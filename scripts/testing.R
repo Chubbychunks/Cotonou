@@ -1,3 +1,12 @@
+devtools::load_all()
+
+# to debug:
+# open terminal in the folder
+# R- d valgrind
+
+require(ggplot2)
+require(reshape2)
+rm(list = ls())
 par_seq = c("c_comm", "c_noncomm")
 groups_seq = c("ProFSW", "LowFSW", "GPF", "FormerFSW", "Client", "GPM", "VirginF", "VirginM", "FormerFSWoutside")
 years_seq = seq(1985, 2016)
@@ -335,9 +344,1011 @@ number_simulations = 1
 
 
 
+# parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
+#                              ranges = rbind(c_comm_1993_ProFSW = c(1001, 1001), c_comm_2012_ProFSW = c(1002, 1002),
+#                                             lol = c(2,22),
+#                                             c_noncomm_1998_Client = c(8, 8.01), c_noncomm_2008_Client = c(1, 1.01), c_noncomm_2015_Client = c(10, 10.01),
+#                                             c_comm_1993_GPM = c(1, 2), c_comm_1998_GPF = c(1, 1.0001),
+#                                             c_comm_1985_Client = c(20,20), c_comm_2012_Client = c(1,1)))
+
+
+#
+# test
+
+# odin::odin_package(".") # looks for any models inside inst/odin
+# devtools::load_all()
+
+
+
 parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
-                             ranges = rbind(c_comm_1993_ProFSW = c(1001, 1001), c_comm_2012_ProFSW = c(1002, 1002),
-                                            lol = c(2,22),
-                                            c_noncomm_1998_Client = c(8, 8.01), c_noncomm_2008_Client = c(1, 1.01), c_noncomm_2015_Client = c(10, 10.01),
-                                            c_comm_1993_GPM = c(1, 2), c_comm_1998_GPF = c(1, 1.0001),
-                                            c_comm_1985_Client = c(20,20), c_comm_2012_Client = c(1,1)))
+                             ranges = rbind(
+                               c_comm_1993_ProFSW = c(0, 2),
+                               # betaMtoF_comm = c(0.00086, 0.0118844), # c(0.00086, 0.00433),
+                               # betaFtoM_comm = c(0.00279 * 0.44, 0.02701 * 0.44),
+                               betaMtoF_noncomm = c(0.00144, 0.00626), # c(0.00086, 0.00433),
+                               # betaFtoM_noncomm = c(0.00279 * 0.44, 0.02701 * 0.44),
+                               RR_beta_GUD = c(1.43, 19.58),
+                               RR_beta_FtM = c(0.5, 2),
+                               c_comm_1993 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 6, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_1993", 9), NULL)),
+                               c_comm_1995 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 6, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_1995", 9), NULL)),
+                               c_comm_1998 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_1998", 9), NULL)),
+                               c_comm_2002 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2002", 9), NULL)),
+                               c_comm_2005 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2005", 9), NULL)),
+                               c_comm_2008 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2008", 9), NULL)),
+                               c_comm_2012 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2012", 9), NULL)),
+                               c_comm_2015 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2015", 9), NULL)),
+                               c_comm_2016 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2016", 9), NULL)),
+
+                               c_noncomm_2012 = matrix(c(0.2, 0.4, 0.2, 0.4, 0, 0, 0, 0, 1, 6, 0.6, 0.96, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_noncomm_2012", 9), NULL)),
+                               c_noncomm_2015 = matrix(c(0.2, 0.4, 0.2, 0.4, 0, 0, 0, 0, 1, 6, 0.6, 0.96, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_noncomm_2015", 9), NULL)),
+                               c_noncomm_2016 = matrix(c(0.2, 0.4, 0.2, 0.4, 0, 0, 0, 0, 1, 6, 0.6, 0.96, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_noncomm_2016", 9), NULL))
+
+
+                             ))
+# lapply(parameters, function(x) x$betaMtoF_noncomm)time <- seq(1986, 2016, length.out = 31)
+f <- function(p, gen, time) {
+  mod <- gen(user = p)
+  all_results <- mod$transform_variables(mod$run(time))
+  all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm")]
+}
+res = lapply(parameters, f, main_model, time)
+
+
+
+# devtools::test()
+
+
+
+########################################################################################################
+########################################################################################################
+########################################################################################################
+########################################################################################################
+start.time <- Sys.time()
+# varying and fitting
+number_simulations = 3
+parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
+                             ranges = rbind(
+                               # betaMtoF_comm = c(0.00086, 0.0118844), # c(0.00086, 0.00433),
+                               # betaFtoM_comm = c(0.00279 * 0.44, 0.02701 * 0.44),
+                               betaMtoF_noncomm = c(0.00144, 0.00626), # c(0.00086, 0.00433),
+                               # betaFtoM_noncomm = c(0.00279 * 0.44, 0.02701 * 0.44),
+                               RR_beta_GUD = c(1.43, 19.58),
+                               RR_beta_FtM = c(0.5, 2),
+                               c_comm_1993_ProFSW = c(1000, 1800),
+                               c_comm_2005_ProFSW = c(250, 600),
+                               c_comm_1998_Client = c(7, 12),
+                               c_comm_2015_Client = c(6, 12),
+
+                               c_noncomm_1998_Client = c(1, 3),
+                               c_noncomm_2015_Client = c(2, 6),
+                               who_believe_comm = c(0, 1)
+
+
+                               #                                c_comm_1993 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 6, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_1993", 9), NULL)),
+                               #                                c_comm_1995 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 6, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_1995", 9), NULL)),
+                               #                                c_comm_1998 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_1998", 9), NULL)),
+                               #                                c_comm_2002 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2002", 9), NULL)),
+                               #                                c_comm_2005 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2005", 9), NULL)),
+                               #                                c_comm_2008 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2008", 9), NULL)),
+                               #                                c_comm_2012 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2012", 9), NULL)),
+                               #                                c_comm_2015 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2015", 9), NULL)),
+                               #                                c_comm_2016 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2016", 9), NULL)),
+                               #
+                               #                                c_noncomm_2012 = matrix(c(0.2, 0.4, 0.2, 0.4, 0, 0, 0, 0, 1, 6, 0.6, 0.96, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_noncomm_2012", 9), NULL)),
+                               #                                c_noncomm_2015 = matrix(c(0.2, 0.4, 0.2, 0.4, 0, 0, 0, 0, 1, 6, 0.6, 0.96, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_noncomm_2015", 9), NULL)),
+                               #                                c_noncomm_2016 = matrix(c(0.2, 0.4, 0.2, 0.4, 0, 0, 0, 0, 1, 6, 0.6, 0.96, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_noncomm_2016", 9), NULL))
+                               #
+
+                             ))
+# lapply(parameters, function(x) x$betaMtoF_noncomm)time <- seq(1986, 2016, length.out = 31)
+f <- function(p, gen, time) {
+  mod <- gen(user = p)
+  all_results <- mod$transform_variables(mod$run(time))
+  #   all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm")]
+  all_results[c("prev")]
+}
+res = lapply(parameters, f, main_model, time)
+
+prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,1998, 2012, 2015,1998, 2008, 1998, 2008,2012, 2015),variable = c(rep("Pro FSW", 11), rep("Clients", 3), rep("GPF", 2), rep("GPM", 2), rep("Low-level FSW", 2)),value = c(3.3, 8.2, 19.2, 53.3, 48.7, 40.6, 38.9, 34.8, 29.3, 27.4, 18.7,100*0.084, 100*0.028, 100*0.016,100*0.035, 100*0.04,100*0.033, 100*0.02,100*0.167, 100*0.065),upper = c(3.3, 8.2, 19.2, 58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01,100*0.11561791, 100*0.051602442, 100*0.035338436,100*0.047726245, 100*0.052817187,100*0.047183668, 100*0.029774338,100*0.268127672, 100*0.130153465),lower = c(3.3, 8.2, 19.2, 48.02, 43.02, 36.58, 31.97, 30.42, 24.93, 23.01, 15.71,100*0.05898524, 100*0.012660836, 100*0.006039259,100*0.024181624, 100*0.030073668,100*0.022857312, 100*0.012427931,100*0.091838441, 100*0.026704897))
+prev_points = prev_points[-c(1,2,3),]
+
+# mapply(function(a, b, c) a+b+c, prev_points$value, prev_points$value, prev_points$value)
+
+
+likelihood_rough <- function(x) {
+  the_prev = data.frame(time, x$prev)
+  names(the_prev) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+
+  likelihood_count <- 0
+
+  for(i in 1:length(prev_points[,1]))
+  {
+    # likelihood_count <- likelihood_count +
+
+    point = subset(the_prev, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
+    if(!is.na(point)) {if((point < prev_points[i, "upper"]) && (point > prev_points[i, "lower"]))
+    {
+      # print(prev_points[i, c("time", "variable")]);
+      likelihood_count <- likelihood_count + 1
+    }}
+  }
+
+
+
+  return (likelihood_count)
+
+}
+
+
+
+# which(unlist(lapply(res, likelihood_rough)) > 4)
+#####
+
+likelihood_list = unlist(lapply(res, likelihood_rough))
+sorted_likelihood_list = sort(likelihood_list)
+
+# table(sorted_likelihood_list)
+
+
+
+best_runs = which(unlist(lapply(res, likelihood_rough)) == max(sorted_likelihood_list))
+
+
+end.time <- Sys.time()
+time.taken <- end.time - start.time
+time.taken
+
+print("number of seconds per simulation:")
+as.numeric(time.taken) * 60 / number_simulations
+
+
+all_binded = do.call(rbind, lapply(res[best_runs], function(x) x$prev))
+all_binded[is.na(all_binded)] = 0
+out = data.frame(time, all_binded, as.character(sort(rep(seq(1,length(best_runs)), length(time)))))
+names(out) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "replication")
+out_melted = melt(out, id.vars = c("time", "replication"))
+prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,1998, 2012, 2015,1998, 2008, 1998, 2008,2012, 2015),variable = c(rep("Pro FSW", 11), rep("Clients", 3), rep("GPF", 2), rep("GPM", 2), rep("Low-level FSW", 2)),value = c(3.3, 8.2, 19.2, 53.3, 48.7, 40.6, 38.9, 34.8, 29.3, 27.4, 18.7,100*0.084, 100*0.028, 100*0.016,100*0.035, 100*0.04,100*0.033, 100*0.02,100*0.167, 100*0.065),upper = c(3.3, 8.2, 19.2, 58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01,100*0.11561791, 100*0.051602442, 100*0.035338436,100*0.047726245, 100*0.052817187,100*0.047183668, 100*0.029774338,100*0.268127672, 100*0.130153465),lower = c(3.3, 8.2, 19.2, 48.02, 43.02, 36.58, 31.97, 30.42, 24.93, 23.01, 15.71,100*0.05898524, 100*0.012660836, 100*0.006039259,100*0.024181624, 100*0.030073668,100*0.022857312, 100*0.012427931,100*0.091838441, 100*0.026704897))
+ggplot()  + geom_line(data = out_melted, aes(x = time, y = value, factor = replication)) + theme_bw() + labs(x="year",y="prevalance (%)") +
+  geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
+  facet_wrap(~variable, scales = "free")
+max(sorted_likelihood_list)
+
+# WHO BELIEVE?
+lapply(parameters[which(likelihood_list == max(likelihood_list))], function(x) x$who_believe_comm)
+
+########################################################################################################
+########################################################################################################
+########################################################################################################
+########################################################################################################
+
+
+# gubbins -----------------------------------------------------------------
+
+#
+#
+#
+# # the parameter sets that are the best fits
+#
+# # all points except first three
+# prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,1998, 2012, 2015,1998, 2008, 1998, 2008,2012, 2015),variable = c(rep("Pro FSW", 11), rep("Clients", 3), rep("GPF", 2), rep("GPM", 2), rep("Low-level FSW", 2)),value = c(3.3, 8.2, 19.2, 53.3, 48.7, 40.6, 38.9, 34.8, 29.3, 27.4, 18.7,100*0.084, 100*0.028, 100*0.016,100*0.035, 100*0.04,100*0.033, 100*0.02,100*0.167, 100*0.065),upper = c(3.3, 8.2, 19.2, 58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01,100*0.11561791, 100*0.051602442, 100*0.035338436,100*0.047726245, 100*0.052817187,100*0.047183668, 100*0.029774338,100*0.268127672, 100*0.130153465),lower = c(3.3, 8.2, 19.2, 48.02, 43.02, 36.58, 31.97, 30.42, 24.93, 23.01, 15.71,100*0.05898524, 100*0.012660836, 100*0.006039259,100*0.024181624, 100*0.030073668,100*0.022857312, 100*0.012427931,100*0.091838441, 100*0.026704897))
+# prev_points = prev_points[-c(1,2,3),]
+# # sorted_likelihood_list = sort(unlist(lapply(res, likelihood_rough)))
+# best_runs = which(unlist(lapply(res, likelihood_rough)) == 10)
+#
+# betas_all_points = lapply(parameters[best_runs], '[', c("betaMtoF_comm", "betaFtoM_comm", "betaMtoF_noncomm", "betaFtoM_noncomm"))
+#
+# betas_df = do.call(rbind, lapply(betas_all_points, '[', c("betaMtoF_comm", "betaFtoM_comm", "betaMtoF_noncomm", "betaFtoM_noncomm")))
+#
+# betas_df = data.frame(matrix(unlist(betas_df), nrow = length(best_runs), byrow = F))
+#
+# names(betas_df) = c("betaMtoF_comm", "betaFtoM_comm", "betaMtoF_noncomm", "betaFtoM_noncomm")
+#
+# betas_df_melted = melt(betas_df)
+#
+#
+# ggplot(data = betas_df_melted, aes(x = value, fill = variable), alpha = 0.5) + geom_histogram() + theme_bw()
+#
+# # just client points
+#
+# prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,1998, 2012, 2015,1998, 2008, 1998, 2008,2012, 2015),variable = c(rep("Pro FSW", 11), rep("Clients", 3), rep("GPF", 2), rep("GPM", 2), rep("Low-level FSW", 2)),value = c(3.3, 8.2, 19.2, 53.3, 48.7, 40.6, 38.9, 34.8, 29.3, 27.4, 18.7,100*0.084, 100*0.028, 100*0.016,100*0.035, 100*0.04,100*0.033, 100*0.02,100*0.167, 100*0.065),upper = c(3.3, 8.2, 19.2, 58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01,100*0.11561791, 100*0.051602442, 100*0.035338436,100*0.047726245, 100*0.052817187,100*0.047183668, 100*0.029774338,100*0.268127672, 100*0.130153465),lower = c(3.3, 8.2, 19.2, 48.02, 43.02, 36.58, 31.97, 30.42, 24.93, 23.01, 15.71,100*0.05898524, 100*0.012660836, 100*0.006039259,100*0.024181624, 100*0.030073668,100*0.022857312, 100*0.012427931,100*0.091838441, 100*0.026704897))
+# prev_points = prev_points[prev_points$variable == "Clients",]
+# best_runs = which(unlist(lapply(res, likelihood_rough)) == 3)
+#
+# all_binded = do.call(rbind, lapply(res[best_runs], function(x) x$prev))
+# all_binded[is.na(all_binded)] = 0
+# out = data.frame(time, all_binded, as.character(sort(rep(seq(1,length(best_runs)), length(time)))))
+# names(out) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "replication")
+# out_melted = melt(out, id.vars = c("time", "replication"))
+# prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,1998, 2012, 2015,1998, 2008, 1998, 2008,2012, 2015),variable = c(rep("Pro FSW", 11), rep("Clients", 3), rep("GPF", 2), rep("GPM", 2), rep("Low-level FSW", 2)),value = c(3.3, 8.2, 19.2, 53.3, 48.7, 40.6, 38.9, 34.8, 29.3, 27.4, 18.7,100*0.084, 100*0.028, 100*0.016,100*0.035, 100*0.04,100*0.033, 100*0.02,100*0.167, 100*0.065),upper = c(3.3, 8.2, 19.2, 58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01,100*0.11561791, 100*0.051602442, 100*0.035338436,100*0.047726245, 100*0.052817187,100*0.047183668, 100*0.029774338,100*0.268127672, 100*0.130153465),lower = c(3.3, 8.2, 19.2, 48.02, 43.02, 36.58, 31.97, 30.42, 24.93, 23.01, 15.71,100*0.05898524, 100*0.012660836, 100*0.006039259,100*0.024181624, 100*0.030073668,100*0.022857312, 100*0.012427931,100*0.091838441, 100*0.026704897))
+# ggplot()  + geom_line(data = out_melted, aes(x = time, y = value, factor = replication)) + theme_bw() + labs(x="year",y="prevalance (%)") +
+#   geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
+#   facet_wrap(~variable, scales = "free")
+#
+# betas_just_clients = lapply(parameters[best_runs], '[', c("betaMtoF_comm", "betaFtoM_comm", "betaMtoF_noncomm", "betaFtoM_noncomm"))
+#
+#
+#
+#
+# # to be altered
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9)[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result["prev"][[1]]
+# df = data.frame(time, yy)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value, color = variable)) + labs(y = "Prevalence (%)") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+#
+#
+#
+# # single run (prev)
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9, c_noncomm_2012 = c(0.3766285, 0.3766285, 0.7943578, 0.7943578, 1.258258, 0.7878543, 0, 0, 0),
+#                             c_noncomm_2015 = c(0.3766285, 0.3766285, 0.7943578, 0.7943578, 1.258258, 0.7878543, 0, 0, 0),
+#                             c_noncomm_2016 = c(0.3766285, 0.3766285, 0.7943578, 0.7943578, 1.258258, 0.7878543, 0, 0, 0))[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result["prev"][[1]]
+# df = data.frame(time, yy)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value, color = variable)) + labs(y = "Prevalence (%)") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+# # FOI
+# FOI <- result["lambda_sum_0"][[1]]
+# df = data.frame(time, FOI)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value)) + labs(y = "force of infection on susceptibles (no PrEP)") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+# # mortality
+# alphaItot <- result["alphaItot"][[1]]
+# df = data.frame(time, alphaItot)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value)) + labs(y = "Annual AIDS deaths") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+#
+# 1/parameters$mu
+#
+#
+#
+# # understanding changes over time
+# df = data.frame(time, result$c_comm_balanced)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value)) + labs(y = "c_comm_balanced") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+# df = data.frame(time, result$c_noncomm_balanced)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value)) + labs(y = "c_noncomm_balanced") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+# df = data.frame(time, result$frac_N)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value)) + labs(y = "frac_N") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+#
+#
+#
+#
+# #try to fit to prevalence data
+# parameters = lhs_parameters(1, set_pars = best_set,
+#                             forced_pars = list(#betaFtoM_comm = 0.00193, betaFtoM_noncomm = 0.00193, # infect_AIDS = 1,
+#                               c_comm_1993 = c(1229.5, 52, 0, 0, 20, 0, 0, 0, 0),
+#                               c_comm_1995 = c(1280, 52, 0, 0, 10, 0, 0, 0, 0),
+#                               c_comm_1998 = c(881, 52, 0, 0, 8, 0, 0, 0, 0),
+#                               c_comm_2002 = c(598.5, 52, 0, 0, 8, 0, 0, 0, 0),
+#                               c_comm_2005 = c(424, 52, 0, 0, 8, 0, 0, 0, 0),
+#                               c_comm_2008 = c(371.5, 52, 0, 0, 8, 0, 0, 0, 0),
+#                               c_comm_2012 = c(541, 52, 0, 0, 8, 0, 0, 0, 0),
+#                               c_comm_2015 = c(400, 52, 0, 0, 8, 0, 0, 0, 0),
+#                               c_comm_2016 = c(400, 52, 0, 0, 8, 0, 0, 0, 0),
+#                               c_noncomm_2012 = c(0.3766285, 0.3766285, 0.7943578, 0.7943578, 1.258258, 0.7878543, 0, 0, 0),
+#                               c_noncomm_2015 = c(0.3766285, 0.3766285, 0.7943578, 0.7943578, 1.258258, 0.7878543, 0, 0, 0),
+#                               c_noncomm_2016 = c(0.3766285, 0.3766285, 0.7943578, 0.7943578, 1.258258, 0.7878543, 0, 0, 0),
+#                               rate_enter_sexual_pop = 0.4,
+#                               betaMtoF_comm = 0.003,
+#                               betaFtoM_comm = 0.0038*0.44,
+#                               betaMtoF_noncomm = 0.002,
+#                               betaFtoM_noncomm = 0.0028*0.44# ,
+#                               #                                                epsilon_2002 = 0.05 * 1.5,
+#                               #                                                epsilon_2013 = 0.05 * 1.5,
+#                               #                                                epsilon_2016 = 0.05 * 1.5
+#                             ),
+#                             Ncat = 9)[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result["prev"][[1]]
+# df = data.frame(time, yy)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,1998, 2012, 2015,1998, 2008, 1998, 2008,2012, 2015),variable = c(rep("Pro FSW", 11), rep("Clients", 3), rep("GPF", 2), rep("GPM", 2), rep("Low-level FSW", 2)),value = c(3.3, 8.2, 19.2, 53.3, 48.7, 40.6, 38.9, 34.8, 29.3, 27.4, 18.7,100*0.084, 100*0.028, 100*0.016,100*0.035, 100*0.04,100*0.033, 100*0.02,100*0.167, 100*0.065),upper = c(3.3, 8.2, 19.2, 58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01,100*0.11561791, 100*0.051602442, 100*0.035338436,100*0.047726245, 100*0.052817187,100*0.047183668, 100*0.029774338,100*0.268127672, 100*0.130153465),lower = c(3.3, 8.2, 19.2, 48.02, 43.02, 36.58, 31.97, 30.42, 24.93, 23.01, 15.71,100*0.05898524, 100*0.012660836, 100*0.006039259,100*0.024181624, 100*0.030073668,100*0.022857312, 100*0.012427931,100*0.091838441, 100*0.026704897))
+# ggplot()  + geom_line(data = df, aes(x = time, y = value)) + theme_bw() + labs(x="year",y="prevalance (%)") +
+#   geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
+#   facet_wrap(~variable, scales = "free")
+# data.frame(time,result$c_comm_balanced)
+# plot(data.frame(year=time, fraction_virgin=result$frac_virgin))
+# plot(data.frame(year=time, sum_of_weighted_FOI = rowSums(result$lambda_sum_0 * result$frac_N)))
+#
+#
+# # average life duration
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9)[[1]]
+# 1/(parameters$gamma01+parameters$alpha01+parameters$mu) +
+#   1/(parameters$gamma02+parameters$alpha02+parameters$mu) +
+#   1/(parameters$gamma03+parameters$alpha03+parameters$mu) +
+#   1/(parameters$gamma04+parameters$alpha04+parameters$mu) +
+#   1/(parameters$alpha05+parameters$mu)
+#
+# #on ART
+# 1/(parameters$gamma01+parameters$alpha01+parameters$mu) +
+#   1/(parameters$gamma32+parameters$alpha32+parameters$mu) +
+#   1/(parameters$gamma33+parameters$alpha33+parameters$mu) +
+#   1/(parameters$gamma34+parameters$alpha34+parameters$mu) +
+#   1/(parameters$alpha35+parameters$mu)
+#
+#
+#
+# # fitting betas
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9, betaMtoF = 0.00193, betaFtoM = 0.00193, infect_AIDS = 1)[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result["prev"][[1]]
+# df = data.frame(time, yy)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,
+#                                   1998, 2012, 2015,
+#                                   1998, 2008,
+#                                   1998, 2008,
+#                                   2012, 2015),
+#                          variable = c(rep("Pro FSW", 11), rep("Clients", 3), rep("GPF", 2), rep("GPM", 2), rep("Low-level FSW", 2)),
+#                          value = c(3.3, 8.2, 19.2, 53.3, 48.7, 40.6, 38.9, 34.8, 29.3, 27.4, 18.7,
+#                                    100*0.084, 100*0.028, 100*0.016,
+#                                    100*0.035, 100*0.04,
+#                                    100*0.033, 100*0.02,
+#                                    100*0.167, 100*0.065),
+#                          upper = c(3.3, 8.2, 19.2, 58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01,
+#                                    100*0.11561791, 100*0.051602442, 100*0.035338436,
+#                                    100*0.047726245, 100*0.052817187,
+#                                    100*0.047183668, 100*0.029774338,
+#                                    100*0.268127672, 100*0.130153465),
+#                          lower = c(3.3, 8.2, 19.2, 48.02, 43.02, 36.58, 31.97, 30.42, 24.93, 23.01, 15.71,
+#                                    100*0.05898524, 100*0.012660836, 100*0.006039259,
+#                                    100*0.024181624, 100*0.030073668,
+#                                    100*0.022857312, 100*0.012427931,
+#                                    100*0.091838441, 100*0.026704897))
+# ggplot()  + geom_line(data = df, aes(x = time, y = value)) + theme_bw() + labs(x="year",y="prevalance (%)") +
+#   geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
+#   facet_wrap(~variable, scales = "free")
+#
+# plot(time, result$c_comm_balanced[,1])
+# plot(time, result$fc_comm[,1,5])
+#
+#
+#
+# # rho
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9)[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result["rho"][[1]]
+# df = data.frame(time, yy)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value, color = variable)) + labs(y = "ART rate") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+#
+#
+# # N
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9)[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result["N"][[1]]
+# df = data.frame(time, yy)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value, color = variable)) + labs(y = "N") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+#
+#
+#
+# # tau
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9)[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result["tau"][[1]]
+# df = data.frame(time, yy)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value, color = variable)) + labs(y = "Testing rate") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+#
+#
+# # test c_comm
+# parameters = lhs_parameters(1, c_comm_1985 = rep_len(1.1, 9), Ncat = 9)[[1]]
+#
+#
+# # new people
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9)[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result["new_people_in_group"][[1]]
+# df = data.frame(time, yy)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value, color = variable)) + labs(y = "Prevalence (%)") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+#
+#
+#
+# # fc
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9)[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result["fc_comm"][[1]][,1,5]
+# df = data.frame(time, yy)
+# plot(df)
+# yy <- result["fc_noncomm"][[1]][,1,5]
+# df = data.frame(time, yy)
+# lines(df)
+#
+# par_gridplot2(result = result, "fc_comm")
+#
+# # frac_F
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9)[[1]]
+# result = run_model(parameters, main_model, time)
+# frac_F <- result["frac_F"][[1]][,1]
+# df = data.frame(time, frac_F)
+# plot(df)
+#
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9, betaMtoF = 0, betaFtoM = 0)[[1]]
+# result = run_model(parameters, main_model, time)
+# frac_F <- result["frac_F"][[1]][,1]
+# df = data.frame(time, frac_F)
+# lines(df)
+#
+#
+# # Ntot
+# parameters = lhs_parameters(1, Ncat = 9, betaMtoF = 0, betaFtoM = 0)[[1]]
+# result = run_model(parameters, main_model, time)
+# # result$prev
+# # result$Ntot
+# # result$new_people
+# # result$Ntot_inc_former_FSW_nonCot
+# result$epsilon
+# plot(result$Ntot_inc_former_FSW_nonCot)
+#
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9, betaMtoF = 0, betaFtoM = 0)[[1]]
+# result = run_model(parameters, main_model, time)
+# # result$prev
+# # result$Ntot
+# # result$new_people
+# # result$Ntot_inc_former_FSW_nonCot
+# result$epsilon
+#
+# lines(result$Ntot_inc_former_FSW_nonCot)
+#
+#
+#
+# # single run (prev)
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9)[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result["prev"][[1]]
+# df = data.frame(time, yy)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value, color = variable)) + labs(y = "Prevalence (%)") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+#
+# # no transmission
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9, betaMtoF = 0, betaFtoM = 0)[[1]]
+# result = run_model(parameters, main_model, time)
+# data.frame(time, result$frac_N)
+# result$prev
+# result$Ntot
+#
+#
+# # frac virgin
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9, forced_pars = list(rate_enter_sexual_pop = .4))[[1]]
+# result = run_model(parameters, main_model, time)
+# fraction_virgin <- result["frac_virgin"][[1]]
+# df = data.frame(time, fraction_virgin);plot(df)
+#
+#
+# # frac N
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9)[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result["frac_N"][[1]]
+# df = data.frame(time, yy)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value, color = variable)) + labs(y = "frac N") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+#
+#
+#
+#
+#
+# # c_noncomm
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9, forced_pars = list(c_noncomm = c(0.38, 0.38, 0.88, 0.88, 1, 1.065, 0, 0, 0)))[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result["prev"][[1]]
+# df = data.frame(time, yy)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value, color = variable)) + labs(y = "Prevalence (%)") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+#
+#
+#
+#
+# ### variations of beta
+# betaseq = c("point estimates", "lower bounds", "upper bounds")
+# betaMtoFseq = c(0.00193, 0.00086, 0.00433)
+# betaFtoMseq = c(0.00867, 0.00279, 0.0279)
+#
+# yy = data.frame()
+# for(i in 1:3)
+# {
+#   run = betaseq[i]
+#   parameters = lhs_parameters(1, set_pars = best_set, forced_pars = list(betaMtoF_comm = betaMtoFseq[i], betaFtoM_comm = betaFtoMseq[i], betaMtoF_noncomm = betaMtoFseq[i], betaFtoM_noncomm = betaFtoMseq[i]
+#                                                                          #                                                                          , n_comm = matrix(c(0, 0, 0, 0, 1.935, 0, 0, 0, 0, # from client sa per partner
+#                                                                          #                                                                                                                                                             0, 0, 0, 0, 1.935, 0, 0, 0, 0,
+#                                                                          #                                                                                                                                                             0, 0, 0, 0, 0, 0, 0, 0, 0,
+#                                                                          #                                                                                                                                                             0, 0, 0, 0, 0, 0, 0, 0, 0,
+#                                                                          #                                                                                                                                                             1.935, 1.935, 0, 0, 0, 0, 0, 0, 0,
+#                                                                          #                                                                                                                                                             0, 0, 0, 0, 0, 0, 0, 0, 0,
+#                                                                          #                                                                                                                                                             0, 0, 0, 0, 0, 0, 0, 0, 0,
+#                                                                          #                                                                                                                                                             0, 0, 0, 0, 0, 0, 0, 0, 0,
+#                                                                          #                                                                                                                                                             0, 0, 0, 0, 0, 0, 0, 0, 0),
+#                                                                          #                                                                                                                                                           nrow = 9, ncol = 9, byrow = T)
+#   ), Ncat = 9)[[1]]
+#   result = run_model(parameters, main_model, time)
+#   yy <- rbind(yy, data.frame(time = time, result["prev"][[1]], replication = betaseq[i]))
+# }
+# colnames(yy) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "replication")
+# yy_melted = melt(yy, id.vars = c("time", "replication"))
+#
+# ggplot(data = yy_melted, aes(x = time, y = value, color = replication)) + facet_wrap(~variable, scales = "free") + geom_line() + theme_bw() + labs(x="year",y="prevalance (%)")
+#
+#
+# prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,
+#                                   1998, 2012, 2015,
+#                                   1998, 2008,
+#                                   1998, 2008,
+#                                   2012, 2015),
+#                          variable = c(rep("Pro FSW", 11), rep("Clients", 3), rep("GPF", 2), rep("GPM", 2), rep("Low-level FSW", 2)),
+#                          value = c(3.3, 8.2, 19.2, 53.3, 48.7, 40.6, 38.9, 34.8, 29.3, 27.4, 18.7,
+#                                    100*0.084, 100*0.028, 100*0.016,
+#                                    100*0.035, 100*0.04,
+#                                    100*0.033, 100*0.02,
+#                                    100*0.167, 100*0.065),
+#                          upper = c(3.3, 8.2, 19.2, 58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01,
+#                                    100*0.11561791, 100*0.051602442, 100*0.035338436,
+#                                    100*0.047726245, 100*0.052817187,
+#                                    100*0.047183668, 100*0.029774338,
+#                                    100*0.268127672, 100*0.130153465),
+#                          lower = c(3.3, 8.2, 19.2, 48.02, 43.02, 36.58, 31.97, 30.42, 24.93, 23.01, 15.71,
+#                                    100*0.05898524, 100*0.012660836, 100*0.006039259,
+#                                    100*0.024181624, 100*0.030073668,
+#                                    100*0.022857312, 100*0.012427931,
+#                                    100*0.091838441, 100*0.026704897))
+# ggplot()  + geom_line(data = yy_melted, aes(x = time, y = value, color = replication)) + theme_bw() + labs(x="year",y="prevalance (%)") +
+#   geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
+#   facet_wrap(~variable, scales = "free")
+#
+#
+# #c_comm
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9, forced_pars = list(c_comm = c(750, 52, 0, 0, 5, 0, 0, 0, 0)))[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result["prev"][[1]]
+# df = data.frame(time, yy)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value)) + labs(y = "Prevalence (%)") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")+
+#   geom_point(data = points, aes(x = time, y = value))+ geom_errorbar(data = points, aes(x = time, ymin = lower, ymax = upper))
+#
+#
+#
+#
+#
+# #beta 0
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9, forced_pars = list(betaMtoF = 0, betaFtoM = 0))[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result["prev"][[1]]
+# df = data.frame(time, yy)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value, color = variable)) + labs(y = "Prevalence (%)") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+#
+#
+#
+#
+# #more condoms run
+# parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9)[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result["prev"][[1]]
+# df = data.frame(time, yy)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value, color = variable)) + labs(y = "Prevalence (%)") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+#
+# best_set_2 = best_set
+#
+# best_set_2$fc_y_comm_1993 = best_set$fc_y_comm_1993*1.8
+# best_set_2$fc_y_comm_1995 = best_set$fc_y_comm_1995*1.8
+# best_set_2$fc_y_comm_1998 = best_set$fc_y_comm_1998*1.8
+#
+# best_set_2$fc_y_noncomm_1998 = best_set$fc_y_noncomm_1998*1.8
+# best_set_2$fc_y_noncomm_2008 = best_set$fc_y_noncomm_2008*1.8
+# best_set_2$fc_y_noncomm_2015 = best_set$fc_y_noncomm_2015*1.8
+#
+# parameters = lhs_parameters(1, set_pars = best_set_2, Ncat = 9)[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result["prev"][[1]]
+# df = data.frame(time, yy)
+# names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+# df = melt(df, id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value, color = variable)) + labs(y = "Prevalence (%)") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
+#
+#
+# # parameters[!(parameters %in% parameters1)]
+#
+#
+#
+#
+#
+# out=data.frame(time=result$t,output=result$Ntot)
+# out
+#
+# ggplot(out, aes(x = time, y = output)) + geom_line() + theme_bw()
+#
+#
+# # no zetas
+# parameters <- lhs_parameters(1,Ncat = 9, set_null = list("zetaa_y", "zetab_y", "zetac_y"))[[1]]
+#
+#
+#
+#
+#
+# # test
+# odin::odin_package(".") # looks for any models inside inst/odin
+# devtools::load_all()
+# time <- seq(1986, 2016, length.out = 31)
+#
+# parameters <- lhs_parameters(1,Ncat = 9, movement = 0)[[1]]
+# result = run_model(parameters, main_model, time)
+#
+#
+#
+#
+# # prev of all groups
+# #### Ncat = 9
+# odin::odin_package(".") # looks for any models inside inst/odin
+# devtools::load_all()
+#
+# number_simulations = 25
+# parms = lhs_parameters(number_simulations, Ncat = 9)
+# time <- seq(1986, 2016, length.out = 31)
+# f <- function(p, gen, time) {
+#   mod <- gen(user = p)
+#   all_results <- mod$transform_variables(mod$run(time))
+#   all_results[c("prev")]
+# }
+# res = lapply(parms, f, main_model, time)
+#
+# out = data.frame(time, do.call(rbind, lapply(res, function(x) x$prev)), as.character(sort(rep(seq(1,number_simulations), length(time)))))
+# names(out) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Former FSW outside Cotonou", "replication")
+# out_melted = melt(out, id.vars = c("time", "replication"))
+# ggplot(data = out_melted, aes(x = time, y = value, factor = replication, color = variable)) + geom_line() + theme_bw() + facet_wrap(~variable)+ theme(legend.position="none")
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# result$prev
+# result$c_comm_balanced
+# result$frac_N
+# result$omega
+#
+# # showing priors are flat and explore space
+# result$c_comm
+#
+# parameters <- lhs_parameters(2000, Ncat = 9)
+# parm_prior1 = do.call(rbind, lapply(parameters, function(x) x$mu))
+# parm_prior2 = do.call(rbind, lapply(parameters, function(x) x$betaMtoF))
+#
+# hist(parm_prior1[,1])
+# ggplot(data= data.frame(parm_prior1, parm_prior2), aes (x= parm_prior1[,1], y= parm_prior2)) + geom_point() + theme_bw()
+#
+# # test prep
+#
+# odin::odin_package(".") # looks for any models inside inst/odin
+# devtools::load_all()
+#
+# time <- seq(1986, 2016, length.out = 31)
+# parameters <- lhs_parameters(1,Ncat = 9)[[1]]
+# result = run_model(parameters, main_model, time)
+#
+# df=melt(data.frame(time, a = result$S1a[,1], b = result$S1b[,1], c = result$S1c[,1], d = result$S1d[,1]), id.vars = "time")
+# ggplot(df, aes(x = time, y = value, color = variable)) + geom_line() + theme_bw()
+#
+#
+#
+#
+#
+# # balancing
+# parameters <- generate_parameters(Ncat = 9, c_comm=c(1244,52,0,0,24,0,0), c_noncomm=c(0.377,0.96,0.96,0.96,2.03,1.34,0),
+#                                   omega = c(1000, 1127, 143728, 500, 27323, 112436, 10)/(1000+1127+143728+500+27323+112436),
+#                                   S0_init = c(1000, 1127, 143728, 500, 27323, 112436, 10)*0.99,
+#                                   I01_init = c(1000, 1127, 143728, 500, 27323, 112436, 10)*0.01)
+# result = run_model(parameters, main_model, time)
+# result$N
+#
+# result$B_check_comm
+# result$B_check_noncomm
+#
+#
+#
+#
+# names(result)
+#
+# result$Ncat
+# result$c_comm
+# result$c_comm_balanced
+# result$c_noncomm
+# result$c_noncomm_balanced
+# result$N
+#
+# result$S0[1,,]
+#
+# result$sum_in_S0
+#
+#
+# result$B_check_comm
+# result$B_check_noncomm
+# #
+#
+# # mixing
+#
+#
+#
+#
+# odin::odin_package(".") # looks for any models inside inst/odin
+# devtools::load_all()
+#
+# parameters <- lhs_parameters(1,Ncat = 9)[[1]]
+# time <- seq(1986, 2016, length.out = 31)
+# result = run_model(parameters, main_model, time)
+# result$M_comm[2,,]
+# result$M_noncomm[2,,]
+# result$p_comm[2,,]
+# result$p_noncomm[2,,]
+#
+#
+# # need to write general test solutions. done! general test below
+# timestep = 3
+# all_female_partnerships = 0; all_male_partnerships = 0;
+# for(i in 1:4)
+#   for (j in 1:7)
+#     all_female_partnerships = all_female_partnerships + result$p_comm[timestep, i, j] * result$c_comm_balanced[timestep,i] * result$N[timestep,i]
+#
+# for(i in 5:6)
+#   for (j in 1:7)
+#     all_male_partnerships = all_male_partnerships + result$p_comm[timestep, i, j] * result$c_comm_balanced[timestep,i] * result$N[timestep,i]
+# all_female_partnerships/all_male_partnerships
+# #nonnoncomm check
+# # need to write general test solutions. done! general test below
+# timestep = 3
+# all_female_partnerships = 0; all_male_partnerships = 0;
+# for(i in 1:4)
+#   for (j in 1:7)
+#     all_female_partnerships = all_female_partnerships + result$p_noncomm[timestep, i, j] * result$c_noncomm_balanced[timestep,i] * result$N[timestep,i]
+#
+# for(i in 5:6)
+#   for (j in 1:7)
+#     all_male_partnerships = all_male_partnerships + result$p_noncomm[timestep, i, j] * result$c_noncomm_balanced[timestep,i] * result$N[timestep,i]
+# all_female_partnerships/all_male_partnerships
+#
+#
+#
+# #below to tset for PrEP
+# parameters <- generate_parameters(zetaa = c(0,0),zetab = c(0,0),zetac = c(0,0), psia = c(1, 1), psib = c(1, 1))
+# result = run_model(parameters, main_model, time)
+#
+# result$OnPrEP
+# result$t
+#
+# result$PrEP_0
+# result$PrEP_1a
+#
+# result$S1a
+# result$S1b
+# result$S1c
+#
+# result$lambda_0[10,,]
+# result$lambda_1a[10,,]
+# result$lambda_1b[10,,]
+# result$lambda_1c[10,,]
+#
+# result$lambda_sum_0[2,]
+# result$lambda_sum_1a[2,]
+# result$lambda_sum_1b[2,]
+# result$lambda_sum_1c[2,]
+#
+#
+# # result$N
+# # result$c[1,,]
+# # result$cstar[1,,]
+# # result$B[1,,]
+# # result$theta[1,,]
+#
+# # RUNNING MULTIPLE SIMULATIONS
+#
+# number_simulations = 2000
+#
+# parms = lhs_parameters(number_simulations)
+#
+# time <- seq(1986, 2016, length.out = 31)
+#
+# # parameter ranges
+#
+# f <- function(p, gen, time) {
+#   mod <- gen(user = p)
+#   all_results <- mod$transform_variables(mod$run(time))
+#   all_results[c("mu","fc_comm","betaMtoF","prev", "cumuInftot")]
+# }
+# res = lapply(parms, f, main_model, time)
+# mu_input <- t(sapply(parms, "[[", "mu"))
+# fc_y_input <- t(sapply(parms, "[[", "fc_y_comm"))
+# prev_client_output <- t(sapply(res, "[[", "prev_client"))
+# betaMtoF_input <- t(sapply(parms, "[[", "betaMtoF"))[1,]
+# cumuInf_output <- t(sapply(res, "[[", "cumuInftot"))[,31]
+#
+# ggplot(data = data.frame(betaMtoF_input, cumuInf_output), aes(x = betaMtoF_input, y = cumuInf_output)) + geom_point() + theme_bw()
+#
+#
+#
+# # fc over time
+# df = melt(data.frame(time, res[[1]]$fc_comm), id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value, colour = variable)) + geom_line() + theme_bw()
+#
+# # prevalence over time
+# matplot(time, res[[1]]$prev, type = "l")#, lty = 1, col = "#00000055")
+#
+#
+# # mu vs prev?
+# plot(mu_input[, 1], prev_client_output[length(time), ])
+#
+#
+# # PLOTTING MULTIPLE SIMULATIONS
+#
+#
+# number_simulations = 100
+# parms = lhs_parameters(number_simulations, Ncat = 2)
+# time <- seq(1986, 2016, length.out = 31)
+# f <- function(p, gen, time) {
+#   mod <- gen(user = p)
+#   all_results <- mod$transform_variables(mod$run(time))
+#   all_results[c("prev")]
+# }
+# res = lapply(parms, f, main_model, time)
+#
+# df=data.frame(time,do.call(cbind, lapply(res, function(x) x <- x$prev[,1])), group = "group 1")
+# df_2=data.frame(time,do.call(cbind, lapply(res, function(x) x <- x$prev[,2])), group = "group 2")
+#
+# df_melted = melt(df, id.vars = c("time","group"))
+# df_melted_2 = melt(df_2, id.vars = c("time","group"))
+# df_all = rbind(df_melted, df_melted_2)
+# ggplot(data = df_all, aes(x = time, y = value, factor = variable, color = group)) + geom_line(alpha = 0.5) + theme_bw()
+#
+#
+# #### Ncat = 9
+# odin::odin_package(".") # looks for any models inside inst/odin
+# devtools::load_all()
+#
+# number_simulations = 50
+# parms = lhs_parameters(number_simulations, Ncat = 9)
+# time <- seq(1986, 2016, length.out = 31)
+# f <- function(p, gen, time) {
+#   mod <- gen(user = p)
+#   all_results <- mod$transform_variables(mod$run(time))
+#   all_results[c("prev")]
+# }
+# res = lapply(parms, f, main_model, time)
+#
+# df=data.frame(time,do.call(cbind, lapply(res, function(x) x <- x$prev[,1])), group = "group 1")
+# df_2=data.frame(time,do.call(cbind, lapply(res, function(x) x <- x$prev[,2])), group = "group 2")
+# df_3=data.frame(time,do.call(cbind, lapply(res, function(x) x <- x$prev[,3])), group = "group 3")
+# df_4=data.frame(time,do.call(cbind, lapply(res, function(x) x <- x$prev[,4])), group = "group 4")
+# df_5=data.frame(time,do.call(cbind, lapply(res, function(x) x <- x$prev[,5])), group = "group 5")
+# df_6=data.frame(time,do.call(cbind, lapply(res, function(x) x <- x$prev[,6])), group = "group 6")
+# df_7=data.frame(time,do.call(cbind, lapply(res, function(x) x <- x$prev[,7])), group = "group 7")
+#
+# df_melted = melt(df, id.vars = c("time","group"))
+# df_melted_2 = melt(df_2, id.vars = c("time","group"))
+# df_melted_3 = melt(df_3, id.vars = c("time","group"))
+# df_melted_4 = melt(df_4, id.vars = c("time","group"))
+# df_melted_5 = melt(df_5, id.vars = c("time","group"))
+# df_melted_6 = melt(df_6, id.vars = c("time","group"))
+# df_melted_7 = melt(df_7, id.vars = c("time","group"))
+#
+# df_all = rbind(df_melted, df_melted_2, df_melted_3, df_melted_4, df_melted_5, df_melted_6, df_melted_7)
+# ggplot(data = df_all, aes(x = time, y = value, factor = variable, color = group)) + geom_line(alpha = 0.5) + theme_bw()
+#
+# df=do.call(cbind,lapply(res, function(x) x$prev[,7]))
+# colnames(df) <- seq(1, number_simulations)
+# df <- data.frame(time, df)
+# df_melted <- melt(df, id.vars = "time")
+# ggplot(data = df_melted, aes(x = time, y = value, factor = variable)) + geom_line() + theme_bw() + labs(x="year",y="prevalance (%) former FSW outside Cotonou")
+#
+#
+# # show priors are flat and well explored
+# number_simulations = 200
+# parms = lhs_parameters(number_simulations, Ncat = 9)
+# time <- seq(1986, 2016, length.out = 31)
+# f <- function(p, gen, time) {
+#   mod <- gen(user = p)
+#   all_results <- mod$transform_variables(mod$run(time))
+#   all_results[c("c_comm", "c_noncomm","mu","gamma01")]
+# }
+# res = lapply(parms, f, main_model, time)
+#
+# c_comm_prior = do.call(rbind, lapply(res, function(x) x$c_comm[1,]))
+# hist(c_comm_prior[,1])
+#
+# mu_prior = do.call(rbind, lapply(res, function(x) x$mu[1,]))
+# hist(mu_prior[,1])
+#
+# c_noncomm_prior = do.call(rbind, lapply(res, function(x) x$c_noncomm[1,]))
+# hist(c_noncomm_prior[,1])
+#
+# gamma01_prior = do.call(rbind, lapply(res, function(x) x$gamma01[1,]))
+# hist(gamma01_prior[,1])
+#
+#
+#
+# # SINGLE RUN WITH PARAMETERS TO CHECK EVERY OUTPUT
+#
+# # plot fc
+# parameters <- lhs_parameters(1)[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result[grep("c_comm", names(result))]
+# df = melt(data.frame(time, yy$c_comm), id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value, colour = variable)) + geom_line() + theme_bw()
+#
+#
+# # number of people on PrEP
+# parameters <- lhs_parameters(1)[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result[grep("S1[a-z]", names(result))]
+# yy_plot <- melt(
+#   data.frame(time,
+#              FSW = rowSums(do.call(cbind, lapply(yy, function(x) x <- x[,1]))),
+#              clients = rowSums(do.call(cbind, lapply(yy, function(x) x <- x[,2])))
+#   ),id.vars = "time")
+#
+# ggplot(data = yy_plot, aes(x = time, y = value, colour = variable)) + geom_line() + theme_bw()
+#
+#
+#
+# # plot prevalence
+# parameters <- lhs_parameters(1)[[1]]
+# result = run_model(parameters, main_model, time)
+# yy <- result[grep("prev", names(result))]
+# df = melt(data.frame(time, FSW = yy$prev_FSW, client = yy$prev_client), id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value, colour = variable)) + geom_line() + theme_bw()
+#
+#
+# # cumulative infections
+# parameters <-lhs_parameters(1)[[1]]
+# result = run_model(parameters, main_model, time)
+# xx <- result[grep("cumu", names(result))]
+# N <- rowSums(do.call(cbind, xx))
+# df = melt(data.frame(time, N), id.vars = "time")
+# ggplot(data = df, aes(x = time, y = value, colour = variable)) + geom_line() + theme_bw()
+
+
+# gubbins -----------------------------------------------------------------
+
+
