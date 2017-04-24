@@ -3,6 +3,8 @@
 #' Eugene's function to be documented
 #' @export
 #' @useDynLib cotonou
+#'
+#' @export
 fix_parameters <- function(y, Ncat, Nage) {
 
   #   # interpolating for c_comm
@@ -313,6 +315,8 @@ fix_parameters <- function(y, Ncat, Nage) {
 #
 # the parameters below will be sampled from an LHS and will replace their respective defaults
 # unless I put something in the args of the function, eg sample = mu
+
+#' @export
 lhs_parameters <- function(n, sample = NULL, Ncat = 2, Nage = 1, ..., set_pars = list(...), forced_pars = list(...), set_null= list(...), ranges = NULL) {
 
 
@@ -499,6 +503,7 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 2, Nage = 1, ..., set_pars =
   lapply(samples_list, function(x) generate_parameters(parameters = x, Ncat = Ncat, set_null = set_null))
 }
 
+#' @export
 generate_parameters <- function(..., parameters = list(...), set_null = list(...), Ncat = 2, Nage = 1) {
   defaults <- list(Ncat = Ncat,
                    Nage = Nage,
