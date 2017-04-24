@@ -1,8 +1,3 @@
-#' @title the model in odin syntax
-#' @export main_model
-#' @rdname main_model
-NULL
-
 #' parameters which depend on others, etc
 #'
 #' Eugene's function to be documented

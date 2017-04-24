@@ -4,7 +4,6 @@
 # open terminal in the folder
 # R- d valgrind
 library(cotonou)
-devtools::load_all()
 require(ggplot2)
 require(reshape2)
 rm(list = ls())
