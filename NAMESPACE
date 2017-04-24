@@ -3,4 +3,5 @@
 export(fix_parameters)
 export(generate_parameters)
 export(lhs_parameters)
+export(main_model)
 useDynLib(cotonou)
