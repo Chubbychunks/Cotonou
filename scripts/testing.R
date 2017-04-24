@@ -1,9 +1,10 @@
-devtools::load_all()
+# devtools::load_all()
 
 # to debug:
 # open terminal in the folder
 # R- d valgrind
-
+library(cotonou)
+devtools::load_all()
 require(ggplot2)
 require(reshape2)
 rm(list = ls())
@@ -391,7 +392,7 @@ f <- function(p, gen, time) {
   all_results <- mod$transform_variables(mod$run(time))
   all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm")]
 }
-res = lapply(parameters, f, main_model, time)
+res = lapply(parameters, f, cotonou::main_model, time)
 
 
 
