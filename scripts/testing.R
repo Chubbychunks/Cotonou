@@ -1,11 +1,23 @@
-odin::odin_package(".") # looks for any models inside inst/odin
 
-# devtools::load_all()
 
 # to debug:
 # open terminal in the folder
 # R- d valgrind
-library(cotonou)
+
+
+
+#######################################################################
+##########################for local editing
+#######################################################################
+odin::odin_package(".") # looks for any models inside inst/odin
+devtools::load_all()
+##############################################################
+
+
+# library(cotonou)
+
+
+
 require(ggplot2)
 require(reshape2)
 rm(list = ls())
@@ -407,7 +419,7 @@ res = lapply(parameters, f, cotonou::main_model, time)
 ########################################################################################################
 start.time <- Sys.time()
 # varying and fitting
-number_simulations = 3
+number_simulations = 2
 parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
                              ranges = rbind(
                                # betaMtoF_comm = c(0.00086, 0.0118844), # c(0.00086, 0.00433),
@@ -447,12 +459,48 @@ f <- function(p, gen, time) {
   mod <- gen(user = p)
   all_results <- mod$transform_variables(mod$run(time))
   #   all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm")]
-  all_results[c("prev")]
+  all_results[c("prev", "frac_N", "Ntot")]
 }
 res = lapply(parameters, f, main_model, time)
 
-prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,1998, 2012, 2015,1998, 2008, 1998, 2008,2012, 2015),variable = c(rep("Pro FSW", 11), rep("Clients", 3), rep("GPF", 2), rep("GPM", 2), rep("Low-level FSW", 2)),value = c(3.3, 8.2, 19.2, 53.3, 48.7, 40.6, 38.9, 34.8, 29.3, 27.4, 18.7,100*0.084, 100*0.028, 100*0.016,100*0.035, 100*0.04,100*0.033, 100*0.02,100*0.167, 100*0.065),upper = c(3.3, 8.2, 19.2, 58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01,100*0.11561791, 100*0.051602442, 100*0.035338436,100*0.047726245, 100*0.052817187,100*0.047183668, 100*0.029774338,100*0.268127672, 100*0.130153465),lower = c(3.3, 8.2, 19.2, 48.02, 43.02, 36.58, 31.97, 30.42, 24.93, 23.01, 15.71,100*0.05898524, 100*0.012660836, 100*0.006039259,100*0.024181624, 100*0.030073668,100*0.022857312, 100*0.012427931,100*0.091838441, 100*0.026704897))
+
+# prev_points -------------------------------------------------------------
+
+
+
+prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,
+                                  1998, 2002, 2005, 2008, 2012, 2015,
+                                  1998, 2008, 2011,
+                                  1998, 2008, 2011,
+                                  2012, 2015),
+                         variable = c(rep("Pro FSW", 11),
+                                      rep("Clients", 6),
+                                      rep("GPF", 3),
+                                      rep("GPM", 3),
+                                      rep("Low-level FSW", 2)),
+                         value = c(3.3, 8.2, 19.2, 53.3, 48.7, 40.6, 38.9, 34.8, 29.3, 27.4, 18.7,
+                                   100*0.084, 9, 6.9, 5.8, 100*0.028, 100*0.016,
+                                   100*0.035, 100*0.04, 2.2,
+                                   100*0.033, 100*0.02, 1.6,
+                                   100*0.167, 100*0.065),
+                         lower = c(3.3, 8.2, 19.2, 48.02, 43.02, 36.58, 31.97, 30.42, 24.93, 23.01, 15.71,
+                                   100*0.05898524, 100*0.068218538, 100*0.04293149, 100*0.034772131, 100*0.012660836, 100*0.006039259,
+                                   100*0.024181624, 100*0.030073668, 100*0.012980254,
+                                   100*0.022857312, 100*0.012427931, 100*0.007517563,
+                                   100*0.091838441, 100*0.026704897),
+                         upper = c(3.3, 8.2, 19.2, 58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01,
+                                   100*0.11561791, 100*0.115608811, 100*0.105215792, 100*0.090216628, 100*0.051602442, 100*0.035338436,
+                                   100*0.047726245, 100*0.052817187, 100*0.035296286,
+                                   100*0.047183668, 100*0.029774338, 100*0.028546718,
+                                   100*0.268127672, 100*0.130153465))
+prev_points_all = prev_points
 prev_points = prev_points[-c(1,2,3),]
+
+
+# prev_points -------------------------------------------------------------
+
+
+
 
 # mapply(function(a, b, c) a+b+c, prev_points$value, prev_points$value, prev_points$value)
 
@@ -509,9 +557,8 @@ all_binded[is.na(all_binded)] = 0
 out = data.frame(time, all_binded, as.character(sort(rep(seq(1,length(best_runs)), length(time)))))
 names(out) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "replication")
 out_melted = melt(out, id.vars = c("time", "replication"))
-prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,1998, 2012, 2015,1998, 2008, 1998, 2008,2012, 2015),variable = c(rep("Pro FSW", 11), rep("Clients", 3), rep("GPF", 2), rep("GPM", 2), rep("Low-level FSW", 2)),value = c(3.3, 8.2, 19.2, 53.3, 48.7, 40.6, 38.9, 34.8, 29.3, 27.4, 18.7,100*0.084, 100*0.028, 100*0.016,100*0.035, 100*0.04,100*0.033, 100*0.02,100*0.167, 100*0.065),upper = c(3.3, 8.2, 19.2, 58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01,100*0.11561791, 100*0.051602442, 100*0.035338436,100*0.047726245, 100*0.052817187,100*0.047183668, 100*0.029774338,100*0.268127672, 100*0.130153465),lower = c(3.3, 8.2, 19.2, 48.02, 43.02, 36.58, 31.97, 30.42, 24.93, 23.01, 15.71,100*0.05898524, 100*0.012660836, 100*0.006039259,100*0.024181624, 100*0.030073668,100*0.022857312, 100*0.012427931,100*0.091838441, 100*0.026704897))
 ggplot()  + geom_line(data = out_melted, aes(x = time, y = value, factor = replication)) + theme_bw() + labs(x="year",y="prevalance (%)") +
-  geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
+  geom_point(data = prev_points_all, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
   facet_wrap(~variable, scales = "free")
 max(sorted_likelihood_list)
 
