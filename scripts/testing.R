@@ -429,7 +429,7 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
 f <- function(p, gen, time) {
   mod <- gen(user = p)
   all_results <- mod$transform_variables(mod$run(time))
-  all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm")]
+  all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm", "fc_comm", "fc_noncomm")]
 }
 res = lapply(parameters, f, cotonou::main_model, time)
 
@@ -437,8 +437,13 @@ res = lapply(parameters, f, cotonou::main_model, time)
 # if(number_simulations == 1)
 #   ggplot(melt(data.frame(time, do.call(rbind, lapply(res, function(x) x$c_comm))), id.vars = "time"), aes(x = time, y = value)) + geom_line() + facet_wrap(~variable, scales = "free") + theme_bw()
 
-# checking fc
 
+# plot function -----------------------------------------------------------
+
+
+
+# checking fc
+# DONT TRUST THE PLOTTING!!
 par_gridplot2 = function(result, parm) {
   require(plyr)
   fc_df = aperm(result[parm][[1]], c(2, 3, 1))
@@ -470,8 +475,17 @@ par_gridplot2 = function(result, parm) {
   return(ggplot(dat, aes(x = year, y = value, color = value)) + geom_line(size = 2) + facet_grid(row~col) + theme_bw())
 }
 
+par_gridplot2(result = res[[1]], "fc_noncomm")
+
+
+# plot end ----------------------------------------------------------------
+
+
+
 # devtools::test()
 
+res[[1]]$fc_noncomm[1,,]
+parameters[[1]]$fc_y_comm_1985
 
 
 ########################################################################################################
@@ -480,7 +494,7 @@ par_gridplot2 = function(result, parm) {
 ########################################################################################################
 start.time <- Sys.time()
 # varying and fitting
-number_simulations = 30
+number_simulations = 10
 
 
 # parameters --------------------------------------------------------------
@@ -514,9 +528,19 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
                                frac_women_LowFSW = c(0.0024, 0.0067),
                                frac_women_exFSW = c(0.0024, 0.0067),
 
-                               frac_men_client = c(0.2, 0.4)
+                               frac_men_client = c(0.2, 0.4),
                                # frac_women_virgin = 0.1,
                                # frac_men_virgin = 0.1
+
+                               fc_y_comm_1993_ProFSW_Client = c(0.535, 0.687),
+                               fc_y_comm_2002_ProFSW_Client = c(0.872, 0.933)
+
+                               # fc_y_noncomm_1985_ProFSW_Client = c(0.27, 0.43),
+                               # fc_y_noncomm_2016_ProFSW_Client = c(0.27, 0.43)
+                               # ,
+                               #
+                               # fc_y_noncomm_1998_GPM_GPF = c(0.0326087, 0.241404781),
+                               # fc_y_noncomm_2016_GPM_GPF = c(0.0326087, 0.251404781)
 
 
                              ))
