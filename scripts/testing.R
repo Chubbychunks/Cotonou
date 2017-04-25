@@ -471,7 +471,7 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
                                rate_leave_low_FSW = c(0, 0.4),
                                rate_leave_client = c(0, 0.4),
 
-                               rate_enter_sexual_pop = c(0, 0.2),
+                               rate_enter_sexual_pop = c(0.6, 0.6),
 
                                epsilon_2002 = c(0.04, 0.08),
                                epsilon_2013 = c(0.04, 0.08),
@@ -485,7 +485,7 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
 
 
                              ))
-# parameters --------------------------------------------------------------
+# end of parameters --------------------------------------------------------------
 
 outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client")
 
