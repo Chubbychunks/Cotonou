@@ -5,6 +5,7 @@
 # R- d valgrind
 
 
+rm(list = ls())
 
 #######################################################################
 ##########################for local editing
@@ -12,6 +13,34 @@
 odin::odin_package(".") # looks for any models inside inst/odin
 devtools::load_all()
 ##############################################################
+# parameters <- lhs_parameters(1, set_pars = best_set, Ncat = 9,
+#                                            ranges = rbind(
+#                                              betaMtoF_noncomm = c(0.00144, 0.00626), # c(0.00086, 0.00433),
+#                                              RR_beta_GUD = c(1.43, 19.58),
+#                                              RR_beta_FtM = c(0.5, 2),
+#
+#                                              c_comm_1993_ProFSW = c(1000, 1800),
+#                                              c_comm_2005_ProFSW = c(250, 600),
+#                                              c_comm_1998_Client = c(7, 12),
+#                                              c_comm_2015_Client = c(6, 12),
+#
+#                                              c_noncomm_1998_Client = c(1, 3),
+#                                              c_noncomm_2015_Client = c(2, 6),
+#
+#                                              who_believe_comm = c(0, 1),
+#                                              frac_women_ProFSW = c(0.025, 0.025)
+#                                            ))
+# f <- function(p, gen, time) {
+#   mod <- gen(user = p)
+#   all_results <- mod$transform_variables(mod$run(time))
+#   all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm")]
+# }
+# res = lapply(parameters, f, cotonou::main_model, time)
+# pars = parameters[[1]]
+# pars$frac_women_ProFSW
+# pars$N_init
+# sum(pars$N_init)
+
 
 
 # library(cotonou)
@@ -20,19 +49,29 @@ devtools::load_all()
 
 require(ggplot2)
 require(reshape2)
-rm(list = ls())
 par_seq = c("c_comm", "c_noncomm")
 groups_seq = c("ProFSW", "LowFSW", "GPF", "FormerFSW", "Client", "GPM", "VirginF", "VirginM", "FormerFSWoutside")
 years_seq = seq(1985, 2016)
+time <- seq(1986, 2016, length.out = 31)
 
 
 # best_set ----------------------------------------------------------------
 
 
 best_set = list(
+  initial_Ntot = 286114,
+
+  frac_women_ProFSW = 0.0024,
+  frac_women_LowFSW = 0.0027,
+  frac_women_exFSW = 0.0024,
+
+  frac_men_client = 0.2,
+  frac_women_virgin = 0.1,
+  frac_men_virgin = 0.1,
+
   prev_init_FSW = 0.0326,
   prev_init_rest = 0.0012,
-  N_init = c(672, 757, 130895, 672, 27124, 100305, 14544, 11145, 0),
+  # N_init = c(672, 757, 130895, 672, 27124, 100305, 14544, 11145, 0),
   fraction_F = 0.515666224,
   epsilon_1985 = 0.059346131 * 1.5,
   epsilon_1992 = 0.053594832 * 1.5,
@@ -348,27 +387,15 @@ best_set = list(
 
 )
 
-# best_set ----------------------------------------------------------------
+# best_set end ----------------------------------------------------------------
 
 
 
 
-time <- seq(1986, 2016, length.out = 31)
 number_simulations = 1
 
 
-
-# parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
-#                              ranges = rbind(c_comm_1993_ProFSW = c(1001, 1001), c_comm_2012_ProFSW = c(1002, 1002),
-#                                             lol = c(2,22),
-#                                             c_noncomm_1998_Client = c(8, 8.01), c_noncomm_2008_Client = c(1, 1.01), c_noncomm_2015_Client = c(10, 10.01),
-#                                             c_comm_1993_GPM = c(1, 2), c_comm_1998_GPF = c(1, 1.0001),
-#                                             c_comm_1985_Client = c(20,20), c_comm_2012_Client = c(1,1)))
-
-
-#
 # test
-
 # odin::odin_package(".") # looks for any models inside inst/odin
 # devtools::load_all()
 
@@ -397,7 +424,6 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
                                c_noncomm_2015 = matrix(c(0.2, 0.4, 0.2, 0.4, 0, 0, 0, 0, 1, 6, 0.6, 0.96, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_noncomm_2015", 9), NULL)),
                                c_noncomm_2016 = matrix(c(0.2, 0.4, 0.2, 0.4, 0, 0, 0, 0, 1, 6, 0.6, 0.96, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_noncomm_2016", 9), NULL))
 
-
                              ))
 # lapply(parameters, function(x) x$betaMtoF_noncomm)time <- seq(1986, 2016, length.out = 31)
 f <- function(p, gen, time) {
@@ -419,15 +445,18 @@ res = lapply(parameters, f, cotonou::main_model, time)
 ########################################################################################################
 start.time <- Sys.time()
 # varying and fitting
-number_simulations = 2
+number_simulations = 1
+
+
+# parameters --------------------------------------------------------------
 parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
                              ranges = rbind(
-                               # betaMtoF_comm = c(0.00086, 0.0118844), # c(0.00086, 0.00433),
-                               # betaFtoM_comm = c(0.00279 * 0.44, 0.02701 * 0.44),
-                               betaMtoF_noncomm = c(0.00144, 0.00626), # c(0.00086, 0.00433),
-                               # betaFtoM_noncomm = c(0.00279 * 0.44, 0.02701 * 0.44),
+                               betaMtoF_noncomm = c(0.00144, 0.00626),
+                               # betaMtoF_noncomm = c(0, 0), # c(0.00086, 0.00433),
+
                                RR_beta_GUD = c(1.43, 19.58),
                                RR_beta_FtM = c(0.5, 2),
+
                                c_comm_1993_ProFSW = c(1000, 1800),
                                c_comm_2005_ProFSW = c(250, 600),
                                c_comm_1998_Client = c(7, 12),
@@ -435,39 +464,42 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
 
                                c_noncomm_1998_Client = c(1, 3),
                                c_noncomm_2015_Client = c(2, 6),
-                               who_believe_comm = c(0, 1)
 
+                               who_believe_comm = c(0, 1),
 
-                               #                                c_comm_1993 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 6, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_1993", 9), NULL)),
-                               #                                c_comm_1995 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 6, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_1995", 9), NULL)),
-                               #                                c_comm_1998 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_1998", 9), NULL)),
-                               #                                c_comm_2002 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2002", 9), NULL)),
-                               #                                c_comm_2005 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2005", 9), NULL)),
-                               #                                c_comm_2008 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2008", 9), NULL)),
-                               #                                c_comm_2012 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2012", 9), NULL)),
-                               #                                c_comm_2015 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2015", 9), NULL)),
-                               #                                c_comm_2016 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2016", 9), NULL)),
-                               #
-                               #                                c_noncomm_2012 = matrix(c(0.2, 0.4, 0.2, 0.4, 0, 0, 0, 0, 1, 6, 0.6, 0.96, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_noncomm_2012", 9), NULL)),
-                               #                                c_noncomm_2015 = matrix(c(0.2, 0.4, 0.2, 0.4, 0, 0, 0, 0, 1, 6, 0.6, 0.96, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_noncomm_2015", 9), NULL)),
-                               #                                c_noncomm_2016 = matrix(c(0.2, 0.4, 0.2, 0.4, 0, 0, 0, 0, 1, 6, 0.6, 0.96, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_noncomm_2016", 9), NULL))
-                               #
+                               rate_leave_pro_FSW = c(0, 0.4),
+                               rate_leave_low_FSW = c(0, 0.4),
+                               rate_leave_client = c(0, 0.4),
+
+                               rate_enter_sexual_pop = c(0, 0.2),
+
+                               epsilon_2002 = c(0.04, 0.08),
+                               epsilon_2013 = c(0.04, 0.08),
+                               frac_women_ProFSW = c(0.0024, 0.0067),
+                               frac_women_LowFSW = c(0.0024, 0.0067),
+                               frac_women_exFSW = c(0.0024, 0.0067),
+
+                               frac_men_client = c(0.2, 0.4)
+                               # frac_women_virgin = 0.1,
+                               # frac_men_virgin = 0.1
+
 
                              ))
-# lapply(parameters, function(x) x$betaMtoF_noncomm)time <- seq(1986, 2016, length.out = 31)
+# parameters --------------------------------------------------------------
+
+outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client")
+
+
 f <- function(p, gen, time) {
   mod <- gen(user = p)
   all_results <- mod$transform_variables(mod$run(time))
-  #   all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm")]
-  all_results[c("prev", "frac_N", "Ntot")]
+  #   all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm", "epsilon")]
+  all_results[outputs]
 }
 res = lapply(parameters, f, main_model, time)
 
 
 # prev_points -------------------------------------------------------------
-
-
-
 prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,
                                   1998, 2002, 2005, 2008, 2012, 2015,
                                   1998, 2008, 2011,
@@ -499,11 +531,7 @@ prev_points = prev_points[-c(1,2,3),]
 
 # prev_points -------------------------------------------------------------
 
-
-
-
-# mapply(function(a, b, c) a+b+c, prev_points$value, prev_points$value, prev_points$value)
-
+# likelihood calculation -----------------------------------
 
 likelihood_rough <- function(x) {
   the_prev = data.frame(time, x$prev)
@@ -529,7 +557,7 @@ likelihood_rough <- function(x) {
 
 }
 
-
+# end of likelihood calculation -----------------------------------
 
 # which(unlist(lapply(res, likelihood_rough)) > 4)
 #####
@@ -539,10 +567,7 @@ sorted_likelihood_list = sort(likelihood_list)
 
 # table(sorted_likelihood_list)
 
-
-
 best_runs = which(unlist(lapply(res, likelihood_rough)) == max(sorted_likelihood_list))
-
 
 end.time <- Sys.time()
 time.taken <- end.time - start.time
@@ -551,6 +576,41 @@ time.taken
 print("number of seconds per simulation:")
 as.numeric(time.taken) * 60 / number_simulations
 
+###
+# THE DEMOGRAPHIC RESULTS OF BEST RUNS
+
+# frac N data points ------------------------------------------------------
+frac_N_data_points = data.frame(time = c(1998, 2014, 1998, 1998, 1998, 2008, 1998, 2008),
+                                point = c(0.67, 0.24, 100*0.195738802*(1-0.515666224), 40, 100*0.1292392*0.515666224, 100*0.124632*0.515666224, 100*0.0972973*(1-0.515666224), 100*0.08840413*(1-0.515666224)),
+                                variable = c("Pro FSW", "Pro FSW", "Clients", "Clients", "Virgin female", "Virgin female", "Virgin male", "Virgin male"))
+
+
+# demographic graphs ------------------------------------------------------
+
+frac_N_best_runs = 100*do.call(rbind, lapply(res[best_runs], function(x) x$frac_N))
+frac_N_best_runs = data.frame(time, frac_N_best_runs, as.character(sort(rep(seq(1,length(best_runs)), length(time)))))
+names(frac_N_best_runs) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "replication")
+frac_N_best_runs_melted = melt(frac_N_best_runs, id.vars = c("time", "replication"))
+ggplot()  + geom_line(data = frac_N_best_runs_melted, aes(x = time, y = value, factor = replication)) + theme_bw() + labs(x="year",y="Percent in each group (%)") +
+  facet_wrap(~variable, scales = "free") + geom_point(data = frac_N_data_points, aes(x = time, y = point), size = I(2), color = "red", shape = 15)
+
+
+epsilon_best_runs = t(do.call(rbind, lapply(res[best_runs], function(x) x$epsilon)))
+epsilon_best_runs = data.frame(time, epsilon_best_runs)
+epsilon_best_runs_melted = melt(epsilon_best_runs, id.vars = "time")
+ggplot() + geom_line(data = epsilon_best_runs_melted, aes(x = time, y = value, factor = variable)) +
+  theme_bw() + labs(x="year",y="Growth rate")
+
+Ntot_data_points = data.frame(time = c(1979, 1992, 2002, 2013), point = c(191106.1467, 404359.0418, 681559.032, 913029.606))
+Ntot_best_runs = t(do.call(rbind, lapply(res[best_runs], function(x) x$Ntot)))
+Ntot_best_runs = data.frame(time, Ntot_best_runs)
+Ntot_best_runs_melted = melt(Ntot_best_runs, id.vars = "time")
+ggplot() + geom_line(data = Ntot_best_runs_melted, aes(x = time, y = value, factor = variable)) +
+  theme_bw() + labs(x="year",y="Total population size") + geom_point(data = Ntot_data_points, aes(x = time, y = point), size = I(2), color = "red", shape = 15)
+
+# end of demographic graphs ------------------------------------------------------
+
+# prev graphs ------------------------------------------------------
 
 all_binded = do.call(rbind, lapply(res[best_runs], function(x) x$prev))
 all_binded[is.na(all_binded)] = 0
@@ -560,11 +620,20 @@ out_melted = melt(out, id.vars = c("time", "replication"))
 ggplot()  + geom_line(data = out_melted, aes(x = time, y = value, factor = replication)) + theme_bw() + labs(x="year",y="prevalance (%)") +
   geom_point(data = prev_points_all, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
   facet_wrap(~variable, scales = "free")
+# end of prev graphs ------------------------------------------------------
+
+
+
 max(sorted_likelihood_list)
 
 # WHO BELIEVE?
-lapply(parameters[which(likelihood_list == max(likelihood_list))], function(x) x$who_believe_comm)
+who_believe = unlist(lapply(parameters[which(likelihood_list == max(likelihood_list))], function(x) x$who_believe_comm))
+who_believe = ifelse(who_believe == 1, "Clients", "FSWs")
+table(who_believe)
 
+
+## END OF TESTS
+########################################################################################################
 ########################################################################################################
 ########################################################################################################
 ########################################################################################################

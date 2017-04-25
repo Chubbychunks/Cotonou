@@ -101,6 +101,18 @@ fix_parameters <- function(y, Ncat, Nage) {
   #   print(y)
 
 
+  # fractions of groups at initialisation
+  y$N_init = y$initial_Ntot*c(y$fraction_F*y$frac_women_ProFSW,
+               y$fraction_F*y$frac_women_LowFSW,
+               y$fraction_F - (y$fraction_F*y$frac_women_ProFSW + y$fraction_F*y$frac_women_LowFSW + y$fraction_F*y$frac_women_virgin + y$fraction_F*y$frac_women_exFSW),
+               y$fraction_F*y$frac_women_exFSW,
+    (1-y$fraction_F)*y$frac_men_client,
+    (1 - y$fraction_F - ((1-y$fraction_F)*y$frac_men_client + (1-y$fraction_F) * y$frac_men_virgin)),
+    y$fraction_F*y$frac_women_virgin,
+    (1-y$fraction_F) * y$frac_men_virgin,
+    0
+    )
+
 
   # may want to switch off!
   y$betaFtoM_noncomm = y$betaMtoF_noncomm * y$RR_beta_FtM * 0.44
@@ -328,11 +340,24 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 2, Nage = 1, ..., set_pars =
 
   #fixed pars list i think for the fix parameters function
   fixed_pars = list(
+
+    initial_Ntot = 286114,
+
+    frac_women_ProFSW = 0.0024,
+    frac_women_LowFSW = 0.0027,
+    frac_women_exFSW = 0.0024,
+
+    frac_men_client = 0.2,
+    frac_women_virgin = 0.1,
+    frac_men_virgin = 0.1,
+
+
+    fraction_F = 0.516,
+
     rate_move_in = matrix(0, nrow = Ncat, ncol = Ncat),
     rate_move_out = rep_len(0, Ncat),
     epsilon_y = 0,
     rate_enter_sexual_pop = 0.4,
-    fraction_F = 0.516,
     fraction_FSW_foreign = 0,
     movement = 1,
     alpha05 = rep_len(0.3,Ncat),
@@ -508,7 +533,16 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
   defaults <- list(Ncat = Ncat,
                    Nage = Nage,
 
-                   N_init = 300000,
+                   N_init = 300000, #ignore that this is weird - I replace with a vector later
+
+                   initial_Ntot = 286114,
+                   frac_women_ProFSW = 0.0024,
+                   frac_women_LowFSW = 0.0027,
+                   frac_women_exFSW = 0.0024,
+
+                   frac_men_client = 0.2,
+                   frac_women_virgin = 0.1,
+                   frac_men_virgin = 0.1,
 
                    #                    epsilon_t_comm = c(1985, 1991.99, 1992, 2001.99, 2002, 2012.99, 2013, 2016),
                    #                    epsilon_y_comm = c(0.059346131, 0.059346131, 0.053594832, 0.053594832, 0.026936907, 0.026936907, 0.026936907, 0.026936907),
