@@ -82,6 +82,10 @@ fix_parameters <- function(y, Ncat, Nage) {
               y[paste0(condom_seq[par_counts[i, "par"]], "_", k)][[paste0(condom_seq[par_counts[i, "par"]], "_", k)]][par_counts[i, "group"], par_counts[i, "group2"]] = slope *
                 (k - years_seq[unlist(the_years)][j]) +
                 y[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])][[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])]][par_counts[i, "group"], par_counts[i, "group2"]]
+
+            # equalising complementary condom rate
+            y[paste0(condom_seq[par_counts[i, "par"]], "_", k)][[paste0(condom_seq[par_counts[i, "par"]], "_", k)]][par_counts[i, "group2"], par_counts[i, "group"]] =
+              y[paste0(condom_seq[par_counts[i, "par"]], "_", k)][[paste0(condom_seq[par_counts[i, "par"]], "_", k)]][par_counts[i, "group"], par_counts[i, "group2"]]
           }
         }
 

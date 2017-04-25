@@ -50,6 +50,7 @@ devtools::load_all()
 require(ggplot2)
 require(reshape2)
 par_seq = c("c_comm", "c_noncomm")
+condom_seq = c("fc_y_comm", "fc_y_noncomm")
 groups_seq = c("ProFSW", "LowFSW", "GPF", "FormerFSW", "Client", "GPM", "VirginF", "VirginM", "FormerFSWoutside")
 years_seq = seq(1985, 2016)
 time <- seq(1986, 2016, length.out = 31)
@@ -403,26 +404,25 @@ number_simulations = 1
 
 parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
                              ranges = rbind(
-                               c_comm_1993_ProFSW = c(0, 2),
                                # betaMtoF_comm = c(0.00086, 0.0118844), # c(0.00086, 0.00433),
                                # betaFtoM_comm = c(0.00279 * 0.44, 0.02701 * 0.44),
                                betaMtoF_noncomm = c(0.00144, 0.00626), # c(0.00086, 0.00433),
                                # betaFtoM_noncomm = c(0.00279 * 0.44, 0.02701 * 0.44),
                                RR_beta_GUD = c(1.43, 19.58),
                                RR_beta_FtM = c(0.5, 2),
-                               c_comm_1993 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 6, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_1993", 9), NULL)),
-                               c_comm_1995 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 6, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_1995", 9), NULL)),
-                               c_comm_1998 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_1998", 9), NULL)),
-                               c_comm_2002 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2002", 9), NULL)),
-                               c_comm_2005 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2005", 9), NULL)),
-                               c_comm_2008 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2008", 9), NULL)),
-                               c_comm_2012 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2012", 9), NULL)),
-                               c_comm_2015 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2015", 9), NULL)),
-                               c_comm_2016 = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 0, 0, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_comm_2016", 9), NULL)),
+                               c_comm_1993_ProFSW = c(1000, 1800),
+                               c_comm_2005_ProFSW = c(250, 600),
+                               c_comm_1998_Client = c(7, 12),
+                               c_comm_2015_Client = c(6, 12),
 
-                               c_noncomm_2012 = matrix(c(0.2, 0.4, 0.2, 0.4, 0, 0, 0, 0, 1, 6, 0.6, 0.96, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_noncomm_2012", 9), NULL)),
-                               c_noncomm_2015 = matrix(c(0.2, 0.4, 0.2, 0.4, 0, 0, 0, 0, 1, 6, 0.6, 0.96, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_noncomm_2015", 9), NULL)),
-                               c_noncomm_2016 = matrix(c(0.2, 0.4, 0.2, 0.4, 0, 0, 0, 0, 1, 6, 0.6, 0.96, 0, 0, 0, 0, 0, 0),  nrow = 9, byrow = TRUE, dimnames = list(rep("c_noncomm_2016", 9), NULL))
+                               c_noncomm_1998_Client = c(1, 3),
+                               c_noncomm_2015_Client = c(2, 6),
+
+                               fc_y_comm_1993_ProFSW_Client = c(0, 1),
+                               fc_y_comm_1998_ProFSW_Client = c(0, 1),
+
+                               fc_y_noncomm_1998_GPM_GPF = c(0, 1),
+                               fc_y_noncomm_2015_GPM_GPF = c(0, 1)
 
                              ))
 # lapply(parameters, function(x) x$betaMtoF_noncomm)time <- seq(1986, 2016, length.out = 31)
@@ -433,7 +433,42 @@ f <- function(p, gen, time) {
 }
 res = lapply(parameters, f, cotonou::main_model, time)
 
+# #checking c_comm
+# if(number_simulations == 1)
+#   ggplot(melt(data.frame(time, do.call(rbind, lapply(res, function(x) x$c_comm))), id.vars = "time"), aes(x = time, y = value)) + geom_line() + facet_wrap(~variable, scales = "free") + theme_bw()
 
+# checking fc
+
+par_gridplot2 = function(result, parm) {
+  require(plyr)
+  fc_df = aperm(result[parm][[1]], c(2, 3, 1))
+  fc_df_list = alply(fc_df, 3)
+
+  fc_df_list_applied = lapply(fc_df_list, function(x) {colnames(x) = rownames(x) = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients",
+                                                                                     "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+  return(x)})
+
+  dat = data.frame(row =
+                     rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients",
+                           "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"), 1, each = 9),
+                   col =
+                     rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients",
+                           "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"), 9),
+                   value = unlist(lapply(fc_df_list_applied, c)),
+                   year = unlist(sort(rep(time, 81))))
+  dat$row = factor(dat$row, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients",
+                                       "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"))
+  dat$col = factor(dat$col, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients",
+                                       "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"))
+
+  #   dat$combination = factor(dat$combination, levels =
+  #                              unlist(lapply(fc_df_list, function(x) {
+  #                                tmp = expand.grid(colnames(x), rownames(x))
+  #                                return(paste(tmp[,2], tmp[,1], sep = "_"))
+  #                              }))[1:81])
+
+  return(ggplot(dat, aes(x = year, y = value, color = value)) + geom_line(size = 2) + facet_grid(row~col) + theme_bw())
+}
 
 # devtools::test()
 
@@ -445,7 +480,7 @@ res = lapply(parameters, f, cotonou::main_model, time)
 ########################################################################################################
 start.time <- Sys.time()
 # varying and fitting
-number_simulations = 1
+number_simulations = 30
 
 
 # parameters --------------------------------------------------------------
@@ -580,9 +615,18 @@ as.numeric(time.taken) * 60 / number_simulations
 # THE DEMOGRAPHIC RESULTS OF BEST RUNS
 
 # frac N data points ------------------------------------------------------
-frac_N_data_points = data.frame(time = c(1998, 2014, 1998, 1998, 1998, 2008, 1998, 2008),
-                                point = c(0.67, 0.24, 100*0.195738802*(1-0.515666224), 40, 100*0.1292392*0.515666224, 100*0.124632*0.515666224, 100*0.0972973*(1-0.515666224), 100*0.08840413*(1-0.515666224)),
-                                variable = c("Pro FSW", "Pro FSW", "Clients", "Clients", "Virgin female", "Virgin female", "Virgin male", "Virgin male"))
+frac_N_data_points = data.frame(time = c(1998, 2014,
+                                         1998, 1998,
+                                         1998, 2008,
+                                         1998, 2008),
+                                point = c(0.67, 0.24,
+                                          100*0.195738802*(1-0.515666224), 40,
+                                          100*0.1292392*0.515666224, 100*0.0972973*0.515666224,
+                                          100*0.124632*(1-0.515666224), 100*0.08840413*(1-0.515666224)),
+                                variable = c("Pro FSW", "Pro FSW",
+                                             "Clients", "Clients",
+                                             "Virgin female", "Virgin female",
+                                             "Virgin male", "Virgin male"))
 
 
 # demographic graphs ------------------------------------------------------
@@ -966,7 +1010,7 @@ table(who_believe)
 #
 #
 #
-# # c_noncomm
+# c_noncomm
 # parameters = lhs_parameters(1, set_pars = best_set, Ncat = 9, forced_pars = list(c_noncomm = c(0.38, 0.38, 0.88, 0.88, 1, 1.065, 0, 0, 0)))[[1]]
 # result = run_model(parameters, main_model, time)
 # yy <- result["prev"][[1]]
@@ -974,7 +1018,7 @@ table(who_believe)
 # names(df) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
 # df = melt(df, id.vars = "time")
 # ggplot(data = df, aes(x = time, y = value, color = variable)) + labs(y = "Prevalence (%)") + geom_line() + theme_bw() + facet_wrap(~variable, scales = "free")+ theme(legend.position="none")
-#
+
 #
 #
 #
