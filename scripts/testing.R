@@ -494,7 +494,7 @@ parameters[[1]]$fc_y_comm_1985
 ########################################################################################################
 start.time <- Sys.time()
 # varying and fitting
-number_simulations = 10
+number_simulations = 100
 
 
 # parameters --------------------------------------------------------------
@@ -522,8 +522,8 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
 
                                rate_enter_sexual_pop = c(0.6, 0.6),
 
-                               epsilon_2002 = c(0.04, 0.08),
-                               epsilon_2013 = c(0.04, 0.08),
+                               epsilon_2002 = c(0.04, 0.07),
+                               epsilon_2013 = c(0.04, 0.07),
                                frac_women_ProFSW = c(0.0024, 0.0067),
                                frac_women_LowFSW = c(0.0024, 0.0067),
                                frac_women_exFSW = c(0.0024, 0.0067),
@@ -633,7 +633,7 @@ time.taken <- end.time - start.time
 time.taken
 
 print("number of seconds per simulation:")
-as.numeric(time.taken) * 60 / number_simulations
+as.numeric(time.taken)/ number_simulations
 
 ###
 # THE DEMOGRAPHIC RESULTS OF BEST RUNS
