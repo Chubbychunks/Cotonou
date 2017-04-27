@@ -450,6 +450,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 2, Nage = 1, ..., set_pars =
     fc_y_comm_2008 = matrix(0.1, Ncat, Ncat),
     fc_y_comm_2012 = matrix(0.6, Ncat, Ncat),
     fc_y_comm_2015 = matrix(0.4, Ncat, Ncat),
+    fc_y_comm_2016 = matrix(0.4, Ncat, Ncat),
+
     fc_y_noncomm_1985 = matrix(0.2, Ncat, Ncat),
     fc_y_noncomm_1998 = matrix(0.4, Ncat, Ncat),
     fc_y_noncomm_2008 = matrix(0.3, Ncat, Ncat),
@@ -771,6 +773,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    fc_y_comm_2008 = matrix(0.1, Ncat, Ncat),
                    fc_y_comm_2012 = matrix(0.6, Ncat, Ncat),
                    fc_y_comm_2015 = matrix(0.4, Ncat, Ncat),
+                   fc_y_comm_2016 = matrix(0.4, Ncat, Ncat),
 
                    fc_y_noncomm_1985 = matrix(0.2, Ncat, Ncat),
                    fc_y_noncomm_1998 = matrix(0.4, Ncat, Ncat),

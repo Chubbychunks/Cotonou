@@ -307,6 +307,17 @@ best_set = list(
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
 
+  fc_y_comm_2015 = matrix(
+    c(0, 0, 0, 0, 0.8, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.8, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0.8, 0.8, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
   fc_y_noncomm_1985 = matrix(
     c(0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -418,12 +429,16 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
                                c_noncomm_1998_Client = c(1, 3),
                                c_noncomm_2015_Client = c(2, 6),
 
-                               fc_y_comm_1993_ProFSW_Client = c(0.99, 1),
+                               fc_y_comm_1985_ProFSW_Client = c(0.5, 0.5),
+                               fc_y_comm_1993_ProFSW_Client = c(1, 1),
                                fc_y_comm_1998_ProFSW_Client = c(0.01, 0.01),
+                               fc_y_comm_2016_ProFSW_Client = c(0.3, 0.3),
 
                                fc_y_noncomm_1985_GPM_GPF = c(0.0, 0),
-                               fc_y_noncomm_2015_GPM_GPF = c(1, 1)
+                               fc_y_noncomm_2015_GPM_GPF = c(1, 1),
+                               fc_y_noncomm_2016_GPM_GPF = c(0, 0)
 
+                               # fc_y_noncomm_2015_Client_GPF = c(1, 1)
                              ))
 # lapply(parameters, function(x) x$betaMtoF_noncomm)time <- seq(1986, 2016, length.out = 31)
 f <- function(p, gen, time) {
@@ -437,7 +452,7 @@ res = lapply(parameters, f, cotonou::main_model, time)
 # if(number_simulations == 1)
 #   ggplot(melt(data.frame(time, do.call(rbind, lapply(res, function(x) x$c_comm))), id.vars = "time"), aes(x = time, y = value)) + geom_line() + facet_wrap(~variable, scales = "free") + theme_bw()
 
-graph_par = "fc_noncomm"
+graph_par = "fc_comm"
 
 # plot function -----------------------------------------------------------
 
