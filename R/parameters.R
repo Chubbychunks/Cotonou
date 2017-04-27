@@ -1,3 +1,14 @@
+#' @export
+#' @useDynLib cotonou
+FormerFSWtoGPF <- function(x) {
+  if(!is.null(dim(x))) {
+    x[4,] = x[3,]
+    x[,4] = x[,3]
+  }
+  return(x)
+}
+
+
 #' parameters which depend on others, etc
 #'
 #' Eugene's function to be documented
@@ -83,9 +94,9 @@ fix_parameters <- function(y, Ncat, Nage) {
             for(k in (years_seq[unlist(the_years)][j]+1):(years_seq[unlist(the_years)][j+1]-1))
             {
               if(paste0(condom_seq[par_counts[i, "par"]], "_", k) %in% names(y))
-               { y[paste0(condom_seq[par_counts[i, "par"]], "_", k)][[paste0(condom_seq[par_counts[i, "par"]], "_", k)]][par_counts[i, "group"], par_counts[i, "group2"]] = slope *
-                  (k - years_seq[unlist(the_years)][j]) +
-                  y[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])][[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])]][par_counts[i, "group"], par_counts[i, "group2"]]
+              { y[paste0(condom_seq[par_counts[i, "par"]], "_", k)][[paste0(condom_seq[par_counts[i, "par"]], "_", k)]][par_counts[i, "group"], par_counts[i, "group2"]] = slope *
+                (k - years_seq[unlist(the_years)][j]) +
+                y[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])][[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])]][par_counts[i, "group"], par_counts[i, "group2"]]
 
               # equalising complementary condom rate
               y[paste0(condom_seq[par_counts[i, "par"]], "_", k)][[paste0(condom_seq[par_counts[i, "par"]], "_", k)]][par_counts[i, "group2"], par_counts[i, "group"]] =
@@ -97,6 +108,14 @@ fix_parameters <- function(y, Ncat, Nage) {
         }
       }
     }
+
+    # MAKING FORMER FSW IN COTONOU EQUAL CONDOM USE TO GPF _ NOTE DO I NEED TO DO THIS FOR ALL GPF PARAMETERS???
+
+
+
+
+    y[names(y)[grep("fc_y_", names(y))]] = lapply(invisible(y[names(y)[grep("fc_y_", names(y))]]), FormerFSWtoGPF)
+
 
 
     ##########################################################################

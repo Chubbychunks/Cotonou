@@ -452,7 +452,7 @@ res = lapply(parameters, f, cotonou::main_model, time)
 # if(number_simulations == 1)
 #   ggplot(melt(data.frame(time, do.call(rbind, lapply(res, function(x) x$c_comm))), id.vars = "time"), aes(x = time, y = value)) + geom_line() + facet_wrap(~variable, scales = "free") + theme_bw()
 
-graph_par = "fc_comm"
+graph_par = "fc_noncomm"
 
 # plot function -----------------------------------------------------------
 
