@@ -13,33 +13,33 @@ rm(list = ls())
 odin::odin_package(".") # looks for any models inside inst/odin
 devtools::load_all()
 ##############################################################
-# parameters <- lhs_parameters(1, set_pars = best_set, Ncat = 9,
-#                                            ranges = rbind(
-#                                              betaMtoF_noncomm = c(0.00144, 0.00626), # c(0.00086, 0.00433),
-#                                              RR_beta_GUD = c(1.43, 19.58),
-#                                              RR_beta_FtM = c(0.5, 2),
-#
-#                                              c_comm_1993_ProFSW = c(1000, 1800),
-#                                              c_comm_2005_ProFSW = c(250, 600),
-#                                              c_comm_1998_Client = c(7, 12),
-#                                              c_comm_2015_Client = c(6, 12),
-#
-#                                              c_noncomm_1998_Client = c(1, 3),
-#                                              c_noncomm_2015_Client = c(2, 6),
-#
-#                                              who_believe_comm = c(0, 1),
-#                                              frac_women_ProFSW = c(0.025, 0.025)
-#                                            ))
-# f <- function(p, gen, time) {
-#   mod <- gen(user = p)
-#   all_results <- mod$transform_variables(mod$run(time))
-#   all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm")]
-# }
-# res = lapply(parameters, f, cotonou::main_model, time)
-# pars = parameters[[1]]
-# pars$frac_women_ProFSW
-# pars$N_init
-# sum(pars$N_init)
+parameters <- lhs_parameters(1, set_pars = best_set, Ncat = 9,
+                                           ranges = rbind(
+                                             betaMtoF_noncomm = c(0.00144, 0.00626), # c(0.00086, 0.00433),
+                                             RR_beta_GUD = c(1.43, 19.58),
+                                             RR_beta_FtM = c(0.5, 2),
+
+                                             c_comm_1993_ProFSW = c(1000, 1800),
+                                             c_comm_2005_ProFSW = c(250, 600),
+                                             c_comm_1998_Client = c(7, 12),
+                                             c_comm_2015_Client = c(6, 12),
+
+                                             c_noncomm_1998_Client = c(1, 3),
+                                             c_noncomm_2015_Client = c(2, 6),
+
+                                             who_believe_comm = c(0, 1),
+                                             frac_women_ProFSW = c(0.025, 0.025)
+                                           ))
+f <- function(p, gen, time) {
+  mod <- gen(user = p)
+  all_results <- mod$transform_variables(mod$run(time))
+  all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm")]
+}
+res = lapply(parameters, f, cotonou::main_model, time)
+pars = parameters[[1]]
+pars$frac_women_ProFSW
+pars$N_init
+sum(pars$N_init)
 
 
 
@@ -376,7 +376,7 @@ best_set = list(
 
   fc_t_comm = c(1985, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015, 2016),
 
-  fc_t_noncomm = c(1985, 1990, 1998, 2015, 2016),
+  fc_t_noncomm = c(1985, 1998, 2008, 2015, 2016),
 
 
   rate_leave_pro_FSW = 0.2,
@@ -418,11 +418,11 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
                                c_noncomm_1998_Client = c(1, 3),
                                c_noncomm_2015_Client = c(2, 6),
 
-                               fc_y_comm_1993_ProFSW_Client = c(0, 1),
-                               fc_y_comm_1998_ProFSW_Client = c(0, 1),
+                               fc_y_comm_1993_ProFSW_Client = c(0.99, 1),
+                               fc_y_comm_1998_ProFSW_Client = c(0.01, 0.01),
 
-                               fc_y_noncomm_1998_GPM_GPF = c(0, 1),
-                               fc_y_noncomm_2015_GPM_GPF = c(0, 1)
+                               fc_y_noncomm_1985_GPM_GPF = c(0.0, 0),
+                               fc_y_noncomm_2015_GPM_GPF = c(1, 1)
 
                              ))
 # lapply(parameters, function(x) x$betaMtoF_noncomm)time <- seq(1986, 2016, length.out = 31)
@@ -437,9 +437,9 @@ res = lapply(parameters, f, cotonou::main_model, time)
 # if(number_simulations == 1)
 #   ggplot(melt(data.frame(time, do.call(rbind, lapply(res, function(x) x$c_comm))), id.vars = "time"), aes(x = time, y = value)) + geom_line() + facet_wrap(~variable, scales = "free") + theme_bw()
 
+graph_par = "fc_noncomm"
 
 # plot function -----------------------------------------------------------
-
 
 
 # checking fc
@@ -475,7 +475,7 @@ par_gridplot2 = function(result, parm) {
   return(ggplot(dat, aes(x = year, y = value, color = value)) + geom_line(size = 2) + facet_grid(row~col) + theme_bw())
 }
 
-par_gridplot2(result = res[[1]], "fc_noncomm")
+par_gridplot2(result = res[[1]], graph_par)
 
 
 # plot end ----------------------------------------------------------------
@@ -494,7 +494,7 @@ parameters[[1]]$fc_y_comm_1985
 ########################################################################################################
 start.time <- Sys.time()
 # varying and fitting
-number_simulations = 100
+number_simulations = 1
 
 
 # parameters --------------------------------------------------------------
@@ -533,14 +533,14 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
                                # frac_men_virgin = 0.1
 
                                fc_y_comm_1993_ProFSW_Client = c(0.535, 0.687),
-                               fc_y_comm_2002_ProFSW_Client = c(0.872, 0.933)
+                               fc_y_comm_2002_ProFSW_Client = c(0.872, 0.933),
+                               fc_y_comm_1998_ProFSW_Client = c(0.872, 0.933), # fake
 
-                               # fc_y_noncomm_1985_ProFSW_Client = c(0.27, 0.43),
-                               # fc_y_noncomm_2016_ProFSW_Client = c(0.27, 0.43)
-                               # ,
-                               #
-                               # fc_y_noncomm_1998_GPM_GPF = c(0.0326087, 0.241404781),
-                               # fc_y_noncomm_2016_GPM_GPF = c(0.0326087, 0.251404781)
+                               fc_y_noncomm_1985_ProFSW_Client = c(0.27, 0.43),
+                               fc_y_noncomm_2016_ProFSW_Client = c(0.27, 0.43),
+
+                               fc_y_noncomm_1998_GPM_GPF = c(0.0326087, 0.241404781),
+                               fc_y_noncomm_2016_GPM_GPF = c(0.0326087, 0.251404781)
 
 
                              ))
@@ -644,7 +644,7 @@ frac_N_data_points = data.frame(time = c(1998, 2014,
                                          1998, 2008,
                                          1998, 2008),
                                 point = c(0.67, 0.24,
-                                          100*0.195738802*(1-0.515666224), 40,
+                                          100*0.195738802*(1-0.515666224), 20,
                                           100*0.1292392*0.515666224, 100*0.0972973*0.515666224,
                                           100*0.124632*(1-0.515666224), 100*0.08840413*(1-0.515666224)),
                                 variable = c("Pro FSW", "Pro FSW",
