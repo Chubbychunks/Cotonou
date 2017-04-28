@@ -435,8 +435,12 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
                                fc_y_comm_2016_ProFSW_Client = c(0.3, 0.3),
 
                                fc_y_noncomm_1985_GPM_GPF = c(0.0, 0),
-                               fc_y_noncomm_2015_GPM_GPF = c(1, 1),
-                               fc_y_noncomm_2016_GPM_GPF = c(0, 0)
+                               fc_y_noncomm_1998_GPM_GPF = c(0.2, 0.2),
+                               fc_y_noncomm_2016_GPM_GPF = c(0, 0),
+
+                               fc_y_noncomm_1985_ProFSW_Client = c(0.5, 0.5),
+                               fc_y_noncomm_2015_ProFSW_Client = c(0.8, 0.8)
+
 
                                # fc_y_noncomm_2015_Client_GPF = c(1, 1)
                              ))
@@ -503,6 +507,10 @@ res[[1]]$fc_noncomm[1,,]
 parameters[[1]]$fc_y_comm_1985
 
 
+
+
+
+
 ########################################################################################################
 ########################################################################################################
 ########################################################################################################
@@ -515,8 +523,25 @@ number_simulations = 1
 # parameters --------------------------------------------------------------
 parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
                              ranges = rbind(
-                               betaMtoF_noncomm = c(0.00144, 0.00626),
-                               # betaMtoF_noncomm = c(0, 0), # c(0.00086, 0.00433),
+
+                               # NO HIV, CONSTANT POP GROWTH RATE
+                               epsilon_1985 = c(0.08, 0.08),
+                               epsilon_1992 = c(0.08, 0.08),
+                               epsilon_2002 = c(0.08, 0.08),
+                               epsilon_2013 = c(0.08, 0.08),
+                               epsilon_2016 = c(0.08, 0.08),
+
+                               betaMtoF_noncomm = c(0, 0),
+                               frac_women_ProFSW = c(0.002, 0.002),
+                               # frac_women_ProFSW = c(0.0024, 0.0067),
+                               # frac_women_LowFSW = c(0.0024, 0.0067),
+                               # frac_women_exFSW = c(0.0024, 0.0067),
+                               # frac_men_client = c(0.2, 0.4),
+                               # frac_women_virgin = 0.1,
+                               # frac_men_virgin = 0.1
+
+
+                               # betaMtoF_noncomm = c(0.00144, 0.00626),
 
                                RR_beta_GUD = c(1.43, 19.58),
                                RR_beta_FtM = c(0.5, 2),
@@ -537,15 +562,8 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
 
                                rate_enter_sexual_pop = c(0.6, 0.6),
 
-                               epsilon_2002 = c(0.04, 0.07),
-                               epsilon_2013 = c(0.04, 0.07),
-                               frac_women_ProFSW = c(0.0024, 0.0067),
-                               frac_women_LowFSW = c(0.0024, 0.0067),
-                               frac_women_exFSW = c(0.0024, 0.0067),
 
-                               frac_men_client = c(0.2, 0.4),
-                               # frac_women_virgin = 0.1,
-                               # frac_men_virgin = 0.1
+
 
                                fc_y_comm_1993_ProFSW_Client = c(0.535, 0.687),
                                fc_y_comm_2002_ProFSW_Client = c(0.872, 0.933),
@@ -561,7 +579,7 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
                              ))
 # end of parameters --------------------------------------------------------------
 
-outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client")
+outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot")
 
 
 f <- function(p, gen, time) {
@@ -570,7 +588,7 @@ f <- function(p, gen, time) {
   #   all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm", "epsilon")]
   all_results[outputs]
 }
-res = lapply(parameters, f, main_model, time)
+res = lapply(parameters, f, main_model, time = seq(1986, 2030, 1))
 
 
 # prev_points -------------------------------------------------------------
@@ -634,7 +652,9 @@ likelihood_rough <- function(x) {
 # end of likelihood calculation -----------------------------------
 
 # which(unlist(lapply(res, likelihood_rough)) > 4)
-#####
+
+
+# best runs etc -----------------------------------------------------------
 
 likelihood_list = unlist(lapply(res, likelihood_rough))
 sorted_likelihood_list = sort(likelihood_list)
@@ -705,8 +725,7 @@ ggplot()  + geom_line(data = out_melted, aes(x = time, y = value, factor = repli
   facet_wrap(~variable, scales = "free")
 # end of prev graphs ------------------------------------------------------
 
-
-
+# who believe etc ---------------------------------------------------------
 max(sorted_likelihood_list)
 
 # WHO BELIEVE?
@@ -721,6 +740,14 @@ table(who_believe)
 ########################################################################################################
 ########################################################################################################
 ########################################################################################################
+
+
+
+
+
+
+
+
 
 
 # gubbins -----------------------------------------------------------------
