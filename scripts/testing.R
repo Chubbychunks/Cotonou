@@ -6,47 +6,6 @@
 
 
 rm(list = ls())
-
-#######################################################################
-##########################for local editing
-#######################################################################
-odin::odin_package(".") # looks for any models inside inst/odin
-devtools::load_all()
-##############################################################
-parameters <- lhs_parameters(1, set_pars = best_set, Ncat = 9,
-                                           ranges = rbind(
-                                             betaMtoF_noncomm = c(0.00144, 0.00626), # c(0.00086, 0.00433),
-                                             RR_beta_GUD = c(1.43, 19.58),
-                                             RR_beta_FtM = c(0.5, 2),
-
-                                             c_comm_1993_ProFSW = c(1000, 1800),
-                                             c_comm_2005_ProFSW = c(250, 600),
-                                             c_comm_1998_Client = c(7, 12),
-                                             c_comm_2015_Client = c(6, 12),
-
-                                             c_noncomm_1998_Client = c(1, 3),
-                                             c_noncomm_2015_Client = c(2, 6),
-
-                                             who_believe_comm = c(0, 1),
-                                             frac_women_ProFSW = c(0.025, 0.025)
-                                           ))
-f <- function(p, gen, time) {
-  mod <- gen(user = p)
-  all_results <- mod$transform_variables(mod$run(time))
-  all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm")]
-}
-res = lapply(parameters, f, cotonou::main_model, time)
-pars = parameters[[1]]
-pars$frac_women_ProFSW
-pars$N_init
-sum(pars$N_init)
-
-
-
-# library(cotonou)
-
-#test
-
 require(ggplot2)
 require(reshape2)
 par_seq = c("c_comm", "c_noncomm")
@@ -54,7 +13,6 @@ condom_seq = c("fc_y_comm", "fc_y_noncomm")
 groups_seq = c("ProFSW", "LowFSW", "GPF", "FormerFSW", "Client", "GPM", "VirginF", "VirginM", "FormerFSWoutside")
 years_seq = seq(1985, 2016)
 time <- seq(1986, 2016, length.out = 31)
-
 
 # best_set ----------------------------------------------------------------
 
@@ -400,6 +358,48 @@ best_set = list(
 )
 
 # best_set end ----------------------------------------------------------------
+
+#######################################################################
+##########################for local editing
+#######################################################################
+odin::odin_package(".") # looks for any models inside inst/odin
+devtools::load_all()
+##############################################################
+parameters <- lhs_parameters(1, set_pars = best_set, Ncat = 9,
+                                           ranges = rbind(
+                                             betaMtoF_noncomm = c(0.00144, 0.00626), # c(0.00086, 0.00433),
+                                             RR_beta_GUD = c(1.43, 19.58),
+                                             RR_beta_FtM = c(0.5, 2),
+
+                                             c_comm_1993_ProFSW = c(1000, 1800),
+                                             c_comm_2005_ProFSW = c(250, 600),
+                                             c_comm_1998_Client = c(7, 12),
+                                             c_comm_2015_Client = c(6, 12),
+
+                                             c_noncomm_1998_Client = c(1, 3),
+                                             c_noncomm_2015_Client = c(2, 6),
+
+                                             who_believe_comm = c(0, 1),
+                                             frac_women_ProFSW = c(0.025, 0.025)
+                                           ))
+f <- function(p, gen, time) {
+  mod <- gen(user = p)
+  all_results <- mod$transform_variables(mod$run(time))
+  all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm")]
+}
+res = lapply(parameters, f, cotonou::main_model, time)
+pars = parameters[[1]]
+pars$frac_women_ProFSW
+pars$N_init
+sum(pars$N_init)
+
+
+
+# library(cotonou)
+
+#test
+
+
 
 
 

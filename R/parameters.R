@@ -392,11 +392,11 @@ fix_parameters <- function(y, Ncat, Nage) {
 
     # MALE MOVEMENT
 
-    y$rate_move_out[5] = - y$rate_leave_client
-    y$rate_move_out[6] = - y$rate_leave_client * y$prop_client_GPM
+    y$rate_move_out[5] = - y$rate_leave_client * 1/y$prop_client_GPM
+    y$rate_move_out[6] = - y$rate_leave_client
 
-    y$rate_move_in[6,5] = y$rate_leave_client # moving from client to GPM
-    y$rate_move_in[5,6] = y$rate_leave_client * y$prop_client_GPM # moving from GPM to client
+    y$rate_move_in[6,5] = y$rate_leave_client  * 1/y$prop_client_GPM # moving from client to GPM
+    y$rate_move_in[5,6] = y$rate_leave_client # moving from GPM to client
 
 
     y$beta_comm = c(y$betaMtoF_comm, y$betaMtoF_comm, y$betaMtoF_comm, y$betaMtoF_comm, y$betaFtoM_comm, y$betaFtoM_comm, 0, 0, 0)
