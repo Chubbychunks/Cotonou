@@ -556,11 +556,10 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
 
                                who_believe_comm = c(0, 1),
 
-                               rate_leave_pro_FSW = c(0, 0.4),
-                               rate_leave_low_FSW = c(0, 0.4),
-                               rate_leave_client = c(0, 0.4),
-
-                               rate_enter_sexual_pop = c(0.6, 0.6),
+                               rate_leave_pro_FSW = c(0.4347826, 0.4347826),
+                               rate_leave_low_FSW = c(0.4347826, 0.4347826),
+                               rate_leave_client = c(10.5, 10.5),
+                               rate_enter_sexual_pop = c(0.3571429, 0.3571429),
 
 
 
@@ -588,7 +587,8 @@ f <- function(p, gen, time) {
   #   all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm", "epsilon")]
   all_results[outputs]
 }
-res = lapply(parameters, f, main_model, time = seq(1986, 2030, 1))
+# res = lapply(parameters, f, main_model, time = seq(1986, 2030, 1))
+res = lapply(parameters, f, main_model, time = seq(1986, 2016, 1))
 
 
 # prev_points -------------------------------------------------------------
@@ -704,12 +704,12 @@ epsilon_best_runs_melted = melt(epsilon_best_runs, id.vars = "time")
 ggplot() + geom_line(data = epsilon_best_runs_melted, aes(x = time, y = value, factor = variable)) +
   theme_bw() + labs(x="year",y="Growth rate")
 
-Ntot_data_points = data.frame(time = c(1979, 1992, 2002, 2013), point = c(191106.1467, 404359.0418, 681559.032, 913029.606))
+Ntot_data_points = data.frame(time = c(1979, 1992, 2002, 2013, 2020, 2030), point = c(191106.1467, 404359.0418, 681559.032, 913029.606, 1128727.062, 1423887.65), colour = c("data", "data", "data", "data", "predicted", "predicted"))
 Ntot_best_runs = t(do.call(rbind, lapply(res[best_runs], function(x) x$Ntot)))
 Ntot_best_runs = data.frame(time, Ntot_best_runs)
 Ntot_best_runs_melted = melt(Ntot_best_runs, id.vars = "time")
 ggplot() + geom_line(data = Ntot_best_runs_melted, aes(x = time, y = value, factor = variable)) +
-  theme_bw() + labs(x="year",y="Total population size") + geom_point(data = Ntot_data_points, aes(x = time, y = point), size = I(2), color = "red", shape = 15)
+  theme_bw() + labs(x="year",y="Total population size") + geom_point(data = Ntot_data_points, aes(x = time, y = point, color = colour), size = I(2), shape = 15)
 
 # end of demographic graphs ------------------------------------------------------
 
