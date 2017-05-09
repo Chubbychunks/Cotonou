@@ -385,7 +385,7 @@ parameters <- lhs_parameters(1, set_pars = best_set, Ncat = 9, time = time,
 f <- function(p, gen, time) {
   mod <- gen(user = p)
   all_results <- mod$transform_variables(mod$run(time))
-  all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm")]
+  all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm", "prev_men", "prev_men_check")]
 }
 res = lapply(parameters, f, cotonou::main_model, time)
 pars = parameters[[1]]
@@ -591,7 +591,7 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, 
                              ))
 # end of parameters --------------------------------------------------------------
 
-outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot")
+outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_men", "prev_women")
 
 
 f <- function(p, gen, time) {
@@ -612,8 +612,8 @@ prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005
                                   2012, 2015),
                          variable = c(rep("Pro FSW", 11),
                                       rep("Clients", 6),
-                                      rep("GPF", 3),
-                                      rep("GPM", 3),
+                                      rep("Women", 3),
+                                      rep("Men", 3),
                                       rep("Low-level FSW", 2)),
                          value = c(3.3, 8.2, 19.2, 53.3, 48.7, 40.6, 38.9, 34.8, 29.3, 27.4, 18.7,
                                    100*0.084, 9, 6.9, 5.8, 100*0.028, 100*0.016,
