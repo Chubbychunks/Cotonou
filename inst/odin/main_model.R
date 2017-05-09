@@ -206,7 +206,7 @@ who_believe_comm = user()
 c_comm_balanced[5] = if(Ncat == 9 && who_believe_comm == 0) (c_comm[1] * N[1] + c_comm[2] * N[2])/N[5] else c_comm_balanced[5]
 c_comm_balanced[1] = if(Ncat == 9 && who_believe_comm == 1) (c_comm[5] * N[5] - c_comm[2] * N[2])/N[1] else c_comm_balanced[1]
 
-
+output(who_believe_comm) = who_believe_comm
 
 ##############
 # BALANCING BY CHANGING THE PARTNER CHANGE RATE OF CLIENTS

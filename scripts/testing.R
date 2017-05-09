@@ -517,8 +517,8 @@ parameters[[1]]$fc_y_comm_1985
 ########################################################################################################
 start.time <- Sys.time()
 # varying and fitting
-number_simulations = 1
-time = seq(1986, 2030, 1)
+number_simulations = 20
+time = seq(1986, 2020, 1)
 
 # parameters --------------------------------------------------------------
 parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
@@ -543,6 +543,7 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, 
                                muF = c(0.0295, 0.0295),
                                muM = c(0.0315, 0.0315),
 
+                               # betaMtoF_noncomm = c(0.00144, 0.00626),
 
                                betaMtoF_noncomm = c(0, 0),
                                frac_women_ProFSW = c(0.004, 0.004),
@@ -554,7 +555,6 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, 
                                # frac_men_virgin = 0.1
 
 
-                               # betaMtoF_noncomm = c(0.00144, 0.00626),
 
                                RR_beta_GUD = c(1.43, 19.58),
                                RR_beta_FtM = c(0.5, 2),
@@ -591,7 +591,7 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, 
                              ))
 # end of parameters --------------------------------------------------------------
 
-outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women")
+outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm")
 
 
 f <- function(p, gen, time) {
@@ -601,7 +601,7 @@ f <- function(p, gen, time) {
   all_results[outputs]
 }
 # res = lapply(parameters, f, main_model, time = seq(1986, 2030, 1))
-res = lapply(parameters, f, main_model, time = seq(1986, 2030, 1))
+res = lapply(parameters, f, main_model, time = time)
 
 
 # prev_points -------------------------------------------------------------
@@ -725,7 +725,16 @@ Ntot_best_runs_melted = melt(Ntot_best_runs, id.vars = "time")
 ggplot() + geom_line(data = Ntot_best_runs_melted, aes(x = time, y = value, factor = variable)) +
   theme_bw() + labs(x="year",y="Total population size") + geom_point(data = Ntot_data_points, aes(x = time, y = point, color = colour), size = I(2), shape = 15)
 
+
+#output growth rate?????
+growth_rate_out = melt(data.frame(time = time[-1], t(do.call(rbind, lapply(lapply(res[best_runs], function(x) x$Ntot), function(y) {
+  diff(y)/y[-length(y)]
+  })))), id.vars = "time")
+ggplot(growth_rate_out) + geom_line(aes(x = time, y = value, factor = variable)) + theme_bw() +
+  labs(x="year",y="Output growth rate")
+
 # end of demographic graphs ------------------------------------------------------
+
 
 # prev graphs ------------------------------------------------------
 
@@ -742,6 +751,7 @@ ggplot()  + geom_line(data = out_melted, aes(x = time, y = value, factor = repli
   facet_wrap(~variable, scales = "free")
 # end of prev graphs ------------------------------------------------------
 
+
 # who believe etc ---------------------------------------------------------
 max(sorted_likelihood_list)
 
@@ -749,6 +759,16 @@ max(sorted_likelihood_list)
 who_believe = unlist(lapply(parameters[which(likelihood_list == max(likelihood_list))], function(x) x$who_believe_comm))
 who_believe = ifelse(who_believe == 1, "Clients", "FSWs")
 table(who_believe)
+
+
+c_comm_out = melt(data.frame(years = rep(time, length(best_runs)), do.call(rbind, lapply(res[best_runs], function(x) {
+  if(x$who_believe_comm[1] == 1)
+    return(data.frame(c_comm_balanced = x$c_comm_balanced[,1], varies = "FSW"))
+  else
+    return(data.frame(c_comm_balanced = x$c_comm_balanced[,5], varies = "Client"))
+})), replication = sort(rep(seq(1, length(best_runs), 1), length(time)))), id.vars = c("years", "replication", "varies"))
+
+ggplot(c_comm_out) + geom_line(aes(x = years, y = value, factor = as.factor(replication))) + facet_wrap(~varies, scales = "free") + theme_bw() + labs(y = "commercial partner change rate")
 
 
 ## END OF TESTS
