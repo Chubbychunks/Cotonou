@@ -200,6 +200,12 @@ fix_parameters <- function(y, Ncat, Nage) {
   #   print(y)
 
 
+  # number of clients at initial conditions shaped by commercial partner change rates and the N of Pro FSW!
+  # partnerships offered by ProFSW / P.C.R of clients / fraction of men * fraction of men that are clients
+  if(init_clientN_from_PCR == 1)
+    y$frac_men_client = y$fraction_F * y$frac_women_ProFSW * y$initial_Ntot * y$c_comm_1985[1] / y$c_comm_1985[5] / (y$initial_Ntot  * (1-y$fraction_F))
+
+
   # fractions of groups at initialisation
   y$N_init = y$initial_Ntot*c(y$fraction_F*y$frac_women_ProFSW,
                               y$fraction_F*y$frac_women_LowFSW,
@@ -538,7 +544,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 2, Nage = 1, ..., set_pars =
     muM = 0.02739726,
     RR_beta_FtM = 1,
     RR_beta_GUD = 1,
-    who_believe_comm = 0
+    who_believe_comm = 0,
+    init_clientN_from_PCR = 0
 
 
   )
@@ -968,7 +975,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    muM = 0.02739726,
                    RR_beta_GUD = 1,
                    RR_beta_FtM = 1,
-                   who_believe_comm = 0
+                   who_believe_comm = 0,
+                   init_clientN_from_PCR = 0
 
 
   )
