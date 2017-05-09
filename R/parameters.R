@@ -416,6 +416,37 @@ fix_parameters <- function(y, Ncat, Nage) {
     y$rate_move_in = y$rate_move_in * 0
     y$rate_move_out = y$rate_move_out * 0}
 
+
+  # extending all interpolating parameters beyond 2016 to the max of time
+
+  y$c_y_comm <- rbind(y$c_y_comm, y$c_y_comm[nrow(y$c_y_comm),])
+  y$c_t_comm <- c(y$c_t_comm, max(y$time))
+
+  y$c_y_noncomm <- rbind(y$c_y_noncomm, y$c_y_comm[nrow(y$c_y_noncomm),])
+  y$c_t_noncomm <- c(y$c_t_noncomm, max(y$time))
+
+  y$fc_y_comm <- abind(y$fc_y_comm, y$fc_y_comm[length(y$fc_y_comm[,1,1]),,], along = 1)
+  y$fc_t_comm <- c(y$fc_t_comm, max(y$time))
+
+  y$fc_y_noncomm <- abind(y$fc_y_noncomm, y$fc_y_noncomm[length(y$fc_y_noncomm[,1,1]),,], along = 1)
+  y$fc_t_noncomm <- c(y$fc_t_noncomm, max(y$time))
+
+  y$zetaa_t <- c(y$zetaa_t, max(y$time))
+  y$zetab_t <- c(y$zetab_t, max(y$time))
+  y$zetac_t <- c(y$zetac_t, max(y$time))
+
+  y$zetaa_y <- rbind(y$zetaa_y, y$zetaa_y[nrow(y$zetaa_y),])
+  y$zetab_y <- rbind(y$zetab_y, y$zetab_y[nrow(y$zetab_y),])
+  y$zetac_y <- rbind(y$zetac_y, y$zetac_y[nrow(y$zetac_y),])
+
+  y$testing_prob_y <- rbind(y$testing_prob_y, y$testing_prob_y[nrow(y$testing_prob_y),])
+  y$testing_prob_t <- c(y$testing_prob_t, max(y$time))
+  y$ART_prob_y <- rbind(y$ART_prob_y, y$ART_prob_y[nrow(y$ART_prob_y),])
+  y$ART_prob_t <- c(y$ART_prob_t, max(y$time))
+
+  y$f
+
+
   return(y)
 }
 
@@ -875,15 +906,15 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
 
 
-                   fP_t_comm = c(1985, 2014, 2015, 2016),
+                   fP_t_comm = c(1985, 2014, 2015, 2016, 2030),
                    fP_y_comm = matrix(
-                     rep(c(1, 1, 1, 1), Ncat), ncol = Ncat),
+                     rep(c(1, 1, 1, 1, 1), Ncat), ncol = Ncat),
 
 
 
-                   fP_t_noncomm = c(1985, 2014, 2015, 2016),
+                   fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
                    fP_y_noncomm = matrix(
-                     rep(c(1, 1, 1, 1), Ncat), ncol = Ncat),
+                     rep(c(1, 1, 1, 1, 1), Ncat), ncol = Ncat),
 
                    n_comm = matrix(1, ncol = Ncat, nrow = Ncat),
                    n_noncomm = matrix(1, ncol = Ncat, nrow = Ncat),

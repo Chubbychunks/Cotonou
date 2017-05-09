@@ -365,7 +365,7 @@ best_set = list(
 odin::odin_package(".") # looks for any models inside inst/odin
 devtools::load_all()
 ##############################################################
-parameters <- lhs_parameters(1, set_pars = best_set, Ncat = 9,
+parameters <- lhs_parameters(1, set_pars = best_set, Ncat = 9, time = time,
                                            ranges = rbind(
                                              betaMtoF_noncomm = c(0.00144, 0.00626), # c(0.00086, 0.00433),
                                              RR_beta_GUD = c(1.43, 19.58),
@@ -413,7 +413,7 @@ number_simulations = 1
 
 
 
-parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
+parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
                              ranges = rbind(
                                # betaMtoF_comm = c(0.00086, 0.0118844), # c(0.00086, 0.00433),
                                # betaFtoM_comm = c(0.00279 * 0.44, 0.02701 * 0.44),
@@ -518,10 +518,10 @@ parameters[[1]]$fc_y_comm_1985
 start.time <- Sys.time()
 # varying and fitting
 number_simulations = 1
-
+time = seq(1986, 2030, 1)
 
 # parameters --------------------------------------------------------------
-parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
+parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
                              ranges = rbind(
 
                                # NO HIV, CONSTANT POP GROWTH RATE
@@ -531,12 +531,25 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
                                epsilon_2013 = c(0.08, 0.08),
                                epsilon_2016 = c(0.08, 0.08),
 
+                               # epsilon_1985 = c(0.059, 0.059),
+                               # epsilon_1992 = c(0.059, 0.059),
+                               # epsilon_2002 = c(0.059, 0.059),
+                               # epsilon_2013 = c(0.059, 0.059),
+                               # epsilon_2016 = c(0.059, 0.059),
+
+                               # muF = c(0.05, 0.05),
+                               # muM = c(0.06, 0.06),
+
+                               muF = c(0.0295, 0.0295),
+                               muM = c(0.0315, 0.0315),
+
+
                                betaMtoF_noncomm = c(0, 0),
-                               frac_women_ProFSW = c(0.002, 0.002),
+                               frac_women_ProFSW = c(0.004, 0.004),
                                # frac_women_ProFSW = c(0.0024, 0.0067),
                                # frac_women_LowFSW = c(0.0024, 0.0067),
                                # frac_women_exFSW = c(0.0024, 0.0067),
-                               # frac_men_client = c(0.2, 0.4),
+                               frac_men_client = c(0.6, 0.6),
                                # frac_women_virgin = 0.1,
                                # frac_men_virgin = 0.1
 
@@ -558,7 +571,7 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9,
 
                                rate_leave_pro_FSW = c(0.4347826, 0.4347826),
                                rate_leave_low_FSW = c(0.4347826, 0.4347826),
-                               rate_leave_client = c(10.5, 10.5),
+                               rate_leave_client = c(0.5, 0.5),
                                rate_enter_sexual_pop = c(0.3571429, 0.3571429),
 
 
@@ -588,7 +601,7 @@ f <- function(p, gen, time) {
   all_results[outputs]
 }
 # res = lapply(parameters, f, main_model, time = seq(1986, 2030, 1))
-res = lapply(parameters, f, main_model, time = seq(1986, 2016, 1))
+res = lapply(parameters, f, main_model, time = seq(1986, 2030, 1))
 
 
 # prev_points -------------------------------------------------------------
@@ -696,6 +709,7 @@ names(frac_N_best_runs) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former F
 frac_N_best_runs_melted = melt(frac_N_best_runs, id.vars = c("time", "replication"))
 ggplot()  + geom_line(data = frac_N_best_runs_melted, aes(x = time, y = value, factor = replication)) + theme_bw() + labs(x="year",y="Percent in each group (%)") +
   facet_wrap(~variable, scales = "free") + geom_point(data = frac_N_data_points, aes(x = time, y = point), size = I(2), color = "red", shape = 15)
+# facet_wrap(~variable, scales = "fixed") + geom_point(data = frac_N_data_points, aes(x = time, y = point), size = I(2), color = "red", shape = 15)
 
 
 epsilon_best_runs = t(do.call(rbind, lapply(res[best_runs], function(x) x$epsilon)))
