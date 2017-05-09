@@ -422,7 +422,7 @@ prev[] = 100 * (I01[i] + I11[i] + I02[i] + I03[i] + I04[i] + I05[i] +
                   I42[i] + I43[i] + I44[i] + I45[i]) / N[i]
 
 
-prev_men = 100 * (prev[5] * N[5] + prev[6] * N[6] + prev[8] * N[8])/(N[5] + N[6] + N[8])
+prev_men = (prev[5] * N[5] + prev[6] * N[6] + prev[8] * N[8])/(N[5] + N[6] + N[8])
 # prev_men_check = 100 * (I01[5] + I11[5] + I02[5] + I03[5] + I04[5] + I05[5] +
 #                     I22[5] + I23[5] + I24[5] + I25[5] + I32[5] + I33[5] + I34[5] + I35[5] +
 #                     I42[5] + I43[5] + I44[5] + I45[5] +
@@ -435,7 +435,7 @@ prev_men = 100 * (prev[5] * N[5] + prev[6] * N[6] + prev[8] * N[8])/(N[5] + N[6]
 #                     ) / (N[5] + N[6] + N[8])
 
 
-prev_women = 100 * (prev[1] * N[1] + prev[2] * N[2] + prev[3] * N[3] + prev[4] * N[4] + prev[7] * N[7]) /
+prev_women = (prev[1] * N[1] + prev[2] * N[2] + prev[3] * N[3] + prev[4] * N[4] + prev[7] * N[7]) /
   (N[1] + N[2] + N[3] + N[4] + N[7])
 
 # prev_women_check = 100 * (I01[1] + I11[1] + I02[1] + I03[1] + I04[1] + I05[1] +

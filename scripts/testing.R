@@ -591,7 +591,7 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, 
                              ))
 # end of parameters --------------------------------------------------------------
 
-outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_men", "prev_women")
+outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women")
 
 
 f <- function(p, gen, time) {
@@ -639,8 +639,8 @@ prev_points = prev_points[-c(1,2,3),]
 # likelihood calculation -----------------------------------
 
 likelihood_rough <- function(x) {
-  the_prev = data.frame(time, x$prev)
-  names(the_prev) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou")
+  the_prev = data.frame(time, x$prev_FSW, x$prev_LowFSW, x$prev_client, x$prev_women, x$prev_men)
+  names(the_prev) = c("time", "Pro FSW", "Low-level FSW", "Clients", "Women", "Men")
 
   likelihood_count <- 0
 
@@ -729,10 +729,13 @@ ggplot() + geom_line(data = Ntot_best_runs_melted, aes(x = time, y = value, fact
 
 # prev graphs ------------------------------------------------------
 
-all_binded = do.call(rbind, lapply(res[best_runs], function(x) x$prev))
+all_binded = do.call(rbind, lapply(res[best_runs], function(x) {
+  return(matrix(c(x$prev_FSW, x$prev_LowFSW, x$prev_client, x$prev_women, x$prev_men), ncol = 5))
+  }))
+
 all_binded[is.na(all_binded)] = 0
 out = data.frame(time, all_binded, as.character(sort(rep(seq(1,length(best_runs)), length(time)))))
-names(out) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "replication")
+names(out) = c("time", "Pro FSW", "Low-level FSW", "Clients", "Women", "Men", "replication")
 out_melted = melt(out, id.vars = c("time", "replication"))
 ggplot()  + geom_line(data = out_melted, aes(x = time, y = value, factor = replication)) + theme_bw() + labs(x="year",y="prevalance (%)") +
   geom_point(data = prev_points_all, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
