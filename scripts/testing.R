@@ -381,12 +381,13 @@ parameters <- lhs_parameters(1, set_pars = best_set, Ncat = 9, time = time,
                                              c_noncomm_2015_Client = c(2, 6),
 
                                              who_believe_comm = c(0, 1),
-                                             frac_women_ProFSW = c(0.025, 0.025)
+                                             frac_women_ProFSW = c(0.0025, 0.0025),
+                                             init_clientN_from_PCR = c(1,1)
                                            ))
 f <- function(p, gen, time) {
   mod <- gen(user = p)
   all_results <- mod$transform_variables(mod$run(time))
-  all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm", "prev_men", "prev_men_check")]
+  all_results[c("N", "prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm", "prev_men", "prev_men_check")]
 }
 res = lapply(parameters, f, cotonou::main_model, time)
 pars = parameters[[1]]
@@ -525,6 +526,7 @@ time = seq(1986, 2020, 1)
 parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
                              ranges = rbind(
 
+                               init_clientN_from_PCR = c(1,1),
                                # NO HIV, CONSTANT POP GROWTH RATE
                                epsilon_1985 = c(0.08, 0.08),
                                epsilon_1992 = c(0.08, 0.08),

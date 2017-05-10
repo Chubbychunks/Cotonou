@@ -202,7 +202,7 @@ fix_parameters <- function(y, Ncat, Nage) {
 
   # number of clients at initial conditions shaped by commercial partner change rates and the N of Pro FSW!
   # partnerships offered by ProFSW / P.C.R of clients / fraction of men * fraction of men that are clients
-  if(init_clientN_from_PCR == 1)
+  if(y$init_clientN_from_PCR == 1)
     y$frac_men_client = y$fraction_F * y$frac_women_ProFSW * y$initial_Ntot * y$c_comm_1985[1] / y$c_comm_1985[5] / (y$initial_Ntot  * (1-y$fraction_F))
 
 
