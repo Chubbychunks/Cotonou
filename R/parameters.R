@@ -431,10 +431,10 @@ fix_parameters <- function(y, Ncat, Nage) {
   y$c_y_noncomm <- rbind(y$c_y_noncomm, y$c_y_comm[nrow(y$c_y_noncomm),])
   y$c_t_noncomm <- c(y$c_t_noncomm, max(y$time))
 
-  y$fc_y_comm <- abind(y$fc_y_comm, y$fc_y_comm[length(y$fc_y_comm[,1,1]),,], along = 1)
+  y$fc_y_comm <- abind::abind(y$fc_y_comm, y$fc_y_comm[length(y$fc_y_comm[,1,1]),,], along = 1)
   y$fc_t_comm <- c(y$fc_t_comm, max(y$time))
 
-  y$fc_y_noncomm <- abind(y$fc_y_noncomm, y$fc_y_noncomm[length(y$fc_y_noncomm[,1,1]),,], along = 1)
+  y$fc_y_noncomm <- abind::abind(y$fc_y_noncomm, y$fc_y_noncomm[length(y$fc_y_noncomm[,1,1]),,], along = 1)
   y$fc_t_noncomm <- c(y$fc_t_noncomm, max(y$time))
 
   y$zetaa_t <- c(y$zetaa_t, max(y$time))

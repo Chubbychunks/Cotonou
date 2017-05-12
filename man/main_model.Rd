@@ -2,5 +2,5 @@
 % Please edit documentation in R/exporting_model.R
 \name{doesthiswork}
 \alias{doesthiswork}
-\title{the model in odin syntax}
+\title{The model in odin syntax}
 

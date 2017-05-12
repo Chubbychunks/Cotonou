@@ -14,5 +14,6 @@ Imports:
     reshape2,
     odin,
     deSolve,
-    plyr
+    plyr,
+    abind
 RoxygenNote: 5.0.1
