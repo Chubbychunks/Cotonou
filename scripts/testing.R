@@ -387,7 +387,7 @@ parameters <- lhs_parameters(1, set_pars = best_set, Ncat = 9, time = time,
 f <- function(p, gen, time) {
   mod <- gen(user = p)
   all_results <- mod$transform_variables(mod$run(time))
-  all_results[c("N", "prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm", "prev_men", "prev_men_check")]
+  all_results[c("N", "prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm", "prev_men")]
 }
 res = lapply(parameters, f, cotonou::main_model, time)
 pars = parameters[[1]]
@@ -678,6 +678,8 @@ sorted_likelihood_list = sort(likelihood_list)
 # table(sorted_likelihood_list)
 
 best_runs = which(unlist(lapply(res, likelihood_rough)) == max(sorted_likelihood_list))
+
+out <- res[best_runs]
 
 end.time <- Sys.time()
 time.taken <- end.time - start.time
