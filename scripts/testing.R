@@ -18,7 +18,12 @@ time <- seq(1986, 2016, length.out = 31)
 
 
 best_set = list(
-  init_clientN_from_PCR=0,
+
+  fraction_sexually_active_15_F = 0,
+  fraction_sexually_active_15_M = 0,
+
+
+  init_clientN_from_PCR = 0,
   initial_Ntot = 286114,
 
   frac_women_ProFSW = 0.0024,
@@ -368,6 +373,11 @@ devtools::load_all()
 ##############################################################
 parameters <- lhs_parameters(1, set_pars = best_set, Ncat = 9, time = time,
                                            ranges = rbind(
+                                             fraction_sexually_active_15_F = 0.4,
+                                             fraction_sexually_active_15_M = 0.4,
+
+                                             fraction_FSW_foreign = 0.9,
+
                                              betaMtoF_noncomm = c(0.00144, 0.00626), # c(0.00086, 0.00433),
                                              RR_beta_GUD = c(1.43, 19.58),
                                              RR_beta_FtM = c(0.5, 2),
@@ -519,20 +529,22 @@ parameters[[1]]$fc_y_comm_1985
 ########################################################################################################
 start.time <- Sys.time()
 # varying and fitting
-number_simulations = 20
+number_simulations = 1
 time = seq(1986, 2020, 1)
 
 # parameters --------------------------------------------------------------
 parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
                              ranges = rbind(
 
-                               init_clientN_from_PCR = c(1,1),
+                               init_clientN_from_PCR = c(0,0),
                                # NO HIV, CONSTANT POP GROWTH RATE
                                epsilon_1985 = c(0.08, 0.08),
                                epsilon_1992 = c(0.08, 0.08),
                                epsilon_2002 = c(0.08, 0.08),
-                               epsilon_2013 = c(0.08, 0.08),
-                               epsilon_2016 = c(0.08, 0.08),
+                               epsilon_2013 = c(0.05, 0.05),
+                               epsilon_2016 = c(0.05, 0.05),
+
+                               fraction_FSW_foreign = c(0.9, 0.9),
 
                                # epsilon_1985 = c(0.059, 0.059),
                                # epsilon_1992 = c(0.059, 0.059),
@@ -549,13 +561,13 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, 
                                # betaMtoF_noncomm = c(0.00144, 0.00626),
 
                                betaMtoF_noncomm = c(0, 0),
-                               frac_women_ProFSW = c(0.004, 0.004),
+                               frac_women_ProFSW = c(0.0067, 0.0067),
                                # frac_women_ProFSW = c(0.0024, 0.0067),
                                # frac_women_LowFSW = c(0.0024, 0.0067),
                                # frac_women_exFSW = c(0.0024, 0.0067),
-                               frac_men_client = c(0.6, 0.6),
-                               # frac_women_virgin = 0.1,
-                               # frac_men_virgin = 0.1
+                               frac_men_client = c(0.3, 0.3),
+                               frac_women_virgin = 0.1,
+                               frac_men_virgin = 0.1,
 
 
 
@@ -575,8 +587,12 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, 
                                rate_leave_pro_FSW = c(0.4347826, 0.4347826),
                                rate_leave_low_FSW = c(0.4347826, 0.4347826),
                                rate_leave_client = c(0.5, 0.5),
-                               rate_enter_sexual_pop = c(0.3571429, 0.3571429),
 
+                               rate_enter_sexual_pop = c(0.6571429, 0.6571429),
+                               # rate_enter_sexual_pop = c(0.3571429, 0.3571429),
+
+                               fraction_sexually_active_15_F = 0.14,
+                               fraction_sexually_active_15_M = 0.21,
 
 
 
@@ -594,7 +610,7 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, 
                              ))
 # end of parameters --------------------------------------------------------------
 
-outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm")
+outputs = c("prev", "omega", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm")
 
 
 f <- function(p, gen, time) {

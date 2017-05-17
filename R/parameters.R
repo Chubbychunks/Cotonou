@@ -330,14 +330,14 @@ fix_parameters <- function(y, Ncat, Nage) {
 
     # BIRTHS
     y$omega = c(
-      y$fraction_F * (y$N_init[1]/y$N_init[3]) * y$fraction_FSW_foreign, # some FSW come from outside Cotonou
-      y$fraction_F * (y$N_init[2]/y$N_init[3]) * y$fraction_FSW_foreign, # BUT THIS IS SET TO 0 FOR NOW: ALL NEW PEOPLE ARE ALL BORN VIRGINS
+      y$fraction_F * y$frac_women_ProFSW * y$fraction_FSW_foreign, # some FSW come from outside Cotonou
+      y$fraction_F * y$frac_women_LowFSW * y$fraction_FSW_foreign, # BUT THIS IS SET TO 0 FOR NOW: ALL NEW PEOPLE ARE ALL BORN VIRGINS. NOT 0 ANYMORE
+      y$fraction_F * y$fraction_sexually_active_15_F,
       0,
       0,
-      0,
-      0,
-      y$fraction_F * (1 - (y$N_init[2]/y$N_init[3]) * y$fraction_FSW_foreign - (y$N_init[1]/y$N_init[3]) * y$fraction_FSW_foreign),
-      1 - y$fraction_F,
+      (1 - y$fraction_F) * y$fraction_sexually_active_15_M,
+      y$fraction_F * (1 - y$frac_women_ProFSW * y$fraction_FSW_foreign - y$frac_women_LowFSW * y$fraction_FSW_foreign - y$fraction_sexually_active_15_F),
+      (1 - y$fraction_F) * (1 -  y$fraction_sexually_active_15_M),
       0)
 
     # MIXING
@@ -476,6 +476,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 2, Nage = 1, ..., set_pars =
 
   #fixed pars list i think for the fix parameters function
   fixed_pars = list(
+    fraction_sexually_active_15_F = 0,
+    fraction_sexually_active_15_M = 0,
 
     initial_Ntot = 286114,
 
@@ -976,7 +978,10 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    RR_beta_GUD = 1,
                    RR_beta_FtM = 1,
                    who_believe_comm = 0,
-                   init_clientN_from_PCR = 0
+                   init_clientN_from_PCR = 0,
+                   fraction_sexually_active_15_F = 0,
+                   fraction_sexually_active_15_M = 0
+
 
 
   )
