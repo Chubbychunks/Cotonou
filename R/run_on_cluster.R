@@ -40,7 +40,7 @@ run_on_cluster <- function(number_simulations, par_seq, condom_seq, groups_seq, 
 
   # parameters --------------------------------------------------------------
   parameters <- cotonou::lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
-                                        ranges = ranges)
+                                        ranges = ranges, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
   # end of parameters --------------------------------------------------------------
 
 

@@ -464,7 +464,7 @@ fix_parameters <- function(y, Ncat, Nage) {
 
 #' @export
 #' @useDynLib cotonou
-lhs_parameters <- function(n, sample = NULL, Ncat = 2, Nage = 1, ..., set_pars = list(...), forced_pars = list(...), set_null= list(...), ranges = NULL) {
+lhs_parameters <- function(n, sample = NULL, Ncat = 2, Nage = 1, ..., set_pars = list(...), forced_pars = list(...), set_null= list(...), ranges = NULL, par_seq, condom_seq, groups_seq, years_seq) {
 
 
   set_pars <- modifyList(set_pars, forced_pars)
