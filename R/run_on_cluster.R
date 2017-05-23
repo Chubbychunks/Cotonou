@@ -9,7 +9,7 @@ return_outputs <- function(p, gen, time, outputs) {
 
 #' @export
 #' @useDynLib cotonou
-likelihood_rough <- function(x) {
+likelihood_rough <- function(x, time, prev_points) {
   the_prev = data.frame(time, x$prev_FSW, x$prev_LowFSW, x$prev_client, x$prev_women, x$prev_men)
   names(the_prev) = c("time", "Pro FSW", "Low-level FSW", "Clients", "Women", "Men")
 
@@ -48,13 +48,13 @@ run_on_cluster <- function(number_simulations, par_seq, condom_seq, groups_seq, 
 
 
 
-  # likelihood_list = unlist(lapply(res, likelihood_rough))
-  # sorted_likelihood_list = sort(likelihood_list)
-  #
-  #
-  # best_runs = which(unlist(lapply(res, likelihood_rough)) == max(sorted_likelihood_list))
-  #
-  # out <- res[best_runs]
+  likelihood_list = unlist(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
+  sorted_likelihood_list = sort(likelihood_list)
+
+
+  best_runs = which(unlist(lapply(res, likelihood_rough)) == max(sorted_likelihood_list))
+
+  out <- res[best_runs]
 
   return(res)
 }
