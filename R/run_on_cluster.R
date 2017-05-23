@@ -1,5 +1,40 @@
 #' @export
 #' @useDynLib cotonou
+f <- function(p, gen, time, outputs) {
+  mod <- gen(user = p)
+  all_results <- mod$transform_variables(mod$run(time))
+  #   all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm", "epsilon")]
+  all_results[outputs]
+}
+
+#' @export
+#' @useDynLib cotonou
+likelihood_rough <- function(x) {
+  the_prev = data.frame(time, x$prev_FSW, x$prev_LowFSW, x$prev_client, x$prev_women, x$prev_men)
+  names(the_prev) = c("time", "Pro FSW", "Low-level FSW", "Clients", "Women", "Men")
+
+  likelihood_count <- 0
+
+  for(i in 1:length(prev_points[,1]))
+  {
+    # likelihood_count <- likelihood_count +
+
+    point = subset(the_prev, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
+    if(!is.na(point)) {if((point < prev_points[i, "upper"]) && (point > prev_points[i, "lower"]))
+    {
+      # print(prev_points[i, c("time", "variable")]);
+      likelihood_count <- likelihood_count + 1
+    }}
+  }
+
+
+
+  return (likelihood_count)
+
+}
+
+#' @export
+#' @useDynLib cotonou
 run_on_cluster <- function(number_simulations) {
   par_seq = c("c_comm", "c_noncomm")
   condom_seq = c("fc_y_comm", "fc_y_noncomm")
@@ -428,14 +463,9 @@ run_on_cluster <- function(number_simulations) {
   outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm")
 
 
-  f <- function(p, gen, time) {
-    mod <- gen(user = p)
-    all_results <- mod$transform_variables(mod$run(time))
-    #   all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm", "epsilon")]
-    all_results[outputs]
-  }
+
   # res = lapply(parameters, f, main_model, time = seq(1986, 2030, 1))
-  res = lapply(parameters, f, main_model, time = time)
+  res = lapply(parameters, f, main_model, time = time, outputs = outputs)
 
 
 
@@ -470,36 +500,6 @@ run_on_cluster <- function(number_simulations) {
 
 
   # prev_points -------------------------------------------------------------
-
-  # likelihood calculation -----------------------------------
-
-  likelihood_rough <- function(x) {
-    the_prev = data.frame(time, x$prev_FSW, x$prev_LowFSW, x$prev_client, x$prev_women, x$prev_men)
-    names(the_prev) = c("time", "Pro FSW", "Low-level FSW", "Clients", "Women", "Men")
-
-    likelihood_count <- 0
-
-    for(i in 1:length(prev_points[,1]))
-    {
-      # likelihood_count <- likelihood_count +
-
-      point = subset(the_prev, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
-      if(!is.na(point)) {if((point < prev_points[i, "upper"]) && (point > prev_points[i, "lower"]))
-      {
-        # print(prev_points[i, c("time", "variable")]);
-        likelihood_count <- likelihood_count + 1
-      }}
-    }
-
-
-
-    return (likelihood_count)
-
-  }
-
-  # end of likelihood calculation -----------------------------------
-
-  # which(unlist(lapply(res, likelihood_rough)) > 4)
 
 
   # best runs etc -----------------------------------------------------------

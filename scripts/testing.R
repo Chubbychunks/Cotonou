@@ -530,7 +530,7 @@ parameters[[1]]$fc_y_comm_1985
 start.time <- Sys.time()
 # varying and fitting
 number_simulations = 1
-time = seq(1986, 2020, 1)
+time = seq(1986, 2030, 1)
 
 # parameters --------------------------------------------------------------
 parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
@@ -541,8 +541,8 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, 
                                epsilon_1985 = c(0.08, 0.08),
                                epsilon_1992 = c(0.08, 0.08),
                                epsilon_2002 = c(0.08, 0.08),
-                               epsilon_2013 = c(0.05, 0.05),
-                               epsilon_2016 = c(0.05, 0.05),
+                               epsilon_2013 = c(0.08, 0.08),
+                               epsilon_2016 = c(0.08, 0.08),
 
                                fraction_FSW_foreign = c(0.9, 0.9),
 
@@ -566,10 +566,11 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, 
                                # frac_women_LowFSW = c(0.0024, 0.0067),
                                # frac_women_exFSW = c(0.0024, 0.0067),
                                frac_men_client = c(0.3, 0.3),
-                               frac_women_virgin = 0.1,
-                               frac_men_virgin = 0.1,
+                               frac_women_virgin = 0.13,
+                               frac_men_virgin = 0.13,
 
-
+                               fraction_sexually_active_15_F = c(0.14, 0.14),
+                               fraction_sexually_active_15_M = c(0.21, 0.21),
 
                                RR_beta_GUD = c(1.43, 19.58),
                                RR_beta_FtM = c(0.5, 2),
@@ -588,11 +589,10 @@ parameters <- lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, 
                                rate_leave_low_FSW = c(0.4347826, 0.4347826),
                                rate_leave_client = c(0.5, 0.5),
 
-                               rate_enter_sexual_pop = c(0.6571429, 0.6571429),
-                               # rate_enter_sexual_pop = c(0.3571429, 0.3571429),
+                               # rate_enter_sexual_pop = c(0.6571429, 0.6571429),
+                               rate_enter_sexual_pop = c(0.3571429, 0.3571429),
 
-                               fraction_sexually_active_15_F = 0.14,
-                               fraction_sexually_active_15_M = 0.21,
+
 
 
 
