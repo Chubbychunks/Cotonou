@@ -14,7 +14,7 @@ FormerFSWtoGPF <- function(x) {
 #' Eugene's function to be documented
 #' @export
 #' @useDynLib cotonou
-fix_parameters <- function(y, Ncat, Nage) {
+fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years_seq) {
 
   if(Ncat == 9) {
 
@@ -659,7 +659,7 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 2, Nage = 1, ..., set_pars =
   #   print(samples_list)
   samples_list_test <<- samples_list
 
-  samples_list <- lapply(samples_list, fix_parameters, Ncat = Ncat)
+  samples_list <- lapply(samples_list, fix_parameters, Ncat = Ncat, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
 
   # samples_list <- lapply(samples_list, function(x) modifyList(x, set_pars)) # set pars after fixed pars in order to get right set pars
   samples_list <- lapply(samples_list, function(x) modifyList(x, forced_pars)) # set pars after fixed pars in order to get right set pars
