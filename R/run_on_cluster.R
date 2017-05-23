@@ -35,7 +35,7 @@ likelihood_rough <- function(x) {
 
 #' @export
 #' @useDynLib cotonou
-run_on_cluster <- function(number_simulations, best_set, time, ranges, outputs) {
+run_on_cluster <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points) {
 
 
   # parameters --------------------------------------------------------------
