@@ -44,17 +44,17 @@ run_on_cluster <- function(number_simulations, par_seq, condom_seq, groups_seq, 
   # end of parameters --------------------------------------------------------------
 
 
-  # res = lapply(parameters, return_outputs, main_model, time = time, outputs = outputs)
-  #
-  #
-  #
-  # likelihood_list = unlist(lapply(res, likelihood_rough))
-  # sorted_likelihood_list = sort(likelihood_list)
-  #
-  #
-  # best_runs = which(unlist(lapply(res, likelihood_rough)) == max(sorted_likelihood_list))
-  #
-  # out <- res[best_runs]
+  res = lapply(parameters, return_outputs, main_model, time = time, outputs = outputs)
 
-  return(parameters)
+
+
+  likelihood_list = unlist(lapply(res, likelihood_rough))
+  sorted_likelihood_list = sort(likelihood_list)
+
+
+  best_runs = which(unlist(lapply(res, likelihood_rough)) == max(sorted_likelihood_list))
+
+  out <- res[best_runs]
+
+  return(res)
 }
