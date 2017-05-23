@@ -4,7 +4,7 @@ return_outputs <- function(p, gen, time, outputs) {
   mod <- gen(user = p)
   all_results <- mod$transform_variables(mod$run(time))
   #   all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm", "epsilon")]
-  all_results[outputs]
+  return(all_results[outputs])
 }
 
 #' @export
