@@ -1,6 +1,6 @@
 #' @export
 #' @useDynLib cotonou
-f <- function(p, gen, time, outputs) {
+return_outputs <- function(p, gen, time, outputs) {
   mod <- gen(user = p)
   all_results <- mod$transform_variables(mod$run(time))
   #   all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm", "epsilon")]
@@ -465,7 +465,7 @@ run_on_cluster <- function(number_simulations) {
 
 
   # res = lapply(parameters, f, main_model, time = seq(1986, 2030, 1))
-  res = lapply(parameters, f, main_model, time = time, outputs = outputs)
+  res = lapply(parameters, return_outputs, main_model, time = time, outputs = outputs)
 
 
 
