@@ -19,18 +19,18 @@ likelihood_rough <- function(x, time, prev_points) {
   {
 
     point = subset(the_prev, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
-    # if(!is.na(point)) {if((point < prev_points[i, "upper"]) && (point > prev_points[i, "lower"]))
-    # {
-    #   # print(prev_points[i, c("time", "variable")]);
-    #   likelihood_count <- likelihood_count + 1
-    # }}
+    if(!is.na(point)) {if((point < prev_points[i, "upper"]) && (point > prev_points[i, "lower"]))
+    {
+      # print(prev_points[i, c("time", "variable")]);
+      likelihood_count <- likelihood_count + 1
+    }}
 
   }
 
-  return (x$prev_FSW)
+  # return (x$prev_FSW)
 
 
-  # return (likelihood_count)
+  return (likelihood_count)
 
 }
 
