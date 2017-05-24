@@ -27,9 +27,10 @@ likelihood_rough <- function(x, time, prev_points) {
 
   }
 
+  return (the_prev)
 
 
-  return (likelihood_count)
+  # return (likelihood_count)
 
 }
 
