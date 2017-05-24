@@ -1,4 +1,9 @@
 
+# to debug:
+# open terminal in the folder
+# R- d valgrind
+
+
 
 #######################################################################
 ##########################for local editing
@@ -485,13 +490,142 @@ prev_points = prev_points[-c(1,2,3),]
 # launch -------------------------------------------------------------
 
 
-result <- cotonou::run_on_cluster(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points)
+result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points)
 
 
-# to debug:
-# open terminal in the folder
-# R- d valgrind
 
+likelihood_list = unlist(lapply(res, likelihood_rough))
+sorted_likelihood_list = sort(likelihood_list)
+
+# table(sorted_likelihood_list)
+
+best_runs = which(unlist(lapply(res, likelihood_rough)) == max(sorted_likelihood_list))
+
+out <- res[best_runs]
+
+end.time <- Sys.time()
+time.taken <- end.time - start.time
+time.taken
+
+print("number of seconds per simulation:")
+as.numeric(time.taken)/ number_simulations
+
+###
+# THE DEMOGRAPHIC RESULTS OF BEST RUNS
+
+# frac N data points ------------------------------------------------------
+frac_N_data_points = data.frame(time = c(1998, 2014,
+                                         1998, 1998,
+                                         1998, 2008, 2011,
+                                         1998, 2008, 2011),
+                                point = c(0.67, 0.24,
+                                          100*0.195738802*(1-0.515666224), 20,
+                                          100*0.1292392*0.515666224, 100*0.0972973*0.515666224, 100*0.16*0.515666224,
+                                          100*0.124632*(1-0.515666224), 100*0.08840413*(1-0.515666224), 100*0.1175*(1-0.515666224)),
+                                variable = c("Pro FSW", "Pro FSW",
+                                             "Clients", "Clients",
+                                             "Virgin female", "Virgin female", "Virgin female",
+                                             "Virgin male", "Virgin male", "Virgin male"))
+
+
+# demographic graphs ------------------------------------------------------
+
+frac_N_best_runs = 100*do.call(rbind, lapply(res[best_runs], function(x) x$frac_N))
+frac_N_best_runs = data.frame(time, frac_N_best_runs, as.character(sort(rep(seq(1,length(best_runs)), length(time)))))
+names(frac_N_best_runs) = c("time", "Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "replication")
+frac_N_best_runs_melted = melt(frac_N_best_runs, id.vars = c("time", "replication"))
+ggplot()  + geom_line(data = frac_N_best_runs_melted, aes(x = time, y = value, factor = replication)) + theme_bw() + labs(x="year",y="Percent in each group (%)") +
+  facet_wrap(~variable, scales = "free") + geom_point(data = frac_N_data_points, aes(x = time, y = point), size = I(2), color = "red", shape = 15)
+# facet_wrap(~variable, scales = "fixed") + geom_point(data = frac_N_data_points, aes(x = time, y = point), size = I(2), color = "red", shape = 15)
+
+
+epsilon_best_runs = t(do.call(rbind, lapply(res[best_runs], function(x) x$epsilon)))
+epsilon_best_runs = data.frame(time, epsilon_best_runs)
+epsilon_best_runs_melted = melt(epsilon_best_runs, id.vars = "time")
+ggplot() + geom_line(data = epsilon_best_runs_melted, aes(x = time, y = value, factor = variable)) +
+  theme_bw() + labs(x="year",y="Growth rate")
+
+Ntot_data_points = data.frame(time = c(1979, 1992, 2002, 2013, 2020, 2030), point = c(191106.1467, 404359.0418, 681559.032, 913029.606, 1128727.062, 1423887.65), colour = c("data", "data", "data", "data", "predicted", "predicted"))
+Ntot_best_runs = t(do.call(rbind, lapply(res[best_runs], function(x) x$Ntot)))
+Ntot_best_runs = data.frame(time, Ntot_best_runs)
+Ntot_best_runs_melted = melt(Ntot_best_runs, id.vars = "time")
+ggplot() + geom_line(data = Ntot_best_runs_melted, aes(x = time, y = value, factor = variable)) +
+  theme_bw() + labs(x="year",y="Total population size") + geom_point(data = Ntot_data_points, aes(x = time, y = point, color = colour), size = I(2), shape = 15)
+
+
+#output growth rate?????
+growth_rate_out = melt(data.frame(time = time[-1], t(do.call(rbind, lapply(lapply(res[best_runs], function(x) x$Ntot), function(y) {
+  diff(y)/y[-length(y)]
+})))), id.vars = "time")
+ggplot(growth_rate_out) + geom_line(aes(x = time, y = value, factor = variable)) + theme_bw() +
+  labs(x="year",y="Output growth rate")
+
+# end of demographic graphs ------------------------------------------------------
+
+
+# prev graphs ------------------------------------------------------
+
+all_binded = do.call(rbind, lapply(res[best_runs], function(x) {
+  return(matrix(c(x$prev_FSW, x$prev_LowFSW, x$prev_client, x$prev_women, x$prev_men), ncol = 5))
+}))
+
+all_binded[is.na(all_binded)] = 0
+out = data.frame(time, all_binded, as.character(sort(rep(seq(1,length(best_runs)), length(time)))))
+names(out) = c("time", "Pro FSW", "Low-level FSW", "Clients", "Women", "Men", "replication")
+out_melted = melt(out, id.vars = c("time", "replication"))
+ggplot()  + geom_line(data = out_melted, aes(x = time, y = value, factor = replication)) + theme_bw() + labs(x="year",y="prevalance (%)") +
+  geom_point(data = prev_points_all, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
+  facet_wrap(~variable, scales = "free")
+# end of prev graphs ------------------------------------------------------
+
+
+# who believe etc ---------------------------------------------------------
+max(sorted_likelihood_list)
+
+# WHO BELIEVE?
+who_believe = unlist(lapply(parameters[which(likelihood_list == max(likelihood_list))], function(x) x$who_believe_comm))
+who_believe = ifelse(who_believe == 1, "Clients", "FSWs")
+table(who_believe)
+
+
+c_comm_out = melt(data.frame(years = rep(time, length(best_runs)), do.call(rbind, lapply(res[best_runs], function(x) {
+  if(x$who_believe_comm[1] == 1)
+    return(data.frame(c_comm_balanced = x$c_comm_balanced[,1], varies = "FSW"))
+  else
+    return(data.frame(c_comm_balanced = x$c_comm_balanced[,5], varies = "Client"))
+})), replication = sort(rep(seq(1, length(best_runs), 1), length(time)))), id.vars = c("years", "replication", "varies"))
+
+ggplot(c_comm_out) + geom_line(aes(x = years, y = value, factor = as.factor(replication))) + facet_wrap(~varies, scales = "free") + theme_bw() + labs(y = "commercial partner change rate")
+
+
+## END OF TESTS
+########################################################################################################
+########################################################################################################
+########################################################################################################
+########################################################################################################
+########################################################################################################
+
+
+
+
+
+
+
+
+
+#############################################################################################
+#############################################################################################
+#############################################################################################
+
+#   ___  _     _       _          __  __
+#  / _ \| | __| |  ___| |_ _   _ / _|/ _|
+# | | | | |/ _` | / __| __| | | | |_| |_
+# | |_| | | (_| | \__ \ |_| |_| |  _|  _|
+#  \___/|_|\__,_| |___/\__|\__,_|_| |_|
+#
+#############################################################################################
+#############################################################################################
+#############################################################################################
 
 rm(list = ls())
 require(ggplot2)

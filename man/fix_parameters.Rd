@@ -4,7 +4,7 @@
 \alias{fix_parameters}
 \title{parameters which depend on others, etc}
 \usage{
-fix_parameters(y, Ncat, Nage)
+fix_parameters(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years_seq)
 }
 \description{
 Eugene's function to be documented
