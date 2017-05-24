@@ -15,16 +15,17 @@ likelihood_rough <- function(x, time, prev_points) {
 
   likelihood_count <- 0
 
-  # for(i in 1:length(prev_points[,1]))
-  # {
-  #   point = subset(the_prev, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
-  #   # if(!is.na(point)) {if((point < prev_points[i, "upper"]) && (point > prev_points[i, "lower"]))
-  #   # {
-  #   #   # print(prev_points[i, c("time", "variable")]);
-  #   #   likelihood_count <- likelihood_count + 1
-  #   # }}
-  #
-  # }
+  for(i in 1:length(prev_points[,1]))
+  {
+
+    point = subset(the_prev, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
+    # if(!is.na(point)) {if((point < prev_points[i, "upper"]) && (point > prev_points[i, "lower"]))
+    # {
+    #   # print(prev_points[i, c("time", "variable")]);
+    #   likelihood_count <- likelihood_count + 1
+    # }}
+
+  }
 
 
 
@@ -55,5 +56,7 @@ run_on_cluster <- function(number_simulations, par_seq, condom_seq, groups_seq, 
   #
   # out <- res[best_runs]
 
-  return(res)
+  return(likelihood_list)
+  # return(out)
+
 }
