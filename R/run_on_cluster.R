@@ -3,7 +3,6 @@
 return_outputs <- function(p, gen, time, outputs) {
   mod <- gen(user = p)
   all_results <- mod$transform_variables(mod$run(time))
-  #   all_results[c("prev", "c_comm_balanced", "c_noncomm_balanced", "c_comm", "c_noncomm", "epsilon")]
   return(all_results[outputs])
 }
 
@@ -52,5 +51,30 @@ run_model <- function(number_simulations, par_seq, condom_seq, groups_seq, years
   out <- res[best_runs]
 
   return(out)
+
+}
+
+#' @export
+#' @useDynLib cotonou
+run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points) {
+
+
+  # parameters --------------------------------------------------------------
+  parameters <- cotonou::lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
+                                        ranges = ranges, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
+  # end of parameters --------------------------------------------------------------
+
+
+  res = lapply(parameters, return_outputs, main_model, time = time, outputs = outputs)
+
+  likelihood_list = unlist(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
+  sorted_likelihood_list = sort(likelihood_list)
+
+
+  best_runs = which(likelihood_list == max(sorted_likelihood_list))
+
+  out <- res[best_runs]
+
+  return(best_runs)
 
 }
