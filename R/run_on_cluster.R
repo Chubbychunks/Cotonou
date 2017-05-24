@@ -52,17 +52,17 @@ run_on_cluster <- function(number_simulations, par_seq, condom_seq, groups_seq, 
 
 
   #test
-  return(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
+  # return(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
 
-  # likelihood_list = unlist(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
-  # sorted_likelihood_list = sort(likelihood_list)
-  #
-  #
-  # best_runs = which(likelihood_list == max(sorted_likelihood_list))
-  #
-  # out <- res[best_runs]
+  likelihood_list = unlist(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
+  sorted_likelihood_list = sort(likelihood_list)
+
+
+  best_runs = which(likelihood_list == max(sorted_likelihood_list))
+
+  out <- res[best_runs]
 
   # return(likelihood_list)
-  # return(out)
+  return(out)
 
 }
