@@ -3,10 +3,11 @@
 # open terminal in the folder
 # R- d valgrind
 
-
+require(ggplot2)
+require(reshape2)
 
 #######################################################################
-##########################for local editing
+########################## run this if not going on cluster ###########
 #######################################################################
 odin::odin_package(".") # looks for any models inside inst/odin
 devtools::load_all()
@@ -27,14 +28,19 @@ devtools::load_all()
 #############################################################################################
 #############################################################################################
 
-number_simulations = 12
-
+# ignore these ######################################
 par_seq = c("c_comm", "c_noncomm")
 condom_seq = c("fc_y_comm", "fc_y_noncomm")
 groups_seq = c("ProFSW", "LowFSW", "GPF", "FormerFSW", "Client", "GPM", "VirginF", "VirginM", "FormerFSWoutside")
 years_seq = seq(1985, 2016)
+#####################################################
+
+# first and last year of simulation, and the number of intervals the model will record
 time <- seq(1986, 2020, length.out = 31)
 
+number_simulations = 12
+
+# this is the best set of parameters (the fixed ones)
 # best_set ----------------------------------------------------------------
 
 
@@ -383,8 +389,7 @@ best_set = list(
 
 
 # ranges and outputs ------------------------------------------------------------------
-
-
+# these are the ranges that go in the LHS
 ranges = rbind(
 
   init_clientN_from_PCR = c(0,0),
@@ -407,14 +412,14 @@ ranges = rbind(
   muF = c(0.0295, 0.0295),
   muM = c(0.0315, 0.0315),
 
-  # betaMtoF_noncomm = c(0.00144, 0.00626),
+  betaMtoF_noncomm = c(0.00144, 0.00626),
 
-  betaMtoF_noncomm = c(0, 0),
-  frac_women_ProFSW = c(0.004, 0.004),
-  # frac_women_ProFSW = c(0.0024, 0.0067),
-  # frac_women_LowFSW = c(0.0024, 0.0067),
-  # frac_women_exFSW = c(0.0024, 0.0067),
-  frac_men_client = c(0.6, 0.6),
+  # betaMtoF_noncomm = c(0, 0),
+  # frac_women_ProFSW = c(0.004, 0.004),
+  frac_women_ProFSW = c(0.0024, 0.0067),
+  frac_women_LowFSW = c(0.0024, 0.0067),
+  frac_women_exFSW = c(0.0024, 0.0067),
+  frac_men_client = c(0.2, 0.4),
   # frac_women_virgin = 0.1,
   # frac_men_virgin = 0.1
 
@@ -457,6 +462,8 @@ ranges = rbind(
 outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm")
 
 
+
+# these are the prevalence points I am fitting to
 # prev_points -------------------------------------------------------------
 prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,
                                   1998, 2002, 2005, 2008, 2012, 2015,
@@ -489,26 +496,66 @@ prev_points = prev_points[-c(1,2,3),]
 
 # launch -------------------------------------------------------------
 
-
+# run simulations
 result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points)
 
 
+# ignore these ######################################
+frac_ProFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,1])), 2, quantile_95)))
+frac_LowFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,2])), 2, quantile_95)))
+frac_GPF = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,3])), 2, quantile_95)))
+frac_FormerFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,4])), 2, quantile_95)))
+frac_Client = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,5])), 2, quantile_95)))
+frac_GPM = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,6])), 2, quantile_95)))
+frac_Virgin_Female = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,7])), 2, quantile_95)))
+frac_Virgin_Male = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,8])), 2, quantile_95)))
+frac_Former_FSW_Outside = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,9])), 2, quantile_95)))
+frac = rbind(frac_ProFSW, frac_LowFSW, frac_GPF, frac_FormerFSW, frac_Client, frac_GPM, frac_Virgin_Female, frac_Virgin_Male, frac_Former_FSW_Outside)
+frac = data.frame(frac, group = rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"), each = 31))
+colnames(frac) = c("time", "Lower", "Median", "Upper", "Group")
+frac$Group = factor(frac$Group, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"))
 
-likelihood_list = unlist(lapply(res, likelihood_rough))
-sorted_likelihood_list = sort(likelihood_list)
+prev_FSW = t(apply(do.call(rbind, lapply(result, function(x) x$prev_FSW)), 2, quantile_95))
+prev_LowFSW = t(apply(do.call(rbind, lapply(result, function(x) x$prev_LowFSW)), 2, quantile_95))
+prev_client = t(apply(do.call(rbind, lapply(result, function(x) x$prev_client)), 2, quantile_95))
+prev_women = t(apply(do.call(rbind, lapply(result, function(x) x$prev_women)), 2, quantile_95))
+prev_men = t(apply(do.call(rbind, lapply(result, function(x) x$prev_men)), 2, quantile_95))
+prev = rbind(prev_FSW, prev_LowFSW, prev_client, prev_women, prev_men)
+prev = data.frame(time, prev, rep(c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"), each = length(time)))
+colnames(prev) = c("time", "Lower", "Median", "Upper", "Group")
+#####################################################
 
-# table(sorted_likelihood_list)
 
-best_runs = which(unlist(lapply(res, likelihood_rough)) == max(sorted_likelihood_list))
+# plot fraction in each group
+ggplot(frac) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() + facet_wrap(~Group)
 
-out <- res[best_runs]
+# plot prevalence in each group
+ggplot(prev) + geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() + facet_wrap(~Group)
 
-end.time <- Sys.time()
-time.taken <- end.time - start.time
-time.taken
 
-print("number of seconds per simulation:")
-as.numeric(time.taken)/ number_simulations
+
+
+# Below c'est
+#  ____                _                         _ _                            _                           _
+# |  _ \ _   _  __   _(_) ___ _   ___  __  _ __ ( |_)_ __ ___  _ __   ___  _ __| |_ ___    __ _ _   _  ___ (_)
+# | | | | | | | \ \ / / |/ _ \ | | \ \/ / | '_ \|/| | '_ ` _ \| '_ \ / _ \| '__| __/ _ \  / _` | | | |/ _ \| |
+# | |_| | |_| |  \ V /| |  __/ |_| |>  <  | | | | | | | | | | | |_) | (_) | |  | ||  __/ | (_| | |_| | (_) | |
+# |____/ \__,_|   \_/ |_|\___|\__,_/_/\_\ |_| |_| |_|_| |_| |_| .__/ \___/|_|   \__\___|  \__, |\__,_|\___/|_|
+#                                                             |_|                            |_|
+#
+
+
+
+#
+#
+# likelihood_list = unlist(lapply(res, likelihood_rough))
+# sorted_likelihood_list = sort(likelihood_list)
+#
+# # table(sorted_likelihood_list)
+#
+# best_runs = which(unlist(lapply(res, likelihood_rough)) == max(sorted_likelihood_list))
+#
+# out <- res[best_runs]
 
 ###
 # THE DEMOGRAPHIC RESULTS OF BEST RUNS

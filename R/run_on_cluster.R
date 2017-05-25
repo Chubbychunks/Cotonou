@@ -1,5 +1,10 @@
 #' @export
 #' @useDynLib cotonou
+quantile_95 <- function(x) return(quantile(x, probs = c(0.025, 0.5, 0.975)))
+
+
+#' @export
+#' @useDynLib cotonou
 return_outputs <- function(p, gen, time, outputs) {
   mod <- gen(user = p)
   all_results <- mod$transform_variables(mod$run(time))
@@ -42,15 +47,15 @@ run_model <- function(number_simulations, par_seq, condom_seq, groups_seq, years
 
   res = lapply(parameters, return_outputs, main_model, time = time, outputs = outputs)
 
-  likelihood_list = unlist(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
-  sorted_likelihood_list = sort(likelihood_list)
+  # likelihood_list = unlist(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
+  # sorted_likelihood_list = sort(likelihood_list)
+  #
+  #
+  # best_runs = which(likelihood_list == max(sorted_likelihood_list))
+  #
+  # out <- res[best_runs]
 
-
-  best_runs = which(likelihood_list == max(sorted_likelihood_list))
-
-  out <- res[best_runs]
-
-  return(out)
+  return(res)
 
 }
 
@@ -75,7 +80,7 @@ run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_s
 
   out <- res[best_runs]
 
-  return(best_runs)
+  return(list(best_runs, res))
 
   #
 }
