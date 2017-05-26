@@ -501,25 +501,25 @@ result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq =
 
 
 # ignore these ######################################
-frac_ProFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,1])), 2, quantile_95)))
-frac_LowFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,2])), 2, quantile_95)))
-frac_GPF = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,3])), 2, quantile_95)))
-frac_FormerFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,4])), 2, quantile_95)))
-frac_Client = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,5])), 2, quantile_95)))
-frac_GPM = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,6])), 2, quantile_95)))
-frac_Virgin_Female = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,7])), 2, quantile_95)))
-frac_Virgin_Male = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,8])), 2, quantile_95)))
-frac_Former_FSW_Outside = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,9])), 2, quantile_95)))
+frac_ProFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,1])), 2, cotonou::quantile_95)))
+frac_LowFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,2])), 2, cotonou::quantile_95)))
+frac_GPF = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,3])), 2, cotonou::quantile_95)))
+frac_FormerFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,4])), 2, cotonou::quantile_95)))
+frac_Client = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,5])), 2, cotonou::quantile_95)))
+frac_GPM = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,6])), 2, cotonou::quantile_95)))
+frac_Virgin_Female = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,7])), 2, cotonou::quantile_95)))
+frac_Virgin_Male = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,8])), 2, cotonou::quantile_95)))
+frac_Former_FSW_Outside = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,9])), 2, cotonou::quantile_95)))
 frac = rbind(frac_ProFSW, frac_LowFSW, frac_GPF, frac_FormerFSW, frac_Client, frac_GPM, frac_Virgin_Female, frac_Virgin_Male, frac_Former_FSW_Outside)
 frac = data.frame(frac, group = rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"), each = 31))
 colnames(frac) = c("time", "Lower", "Median", "Upper", "Group")
 frac$Group = factor(frac$Group, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"))
 
-prev_FSW = t(apply(do.call(rbind, lapply(result, function(x) x$prev_FSW)), 2, quantile_95))
-prev_LowFSW = t(apply(do.call(rbind, lapply(result, function(x) x$prev_LowFSW)), 2, quantile_95))
-prev_client = t(apply(do.call(rbind, lapply(result, function(x) x$prev_client)), 2, quantile_95))
-prev_women = t(apply(do.call(rbind, lapply(result, function(x) x$prev_women)), 2, quantile_95))
-prev_men = t(apply(do.call(rbind, lapply(result, function(x) x$prev_men)), 2, quantile_95))
+prev_FSW = t(apply(do.call(rbind, lapply(result, function(x) x$prev_FSW)), 2, cotonou::quantile_95))
+prev_LowFSW = t(apply(do.call(rbind, lapply(result, function(x) x$prev_LowFSW)), 2, cotonou::quantile_95))
+prev_client = t(apply(do.call(rbind, lapply(result, function(x) x$prev_client)), 2, cotonou::quantile_95))
+prev_women = t(apply(do.call(rbind, lapply(result, function(x) x$prev_women)), 2, cotonou::quantile_95))
+prev_men = t(apply(do.call(rbind, lapply(result, function(x) x$prev_men)), 2, cotonou::quantile_95))
 prev = rbind(prev_FSW, prev_LowFSW, prev_client, prev_women, prev_men)
 prev = data.frame(time, prev, rep(c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"), each = length(time)))
 colnames(prev) = c("time", "Lower", "Median", "Upper", "Group")
@@ -527,7 +527,7 @@ colnames(prev) = c("time", "Lower", "Median", "Upper", "Group")
 
 
 # plot fraction in each group
-ggplot(frac) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() + facet_wrap(~Group)
+ggplot(frac) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() + facet_wrap(~Group, scales = "free")
 
 # plot prevalence in each group
 ggplot(prev) + geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() + facet_wrap(~Group)
