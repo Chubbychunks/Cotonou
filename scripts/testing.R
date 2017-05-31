@@ -561,7 +561,7 @@ require(reshape2)
 devtools::install_github("chubbychunks/cotonou")
 
 
-number_simulations = 20
+number_simulations = 1
 epi_start = 1986
 epi_end = 2020
 

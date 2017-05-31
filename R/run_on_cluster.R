@@ -22,8 +22,8 @@ likelihood_rough <- function(x, time, prev_points) {
   for(i in 1:length(prev_points[,1]))
   {
 
-    # point = subset(the_prev, time = prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
-    point = the_prev[the_prev$time == prev_points[i, "time"], as.character(prev_points[i, "variable"])]
+    point = subset(the_prev, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
+    # point = the_prev[the_prev$time == prev_points[i, "time"], as.character(prev_points[i, "variable"])]
     if(!is.na(point)) {if((point < prev_points[i, "upper"]) && (point > prev_points[i, "lower"]))
     {
       likelihood_count <- likelihood_count + 1
