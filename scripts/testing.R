@@ -554,14 +554,14 @@ ggplot(prev) + geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, y
 #
 
 
-rm(list = ls())
+# rm(list = ls())
 require(ggplot2)
 require(reshape2)
 
 devtools::install_github("chubbychunks/cotonou")
 
 
-number_simulations = 1
+number_simulations = 10
 epi_start = 1986
 epi_end = 2016
 
@@ -979,8 +979,8 @@ ranges = rbind(
   rate_leave_low_FSW = c(0.4347826, 0.4347826),
   rate_leave_client = c(0.5, 0.5),
 
-  # rate_enter_sexual_pop = c(0.6571429, 0.6571429),
-  rate_enter_sexual_pop = c(0.3571429, 0.3571429),
+  rate_enter_sexual_pop = 0.5,
+  # rate_enter_sexual_pop = c(0.3571429, 0.3571429),
 
 
   # not sure if below is useful
@@ -1044,6 +1044,11 @@ frac_N_data_points = data.frame(time = c(1998, 2014,
                                              "Clients", "Clients",
                                              "Virgin female", "Virgin female", "Virgin female",
                                              "Virgin male", "Virgin male", "Virgin male"))
+
+frac_N_discard_points = data.frame(variable = c("Pro FSW", "Clients", "Virgin female", "Virgin male"),
+                                   min = c(0.001237599, 0.094735687, 0.050019624, 0.042621372),
+                                   max = c(0.007374027, 0.193733511, 0.09281992, 0.060783889))
+
 # Ntot data points ------------------------------------------------------
 
 Ntot_data_points = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
@@ -1054,7 +1059,7 @@ Ntot_data_points = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
 
 #####################################################
 
-result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points)
+result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 # result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points)
 
 # ignore these ######################################

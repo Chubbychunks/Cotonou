@@ -13,31 +13,51 @@ return_outputs <- function(p, gen, time, outputs) {
 
 #' @export
 #' @useDynLib cotonou
-likelihood_rough <- function(x, time, prev_points) {
+likelihood_rough <- function(x, time, prev_points, frac_N_discard_points) {
   the_prev = data.frame(time, x$prev_FSW, x$prev_LowFSW, x$prev_client, x$prev_women, x$prev_men)
   names(the_prev) = c("time", "Pro FSW", "Low-level FSW", "Clients", "Women", "Men")
 
+  the_frac_N = data.frame(time, x$frac_N[,c(1, 5, 7, 8)])
+  names(the_frac_N) = c("time", "Pro FSW", "Clients", "Virgin female", "Virgin male")
+
   likelihood_count <- 0
 
-  for(i in 1:length(prev_points[,1]))
-  {
+  frac_count <- 0
 
-    point = subset(the_prev, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
-    # point = the_prev[the_prev$time == prev_points[i, "time"], as.character(prev_points[i, "variable"])]
-    if(!is.na(point)) {{if((point < prev_points[i, "upper"]) && (point > prev_points[i, "lower"]))
-    {
-      likelihood_count <- likelihood_count + 1
-    }}}
+  for (i in 1:length(frac_N_discard_points[,1]))
+  {
+    if(all(the_frac_N[, as.character(frac_N_discard_points[i, "variable"])] < frac_N_discard_points[i, "max"]) &&
+      all(the_frac_N[,  as.character(frac_N_discard_points[i, "variable"])] > frac_N_discard_points[i, "min"])) {
+      frac_count <- frac_count + 1
+    }
+
   }
+
+  if(frac_count == length(length(frac_N_discard_points[,1]))) {
+    # prevalence
+    for(i in 1:length(prev_points[,1]))
+    {
+
+      point = subset(the_prev, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
+      # point = the_prev[the_prev$time == prev_points[i, "time"], as.character(prev_points[i, "variable"])]
+      if(!is.na(point)) {{if((point < prev_points[i, "upper"]) && (point > prev_points[i, "lower"]))
+      {
+        likelihood_count <- likelihood_count + 1
+      }}}
+    }
+  }
+
+
 
 
   return (likelihood_count)
 
 }
 
+
 #' @export
 #' @useDynLib cotonou
-run_model <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points) {
+run_model <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points) {
 
 
   # parameters --------------------------------------------------------------
@@ -62,7 +82,7 @@ run_model <- function(number_simulations, par_seq, condom_seq, groups_seq, years
 
 #' @export
 #' @useDynLib cotonou
-run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points) {
+run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points) {
 
 
   # parameters --------------------------------------------------------------
@@ -73,8 +93,10 @@ run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_s
 
   res = lapply(parameters, return_outputs, main_model, time = time, outputs = outputs)
 
+
+
   # likelihood_list = unlist(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
-  likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points)
+  likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 
   # sorted_likelihood_list = sort(likelihood_list)
   #
