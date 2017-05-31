@@ -24,10 +24,10 @@ likelihood_rough <- function(x, time, prev_points) {
 
     point = subset(the_prev, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
     # point = the_prev[the_prev$time == prev_points[i, "time"], as.character(prev_points[i, "variable"])]
-    if(!is.na(point)) {if((point < prev_points[i, "upper"]) && (point > prev_points[i, "lower"]))
+    if(!is.na(point)) {{if((point < prev_points[i, "upper"]) && (point > prev_points[i, "lower"]))
     {
       likelihood_count <- likelihood_count + 1
-    }}
+    }}}
   }
 
 
@@ -82,7 +82,9 @@ run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_s
   #
   # out <- res[best_runs]
 
-  return(list(parameters, res, likelihood_list))
+  return(list(time, prev_points, res))
+
+  # return(list(parameters, res, likelihood_list))
 
   #
 }

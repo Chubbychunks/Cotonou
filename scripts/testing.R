@@ -563,7 +563,7 @@ devtools::install_github("chubbychunks/cotonou")
 
 number_simulations = 1
 epi_start = 1986
-epi_end = 2020
+epi_end = 2016
 
 # setup -------------------------------------------------------------------
 par_seq = c("c_comm", "c_noncomm")
