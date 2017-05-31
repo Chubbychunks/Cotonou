@@ -33,7 +33,7 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points) {
 
   }
 
-  if(frac_count == length(length(frac_N_discard_points[,1]))) {
+  if(frac_count == length(frac_N_discard_points[,1])) {
     # prevalence
     for(i in 1:length(prev_points[,1]))
     {
@@ -50,7 +50,7 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points) {
 
 
 
-  return (likelihood_count)
+  return (list(likelihood_count, frac_count))
 
 }
 

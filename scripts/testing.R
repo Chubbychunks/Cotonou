@@ -561,7 +561,7 @@ require(reshape2)
 devtools::install_github("chubbychunks/cotonou")
 
 
-number_simulations = 10
+number_simulations = 50
 epi_start = 1986
 epi_end = 2016
 
@@ -951,13 +951,14 @@ ranges = rbind(
   betaMtoF_noncomm = c(0.00144, 0.00626),
 
   # betaMtoF_noncomm = c(0, 0),
-  frac_women_ProFSW = c(0.0067, 0.0067),
-  # frac_women_ProFSW = c(0.0024, 0.0067),
+  # frac_women_ProFSW = c(0.0067, 0.0067),
+  frac_women_ProFSW = c(0.0024, 0.0143),
   # frac_women_LowFSW = c(0.0024, 0.0067),
   # frac_women_exFSW = c(0.0024, 0.0067),
-  frac_men_client = c(0.3, 0.3),
-  frac_women_virgin = 0.13,
-  frac_men_virgin = 0.13,
+  # frac_men_client = c(0.3, 0.3),
+  frac_men_client = c(0.196, 0.4),
+  frac_women_virgin = c(0.1, 0.18),
+  frac_men_virgin = c(0.1, 0.1255),
 
   fraction_sexually_active_15_F = c(0.14, 0.14),
   fraction_sexually_active_15_M = c(0.21, 0.21),
@@ -1061,6 +1062,8 @@ Ntot_data_points = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
 
 result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 # result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points)
+
+unlist(result[[3]])
 
 # ignore these ######################################
 frac_ProFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[2]], function(x) x$frac_N*100), function(x) x[,1])), 2, cotonou::quantile_95)))
