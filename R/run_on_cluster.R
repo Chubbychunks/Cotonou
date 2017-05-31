@@ -24,13 +24,14 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points) {
 
   frac_count <- 0
 
-  for (i in 1:length(frac_N_discard_points[,1]))
-  {
-    if(all(the_frac_N[, as.character(frac_N_discard_points[i, "variable"])] < frac_N_discard_points[i, "max"]) &&
-      all(the_frac_N[,  as.character(frac_N_discard_points[i, "variable"])] > frac_N_discard_points[i, "min"])) {
-      frac_count <- frac_count + 1
+  if(all(!is.na(unlist(the_frac_N)))) {
+    for (i in 1:length(frac_N_discard_points[,1]))
+    {
+      if(all(the_frac_N[, as.character(frac_N_discard_points[i, "variable"])] < frac_N_discard_points[i, "max"]) &&
+         all(the_frac_N[,  as.character(frac_N_discard_points[i, "variable"])] > frac_N_discard_points[i, "min"])) {
+        frac_count <- frac_count + 1
+      }
     }
-
   }
 
   if(frac_count == length(frac_N_discard_points[,1])) {
@@ -49,8 +50,8 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points) {
 
 
 
-
-  return (list(likelihood_count, frac_count))
+  return (likelihood_count)
+  # return (list(likelihood_count, frac_count))
 
 }
 
@@ -98,15 +99,15 @@ run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_s
   # likelihood_list = unlist(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
   likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 
-  # sorted_likelihood_list = sort(likelihood_list)
-  #
-  # best_runs = which(likelihood_list == max(sorted_likelihood_list))
-  #
+  sorted_likelihood_list = sort(unlist(likelihood_list))
+
+  best_runs = which(likelihood_list == max(sorted_likelihood_list))
+
   # out <- res[best_runs]
 
   # return(list(time, prev_points, res))
 
-  return(list(parameters, res, likelihood_list))
+  return(list(parameters, res, likelihood_list, best_runs))
 
 
 }
