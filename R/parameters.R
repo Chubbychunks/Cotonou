@@ -306,9 +306,10 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
   y$fc_y_comm = aperm(y$fc_y_comm, c(3, 1, 2))
 
-  y$fc_y_noncomm = array(data = c(y$fc_y_noncomm_1985, y$fc_y_noncomm_1998,
-                                  y$fc_y_noncomm_2008, y$fc_y_noncomm_2015,
-                                  y$fc_y_noncomm_2015), dim=c(Ncat, Ncat, 5))
+  y$fc_y_noncomm = array(data = c(y$fc_y_noncomm_1985, y$fc_y_noncomm_1993, y$fc_y_noncomm_1998,
+                                  y$fc_y_noncomm_2008, y$fc_y_noncomm_2011, y$fc_y_noncomm_2015,
+                                  y$fc_y_noncomm_2015), dim=c(Ncat, Ncat, 7))
+
 
   y$fc_y_noncomm = aperm(y$fc_y_noncomm, c(3, 1, 2))
 
@@ -511,8 +512,10 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 2, Nage = 1, ..., set_pars =
     fc_y_comm_2016 = matrix(0.4, Ncat, Ncat),
 
     fc_y_noncomm_1985 = matrix(0.2, Ncat, Ncat),
+    fc_y_noncomm_1993 = matrix(0.2, Ncat, Ncat),
     fc_y_noncomm_1998 = matrix(0.4, Ncat, Ncat),
     fc_y_noncomm_2008 = matrix(0.3, Ncat, Ncat),
+    fc_y_noncomm_2011 = matrix(0.3, Ncat, Ncat),
     fc_y_noncomm_2015 = matrix(0.5, Ncat, Ncat),
     fc_y_noncomm_2016 = matrix(0.5, Ncat, Ncat),
     c_comm_1985 = rep_len(2, Ncat),
@@ -835,20 +838,22 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    fc_y_comm_2016 = matrix(0.4, Ncat, Ncat),
 
                    fc_y_noncomm_1985 = matrix(0.2, Ncat, Ncat),
+                   fc_y_noncomm_1993 = matrix(0.2, Ncat, Ncat),
                    fc_y_noncomm_1998 = matrix(0.4, Ncat, Ncat),
                    fc_y_noncomm_2008 = matrix(0.3, Ncat, Ncat),
+                   fc_y_noncomm_2011 = matrix(0.3, Ncat, Ncat),
                    fc_y_noncomm_2015 = matrix(0.5, Ncat, Ncat),
                    fc_y_noncomm_2016 = matrix(0.5, Ncat, Ncat),
 
 
 
-                   fc_y_comm = array(0.5,dim=c(9,Ncat,Ncat)),
-                   fc_y_noncomm = array(0.5,dim=c(4,Ncat,Ncat)),
+                   fc_y_comm = array(0.5,dim=c(10,Ncat,Ncat)),
+                   fc_y_noncomm = array(0.5,dim=c(7,Ncat,Ncat)),
 
                    fc_t_comm = c(1985, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015, 2016),
                    #                    fc_y_comm = matrix(
                    #                      rep(c(0.5, 0.5, 0.9, 0.99), Ncat), ncol = Ncat),
-                   fc_t_noncomm = c(1985, 1998, 2008, 2015, 2016),
+                   fc_t_noncomm = c(1985, 1993, 1998, 2008, 2011, 2015, 2016),
                    #                    fc_y_comm = matrix(
                    #                      rep(c(0.5, 0.5, 0.9, 0.99), Ncat), ncol = Ncat),
 

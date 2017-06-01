@@ -38,7 +38,7 @@ years_seq = seq(1985, 2016)
 # first and last year of simulation, and the number of intervals the model will record
 time <- seq(1986, 2020, length.out = 31)
 
-number_simulations = 12
+number_simulations = 1
 
 # this is the best set of parameters (the fixed ones)
 # best_set ----------------------------------------------------------------
@@ -315,6 +315,17 @@ best_set = list(
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
 
+  fc_y_noncomm_1993 = matrix(
+    c(0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
   # 1998
   # (0.33 + 0.2705314)/ 2 # average FSW client
   # (0.0326087 + 0.2705314)/ 2 # average client GPF
@@ -337,6 +348,17 @@ best_set = list(
   # ((0.05042017+0.241404781)/2 + (0.07103825+0.34838295)/2) / 2 # average gpm gpf
 
   fc_y_noncomm_2008 = matrix(
+    c(0, 0, 0, 0, 0.365, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.365, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.2729562, 0.1778115, 0, 0, 0,
+      0, 0, 0, 0, 0.2729562, 0.1778115, 0, 0, 0,
+      0.365, 0.365, 0.2729562, 0.2729562, 0, 0, 0, 0, 0,
+      0, 0, 0.1778115, 0.1778115, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  fc_y_noncomm_2011 = matrix(
     c(0, 0, 0, 0, 0.365, 0, 0, 0, 0,
       0, 0, 0, 0, 0.365, 0, 0, 0, 0,
       0, 0, 0, 0, 0.2729562, 0.1778115, 0, 0, 0,
@@ -373,7 +395,7 @@ best_set = list(
 
   fc_t_comm = c(1985, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015, 2016),
 
-  fc_t_noncomm = c(1985, 1998, 2008, 2015, 2016),
+  fc_t_noncomm = c(1985, 1993, 1998, 2008, 2011, 2015, 2016),
 
 
   rate_leave_pro_FSW = 0.2,
@@ -563,7 +585,7 @@ devtools::install_github("chubbychunks/cotonou")
 
 number_simulations = 1
 epi_start = 1986
-epi_end = 2016
+epi_end = 2020
 
 # setup -------------------------------------------------------------------
 par_seq = c("c_comm", "c_noncomm")
@@ -1037,9 +1059,9 @@ frac_N_data_points = data.frame(time = c(1998, 2014,
                                          1998, 1998,
                                          1998, 2008, 2011,
                                          1998, 2008, 2011),
-                                point = c(0.67, 0.24,
-                                          100*0.195738802*(1-0.515666224), 20,
-                                          100*0.1292392*0.515666224, 100*0.0972973*0.515666224, 100*0.16*0.515666224,
+                                point = c(1.43*0.515666224, 0.24*0.515666224,
+                                          100*0.195738802*(1-0.515666224), 40*(1-0.515666224),
+                                          100*0.1292392*0.515666224, 100*0.0972973*0.515666224, 100*0.18*0.515666224,
                                           100*0.124632*(1-0.515666224), 100*0.08840413*(1-0.515666224), 100*0.1175*(1-0.515666224)),
                                 variable = c("Pro FSW", "Pro FSW",
                                              "Clients", "Clients",
@@ -1076,7 +1098,7 @@ frac_Virgin_Female = data.frame(time, t(apply(do.call(rbind, lapply(lapply(resul
 frac_Virgin_Male = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[2]], function(x) x$frac_N*100), function(x) x[,8])), 2, cotonou::quantile_95)))
 frac_Former_FSW_Outside = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[2]], function(x) x$frac_N*100), function(x) x[,9])), 2, cotonou::quantile_95)))
 frac = rbind(frac_ProFSW, frac_LowFSW, frac_GPF, frac_FormerFSW, frac_Client, frac_GPM, frac_Virgin_Female, frac_Virgin_Male, frac_Former_FSW_Outside)
-frac = data.frame(frac, group = rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"), each = 31))
+frac = data.frame(frac, group = rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"), each = length(time)))
 colnames(frac) = c("time", "Lower", "Median", "Upper", "variable")
 frac$variable = factor(frac$variable, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"))
 
