@@ -36,7 +36,7 @@ years_seq = seq(1985, 2016)
 #####################################################
 
 # first and last year of simulation, and the number of intervals the model will record
-time <- seq(1986, 2020, length.out = 31)
+time <- seq(1986, 2016, length.out = 31)
 
 number_simulations = 1
 
@@ -583,9 +583,9 @@ require(reshape2)
 devtools::install_github("chubbychunks/cotonou")
 
 
-number_simulations = 1
+number_simulations = 20
 epi_start = 1986
-epi_end = 2020
+epi_end = 2016
 
 # setup -------------------------------------------------------------------
 par_seq = c("c_comm", "c_noncomm")
@@ -595,6 +595,7 @@ years_seq = seq(1985, 2016)
 time <- seq(epi_start, epi_end, length.out = epi_end - epi_start + 1)
 #####################################################
 
+# this is the best set of parameters (the fixed ones)
 # best_set ----------------------------------------------------------------
 
 
@@ -869,6 +870,17 @@ best_set = list(
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
 
+  fc_y_noncomm_1993 = matrix(
+    c(0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
   # 1998
   # (0.33 + 0.2705314)/ 2 # average FSW client
   # (0.0326087 + 0.2705314)/ 2 # average client GPF
@@ -891,6 +903,17 @@ best_set = list(
   # ((0.05042017+0.241404781)/2 + (0.07103825+0.34838295)/2) / 2 # average gpm gpf
 
   fc_y_noncomm_2008 = matrix(
+    c(0, 0, 0, 0, 0.365, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.365, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.2729562, 0.1778115, 0, 0, 0,
+      0, 0, 0, 0, 0.2729562, 0.1778115, 0, 0, 0,
+      0.365, 0.365, 0.2729562, 0.2729562, 0, 0, 0, 0, 0,
+      0, 0, 0.1778115, 0.1778115, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  fc_y_noncomm_2011 = matrix(
     c(0, 0, 0, 0, 0.365, 0, 0, 0, 0,
       0, 0, 0, 0, 0.365, 0, 0, 0, 0,
       0, 0, 0, 0, 0.2729562, 0.1778115, 0, 0, 0,
@@ -927,7 +950,7 @@ best_set = list(
 
   fc_t_comm = c(1985, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015, 2016),
 
-  fc_t_noncomm = c(1985, 1998, 2008, 2015, 2016),
+  fc_t_noncomm = c(1985, 1993, 1998, 2008, 2011, 2015, 2016),
 
 
   rate_leave_pro_FSW = 0.2,
@@ -970,9 +993,9 @@ ranges = rbind(
   muF = c(0.0295, 0.0295),
   muM = c(0.0315, 0.0315),
 
-  betaMtoF_noncomm = c(0.00144, 0.00626),
+  # betaMtoF_noncomm = c(0.00144, 0.00626),
 
-  # betaMtoF_noncomm = c(0, 0),
+  betaMtoF_noncomm = c(0, 0),
   # frac_women_ProFSW = c(0.0067, 0.0067),
   frac_women_ProFSW = c(0.0024, 0.0143),
   # frac_women_LowFSW = c(0.0024, 0.0067),
@@ -982,8 +1005,17 @@ ranges = rbind(
   frac_women_virgin = c(0.1, 0.18),
   frac_men_virgin = c(0.1, 0.1255),
 
-  fraction_sexually_active_15_F = c(0.14, 0.14),
-  fraction_sexually_active_15_M = c(0.21, 0.21),
+
+
+  fraction_sexually_active_15_F = c(0.1187827, 0.17),
+  fraction_sexually_active_15_M = c(0.1812428, 0.35),
+
+
+  rate_enter_sexual_pop_F = c(1/(19.967-15), 1/(18.45837-15)),
+  rate_enter_sexual_pop_M = c(1/(19.967-15), 1/(18.45837-15)),
+
+  # rate_enter_sexual_pop = c(0.3571429, 0.3571429),
+
 
   RR_beta_GUD = c(1.43, 19.58),
   RR_beta_FtM = c(0.5, 2),
@@ -1000,10 +1032,10 @@ ranges = rbind(
 
   rate_leave_pro_FSW = c(0.4347826, 0.4347826),
   rate_leave_low_FSW = c(0.4347826, 0.4347826),
+
   rate_leave_client = c(0.5, 0.5),
 
-  rate_enter_sexual_pop = 0.5,
-  # rate_enter_sexual_pop = c(0.3571429, 0.3571429),
+
 
 
   # not sure if below is useful
@@ -1085,7 +1117,7 @@ Ntot_data_points = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
 result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 # result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points)
 
-unlist(result[[3]])
+# unlist(result[[3]])
 
 # ignore these ######################################
 frac_ProFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[2]], function(x) x$frac_N*100), function(x) x[,1])), 2, cotonou::quantile_95)))

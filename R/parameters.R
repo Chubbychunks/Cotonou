@@ -369,10 +369,10 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     ###############################################
 
     # virgin movement
-    y$rate_move_out[7] = - y$rate_enter_sexual_pop
-    y$rate_move_out[8] = - y$rate_enter_sexual_pop
-    y$rate_move_in[3,7] = y$rate_enter_sexual_pop
-    y$rate_move_in[6,8] = y$rate_enter_sexual_pop
+    y$rate_move_out[7] = - y$rate_enter_sexual_pop_F
+    y$rate_move_out[8] = - y$rate_enter_sexual_pop_M
+    y$rate_move_in[3,7] = y$rate_enter_sexual_pop_F
+    y$rate_move_in[6,8] = y$rate_enter_sexual_pop_M
 
     #this is just to show what happens when you increase movement
     #     y$rate_leave_pro_FSW = y$rate_leave_pro_FSW * 10
@@ -496,7 +496,9 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 2, Nage = 1, ..., set_pars =
     rate_move_in = matrix(0, nrow = Ncat, ncol = Ncat),
     rate_move_out = rep_len(0, Ncat),
     epsilon_y = 0,
-    rate_enter_sexual_pop = 0.4,
+    rate_enter_sexual_pop_F = 0.4,
+    rate_enter_sexual_pop_M = 0.4,
+
     fraction_FSW_foreign = 0,
     movement = 1,
     alpha05 = rep_len(0.3,Ncat),
@@ -970,7 +972,9 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    prop_low_FSW_GPF = 0.005204931, # 757 / 145439
                    rate_move_in = matrix(0, ncol = Ncat, nrow = Ncat),
                    rate_move_out = rep_len(0, Ncat),
-                   rate_enter_sexual_pop = 1,
+                   rate_enter_sexual_pop_F = 1,
+                   rate_enter_sexual_pop_M = 1,
+
                    fraction_F = 0.51,
                    fraction_FSW_foreign = 0.5,
                    replaceDeaths = 0,
