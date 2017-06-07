@@ -15,7 +15,7 @@ FormerFSWtoGPF <- function(x) {
 #' @export
 #' @useDynLib cotonou
 fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years_seq) {
-
+  useless_parameter = 1
   # why not working
   if(Ncat == 9) {
 
