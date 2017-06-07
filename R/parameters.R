@@ -351,7 +351,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
       y$fraction_F * (1-y$fraction_sexually_active_15_F),
       (1 - y$fraction_F) * (1 - y$fraction_sexually_active_15_M),
       0)
-
+#
     # MIXING
     ###############################################
 
