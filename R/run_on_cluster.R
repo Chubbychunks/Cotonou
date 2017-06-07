@@ -21,7 +21,7 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points) {
   names(the_frac_N) = c("time", "Pro FSW", "Clients", "Virgin female", "Virgin male")
 
   likelihood_count <- 0
-
+#
   frac_count <- 0
 
   if(all(!is.na(unlist(the_frac_N)))) {
