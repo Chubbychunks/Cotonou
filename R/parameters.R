@@ -446,7 +446,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$c_y_comm <- rbind(y$c_y_comm, y$c_y_comm[nrow(y$c_y_comm),])
   y$c_t_comm <- c(y$c_t_comm, max(y$time))
 
-  y$c_y_noncomm <- rbind(y$c_y_noncomm, y$c_y_comm[nrow(y$c_y_noncomm),])
+  y$c_y_noncomm <- rbind(y$c_y_noncomm, y$c_y_noncomm[nrow(y$c_y_noncomm),])
   y$c_t_noncomm <- c(y$c_t_noncomm, max(y$time))
 
   y$fc_y_comm <- abind::abind(y$fc_y_comm, y$fc_y_comm[length(y$fc_y_comm[,1,1]),,], along = 1)
