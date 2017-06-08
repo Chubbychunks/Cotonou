@@ -2789,11 +2789,15 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     double prev_LowFSW = 100 * (I01[1] + I11[1] + I02[1] + I03[1] + I04[1] + I05[1] + I22[1] + I23[1] + I24[1] + I25[1] + I32[1] + I33[1] + I34[1] + I35[1] + I42[1] + I43[1] + I44[1] + I45[1]) / main_model_p->N[1];
     output[8] = prev_LowFSW;
     double prev_client = 100 * (I01[4] + I11[4] + I02[4] + I03[4] + I04[4] + I05[4] + I22[4] + I23[4] + I24[4] + I25[4] + I32[4] + I33[4] + I34[4] + I35[4] + I42[4] + I43[4] + I44[4] + I45[4]) / main_model_p->N[4];
-    output[9] = Ntot;
-    output[10] = new_people;
+    double prev_men = 100 * (I01[4] + I11[4] + I02[4] + I03[4] + I04[4] + I05[4] + I22[4] + I23[4] + I24[4] + I25[4] + I32[4] + I33[4] + I34[4] + I35[4] + I42[4] + I43[4] + I44[4] + I45[4] + I01[5] + I11[5] + I02[5] + I03[5] + I04[5] + I05[5] + I22[5] + I23[5] + I24[5] + I25[5] + I32[5] + I33[5] + I34[5] + I35[5] + I42[5] + I43[5] + I44[5] + I45[5] + I01[7] + I11[7] + I02[7] + I03[7] + I04[7] + I05[7] + I22[7] + I23[7] + I24[7] + I25[7] + I32[7] + I33[7] + I34[7] + I35[7] + I42[7] + I43[7] + I44[7] + I45[7]) / (main_model_p->N[4] + main_model_p->N[5] + main_model_p->N[7]);
+    double prev_women = 100 * (I01[0] + I11[0] + I02[0] + I03[0] + I04[0] + I05[0] + I22[0] + I23[0] + I24[0] + I25[0] + I32[0] + I33[0] + I34[0] + I35[0] + I42[0] + I43[0] + I44[0] + I45[0] + I01[1] + I11[1] + I02[1] + I03[1] + I04[1] + I05[1] + I22[1] + I23[1] + I24[1] + I25[1] + I32[1] + I33[1] + I34[1] + I35[1] + I42[1] + I43[1] + I44[1] + I45[1] + I01[2] + I11[2] + I02[2] + I03[2] + I04[2] + I05[2] + I22[2] + I23[2] + I24[2] + I25[2] + I32[2] + I33[2] + I34[2] + I35[2] + I42[2] + I43[2] + I44[2] + I45[2] + I01[3] + I11[3] + I02[3] + I03[3] + I04[3] + I05[3] + I22[3] + I23[3] + I24[3] + I25[3] + I32[3] + I33[3] + I34[3] + I35[3] + I42[3] + I43[3] + I44[3] + I45[3] + I01[6] + I11[6] + I02[6] + I03[6] + I04[6] + I05[6] + I22[6] + I23[6] + I24[6] + I25[6] + I32[6] + I33[6] + I34[6] + I35[6] + I42[6] + I43[6] + I44[6] + I45[6]) / (main_model_p->N[0] + main_model_p->N[1] + main_model_p->N[2] + main_model_p->N[3] + main_model_p->N[6]);
+    output[9] = prev_men;
+    output[10] = prev_women;
+    output[11] = Ntot;
+    output[12] = new_people;
     memcpy(output_N, main_model_p->N, main_model_p->dim_N * sizeof(double));
-    output[11] = prev_FSW;
-    output[12] = prev_client;
+    output[13] = prev_FSW;
+    output[14] = prev_client;
     memcpy(output_frac_N, main_model_p->frac_N, main_model_p->dim_frac_N * sizeof(double));
     memcpy(output_E1a, main_model_p->E1a, main_model_p->dim_E1a * sizeof(double));
     memcpy(output_E1b, main_model_p->E1b, main_model_p->dim_E1b * sizeof(double));
@@ -2804,10 +2808,6 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     for (int i = 0; i < main_model_p->dim_prev; ++i) {
       main_model_p->prev[i] = 100 * (I01[i] + I11[i] + I02[i] + I03[i] + I04[i] + I05[i] + I22[i] + I23[i] + I24[i] + I25[i] + I32[i] + I33[i] + I34[i] + I35[i] + I42[i] + I43[i] + I44[i] + I45[i]) / main_model_p->N[i];
     }
-    double prev_men = (main_model_p->prev[4] * main_model_p->N[4] + main_model_p->prev[5] * main_model_p->N[5] + main_model_p->prev[7] * main_model_p->N[7]) / (main_model_p->N[4] + main_model_p->N[5] + main_model_p->N[7]);
-    double prev_women = (main_model_p->prev[0] * main_model_p->N[0] + main_model_p->prev[1] * main_model_p->N[1] + main_model_p->prev[2] * main_model_p->N[2] + main_model_p->prev[3] * main_model_p->N[3] + main_model_p->prev[6] * main_model_p->N[6]) / (main_model_p->N[0] + main_model_p->N[1] + main_model_p->N[2] + main_model_p->N[3] + main_model_p->N[6]);
-    output[13] = prev_men;
-    output[14] = prev_women;
     memcpy(output_prev, main_model_p->prev, main_model_p->dim_prev * sizeof(double));
     double B_check_comm = (main_model_p->Ncat == 9 ? main_model_p->c_comm_balanced[0] * main_model_p->N[0] + main_model_p->c_comm_balanced[1] * main_model_p->N[1] + main_model_p->c_comm_balanced[2] * main_model_p->N[2] + main_model_p->c_comm_balanced[3] * main_model_p->N[3] - main_model_p->c_comm_balanced[4] * main_model_p->N[4] - main_model_p->c_comm_balanced[5] * main_model_p->N[5] : 1);
     output[15] = B_check_comm;
@@ -3006,11 +3006,15 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   double prev_LowFSW = 100 * (I01[1] + I11[1] + I02[1] + I03[1] + I04[1] + I05[1] + I22[1] + I23[1] + I24[1] + I25[1] + I32[1] + I33[1] + I34[1] + I35[1] + I42[1] + I43[1] + I44[1] + I45[1]) / main_model_p->N[1];
   output[8] = prev_LowFSW;
   double prev_client = 100 * (I01[4] + I11[4] + I02[4] + I03[4] + I04[4] + I05[4] + I22[4] + I23[4] + I24[4] + I25[4] + I32[4] + I33[4] + I34[4] + I35[4] + I42[4] + I43[4] + I44[4] + I45[4]) / main_model_p->N[4];
-  output[9] = Ntot;
-  output[10] = new_people;
+  double prev_men = 100 * (I01[4] + I11[4] + I02[4] + I03[4] + I04[4] + I05[4] + I22[4] + I23[4] + I24[4] + I25[4] + I32[4] + I33[4] + I34[4] + I35[4] + I42[4] + I43[4] + I44[4] + I45[4] + I01[5] + I11[5] + I02[5] + I03[5] + I04[5] + I05[5] + I22[5] + I23[5] + I24[5] + I25[5] + I32[5] + I33[5] + I34[5] + I35[5] + I42[5] + I43[5] + I44[5] + I45[5] + I01[7] + I11[7] + I02[7] + I03[7] + I04[7] + I05[7] + I22[7] + I23[7] + I24[7] + I25[7] + I32[7] + I33[7] + I34[7] + I35[7] + I42[7] + I43[7] + I44[7] + I45[7]) / (main_model_p->N[4] + main_model_p->N[5] + main_model_p->N[7]);
+  double prev_women = 100 * (I01[0] + I11[0] + I02[0] + I03[0] + I04[0] + I05[0] + I22[0] + I23[0] + I24[0] + I25[0] + I32[0] + I33[0] + I34[0] + I35[0] + I42[0] + I43[0] + I44[0] + I45[0] + I01[1] + I11[1] + I02[1] + I03[1] + I04[1] + I05[1] + I22[1] + I23[1] + I24[1] + I25[1] + I32[1] + I33[1] + I34[1] + I35[1] + I42[1] + I43[1] + I44[1] + I45[1] + I01[2] + I11[2] + I02[2] + I03[2] + I04[2] + I05[2] + I22[2] + I23[2] + I24[2] + I25[2] + I32[2] + I33[2] + I34[2] + I35[2] + I42[2] + I43[2] + I44[2] + I45[2] + I01[3] + I11[3] + I02[3] + I03[3] + I04[3] + I05[3] + I22[3] + I23[3] + I24[3] + I25[3] + I32[3] + I33[3] + I34[3] + I35[3] + I42[3] + I43[3] + I44[3] + I45[3] + I01[6] + I11[6] + I02[6] + I03[6] + I04[6] + I05[6] + I22[6] + I23[6] + I24[6] + I25[6] + I32[6] + I33[6] + I34[6] + I35[6] + I42[6] + I43[6] + I44[6] + I45[6]) / (main_model_p->N[0] + main_model_p->N[1] + main_model_p->N[2] + main_model_p->N[3] + main_model_p->N[6]);
+  output[9] = prev_men;
+  output[10] = prev_women;
+  output[11] = Ntot;
+  output[12] = new_people;
   memcpy(output_N, main_model_p->N, main_model_p->dim_N * sizeof(double));
-  output[11] = prev_FSW;
-  output[12] = prev_client;
+  output[13] = prev_FSW;
+  output[14] = prev_client;
   memcpy(output_frac_N, main_model_p->frac_N, main_model_p->dim_frac_N * sizeof(double));
   for (int i = 0; i < main_model_p->dim_E1a; ++i) {
     main_model_p->E1a[i] = main_model_p->zetaa[i] * S0[i] - main_model_p->psia[i] * S1a[i] - main_model_p->kappaa[i] * S1a[i];
@@ -3039,10 +3043,6 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   for (int i = 0; i < main_model_p->dim_prev; ++i) {
     main_model_p->prev[i] = 100 * (I01[i] + I11[i] + I02[i] + I03[i] + I04[i] + I05[i] + I22[i] + I23[i] + I24[i] + I25[i] + I32[i] + I33[i] + I34[i] + I35[i] + I42[i] + I43[i] + I44[i] + I45[i]) / main_model_p->N[i];
   }
-  double prev_men = (main_model_p->prev[4] * main_model_p->N[4] + main_model_p->prev[5] * main_model_p->N[5] + main_model_p->prev[7] * main_model_p->N[7]) / (main_model_p->N[4] + main_model_p->N[5] + main_model_p->N[7]);
-  double prev_women = (main_model_p->prev[0] * main_model_p->N[0] + main_model_p->prev[1] * main_model_p->N[1] + main_model_p->prev[2] * main_model_p->N[2] + main_model_p->prev[3] * main_model_p->N[3] + main_model_p->prev[6] * main_model_p->N[6]) / (main_model_p->N[0] + main_model_p->N[1] + main_model_p->N[2] + main_model_p->N[3] + main_model_p->N[6]);
-  output[13] = prev_men;
-  output[14] = prev_women;
   memcpy(output_prev, main_model_p->prev, main_model_p->dim_prev * sizeof(double));
   for (int i = 0; i < main_model_p->dim_c_comm_balanced; ++i) {
     main_model_p->c_comm_balanced[i] = main_model_p->c_comm[i];
@@ -4772,17 +4772,17 @@ SEXP main_model_output_order(SEXP main_model_ptr) {
   SET_VECTOR_ELT(state_len, 8, R_NilValue);
   SET_STRING_ELT(state_names, 8, mkChar("prev_LowFSW"));
   SET_VECTOR_ELT(state_len, 9, R_NilValue);
-  SET_STRING_ELT(state_names, 9, mkChar("Ntot"));
+  SET_STRING_ELT(state_names, 9, mkChar("prev_men"));
   SET_VECTOR_ELT(state_len, 10, R_NilValue);
-  SET_STRING_ELT(state_names, 10, mkChar("new_people"));
+  SET_STRING_ELT(state_names, 10, mkChar("prev_women"));
   SET_VECTOR_ELT(state_len, 11, R_NilValue);
-  SET_STRING_ELT(state_names, 11, mkChar("prev_FSW"));
+  SET_STRING_ELT(state_names, 11, mkChar("Ntot"));
   SET_VECTOR_ELT(state_len, 12, R_NilValue);
-  SET_STRING_ELT(state_names, 12, mkChar("prev_client"));
+  SET_STRING_ELT(state_names, 12, mkChar("new_people"));
   SET_VECTOR_ELT(state_len, 13, R_NilValue);
-  SET_STRING_ELT(state_names, 13, mkChar("prev_men"));
+  SET_STRING_ELT(state_names, 13, mkChar("prev_FSW"));
   SET_VECTOR_ELT(state_len, 14, R_NilValue);
-  SET_STRING_ELT(state_names, 14, mkChar("prev_women"));
+  SET_STRING_ELT(state_names, 14, mkChar("prev_client"));
   SET_VECTOR_ELT(state_len, 15, R_NilValue);
   SET_STRING_ELT(state_names, 15, mkChar("B_check_comm"));
   SET_VECTOR_ELT(state_len, 16, R_NilValue);

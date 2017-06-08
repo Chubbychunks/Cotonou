@@ -583,7 +583,7 @@ require(reshape2)
 devtools::install_github("geidelberg/cotonou")
 
 
-number_simulations = 20
+number_simulations = 1
 epi_start = 1986
 epi_end = 2016
 
@@ -993,9 +993,9 @@ ranges = rbind(
   muF = c(0.025898973, 0.025898973),
   muM = c(0.027684718, 0.027684718),
 
-  # betaMtoF_noncomm = c(0.00144, 0.00626),
+  betaMtoF_noncomm = c(0.00144, 0.00626),
 
-  betaMtoF_noncomm = c(0, 0),
+  # betaMtoF_noncomm = c(0, 0),
   # frac_women_ProFSW = c(0.0067, 0.0067),
   frac_women_ProFSW = c(0.0024, 0.0143),
   # frac_women_LowFSW = c(0.0024, 0.0067),
@@ -1025,8 +1025,12 @@ ranges = rbind(
   # rate_enter_sexual_pop = c(0.3571429, 0.3571429),
 
 
-  RR_beta_GUD = c(1.43, 19.58),
-  RR_beta_FtM = c(0.5, 2),
+   # RR_beta_GUD = c(1.43, 19.58),
+  # RR_beta_FtM = c(0.5, 2),
+
+  RR_beta_GUD = 19.58,
+  RR_beta_FtM = 2,
+  infect_acute = 18.81,
 
   c_comm_1993_ProFSW = c(1000, 1800),
   c_comm_2005_ProFSW = c(250, 600),

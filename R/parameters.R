@@ -219,8 +219,13 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
                               0
   )
 
+  # if beta becomes > 1, then make them all zero and flag it
+  if(y$betaMtoF_noncomm * y$RR_beta_GUD * y$infect_acute * y$RR_beta_FtM > 1)
+  {
+    y$betaMtoF_noncomm = 0
+    y$beta_above_1 = 1
+  }
 
-  # may want to switch off!
   y$betaFtoM_noncomm = y$betaMtoF_noncomm * y$RR_beta_FtM * 0.44
   y$betaMtoF_comm = y$betaMtoF_noncomm * y$RR_beta_GUD
   y$betaFtoM_comm = y$betaMtoF_noncomm * y$RR_beta_FtM * 0.44 # no GUD effect?
@@ -352,7 +357,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
       y$fraction_F * (1-y$fraction_sexually_active_15_F),
       (1 - y$fraction_F) * (1 - y$fraction_sexually_active_15_M),
       0)
-#
+    #
     # MIXING
     ###############################################
 
@@ -564,7 +569,9 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 2, Nage = 1, ..., set_pars =
     RR_beta_FtM = 1,
     RR_beta_GUD = 1,
     who_believe_comm = 0,
-    init_clientN_from_PCR = 0
+    init_clientN_from_PCR = 0,
+    beta_above_1 = 0
+
 
 
   )
@@ -1001,7 +1008,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    who_believe_comm = 0,
                    init_clientN_from_PCR = 0,
                    fraction_sexually_active_15_F = 0,
-                   fraction_sexually_active_15_M = 0
+                   fraction_sexually_active_15_M = 0,
+                   beta_above_1 = 0
 
 
 
