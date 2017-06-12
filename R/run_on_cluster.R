@@ -103,11 +103,11 @@ run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_s
 
   best_runs = which(likelihood_list == max(sorted_likelihood_list))
 
-  # out <- res[best_runs]
+  out <- res[best_runs]
 
   # return(list(time, prev_points, res))
 
-  return(list(parameters, res, likelihood_list, best_runs))
+  return(list(parameters[best_runs], likelihood_list, out))
 
 
 }

@@ -583,7 +583,7 @@ require(reshape2)
 devtools::install_github("geidelberg/cotonou")
 
 
-number_simulations = 1
+number_simulations = 20
 epi_start = 1986
 epi_end = 2016
 
@@ -981,87 +981,82 @@ ranges = rbind(
 
   fraction_FSW_foreign = c(0.9, 0.9),
 
-  # epsilon_1985 = c(0.059, 0.059),
-  # epsilon_1992 = c(0.059, 0.059),
-  # epsilon_2002 = c(0.059, 0.059),
-  # epsilon_2013 = c(0.059, 0.059),
-  # epsilon_2016 = c(0.059, 0.059),
-
-  # muF = c(0.05, 0.05),
-  # muM = c(0.06, 0.06),
-
-  muF = c(0.025898973, 0.025898973),
-  muM = c(0.027684718, 0.027684718),
+  muF = c(0.01851852, 0.025),
+  muM = c(0.01851852, 0.025),
 
   betaMtoF_noncomm = c(0.00144, 0.00626),
-
   # betaMtoF_noncomm = c(0, 0),
-  # frac_women_ProFSW = c(0.0067, 0.0067),
+
+
+  RR_beta_GUD = c(1.43, 19.58),
+  RR_beta_FtM = c(0.5, 2),
+
   frac_women_ProFSW = c(0.0024, 0.0143),
   # frac_women_LowFSW = c(0.0024, 0.0067),
-  # frac_women_exFSW = c(0.0024, 0.0067),
-  # frac_men_client = c(0.3, 0.3),
+  frac_women_exFSW = c(0.0024, 0.0143),
   frac_men_client = c(0.196, 0.4),
+
 
   frac_women_virgin = c(0.0972973, 0.18),
   frac_men_virgin = c(0.08840413, 0.1255),
 
 
 
-  # fraction_sexually_active_15_F = c(0.1387868, 0.153),
-  # fraction_sexually_active_15_M = c(0.291, 0.35),
+  fraction_sexually_active_15_F = c(0.1387868, 0.153),
+  fraction_sexually_active_15_M = c(0.2057087, 0.291),
 
 
-  fraction_sexually_active_15_F = c(0.1187827, 0.17),
-  fraction_sexually_active_15_M = c(0.1812428, 0.35),
+  rate_enter_sexual_pop_F = c(1/(20-15), 1/(17-15)),
+  rate_enter_sexual_pop_M = c(1/(20-15), 1/(17-15)),
 
 
-  # rate_enter_sexual_pop_F = c(1/(18.89-15), 1/(18.45837-15)),
-  # rate_enter_sexual_pop_M = c(1/(19.967-15), 1/(19.00441-15)),
-
-  rate_enter_sexual_pop_F = c(1/(18.89-15), 1/(17.18-15)),
-  rate_enter_sexual_pop_M = c(1/(19.967-15), 1/(17.18-15)),
-
-  # rate_enter_sexual_pop = c(0.3571429, 0.3571429),
 
 
-   # RR_beta_GUD = c(1.43, 19.58),
-  # RR_beta_FtM = c(0.5, 2),
-
-  RR_beta_GUD = 19.58,
-  RR_beta_FtM = 2,
-  infect_acute = 18.81,
-
+  # commercial partnerships
   c_comm_1993_ProFSW = c(1000, 1800),
   c_comm_2005_ProFSW = c(250, 600),
-  c_comm_1998_Client = c(7, 12),
-  c_comm_2015_Client = c(6, 12),
 
-  c_noncomm_1998_Client = c(1, 3),
-  c_noncomm_2015_Client = c(2, 6),
+  c_comm_1998_Client = c(7, 12),
+  c_comm_2015_Client = c(12, 17),
+
+  #non commercial partnerships
+  c_non_comm_1985_ProFSW = c(0.273, 0.468),
+  c_non_comm_2016_ProFSW = c(0.273, 0.468),
+
+  c_noncomm_1998_Client = c(1.2, 2.5),
+  c_noncomm_2015_Client = c(5, 9),
+
+  c_noncomm_1998_GPF = c(0.84, 1.05),
+  c_noncomm_2008_GPF = c(0.5, 1),
+
+  c_noncomm_1998_GPM = c(1.14, 1.46),
+  c_noncomm_2008_GPM = c(0.28, 1.24),
+
+
+
+
 
   who_believe_comm = c(0, 1),
 
   rate_leave_pro_FSW = c(0.2173913, 0.4347826),
   rate_leave_low_FSW = c(0.2173913, 0.4347826),
 
-  # rate_leave_client = c(0.5, 0.5),
   rate_leave_client = c(0.1428571, 1),
 
 
+  # condoms
 
-
-  # not sure if below is useful
-
+  fc_y_comm_1985_ProFSW_Client = c(0, 0),
   fc_y_comm_1993_ProFSW_Client = c(0.535, 0.687),
   fc_y_comm_2002_ProFSW_Client = c(0.872, 0.933),
-  fc_y_comm_1998_ProFSW_Client = c(0.872, 0.933), # fake
 
   fc_y_noncomm_1985_ProFSW_Client = c(0.27, 0.43),
   fc_y_noncomm_2016_ProFSW_Client = c(0.27, 0.43),
 
-  fc_y_noncomm_1998_GPM_GPF = c(0.0326087, 0.241404781),
-  fc_y_noncomm_2016_GPM_GPF = c(0.0326087, 0.251404781)
+  fc_y_noncomm_1985_GPM_GPF = 0,
+  fc_y_noncomm_1998_GPM_GPF = c(0.0326087, 0.05042017),
+  fc_y_noncomm_2011_GPM_GPF = c(0.161, 0.255)
+
 
 
 )
