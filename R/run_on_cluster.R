@@ -74,7 +74,7 @@ run_model <- function(number_simulations, par_seq, condom_seq, groups_seq, years
   #
   #
   # best_runs = which(likelihood_list == max(sorted_likelihood_list))
-  #
+  # #
   # out <- res[best_runs]
 
   return(parameters, res)
