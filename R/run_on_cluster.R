@@ -77,7 +77,7 @@ run_model <- function(number_simulations, par_seq, condom_seq, groups_seq, years
   #
   # out <- res[best_runs]
 
-  return(res)
+  return(parameters, res)
 
 }
 
