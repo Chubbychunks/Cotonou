@@ -1132,6 +1132,10 @@ Ntot_data_points = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
 result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 # result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 
+# removing those with too high betas
+beta_not_above_1 = which(unlist(lapply(result[[1]], function(x) x$beta_above_1)) == 0)
+result_adjusted = list(result[[1]][beta_not_above_1], result[[2]][beta_not_above_1])
+
 # unlist(result[[3]])
 
 # ignore these ######################################
@@ -1753,6 +1757,17 @@ result_adjusted = list(result[[1]][beta_not_above_1], result[[2]][beta_not_above
 
 
 
+# WHICH POINTS ARE FITS?
+
+
+lapply(lapply(result[[2]], function(x) x[[2]]), function(x) {
+  if(!is.null(x))
+  {
+    return(sum(x < 9))
+  } else
+  {return (0)}
+})
+
 
 # CORRELATIONS WITH CLIENT PREVALENCE
 # betaMtoF_noncomm, RR_beta_GUD, RR_beta_FtM, frac_men_client, rate_leave_client, frac_men_virgin, who_believe_comm
@@ -1810,7 +1825,17 @@ names(cor_test_results_sorted) = ranges_with_range[order(unlist(lapply(cor_test_
 
 head(do.call(rbind, cor_test_results_sorted), n =10)
 
+
+
+
+
+
+
+
+
+
 # PLOTS
+
 
 
 # ignore these ######################################
