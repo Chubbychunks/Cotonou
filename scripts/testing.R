@@ -1204,7 +1204,7 @@ require(reshape2)
 devtools::install_github("geidelberg/cotonou")
 
 
-number_simulations = 2
+number_simulations = 500
 epi_start = 1986
 epi_end = 2030
 
@@ -1746,45 +1746,99 @@ Ntot_data_points = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
 # result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 
-# unlist(result[[3]])
+# removing those with too high betas
+beta_not_above_1 = which(unlist(lapply(result[[1]], function(x) x$beta_above_1)) == 0)
+result_adjusted = list(result[[1]][beta_not_above_1], result[[2]][beta_not_above_1])
 
 
-# CORRELATIONS
+
+
+
+# CORRELATIONS WITH CLIENT PREVALENCE
+# betaMtoF_noncomm, RR_beta_GUD, RR_beta_FtM, frac_men_client, rate_leave_client, frac_men_virgin, who_believe_comm
+year = 2000
+param_ind = "fc_y_comm_2002_ProFSW_Client"
+param_dep = "prev_client"
+
+x1 = unlist(lapply(lapply(result_adjusted[[2]], function(x) unlist(x[param_dep])), function(x) x[which(time == year)]))
+x2 = unlist(lapply(result_adjusted[[1]], function(x) x[param_ind]))
+
+cor.test(x1, x2)
+qplot(x = x2, y = x1) + theme_bw() + labs(y = param_dep, x = param_ind)
+
+
+
+
+# CORRELATIONS WITH CLIENT PREVALENCE / FSW PREVALENCE
+# betaMtoF_noncomm, RR_beta_GUD, RR_beta_FtM, frac_men_client, rate_leave_client, frac_men_virgin
+year = 2000
+param_ind = "frac_men_virgin"
+
+x1 = unlist(lapply(lapply(result_adjusted[[2]], function(x) unlist(x["prev_FSW"])), function(x) x[which(time == year)])) /
+  unlist(lapply(lapply(result_adjusted[[2]], function(x) unlist(x["prev_client"])), function(x) x[which(time == year)]))
+x2 = unlist(lapply(result_adjusted[[1]], function(x) x[param_ind]))
+
+cor.test(x1, x2)
+qplot(x = x2, y = x1) + theme_bw() + labs(y = param_dep, x = "FSW prevalence / Client prevalence")
+
+
+
+
+
+# CORRELATIONS WITH CLIENT PREVALENCE LOOPING THROUGH ALL OF PARAMETERS
 year = 2000
 
-unlist(lapply(lapply(result, function(x) x$prev_client), function(x) x[which(time == year)]))
+cor_test_parm = function(y) {
+  param_ind = y
+  param_dep = "prev_client"
 
+  x1 = unlist(lapply(lapply(result_adjusted[[2]], function(x) unlist(x[param_dep])), function(x) x[which(time == year)]))
+  x2 = unlist(lapply(result_adjusted[[1]], function(x) x[param_ind]))
 
+  test = cor.test(x1, x2)
+
+  return(test[c("p.value", "estimate")])
+}
+
+ranges_with_range = names(ranges[which(ranges[,1] != ranges[,2]),1])
+
+cor_test_results = lapply(as.list(ranges_with_range), cor_test_parm)
+
+cor_test_results_sorted = cor_test_results[order(unlist(lapply(cor_test_results, function(x) x$p.value)))]
+
+names(cor_test_results_sorted) = ranges_with_range[order(unlist(lapply(cor_test_results, function(x) x$p.value)))]
+
+head(do.call(rbind, cor_test_results_sorted), n =10)
 
 # PLOTS
 
 
 # ignore these ######################################
-frac_ProFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N*100), function(x) x[,1])), 2, cotonou::quantile_95)))
-frac_LowFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N*100), function(x) x[,2])), 2, cotonou::quantile_95)))
-frac_GPF = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N*100), function(x) x[,3])), 2, cotonou::quantile_95)))
-frac_FormerFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N*100), function(x) x[,4])), 2, cotonou::quantile_95)))
-frac_Client = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N*100), function(x) x[,5])), 2, cotonou::quantile_95)))
-frac_GPM = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N*100), function(x) x[,6])), 2, cotonou::quantile_95)))
-frac_Virgin_Female = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N*100), function(x) x[,7])), 2, cotonou::quantile_95)))
-frac_Virgin_Male = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N*100), function(x) x[,8])), 2, cotonou::quantile_95)))
-frac_Former_FSW_Outside = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N*100), function(x) x[,9])), 2, cotonou::quantile_95)))
+frac_ProFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[2]], function(x) x$frac_N*100), function(x) x[,1])), 2, cotonou::quantile_95)))
+frac_LowFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[2]], function(x) x$frac_N*100), function(x) x[,2])), 2, cotonou::quantile_95)))
+frac_GPF = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[2]], function(x) x$frac_N*100), function(x) x[,3])), 2, cotonou::quantile_95)))
+frac_FormerFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[2]], function(x) x$frac_N*100), function(x) x[,4])), 2, cotonou::quantile_95)))
+frac_Client = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[2]], function(x) x$frac_N*100), function(x) x[,5])), 2, cotonou::quantile_95)))
+frac_GPM = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[2]], function(x) x$frac_N*100), function(x) x[,6])), 2, cotonou::quantile_95)))
+frac_Virgin_Female = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[2]], function(x) x$frac_N*100), function(x) x[,7])), 2, cotonou::quantile_95)))
+frac_Virgin_Male = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[2]], function(x) x$frac_N*100), function(x) x[,8])), 2, cotonou::quantile_95)))
+frac_Former_FSW_Outside = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[2]], function(x) x$frac_N*100), function(x) x[,9])), 2, cotonou::quantile_95)))
 frac = rbind(frac_ProFSW, frac_LowFSW, frac_GPF, frac_FormerFSW, frac_Client, frac_GPM, frac_Virgin_Female, frac_Virgin_Male, frac_Former_FSW_Outside)
 frac = data.frame(frac, group = rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"), each = length(time)))
 colnames(frac) = c("time", "Lower", "Median", "Upper", "variable")
 frac$variable = factor(frac$variable, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"))
 
-prev_FSW = t(apply(do.call(rbind, lapply(result, function(x) x$prev_FSW)), 2, cotonou::quantile_95))
-prev_LowFSW = t(apply(do.call(rbind, lapply(result, function(x) x$prev_LowFSW)), 2, cotonou::quantile_95))
-prev_client = t(apply(do.call(rbind, lapply(result, function(x) x$prev_client)), 2, cotonou::quantile_95))
-prev_women = t(apply(do.call(rbind, lapply(result, function(x) x$prev_women)), 2, cotonou::quantile_95))
-prev_men = t(apply(do.call(rbind, lapply(result, function(x) x$prev_men)), 2, cotonou::quantile_95))
+prev_FSW = t(apply(do.call(rbind, lapply(result[[2]], function(x) x$prev_FSW)), 2, cotonou::quantile_95))
+prev_LowFSW = t(apply(do.call(rbind, lapply(result[[2]], function(x) x$prev_LowFSW)), 2, cotonou::quantile_95))
+prev_client = t(apply(do.call(rbind, lapply(result[[2]], function(x) x$prev_client)), 2, cotonou::quantile_95))
+prev_women = t(apply(do.call(rbind, lapply(result[[2]], function(x) x$prev_women)), 2, cotonou::quantile_95))
+prev_men = t(apply(do.call(rbind, lapply(result[[2]], function(x) x$prev_men)), 2, cotonou::quantile_95))
 prev = rbind(prev_FSW, prev_LowFSW, prev_client, prev_women, prev_men)
 prev = data.frame(time, prev, rep(c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"), each = length(time)))
 colnames(prev) = c("time", "Lower", "Median", "Upper", "variable")
 prev$variable = factor(prev$variable, levels = c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"))
 
-Ntot = data.frame(time, t(apply(do.call(rbind, lapply(result, function(x) x$Ntot)), 2, cotonou::quantile_95)))
+Ntot = data.frame(time, t(apply(do.call(rbind, lapply(result[[2]], function(x) x$Ntot)), 2, cotonou::quantile_95)))
 colnames(Ntot) = c("time", "Lower", "Median", "Upper")
 #####################################################
 
@@ -2318,28 +2372,28 @@ odin::odin_package(".") # looks for any models inside inst/odin
 devtools::load_all()
 ##############################################################
 parameters <- lhs_parameters(1, set_pars = best_set, Ncat = 9, time = time,
-                                           ranges = rbind(
-                                             fraction_sexually_active_15_F = 0.4,
-                                             fraction_sexually_active_15_M = 0.4,
+                             ranges = rbind(
+                               fraction_sexually_active_15_F = 0.4,
+                               fraction_sexually_active_15_M = 0.4,
 
-                                             fraction_FSW_foreign = 0.9,
+                               fraction_FSW_foreign = 0.9,
 
-                                             betaMtoF_noncomm = c(0.00144, 0.00626), # c(0.00086, 0.00433),
-                                             RR_beta_GUD = c(1.43, 19.58),
-                                             RR_beta_FtM = c(0.5, 2),
+                               betaMtoF_noncomm = c(0.00144, 0.00626), # c(0.00086, 0.00433),
+                               RR_beta_GUD = c(1.43, 19.58),
+                               RR_beta_FtM = c(0.5, 2),
 
-                                             c_comm_1993_ProFSW = c(1000, 1800),
-                                             c_comm_2005_ProFSW = c(250, 600),
-                                             c_comm_1998_Client = c(7, 12),
-                                             c_comm_2015_Client = c(6, 12),
+                               c_comm_1993_ProFSW = c(1000, 1800),
+                               c_comm_2005_ProFSW = c(250, 600),
+                               c_comm_1998_Client = c(7, 12),
+                               c_comm_2015_Client = c(6, 12),
 
-                                             c_noncomm_1998_Client = c(1, 3),
-                                             c_noncomm_2015_Client = c(2, 6),
+                               c_noncomm_1998_Client = c(1, 3),
+                               c_noncomm_2015_Client = c(2, 6),
 
-                                             who_believe_comm = c(0, 1),
-                                             frac_women_ProFSW = c(0.0025, 0.0025),
-                                             init_clientN_from_PCR = c(1,1)
-                                           ))
+                               who_believe_comm = c(0, 1),
+                               frac_women_ProFSW = c(0.0025, 0.0025),
+                               init_clientN_from_PCR = c(1,1)
+                             ))
 f <- function(p, gen, time) {
   mod <- gen(user = p)
   all_results <- mod$transform_variables(mod$run(time))
@@ -2696,7 +2750,7 @@ ggplot() + geom_line(data = Ntot_best_runs_melted, aes(x = time, y = value, fact
 #output growth rate?????
 growth_rate_out = melt(data.frame(time = time[-1], t(do.call(rbind, lapply(lapply(res[best_runs], function(x) x$Ntot), function(y) {
   diff(y)/y[-length(y)]
-  })))), id.vars = "time")
+})))), id.vars = "time")
 ggplot(growth_rate_out) + geom_line(aes(x = time, y = value, factor = variable)) + theme_bw() +
   labs(x="year",y="Output growth rate")
 
@@ -2707,7 +2761,7 @@ ggplot(growth_rate_out) + geom_line(aes(x = time, y = value, factor = variable))
 
 all_binded = do.call(rbind, lapply(res[best_runs], function(x) {
   return(matrix(c(x$prev_FSW, x$prev_LowFSW, x$prev_client, x$prev_women, x$prev_men), ncol = 5))
-  }))
+}))
 
 all_binded[is.na(all_binded)] = 0
 out = data.frame(time, all_binded, as.character(sort(rep(seq(1,length(best_runs)), length(time)))))

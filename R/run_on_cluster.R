@@ -34,6 +34,8 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points) {
     }
   }
 
+  prev_fits = c()
+
   if(frac_count == length(frac_N_discard_points[,1])) {
     # prevalence
     for(i in 1:length(prev_points[,1]))
@@ -44,13 +46,14 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points) {
       if(!is.na(point)) {{if((point < prev_points[i, "upper"]) && (point > prev_points[i, "lower"]))
       {
         likelihood_count <- likelihood_count + 1
+        prev_fits <- c(prev_fits, i)
       }}}
     }
   }
 
 
 
-  return (likelihood_count)
+  return (list(likelihood_count, prev_fits))
   # return (list(likelihood_count, frac_count))
 
 }
@@ -99,7 +102,7 @@ run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_s
   # likelihood_list = unlist(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
   likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 
-  sorted_likelihood_list = sort(unlist(likelihood_list))
+  sorted_likelihood_list = sort(unlist(lapply(likelihood_list, function(x) x[[1]])))
 
   best_runs = which(likelihood_list == max(sorted_likelihood_list))
 
