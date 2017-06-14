@@ -104,7 +104,7 @@ run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_s
 
   sorted_likelihood_list = sort(unlist(lapply(likelihood_list, function(x) x[[1]])))
 
-  best_runs = which(likelihood_list == max(sorted_likelihood_list))
+  best_runs = which(unlist(lapply(likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
 
   out <- res[best_runs]
 
