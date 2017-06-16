@@ -404,10 +404,10 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
     y$rate_move_out[1] = - y$rate_leave_pro_FSW
     y$rate_move_out[2] = - y$rate_leave_low_FSW
-    y$rate_move_out[3] = - y$rate_leave_pro_FSW * y$prop_pro_FSW_GPF - y$rate_leave_low_FSW * y$prop_low_FSW_GPF
+    y$rate_move_out[3] = - (y$rate_leave_pro_FSW + y$muF) * y$prop_pro_FSW_GPF - (y$rate_leave_low_FSW + y$muF) * y$prop_low_FSW_GPF
 
-    y$rate_move_in[1,3] = y$rate_leave_pro_FSW * y$prop_pro_FSW_GPF # moving from GPF to pro-FSW
-    y$rate_move_in[2,3] = y$rate_leave_low_FSW * y$prop_low_FSW_GPF # moving from GPF to low-FSW
+    y$rate_move_in[1,3] = (y$rate_leave_pro_FSW + y$muF) * y$prop_pro_FSW_GPF # moving from GPF to pro-FSW
+    y$rate_move_in[2,3] = (y$rate_leave_low_FSW + y$muF) * y$prop_low_FSW_GPF # moving from GPF to low-FSW
     y$rate_move_in[4,1] = y$rate_leave_pro_FSW * (1 - y$FSW_leave_Cotonou_fraction) # moving from pro-FSW to former FSW in Cot
     y$rate_move_in[4,2] = y$rate_leave_low_FSW * (1 - y$FSW_leave_Cotonou_fraction) # moving from low-FSW to former FSW in Cot
     y$rate_move_in[9,1] = y$rate_leave_pro_FSW * y$FSW_leave_Cotonou_fraction # moving from low-FSW to former FSW NOT in Cot
@@ -416,11 +416,11 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
     # MALE MOVEMENT
 
-    y$rate_move_out[5] = - y$rate_leave_client * 1/y$prop_client_GPM
-    y$rate_move_out[6] = - y$rate_leave_client
+    y$rate_move_out[5] = - y$rate_leave_client
+    y$rate_move_out[6] = - y$prop_client_GPM * (y$rate_leave_client + y$muM)
 
-    y$rate_move_in[6,5] = y$rate_leave_client  * 1/y$prop_client_GPM # moving from client to GPM
-    y$rate_move_in[5,6] = y$rate_leave_client # moving from GPM to client
+    y$rate_move_in[6,5] = y$rate_leave_client  # moving from client to GPM
+    y$rate_move_in[5,6] = y$prop_client_GPM * (y$rate_leave_client + y$muM) # moving from GPM to client
 
 
     y$beta_comm = c(y$betaMtoF_comm, y$betaMtoF_comm, y$betaMtoF_comm, y$betaMtoF_comm, y$betaFtoM_comm, y$betaFtoM_comm, 0, 0, 0)

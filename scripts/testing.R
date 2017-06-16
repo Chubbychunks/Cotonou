@@ -590,7 +590,7 @@ require(reshape2)
 devtools::install_github("geidelberg/cotonou")
 
 
-number_simulations = 25
+number_simulations = 2
 epi_start = 1986
 epi_end = 2030
 
@@ -1188,6 +1188,593 @@ ggplot(Ntot) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, 
 
 
 
+#  _____ ___ _____            ____ ___  ____  ____  _____ _        _  _____ ___ ___  _   _   ___ _   _ _____ ___
+# |  ___|_ _|_   _|    _     / ___/ _ \|  _ \|  _ \| ____| |      / \|_   _|_ _/ _ \| \ | | |_ _| \ | |  ___/ _ \
+# | |_   | |  | |    _| |_  | |  | | | | |_) | |_) |  _| | |     / _ \ | |  | | | | |  \| |  | ||  \| | |_ | | | |
+# |  _|  | |  | |   |_   _| | |__| |_| |  _ <|  _ <| |___| |___ / ___ \| |  | | |_| | |\  |  | || |\  |  _|| |_| |
+# |_|   |___| |_|     |_|    \____\___/|_| \_\_| \_\_____|_____/_/   \_\_| |___\___/|_| \_| |___|_| \_|_|   \___/
+#
+
+
+remove.packages("cotonou")
+
+# rm(list = ls())
+require(ggplot2)
+require(reshape2)
+
+devtools::install_github("geidelberg/cotonou")
+
+
+number_simulations = 100
+epi_start = 1986
+epi_end = 2016
+
+# setup -------------------------------------------------------------------
+par_seq = c("c_comm", "c_noncomm")
+condom_seq = c("fc_y_comm", "fc_y_noncomm")
+groups_seq = c("ProFSW", "LowFSW", "GPF", "FormerFSW", "Client", "GPM", "VirginF", "VirginM", "FormerFSWoutside")
+years_seq = seq(1985, 2016)
+time <- seq(epi_start, epi_end, length.out = epi_end - epi_start + 1)
+#####################################################
+
+# this is the best set of parameters (the fixed ones)
+# best_set ----------------------------------------------------------------
+
+
+best_set = list(
+  init_clientN_from_PCR=0,
+  initial_Ntot = 286114,
+
+  frac_women_ProFSW = 0.0024,
+  frac_women_LowFSW = 0.0027,
+  frac_women_exFSW = 0.0024,
+
+  frac_men_client = 0.2,
+  frac_women_virgin = 0.1,
+  frac_men_virgin = 0.1,
+
+  prev_init_FSW = 0.0326,
+  prev_init_rest = 0.0012,
+  # N_init = c(672, 757, 130895, 672, 27124, 100305, 14544, 11145, 0),
+  fraction_F = 0.515666224,
+  epsilon_1985 = 0.059346131 * 1.5,
+  epsilon_1992 = 0.053594832 * 1.5,
+  epsilon_2002 = 0.026936907 * 1.5,
+  epsilon_2013 = 0.026936907 * 1.5,
+  epsilon_2016 = 0.026936907 * 1.5,
+  # mu = c(0.02597403, 0.02597403, 0.02597403, 0.02597403, 0.02739726, 0.02739726, 0.02597403, 0.02739726, 0.02597403), # women 1/((27 + 50)/2) # men 1/((25 +  48)/2)
+  #   c_comm = c(750, 52, 0, 0, 13.5, 0, 0, 0, 0),
+  #   c_noncomm = c(0.38, 0.38, 0.88, 0.88, 4, 1.065, 0, 0, 0), # partner change rate lowlevel FSW same as pro, others are approximations from various surveys
+  #
+  muF = 0.02597403,
+  muM = 0.02739726,
+  # PARTNER CHANGE RATE
+  c_comm_1985 = c(1229.5, 52, 0, 0, 10.15873, 0, 0, 0, 0), # (1020 + 1439)/2
+  c_comm_1993 = c(1229.5, 52, 0, 0, 10.15873, 0, 0, 0, 0), # (1020 + 1439)/2
+  c_comm_1995 = c(1280, 52, 0, 0, 10.15873, 0, 0, 0, 0), # (1135 + 1425)/2
+  c_comm_1998 = c(881, 52, 0, 0, 10.15873, 0, 0, 0, 0), # (757 + 1005)/2
+  c_comm_2002 = c(598.5, 52, 0, 0, 11.08109, 0, 0, 0, 0), # (498 + 699)/2, (13.387-10.15873)/14 * 4 + 10.15873
+  c_comm_2005 = c(424, 52, 0, 0, 11.77286, 0, 0, 0, 0), # (366 + 482)/2, (13.387-10.15873)/14 * 7 + 10.15873
+  c_comm_2008 = c(371.5, 52, 0, 0, 12.46464, 0, 0, 0, 0), # (272 + 471)/2, (13.387-10.15873)/14 * 10 + 10.15873
+  c_comm_2012 = c(541, 52, 0, 0, 13.387, 0, 0, 0, 0), # (459 + 623)/2
+  c_comm_2015 = c(400, 52, 0, 0, 17.15294, 0, 0, 0, 0), # (309 + 491)/2
+  c_comm_2016 = c(400, 52, 0, 0, 17.15294, 0, 0, 0, 0), # (309 + 491)/2
+
+  c_noncomm_1985 = c(0.3766285, 0.3766285, 0.9610526, 0.9610526, 2.028986, 1.337444, 0, 0, 0), # (0.4682779 + 0.3886719 + 0.2729358)/3
+  c_noncomm_1993 = c(0.3766285, 0.3766285, 0.9610526, 0.9610526, 2.028986, 1.337444, 0, 0, 0),
+  c_noncomm_1995 = c(0.3766285, 0.3766285, 0.9610526, 0.9610526, 2.028986, 1.337444, 0, 0, 0),
+  c_noncomm_1998 = c(0.3766285, 0.3766285, 0.9610526, 0.9610526, 2.028986, 1.337444, 0, 0, 0),
+  c_noncomm_2002 = c(0.3766285, 0.3766285, 0.9610526, 0.9610526, 2.028986, 1.337444, 0, 0, 0),
+  c_noncomm_2005 = c(0.3766285, 0.3766285, 0.9610526, 0.9610526, 2.028986, 1.337444, 0, 0, 0),
+  c_noncomm_2008 = c(0.3766285, 0.3766285, 0.7943578, 0.7943578, 2.028986, 0.7878543, 0, 0, 0),
+  c_noncomm_2012 = c(0.3766285, 0.3766285, 0.7943578, 0.7943578, 8.086957, 0.7878543, 0, 0, 0),
+  c_noncomm_2015 = c(0.3766285, 0.3766285, 0.7943578, 0.7943578, 6.258258, 0.7878543, 0, 0, 0),
+  c_noncomm_2016 = c(0.3766285, 0.3766285, 0.7943578, 0.7943578, 6.258258, 0.7878543, 0, 0, 0),
+
+
+
+  n_comm = matrix(c(0, 0, 0, 0, 1.935, 0, 0, 0, 0, # from client sa per partner
+                    0, 0, 0, 0, 1.935, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    1.935, 1.935, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0),
+                  nrow = 9, ncol = 9, byrow = T),
+  n_noncomm = matrix(c(0, 0, 0, 0, 32.7, 0, 0, 0, 0,
+                       0, 0, 0, 0, 32.7, 0, 0, 0, 0, # could replace lowlevel with bargirls parameters
+                       0, 0, 0, 0, 39, 37.875, 0, 0, 0, #(36.75+39)/2
+                       0, 0, 0, 0, 39, 37.875, 0, 0, 0,
+                       32.7, 32.7, 39, 39, 0, 0, 0, 0, 0,
+                       0, 0, 37.875, 37.875, 0, 0, 0, 0, 0,
+                       0, 0, 0, 0, 0, 0, 0, 0, 0,
+                       0, 0, 0, 0, 0, 0, 0, 0, 0,
+                       0, 0, 0, 0, 0, 0, 0, 0, 0),
+                     nrow = 9, ncol = 9, byrow = T),
+  #think about transforming to matrix
+  betaMtoF_comm = 0.00051, # RR circumcision = 0.44
+  betaFtoM_comm = 0.02442*0.44,
+  betaMtoF_noncomm = 0.003,
+  betaFtoM_noncomm = 0.0038*0.44,
+
+  infect_acute = 9, # RR for acute phase
+  infect_AIDS = 2, #7.27, # RR for AIDS phase
+  infect_ART = 0.9 * 0.523, # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
+  ec = rep_len(0.8, 9), # from kate's paper on nigeria SD couples
+  eP0 = c(0, rep_len(0, 8)), # assumptions!
+  eP1a = c(0.9, rep_len(0, 8)),
+  eP1b = c(0.45, rep_len(0, 8)),
+  eP1c = c(0, rep_len(0, 8)),
+  eP1d = c(0, rep_len(0, 8)),
+  gamma01 = 0.4166667, #years
+  SC_to_200_349 = 3.4,
+  gamma04 = 4.45, #years
+
+
+  alpha01 = rep_len(0, 9),
+  alpha02 = rep_len(0, 9),
+  alpha03 = rep_len(0.05, 9),
+  alpha04 = rep_len(0.08, 9),
+  alpha05 = rep_len(0.27, 9), #1/2.9
+  alpha11 = rep_len(0, 9),
+  alpha22 = rep_len(0, 9),
+  alpha23 = rep_len(0.05, 9),
+  alpha24 = rep_len(0.08, 9),
+  alpha25 = rep_len(0.27, 9),
+  alpha32 = rep_len(0, 9),
+  alpha33 = rep_len(0.05, 9),
+  alpha34 = rep_len(0.08, 9),
+  alpha35 = rep_len(0.27, 9),
+  alpha42 = rep_len(0, 9),
+  alpha43 = rep_len(0.05, 9),
+  alpha44 = rep_len(0.08, 9),
+  alpha45 = rep_len(0.27, 9),
+
+
+  #PREP
+  zetaa_t = c(1985, 2013, 2015, 2016),
+  zetaa_y = matrix(c(rep(0, 9), 0.0075, rep(0, 9-1), rep(0, 9), rep(0, 9)), ncol = 9, byrow = T),
+  zetab_t = c(1985, 2013, 2015, 2016),
+  zetab_y = matrix(c(rep(0, 9), 0.0075, rep(0, 9-1), rep(0, 9), rep(0, 9)), ncol = 9, byrow = T),
+  zetac_t = c(1985, 2013, 2015, 2016),
+  zetac_y = matrix(c(rep(0, 9), 0.0075, rep(0, 9-1), rep(0, 9), rep(0, 9)), ncol = 9, byrow = T),
+  psia = rep_len(0.1,9),
+  psib = rep_len(0.1,9),
+
+  #TESTING
+  testing_prob_t = c(1985, 2001, 2005, 2006, 2008, 2012, 2013, 2015, 2016),
+  testing_prob_y = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 0, # 1985 columns are the risk groups
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, # 2001
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, # 2005
+                            0.081625, 0.142, 0.142, 0.142, 0.0975, 0.0975, 0, 0, 0, # 2006 0.653/8 slope
+                            0.244875, 0.21, 0.21, 0.21, 0.1, 0.1, 0, 0, 0, # 2008 3*0.653/8
+                            0.571375, 0.331, 0.331, 0.331, 0.0582, 0.0582, 0, 0, 0, # 2012 7*0.653/8
+                            0.653, 0.331, 0.331, 0.331, 0.0582, 0.0582, 0, 0, 0, # 2013
+                            0.68, 0.331, 0.331, 0.331, 0.0582, 0.0582, 0, 0, 0, # 2015
+                            0.68, 0.331, 0.331, 0.331, 0.0582, 0.0582, 0, 0, 0), # 2016
+                          nrow = 9, ncol = 9, byrow = T),
+  #ART
+  ART_prob_t = c(1985, 2002, 2005, 2016),
+  ART_prob_y = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 0, # 1985
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, # 2002
+                        0, 0.1448571, 0.1448571, 0.1448571, 0.1448571, 0.1448571, 0, 0, 0, # 2005 0.676/14 * 3
+                        0.6739, 0.676, 0.676, 0.676, 0.676, 0.676, 0, 0, 0),
+                      nrow = 4, ncol = 9, byrow = T), # 2016 GP: (0.8+0.552)/2
+  RR_ART_CD4200 = 5.39,
+  phi2 = c(0.105360516, rep_len(0.025,8)), # former sex workers drop out rate??!
+  phi3 = c(0.105360516, rep_len(0.025,8)),
+  phi4 = c(0.105360516, rep_len(0.025,8)),
+  phi5 = c(0.105360516, rep_len(0.025,8)),
+  ART_RR = (1.3+3.45)/2,
+
+  #CONDOM
+
+  fc_y_comm_1985 = matrix(
+    c(0, 0, 0, 0, 0.145524, 0, 0, 0, 0, # 0.145524 is using John's FSW condom 1989 as prop of 1993, * our measure of 1993
+      0, 0, 0, 0, 0.145524, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0.145524, 0.145524, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  fc_y_comm_1993 = matrix(
+    c(0, 0, 0, 0, 0.536, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.536, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0.536, 0.536, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  fc_y_comm_1995 = matrix(
+    c(0, 0, 0, 0, 0.536, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.536, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0.536, 0.536, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  fc_y_comm_1998 = matrix(
+    c(0, 0, 0, 0, 0.536, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.536, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0.536, 0.536, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  fc_y_comm_2002 = matrix(
+    c(0, 0, 0, 0, 0.8, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.8, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0.8, 0.8, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  fc_y_comm_2005 = matrix(
+    c(0, 0, 0, 0, 0.8, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.8, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0.8, 0.8, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  fc_y_comm_2008 = matrix(
+    c(0, 0, 0, 0, 0.8, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.8, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0.8, 0.8, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  fc_y_comm_2012 = matrix(
+    c(0, 0, 0, 0, 0.8, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.8, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0.8, 0.8, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  fc_y_comm_2015 = matrix(
+    c(0, 0, 0, 0, 0.8, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.8, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0.8, 0.8, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  fc_y_comm_2015 = matrix(
+    c(0, 0, 0, 0, 0.8, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.8, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0.8, 0.8, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  fc_y_noncomm_1985 = matrix(
+    c(0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  fc_y_noncomm_1993 = matrix(
+    c(0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  # 1998
+  # (0.33 + 0.2705314)/ 2 # average FSW client
+  # (0.0326087 + 0.2705314)/ 2 # average client GPF
+  # (0.0326087 + 0.04989035) / 2 # average gpm gpf
+
+  fc_y_noncomm_1998 = matrix(
+    c(0, 0, 0, 0, 0.3002657, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.3002657, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.15157, 0.04124952, 0, 0, 0,
+      0, 0, 0, 0, 0.15157, 0.04124952, 0, 0, 0,
+      0.3002657, 0.3002657, 0.15157, 0.15157, 0, 0, 0, 0, 0,
+      0, 0, 0.04124952, 0.04124952, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  # 2008
+  # (0.33 + 0.4)/ 2 # average FSW client (both approx)
+  # ((0.05042017+0.241404781)/2 + 0.4)/ 2 # average client GPF (gpf averaged from 2 estimtes)
+  # ((0.05042017+0.241404781)/2 + (0.07103825+0.34838295)/2) / 2 # average gpm gpf
+
+  fc_y_noncomm_2008 = matrix(
+    c(0, 0, 0, 0, 0.365, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.365, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.2729562, 0.1778115, 0, 0, 0,
+      0, 0, 0, 0, 0.2729562, 0.1778115, 0, 0, 0,
+      0.365, 0.365, 0.2729562, 0.2729562, 0, 0, 0, 0, 0,
+      0, 0, 0.1778115, 0.1778115, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  fc_y_noncomm_2011 = matrix(
+    c(0, 0, 0, 0, 0.365, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.365, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.2729562, 0.1778115, 0, 0, 0,
+      0, 0, 0, 0, 0.2729562, 0.1778115, 0, 0, 0,
+      0.365, 0.365, 0.2729562, 0.2729562, 0, 0, 0, 0, 0,
+      0, 0, 0.1778115, 0.1778115, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  fc_y_noncomm_2015 = matrix(
+    c(0, 0, 0, 0, 0.365, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.365, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.2729562, 0.1778115, 0, 0, 0,
+      0, 0, 0, 0, 0.2729562, 0.1778115, 0, 0, 0,
+      0.365, 0.365, 0.2729562, 0.2729562, 0, 0, 0, 0, 0,
+      0, 0, 0.1778115, 0.1778115, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  fc_y_noncomm_2016 = matrix(
+    c(0, 0, 0, 0, 0.365, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.365, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.2729562, 0.1778115, 0, 0, 0,
+      0, 0, 0, 0, 0.2729562, 0.1778115, 0, 0, 0,
+      0.365, 0.365, 0.2729562, 0.2729562, 0, 0, 0, 0, 0,
+      0, 0, 0.1778115, 0.1778115, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+
+
+  fc_t_comm = c(1985, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015, 2016),
+
+  fc_t_noncomm = c(1985, 1993, 1998, 2008, 2011, 2015, 2016),
+
+
+  rate_leave_pro_FSW = 0.2,
+  FSW_leave_Cotonou_fraction = 0.1,
+  rate_leave_low_FSW = 0.1,
+  rate_leave_client = 0.05,
+  replaceDeaths = 0,
+  movement = 1
+
+)
+
+# best_set end ----------------------------------------------------------------
+
+
+# ranges and outputs ------------------------------------------------------------------
+
+
+ranges = rbind(
+
+
+  init_clientN_from_PCR = c(0,0),
+  # NO HIV, CONSTANT POP GROWTH RATE
+  epsilon_1985 = c(0.08, 0.08),
+  epsilon_1992 = c(0.08, 0.08),
+  epsilon_2002 = c(0.08, 0.08),
+  epsilon_2013 = c(0.08, 0.08),
+  epsilon_2016 = c(0.08, 0.08),
+
+  fraction_FSW_foreign = c(0.9, 0.9),
+
+  muF = c(0.01851852, 0.025),
+  muM = c(0.01851852, 0.025),
+
+  betaMtoF_noncomm = c(0.00144, 0.00626),
+  # betaMtoF_noncomm = c(0, 0),
+
+
+  RR_beta_GUD = c(1.43, 19.58),
+  RR_beta_FtM = c(0.5, 2),
+
+  frac_women_ProFSW = c(0.0024, 0.0143),
+  # frac_women_LowFSW = c(0.0024, 0.0067),
+  frac_women_exFSW = c(0.0024, 0.0143),
+  frac_men_client = c(0.196, 0.4),
+
+
+  frac_women_virgin = c(0.0972973, 0.18),
+  frac_men_virgin = c(0.08840413, 0.1255),
+
+
+
+  fraction_sexually_active_15_F = c(0.1387868, 0.153),
+  fraction_sexually_active_15_M = c(0.2057087, 0.291),
+
+
+  rate_enter_sexual_pop_F = c(1/(20-15), 1/(17-15)),
+  rate_enter_sexual_pop_M = c(1/(20-15), 1/(17-15)),
+
+
+
+
+  # commercial partnerships
+  c_comm_1993_ProFSW = c(1000, 1800),
+  c_comm_2005_ProFSW = c(250, 600),
+
+  c_comm_1998_Client = c(7, 12),
+  c_comm_2015_Client = c(12, 17),
+
+  #non commercial partnerships
+  c_non_comm_1985_ProFSW = c(0.273, 0.468),
+  c_non_comm_2016_ProFSW = c(0.273, 0.468),
+
+  c_noncomm_1998_Client = c(1.2, 2.5),
+  c_noncomm_2015_Client = c(5, 9),
+
+  c_noncomm_1998_GPF = c(0.84, 1.05),
+  c_noncomm_2008_GPF = c(0.5, 1),
+
+  c_noncomm_1998_GPM = c(1.14, 1.46),
+  c_noncomm_2008_GPM = c(0.28, 1.24),
+
+
+
+
+
+  who_believe_comm = c(0, 1),
+
+  rate_leave_pro_FSW = c(0.2173913, 0.4347826),
+  rate_leave_low_FSW = c(0.2173913, 0.4347826),
+
+  rate_leave_client = c(0.05, 0.2),
+  # rate_leave_client = 0,
+
+  # condoms
+
+  fc_y_comm_1985_ProFSW_Client = c(0, 0),
+  fc_y_comm_1993_ProFSW_Client = c(0.535, 0.687),
+  fc_y_comm_2002_ProFSW_Client = c(0.872, 0.933),
+
+  fc_y_noncomm_1985_ProFSW_Client = c(0.27, 0.43),
+  fc_y_noncomm_2016_ProFSW_Client = c(0.27, 0.43),
+
+  fc_y_noncomm_1985_GPM_GPF = 0,
+  fc_y_noncomm_1998_GPM_GPF = c(0.0326087, 0.05042017),
+  fc_y_noncomm_2011_GPM_GPF = c(0.161, 0.255)
+
+
+
+)
+
+outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm")
+
+
+# prev_points -------------------------------------------------------------
+prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,
+                                  1998, 2002, 2005, 2008, 2012, 2015,
+                                  1998, 2008, 2011,
+                                  1998, 2008, 2011,
+                                  2012, 2015),
+                         variable = c(rep("Pro FSW", 11),
+                                      rep("Clients", 6),
+                                      rep("Women", 3),
+                                      rep("Men", 3),
+                                      rep("Low-level FSW", 2)),
+                         value = c(3.3, 8.2, 19.2, 53.3, 48.7, 40.6, 38.9, 34.8, 29.3, 27.4, 18.7,
+                                   100*0.084, 9, 6.9, 5.8, 100*0.028, 100*0.016,
+                                   100*0.035, 100*0.04, 2.2,
+                                   100*0.033, 100*0.02, 1.6,
+                                   100*0.167, 100*0.065),
+                         lower = c(3.3, 8.2, 19.2, 48.02, 43.02, 36.58, 31.97, 30.42, 24.93, 23.01, 15.71,
+                                   100*0.05898524, 100*0.068218538, 100*0.04293149, 100*0.034772131, 100*0.012660836, 100*0.006039259,
+                                   100*0.024181624, 100*0.030073668, 100*0.012980254,
+                                   100*0.022857312, 100*0.012427931, 100*0.007517563,
+                                   100*0.091838441, 100*0.026704897),
+                         upper = c(3.3, 8.2, 19.2, 58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01,
+                                   100*0.11561791, 100*0.115608811, 100*0.105215792, 100*0.090216628, 100*0.051602442, 100*0.035338436,
+                                   100*0.047726245, 100*0.052817187, 100*0.035296286,
+                                   100*0.047183668, 100*0.029774338, 100*0.028546718,
+                                   100*0.268127672, 100*0.130153465))
+prev_points_all = prev_points
+prev_points = prev_points[-c(1,2,3),]
+
+
+# frac N data points ------------------------------------------------------
+frac_N_data_points = data.frame(time = c(1998, 2014,
+                                         1998, 1998,
+                                         1998, 2008, 2011,
+                                         1998, 2008, 2011),
+                                point = c(1.43*0.515666224, 0.24*0.515666224,
+                                          100*0.195738802*(1-0.515666224), 40*(1-0.515666224),
+                                          100*0.1292392*0.515666224, 100*0.0972973*0.515666224, 100*0.18*0.515666224,
+                                          100*0.124632*(1-0.515666224), 100*0.08840413*(1-0.515666224), 100*0.1175*(1-0.515666224)),
+                                variable = c("Pro FSW", "Pro FSW",
+                                             "Clients", "Clients",
+                                             "Virgin female", "Virgin female", "Virgin female",
+                                             "Virgin male", "Virgin male", "Virgin male"))
+
+frac_N_discard_points = data.frame(variable = c("Pro FSW", "Clients", "Virgin female", "Virgin male"),
+                                   min = c(0.001237599, 0.094735687, 0.050019624, 0.042621372),
+                                   max = c(0.007374027, 0.193733511, 0.09281992, 0.060783889))
+
+# Ntot data points ------------------------------------------------------
+
+Ntot_data_points = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
+                              point = c(404359.0418, 681559.032, 913029.606, 1128727.062, 1423887.65),
+                              lower = c(343705.15, 579325.15, 776075.5, 959417.95, 1210304.8),
+                              upper = c(465012.85, 783792.85, 1049984.5, 1298036.05, 1637471.2),
+                              colour = c("data", "data", "data", "predicted", "predicted"))
+
+#####################################################
+
+result <- cotonou::run_model_with_fit_for_correlations(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
+# result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
+
+# removing those with too high betas
+beta_not_above_1 = which(unlist(lapply(result[[1]], function(x) x$beta_above_1)) == 0)
+result_adjusted = list(result[[1]][beta_not_above_1], result[[2]][beta_not_above_1], result[[3]][beta_not_above_1])
+
+
+# WHICH POINTS ARE FITS TO FSW PREVALENCE? (POINTS 1 to 8)
+x3 = unlist(lapply(lapply(result_adjusted[[3]], function(x) x[[2]]), function(x) {
+  if(!is.null(x))
+  {
+    return(sum(x < 9))
+  } else
+  {return (0)}
+}))
+
+
+# CORRELATIONS WITH CLIENT PREVALENCE
+# betaMtoF_noncomm, RR_beta_GUD, RR_beta_FtM, frac_men_client, rate_leave_client, frac_men_virgin, who_believe_comm
+year = 2000
+param_ind = "fc_y_comm_2002_ProFSW_Client"
+param_dep = "prev_client"
+
+x1 = unlist(lapply(lapply(result_adjusted[[2]], function(x) unlist(x[param_dep])), function(x) x[which(time == year)]))
+x2 = unlist(lapply(result_adjusted[[1]], function(x) x[param_ind]))
+
+correlation_with_fit = data.frame(x1, x2, x3)
+
+cor.test(x1, x2)
+ggplot(data = correlation_with_fit) + geom_point(aes(x = x2, y = x1, colour = x3)) + theme_bw() + labs(y = param_dep, x = param_ind)
 
 
 
@@ -1756,17 +2343,6 @@ result_adjusted = list(result[[1]][beta_not_above_1], result[[2]][beta_not_above
 
 
 
-
-# WHICH POINTS ARE FITS?
-
-
-lapply(lapply(result[[2]], function(x) x[[2]]), function(x) {
-  if(!is.null(x))
-  {
-    return(sum(x < 9))
-  } else
-  {return (0)}
-})
 
 
 # CORRELATIONS WITH CLIENT PREVALENCE
