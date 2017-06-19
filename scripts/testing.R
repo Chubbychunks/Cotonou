@@ -28,17 +28,19 @@ devtools::load_all()
 #############################################################################################
 #############################################################################################
 
-# ignore these ######################################
+require(ggplot2)
+require(reshape2)
+number_simulations = 10
+epi_start = 1986
+epi_end = 2016
+
+# setup -------------------------------------------------------------------
 par_seq = c("c_comm", "c_noncomm")
 condom_seq = c("fc_y_comm", "fc_y_noncomm")
 groups_seq = c("ProFSW", "LowFSW", "GPF", "FormerFSW", "Client", "GPM", "VirginF", "VirginM", "FormerFSWoutside")
 years_seq = seq(1985, 2016)
+time <- seq(epi_start, epi_end, length.out = epi_end - epi_start + 1)
 #####################################################
-
-# first and last year of simulation, and the number of intervals the model will record
-time <- seq(1986, 2016, length.out = 31)
-
-number_simulations = 1
 
 # this is the best set of parameters (the fixed ones)
 # best_set ----------------------------------------------------------------
@@ -411,8 +413,10 @@ best_set = list(
 
 
 # ranges and outputs ------------------------------------------------------------------
-# these are the ranges that go in the LHS
+
+
 ranges = rbind(
+
 
   init_clientN_from_PCR = c(0,0),
   # NO HIV, CONSTANT POP GROWTH RATE
@@ -422,61 +426,84 @@ ranges = rbind(
   epsilon_2013 = c(0.08, 0.08),
   epsilon_2016 = c(0.08, 0.08),
 
-  # epsilon_1985 = c(0.059, 0.059),
-  # epsilon_1992 = c(0.059, 0.059),
-  # epsilon_2002 = c(0.059, 0.059),
-  # epsilon_2013 = c(0.059, 0.059),
-  # epsilon_2016 = c(0.059, 0.059),
+  fraction_FSW_foreign = c(0.9, 0.9),
 
-  # muF = c(0.05, 0.05),
-  # muM = c(0.06, 0.06),
-
-  muF = c(0.0295, 0.0295),
-  muM = c(0.0315, 0.0315),
+  muF = c(0.01851852, 0.025),
+  muM = c(0.01851852, 0.025),
 
   betaMtoF_noncomm = c(0.00144, 0.00626),
-
   # betaMtoF_noncomm = c(0, 0),
-  # frac_women_ProFSW = c(0.004, 0.004),
-  frac_women_ProFSW = c(0.0024, 0.0067),
-  frac_women_LowFSW = c(0.0024, 0.0067),
-  frac_women_exFSW = c(0.0024, 0.0067),
-  frac_men_client = c(0.2, 0.4),
-  # frac_women_virgin = 0.1,
-  # frac_men_virgin = 0.1
-
 
 
   RR_beta_GUD = c(1.43, 19.58),
   RR_beta_FtM = c(0.5, 2),
 
+  frac_women_ProFSW = c(0.0024, 0.0143),
+  # frac_women_LowFSW = c(0.0024, 0.0067),
+  frac_women_exFSW = c(0.0024, 0.0143),
+  frac_men_client = c(0.196, 0.4),
+
+
+  frac_women_virgin = c(0.0972973, 0.18),
+  frac_men_virgin = c(0.08840413, 0.1255),
+
+
+
+  fraction_sexually_active_15_F = c(0.1387868, 0.153),
+  fraction_sexually_active_15_M = c(0.2057087, 0.291),
+
+
+  rate_enter_sexual_pop_F = c(1/(20-15), 1/(17-15)),
+  rate_enter_sexual_pop_M = c(1/(20-15), 1/(17-15)),
+
+
+
+
+  # commercial partnerships
   c_comm_1993_ProFSW = c(1000, 1800),
   c_comm_2005_ProFSW = c(250, 600),
-  c_comm_1998_Client = c(7, 12),
-  c_comm_2015_Client = c(6, 12),
 
-  c_noncomm_1998_Client = c(1, 3),
-  c_noncomm_2015_Client = c(2, 6),
+  c_comm_1998_Client = c(7, 12),
+  c_comm_2015_Client = c(12, 17),
+
+  #non commercial partnerships
+  c_non_comm_1985_ProFSW = c(0.273, 0.468),
+  c_non_comm_2016_ProFSW = c(0.273, 0.468),
+
+  c_noncomm_1998_Client = c(1.2, 2.5),
+  c_noncomm_2015_Client = c(5, 9),
+
+  c_noncomm_1998_GPF = c(0.84, 1.05),
+  c_noncomm_2008_GPF = c(0.5, 1),
+
+  c_noncomm_1998_GPM = c(1.14, 1.46),
+  c_noncomm_2008_GPM = c(0.28, 1.24),
+
+
+
+
 
   who_believe_comm = c(0, 1),
 
-  rate_leave_pro_FSW = c(0.4347826, 0.4347826),
-  rate_leave_low_FSW = c(0.4347826, 0.4347826),
-  rate_leave_client = c(0.5, 0.5),
-  rate_enter_sexual_pop = c(0.3571429, 0.3571429),
+  rate_leave_pro_FSW = c(0.2173913, 0.4347826),
+  rate_leave_low_FSW = c(0.2173913, 0.4347826),
 
+  rate_leave_client = c(0.05, 0.2),
+  # rate_leave_client = 0,
 
+  # condoms
 
-
+  fc_y_comm_1985_ProFSW_Client = c(0, 0),
   fc_y_comm_1993_ProFSW_Client = c(0.535, 0.687),
   fc_y_comm_2002_ProFSW_Client = c(0.872, 0.933),
-  fc_y_comm_1998_ProFSW_Client = c(0.872, 0.933), # fake
 
   fc_y_noncomm_1985_ProFSW_Client = c(0.27, 0.43),
   fc_y_noncomm_2016_ProFSW_Client = c(0.27, 0.43),
 
-  fc_y_noncomm_1998_GPM_GPF = c(0.0326087, 0.241404781),
-  fc_y_noncomm_2016_GPM_GPF = c(0.0326087, 0.251404781)
+  fc_y_noncomm_1985_GPM_GPF = 0,
+  fc_y_noncomm_1998_GPM_GPF = c(0.0326087, 0.05042017),
+  fc_y_noncomm_2011_GPM_GPF = c(0.161, 0.255)
+
 
 
 )
@@ -484,8 +511,6 @@ ranges = rbind(
 outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm")
 
 
-
-# these are the prevalence points I am fitting to
 # prev_points -------------------------------------------------------------
 prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,
                                   1998, 2002, 2005, 2008, 2012, 2015,
@@ -516,43 +541,74 @@ prev_points_all = prev_points
 prev_points = prev_points[-c(1,2,3),]
 
 
-# launch -------------------------------------------------------------
+# frac N data points ------------------------------------------------------
+frac_N_data_points = data.frame(time = c(1998, 2014,
+                                         1998, 1998,
+                                         1998, 2008, 2011,
+                                         1998, 2008, 2011),
+                                point = c(1.43*0.515666224, 0.24*0.515666224,
+                                          100*0.195738802*(1-0.515666224), 40*(1-0.515666224),
+                                          100*0.1292392*0.515666224, 100*0.0972973*0.515666224, 100*0.18*0.515666224,
+                                          100*0.124632*(1-0.515666224), 100*0.08840413*(1-0.515666224), 100*0.1175*(1-0.515666224)),
+                                variable = c("Pro FSW", "Pro FSW",
+                                             "Clients", "Clients",
+                                             "Virgin female", "Virgin female", "Virgin female",
+                                             "Virgin male", "Virgin male", "Virgin male"))
 
-# run simulations
-result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points)
+frac_N_discard_points = data.frame(variable = c("Pro FSW", "Clients", "Virgin female", "Virgin male"),
+                                   min = c(0.001237599, 0.094735687, 0.050019624, 0.042621372),
+                                   max = c(0.007374027, 0.193733511, 0.09281992, 0.060783889))
 
+# Ntot data points ------------------------------------------------------
 
-# ignore these ######################################
-frac_ProFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,1])), 2, cotonou::quantile_95)))
-frac_LowFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,2])), 2, cotonou::quantile_95)))
-frac_GPF = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,3])), 2, cotonou::quantile_95)))
-frac_FormerFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,4])), 2, cotonou::quantile_95)))
-frac_Client = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,5])), 2, cotonou::quantile_95)))
-frac_GPM = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,6])), 2, cotonou::quantile_95)))
-frac_Virgin_Female = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,7])), 2, cotonou::quantile_95)))
-frac_Virgin_Male = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,8])), 2, cotonou::quantile_95)))
-frac_Former_FSW_Outside = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result, function(x) x$frac_N), function(x) x[,9])), 2, cotonou::quantile_95)))
-frac = rbind(frac_ProFSW, frac_LowFSW, frac_GPF, frac_FormerFSW, frac_Client, frac_GPM, frac_Virgin_Female, frac_Virgin_Male, frac_Former_FSW_Outside)
-frac = data.frame(frac, group = rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"), each = 31))
-colnames(frac) = c("time", "Lower", "Median", "Upper", "variable")
-frac$variable = factor(frac$variable, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"))
+Ntot_data_points = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
+                              point = c(404359.0418, 681559.032, 913029.606, 1128727.062, 1423887.65),
+                              lower = c(343705.15, 579325.15, 776075.5, 959417.95, 1210304.8),
+                              upper = c(465012.85, 783792.85, 1049984.5, 1298036.05, 1637471.2),
+                              colour = c("data", "data", "data", "predicted", "predicted"))
 
-prev_FSW = t(apply(do.call(rbind, lapply(result, function(x) x$prev_FSW)), 2, cotonou::quantile_95))
-prev_LowFSW = t(apply(do.call(rbind, lapply(result, function(x) x$prev_LowFSW)), 2, cotonou::quantile_95))
-prev_client = t(apply(do.call(rbind, lapply(result, function(x) x$prev_client)), 2, cotonou::quantile_95))
-prev_women = t(apply(do.call(rbind, lapply(result, function(x) x$prev_women)), 2, cotonou::quantile_95))
-prev_men = t(apply(do.call(rbind, lapply(result, function(x) x$prev_men)), 2, cotonou::quantile_95))
-prev = rbind(prev_FSW, prev_LowFSW, prev_client, prev_women, prev_men)
-prev = data.frame(time, prev, rep(c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"), each = length(time)))
-colnames(prev) = c("time", "Lower", "Median", "Upper", "variable")
 #####################################################
 
+result <- cotonou::run_model_with_fit_for_correlations(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
+# result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 
-# plot fraction in each group
-ggplot(frac) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() + facet_wrap(~variable, scales = "free")
+# removing those with too high betas
+beta_not_above_1 = which(unlist(lapply(result[[1]], function(x) x$beta_above_1)) == 0)
+result_adjusted = list(result[[1]][beta_not_above_1], result[[2]][beta_not_above_1], result[[3]][beta_not_above_1])
 
-# plot prevalence in each group
-ggplot(prev) + geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() + facet_wrap(~variable)
+
+
+
+
+
+
+
+# which points fit? -------------------------------------------------------
+
+
+# WHICH POINTS ARE FITS TO FSW PREVALENCE? (POINTS 1 to 8)
+x3 = unlist(lapply(lapply(result_adjusted[[3]], function(x) x[[2]]), function(x) {
+  if(!is.null(x))
+  {
+    return(sum(x < 9))
+  } else
+  {return (0)}
+}))
+# end of which points fit? -------------------------------------------------------
+
+# CORRELATIONS WITH CLIENT PREVALENCE
+# betaMtoF_noncomm, RR_beta_GUD, RR_beta_FtM, frac_men_client, rate_leave_client, frac_men_virgin, who_believe_comm
+year = 2000
+param_ind = "fc_y_comm_2002_ProFSW_Client"
+param_dep = "prev_client"
+
+x1 = unlist(lapply(lapply(result_adjusted[[2]], function(x) unlist(x[param_dep])), function(x) x[which(time == year)]))
+x2 = unlist(lapply(result_adjusted[[1]], function(x) x[param_ind]))
+
+correlation_with_fit = data.frame(x1, x2, x3)
+
+cor.test(x1, x2)
+ggplot(data = correlation_with_fit) + geom_point(aes(x = x2, y = x1, colour = x3)) + theme_bw() + labs(y = param_dep, x = param_ind)
 
 
 
