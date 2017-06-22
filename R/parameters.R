@@ -17,7 +17,7 @@ FormerFSWtoGPF <- function(x) {
 fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years_seq) {
   useless_parameter = 1
   # why not working
-  if(Ncat == 9) {
+  if(y$ignore_ranges_fc_c == 0) {
 
 
     # CONDOMS
@@ -135,6 +135,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
       what_we_got = rbind(what_we_got, c(par, year, group))
       # print(c(par_seq[par], groups_seq[group], years_seq[year]))
     }}}}
+    # print(list(what_we_got, years_seq, groups_seq, par_seq, what_we_got_condom))
     colnames(what_we_got) = c("par", "year", "group")
 
     # now we have to fill in the rest of the years... IF 2 OR MORE YEARS FOR SAME GROUP AND PARM
@@ -308,13 +309,13 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
                                y$fc_y_comm_1995, y$fc_y_comm_1998,
                                y$fc_y_comm_2002, y$fc_y_comm_2005,
                                y$fc_y_comm_2008, y$fc_y_comm_2012,
-                               y$fc_y_comm_2015, y$fc_y_comm_2015), dim=c(Ncat, Ncat, 10))
+                               y$fc_y_comm_2015, y$fc_y_comm_2016), dim=c(Ncat, Ncat, 10))
 
   y$fc_y_comm = aperm(y$fc_y_comm, c(3, 1, 2))
 
   y$fc_y_noncomm = array(data = c(y$fc_y_noncomm_1985, y$fc_y_noncomm_1993, y$fc_y_noncomm_1998,
                                   y$fc_y_noncomm_2008, y$fc_y_noncomm_2011, y$fc_y_noncomm_2015,
-                                  y$fc_y_noncomm_2015), dim=c(Ncat, Ncat, 7))
+                                  y$fc_y_noncomm_2016), dim=c(Ncat, Ncat, 7))
 
 
   y$fc_y_noncomm = aperm(y$fc_y_noncomm, c(3, 1, 2))
@@ -482,7 +483,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
 #' @export
 #' @useDynLib cotonou
-lhs_parameters <- function(n, sample = NULL, Ncat = 2, Nage = 1, ..., set_pars = list(...), forced_pars = list(...), set_null= list(...), ranges = NULL, par_seq, condom_seq, groups_seq, years_seq) {
+lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars = list(...), forced_pars = list(...), set_null= list(...), ranges = NULL, par_seq, condom_seq, groups_seq, years_seq) {
 
 
   set_pars <- modifyList(set_pars, forced_pars)
@@ -570,7 +571,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 2, Nage = 1, ..., set_pars =
     RR_beta_GUD = 1,
     who_believe_comm = 0,
     init_clientN_from_PCR = 0,
-    beta_above_1 = 0
+    beta_above_1 = 0,
+    ignore_ranges_fc_c = 0
 
 
 
@@ -685,6 +687,9 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 2, Nage = 1, ..., set_pars =
 
   samples_list <- lapply(samples_list, fix_parameters, Ncat = Ncat, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
 
+  samples_list_test_fixed <<- samples_list
+
+
   # samples_list <- lapply(samples_list, function(x) modifyList(x, set_pars)) # set pars after fixed pars in order to get right set pars
   samples_list <- lapply(samples_list, function(x) modifyList(x, forced_pars)) # set pars after fixed pars in order to get right set pars
 
@@ -694,7 +699,7 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 2, Nage = 1, ..., set_pars =
 
 #' @export
 #' @useDynLib cotonou
-generate_parameters <- function(..., parameters = list(...), set_null = list(...), Ncat = 2, Nage = 1) {
+generate_parameters <- function(..., parameters = list(...), set_null = list(...), Ncat = 9, Nage = 1) {
   defaults <- list(Ncat = Ncat,
                    Nage = Nage,
 
@@ -1009,7 +1014,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    init_clientN_from_PCR = 0,
                    fraction_sexually_active_15_F = 0,
                    fraction_sexually_active_15_M = 0,
-                   beta_above_1 = 0
+                   beta_above_1 = 0,
+                   ignore_ranges_fc_c = 0
 
 
 

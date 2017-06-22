@@ -13,6 +13,13 @@ return_outputs <- function(p, gen, time, outputs) {
 
 #' @export
 #' @useDynLib cotonou
+return_all_outputs <- function(p, gen, time) {
+  mod <- gen(user = p)
+  return(mod$transform_variables(mod$run(time)))
+}
+
+#' @export
+#' @useDynLib cotonou
 likelihood_rough <- function(x, time, prev_points, frac_N_discard_points) {
   the_prev = data.frame(time, x$prev_FSW, x$prev_LowFSW, x$prev_client, x$prev_women, x$prev_men)
   names(the_prev) = c("time", "Pro FSW", "Low-level FSW", "Clients", "Women", "Men")
@@ -58,10 +65,17 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points) {
 
 }
 
+#' @export
+#' @useDynLib cotonou
+run_model_for_tests <- function(number_simulations, time, parameters) {
+
+  return(lapply(parameters, return_all_outputs, main_model, time = time))
+
+}
 
 #' @export
 #' @useDynLib cotonou
-run_model <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points) {
+run_model <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs) {
 
 
   # parameters --------------------------------------------------------------
@@ -72,13 +86,6 @@ run_model <- function(number_simulations, par_seq, condom_seq, groups_seq, years
 
   res = lapply(parameters, return_outputs, main_model, time = time, outputs = outputs)
 
-  # likelihood_list = unlist(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
-  # sorted_likelihood_list = sort(likelihood_list)
-  #
-  #
-  # best_runs = which(likelihood_list == max(sorted_likelihood_list))
-  # #
-  # out <- res[best_runs]
 
   return(list(parameters, res))
 

@@ -148,6 +148,9 @@ in_I45[,] <- if (i == j) 0 else rate_move_in[i, j] * I45[j]
 sum_in_S0[] = sum(in_S0[i, ])
 output(sum_in_S0[]) = sum_in_S0
 
+# output(in_S0[,]) = in_S0
+# output(in_I01[,]) = in_I01
+
 ##
 
 
