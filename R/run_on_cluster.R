@@ -8,6 +8,11 @@ quantile_95 <- function(x) return(quantile(x, probs = c(0.025, 0.5, 0.975)))
 return_outputs <- function(p, gen, time, outputs) {
   mod <- gen(user = p)
   all_results <- mod$transform_variables(mod$run(time))
+  # counter <<- counter + 1
+  # if (counter %% 10 == 0)
+  #   print(counter)
+
+
   return(all_results[outputs])
 }
 
@@ -125,6 +130,39 @@ run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_s
 #' @export
 #' @useDynLib cotonou
 run_model_with_fit_for_correlations <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points) {
+
+  counter = 0
+
+  # parameters --------------------------------------------------------------
+  parameters <- cotonou::lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
+                                        ranges = ranges, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
+  # end of parameters --------------------------------------------------------------
+
+
+  res = lapply(parameters, function(x) {
+
+    counter <<- counter + 1
+    if (counter %% 100 == 0)
+      cat(paste("simulation:", counter))
+
+    return_outputs(x, gen = main_model, time = time, outputs = outputs)})
+
+
+
+  # likelihood_list = unlist(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
+  likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
+
+
+  # return(list(time, prev_points, res))
+
+  return(list(parameters, res, likelihood_list))
+
+
+}
+
+#' @export
+#' @useDynLib cotonou
+run_model_with_fit_for_correlations_cluster <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points) {
 
 
   # parameters --------------------------------------------------------------

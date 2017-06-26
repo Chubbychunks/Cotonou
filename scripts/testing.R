@@ -30,7 +30,7 @@ devtools::test()
 
 require(ggplot2)
 require(reshape2)
-number_simulations = 10
+number_simulations = 10000
 epi_start = 1986
 epi_end = 2016
 
@@ -596,10 +596,38 @@ x3 = unlist(lapply(lapply(result_adjusted[[3]], function(x) x[[2]]), function(x)
 }))
 # end of which points fit? -------------------------------------------------------
 
+
+# CORRELATIONS WITH CLIENT PREVALENCE LOOPING THROUGH ALL OF PARAMETERS
+year = 2000
+
+cor_test_parm = function(y) {
+  param_ind = y
+  param_dep = "prev_client"
+
+  x1 = unlist(lapply(lapply(result_adjusted[[2]], function(x) unlist(x[param_dep])), function(x) x[which(time == year)]))
+  x2 = unlist(lapply(result_adjusted[[1]], function(x) x[param_ind]))
+
+  test = cor.test(x1, x2)
+
+  return(test[c("p.value", "estimate")])
+}
+
+ranges_with_range = names(ranges[which(ranges[,1] != ranges[,2]),1])
+
+cor_test_results = lapply(as.list(ranges_with_range), cor_test_parm)
+
+cor_test_results_sorted = cor_test_results[order(unlist(lapply(cor_test_results, function(x) x$p.value)))]
+
+names(cor_test_results_sorted) = ranges_with_range[order(unlist(lapply(cor_test_results, function(x) x$p.value)))]
+
+head(do.call(rbind, cor_test_results_sorted), n =10)
+
+
+
 # CORRELATIONS WITH CLIENT PREVALENCE
 # betaMtoF_noncomm, RR_beta_GUD, RR_beta_FtM, frac_men_client, rate_leave_client, frac_men_virgin, who_believe_comm
 year = 2000
-param_ind = "fc_y_comm_2002_ProFSW_Client"
+param_ind = "RR_beta_GUD"
 param_dep = "prev_client"
 
 x1 = unlist(lapply(lapply(result_adjusted[[2]], function(x) unlist(x[param_dep])), function(x) x[which(time == year)]))
@@ -608,10 +636,24 @@ x2 = unlist(lapply(result_adjusted[[1]], function(x) x[param_ind]))
 correlation_with_fit = data.frame(x1, x2, x3)
 
 cor.test(x1, x2)
-ggplot(data = correlation_with_fit) + geom_point(aes(x = x2, y = x1, colour = x3)) + theme_bw() + labs(y = param_dep, x = param_ind)
+ggplot(data = correlation_with_fit)+scale_color_gradient(low="darkgreen", high="red") + geom_point(aes(x = x2, y = x1, colour = x3, size = x3))+ labs(colour=" Number \n of \n FSW  \n prevalence \n points \n fits", size = "")  + theme_bw() + labs(y = param_dep, x = param_ind)
 
 
 
+
+#histogram
+ggplot() + aes(x2[x3 > 0])+ geom_histogram(binwidth = (diff(range(x2))/10), colour="black", fill="black") + theme_bw()
+
+# posterior dist
+# apply(do.call(rbind, lapply(result_adjusted[[1]][which(x3 > 0)], function(x) x[rownames(ranges)])), 2, function(x) mean(unlist(x)))
+
+# prior dist
+# apply(do.call(rbind, lapply(result_adjusted[[1]], function(x) x[rownames(ranges)])), 2, function(x) mean(unlist(x)))
+
+
+# the percentage difference between the posterior and prior for all the pars that I vary in LHS, sorted
+sort((apply(do.call(rbind, lapply(result_adjusted[[1]][which(x3 > 0)], function(x) x[rownames(ranges)])), 2, function(x) mean(unlist(x)))
+   - apply(do.call(rbind, lapply(result_adjusted[[1]], function(x) x[rownames(ranges)])), 2, function(x) mean(unlist(x)))) / apply(do.call(rbind, lapply(result_adjusted[[1]], function(x) x[rownames(ranges)])), 2, function(x) mean(unlist(x))))
 
 #############################################################################################
 #############################################################################################
