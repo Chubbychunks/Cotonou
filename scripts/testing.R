@@ -30,7 +30,7 @@ devtools::test()
 
 require(ggplot2)
 require(reshape2)
-number_simulations = 2000
+number_simulations = 1
 epi_start = 1986
 epi_end = 2016
 
@@ -405,7 +405,10 @@ best_set = list(
   rate_leave_low_FSW = 0.1,
   rate_leave_client = 0.05,
   replaceDeaths = 0,
-  movement = 1
+  movement = 1,
+  RR_beta_circum = 0.44,
+  prev_ratio_FSW_GPF = 1,
+  prev_ratio_Client_GPM = 1
 
 )
 
@@ -435,8 +438,14 @@ ranges = rbind(
   # betaMtoF_noncomm = c(0, 0),
 
 
-  RR_beta_GUD = c(1.43, 19.58),
+  # RR_beta_GUD = c(1.43, 19.58),
+  RR_beta_GUD = c(1.43, 5),
+
   RR_beta_FtM = c(0.5, 2),
+
+  RR_beta_circum = c(0.34, 0.72),
+  prev_ratio_FSW_GPF = c(1, 2),
+  prev_ratio_Client_GPM = c(1, 2),
 
   frac_women_ProFSW = c(0.0024, 0.0143),
   # frac_women_LowFSW = c(0.0024, 0.0067),

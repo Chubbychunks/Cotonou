@@ -30,6 +30,9 @@ par_gridplot2 = function(result, parm) {
 
 # best_set_default --------------------------------------------------------
 best_set_default = list(
+  RR_beta_circum = 0.44,
+  prev_ratio_FSW_GPF = 1,
+  prev_ratio_Client_GPM = 1,
   ignore_ranges_fc_c = 0,
   init_clientN_from_PCR=0,
   initial_Ntot = 286114,
@@ -423,7 +426,9 @@ ranges_default = rbind(
 
   RR_beta_GUD = c(1.43, 19.58),
   RR_beta_FtM = c(0.5, 2),
-
+  RR_beta_circum = c(0.34, 0.72),
+  prev_ratio_FSW_GPF = c(1, 20),
+  prev_ratio_Client_GPM = c(1, 5),
   frac_women_ProFSW = c(0.0024, 0.0143),
   # frac_women_LowFSW = c(0.0024, 0.0067),
   frac_women_exFSW = c(0.0024, 0.0143),

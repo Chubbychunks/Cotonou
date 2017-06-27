@@ -227,7 +227,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$betaFtoM_comm = y$betaMtoF_noncomm * y$RR_beta_FtM * y$RR_beta_circum * y$prev_ratio_Client_GPM * y$RR_beta_GUD
 
   # if any beta becomes > 1, then make them all zero and flag it
-  if(y$betaMtoF_noncomm >= 1 || y$betaMtoF_comm >= 1 || y$betaFtoM_noncomm >= 1 || y$betaFtoM_comm >= 1)
+  if(y$betaMtoF_noncomm * y$infect_acute >= 1 || y$betaMtoF_comm * y$infect_acute >= 1 || y$betaFtoM_noncomm * y$infect_acute >= 1 || y$betaFtoM_comm * y$infect_acute >= 1)
   {
     y$betaMtoF_noncomm = 0
     y$betaFtoM_noncomm = 0
