@@ -30,7 +30,7 @@ devtools::test()
 
 require(ggplot2)
 require(reshape2)
-number_simulations = 10000
+number_simulations = 2000
 epi_start = 1986
 epi_end = 2016
 
@@ -586,16 +586,27 @@ result_adjusted = list(result[[1]][beta_not_above_1], result[[2]][beta_not_above
 # which points fit? -------------------------------------------------------
 
 
-# WHICH POINTS ARE FITS TO FSW PREVALENCE? (POINTS 1 to 8)
+# # WHICH POINTS ARE FITS TO FSW PREVALENCE? (POINTS 1 to 8)
+# x3 = unlist(lapply(lapply(result_adjusted[[3]], function(x) x[[2]]), function(x) {
+#   if(!is.null(x))
+#   {
+#     return(sum(x < 9))
+#   } else
+#   {return (0)}
+# }))
+# # end of which points fit? -------------------------------------------------------
+
+
+
+# WHICH POINTS ARE FITS TO CLIENT PREVALENCE? (POINTS 9 to 14)
 x3 = unlist(lapply(lapply(result_adjusted[[3]], function(x) x[[2]]), function(x) {
   if(!is.null(x))
   {
-    return(sum(x < 9))
+    return(sum(x > 8 & x < 15))
   } else
   {return (0)}
 }))
 # end of which points fit? -------------------------------------------------------
-
 
 # CORRELATIONS WITH CLIENT PREVALENCE LOOPING THROUGH ALL OF PARAMETERS
 year = 2000
@@ -620,14 +631,15 @@ cor_test_results_sorted = cor_test_results[order(unlist(lapply(cor_test_results,
 
 names(cor_test_results_sorted) = ranges_with_range[order(unlist(lapply(cor_test_results, function(x) x$p.value)))]
 
-head(do.call(rbind, cor_test_results_sorted), n =10)
+# parameters with biggest effect on client prevalence
+head(do.call(rbind, cor_test_results_sorted), n = 10)
 
 
 
 # CORRELATIONS WITH CLIENT PREVALENCE
 # betaMtoF_noncomm, RR_beta_GUD, RR_beta_FtM, frac_men_client, rate_leave_client, frac_men_virgin, who_believe_comm
 year = 2000
-param_ind = "RR_beta_GUD"
+param_ind = "c_noncomm_1998_Client"
 param_dep = "prev_client"
 
 x1 = unlist(lapply(lapply(result_adjusted[[2]], function(x) unlist(x[param_dep])), function(x) x[which(time == year)]))
@@ -636,7 +648,7 @@ x2 = unlist(lapply(result_adjusted[[1]], function(x) x[param_ind]))
 correlation_with_fit = data.frame(x1, x2, x3)
 
 cor.test(x1, x2)
-ggplot(data = correlation_with_fit)+scale_color_gradient(low="darkgreen", high="red") + geom_point(aes(x = x2, y = x1, colour = x3, size = x3))+ labs(colour=" Number \n of \n FSW  \n prevalence \n points \n fits", size = "")  + theme_bw() + labs(y = param_dep, x = param_ind)
+ggplot(data = correlation_with_fit)+scale_color_gradient(low="darkgreen", high="red") + geom_point(aes(x = x2, y = x1, colour = x3, size = x3))+ labs(colour=" Number \n of \n CLIENT  \n prevalence \n points \n fits", size = "")  + theme_bw() + labs(y = param_dep, x = param_ind)
 
 
 

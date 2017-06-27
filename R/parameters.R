@@ -220,18 +220,20 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
                               0
   )
 
-  # if beta becomes > 1, then make them all zero and flag it
-  if(y$betaMtoF_noncomm * y$RR_beta_GUD * y$infect_acute * y$RR_beta_FtM > 1)
+
+
+  y$betaFtoM_noncomm = y$betaMtoF_noncomm * y$RR_beta_FtM * y$RR_beta_circum
+  y$betaMtoF_comm = y$betaMtoF_noncomm * y$RR_beta_GUD * y$prev_ratio_FSW_GPF
+  y$betaFtoM_comm = y$betaMtoF_noncomm * y$RR_beta_FtM * y$RR_beta_circum * y$prev_ratio_Client_GPM * y$RR_beta_GUD
+
+  # if any beta becomes > 1, then make them all zero and flag it
+  if(y$betaMtoF_noncomm >= 1 || y$betaMtoF_comm >= 1 || y$betaFtoM_noncomm >= 1 || y$betaFtoM_comm >= 1)
   {
     y$betaMtoF_noncomm = 0
-    y$beta_above_1 = 1
+    y$betaFtoM_noncomm = 0
+    y$betaMtoF_comm = 0
+    y$betaFtoM_comm = 0
   }
-
-  y$betaFtoM_noncomm = y$betaMtoF_noncomm * y$RR_beta_FtM * 0.44
-  y$betaMtoF_comm = y$betaMtoF_noncomm * y$RR_beta_GUD
-  y$betaFtoM_comm = y$betaMtoF_noncomm * y$RR_beta_FtM * 0.44 # no GUD effect?
-
-
 
   y$epsilon_y = c(y$epsilon_1985, y$epsilon_1992, y$epsilon_2002, y$epsilon_2013, y$epsilon_2016)
 
@@ -569,6 +571,10 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     muM = 0.02739726,
     RR_beta_FtM = 1,
     RR_beta_GUD = 1,
+    RR_beta_circum = 0.44,
+    prev_ratio_FSW_GPF = 1,
+    prev_ratio_Client_GPM = 1,
+
     who_believe_comm = 0,
     init_clientN_from_PCR = 0,
     beta_above_1 = 0,
@@ -1010,6 +1016,9 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    muM = 0.02739726,
                    RR_beta_GUD = 1,
                    RR_beta_FtM = 1,
+                   RR_beta_circum = 0.44,
+                   prev_ratio_FSW_GPF = 1,
+                   prev_ratio_Client_GPM = 1,
                    who_believe_comm = 0,
                    init_clientN_from_PCR = 0,
                    fraction_sexually_active_15_F = 0,

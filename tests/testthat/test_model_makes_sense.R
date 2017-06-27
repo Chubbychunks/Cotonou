@@ -1314,3 +1314,35 @@ test_that("movement in = out", {
     expect_equal(sum(result$rate_move_in[1,,i]), -result$rate_move_out[1,i])
 })
 
+test_that("if rate_leave_client is 0, then client out should equal zero", {
+  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default,
+                               ranges = ranges_default[which(rownames(ranges_default) != "rate_leave_client"),],
+                               forced_pars = list(time = time_default, rate_leave_client = 0))
+  result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
+
+
+  expect_true(all(result$rate_move_out[,5] == 0))
+
+})
+
+test_that("if rate_leave_pro_FSW is 0, then FSW out should equal zero", {
+  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default,
+                               ranges = ranges_default[which(rownames(ranges_default) != "rate_leave_pro_FSW"),],
+                               forced_pars = list(time = time_default, rate_leave_pro_FSW = 0))
+  result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
+
+
+  expect_true(all(result$rate_move_out[,1] == 0))
+
+})
+
+test_that("if rate_leave_low_FSW is 0, then FSW low out should equal zero", {
+  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default,
+                               ranges = ranges_default[which(rownames(ranges_default) != "rate_leave_low_FSW"),],
+                               forced_pars = list(time = time_default, rate_leave_low_FSW = 0))
+  result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
+
+
+  expect_true(all(result$rate_move_out[,2] == 0))
+
+})
