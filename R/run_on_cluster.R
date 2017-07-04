@@ -101,17 +101,15 @@ run_model <- function(number_simulations, par_seq, condom_seq, groups_seq, years
 run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points) {
 
 
-  # parameters --------------------------------------------------------------
   parameters <- cotonou::lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
                                         ranges = ranges, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
-  # end of parameters --------------------------------------------------------------
 
 
+  # this is the slowest part - can I turn this into
   res = lapply(parameters, return_outputs, main_model, time = time, outputs = outputs)
 
 
 
-  # likelihood_list = unlist(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
   likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 
   sorted_likelihood_list = sort(unlist(lapply(likelihood_list, function(x) x[[1]])))
@@ -120,12 +118,40 @@ run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_s
 
   out <- res[best_runs]
 
-  # return(list(time, prev_points, res))
-  #
   return(list(parameters[best_runs], likelihood_list, out, best_runs))
 
 
 }
+
+#' @export
+#' @useDynLib cotonou
+run_model_with_fit_cluster <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points) {
+
+
+  # LHS to create parameter sets
+  parameters <- cotonou::lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
+                                        ranges = ranges, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
+
+
+  # this is the slowest part - simulating model
+  res = parallel::parLapply(NULL, parameters, return_outputs, main_model, time = time, outputs = outputs)
+
+
+
+  # model fitting
+  likelihood_list = parallel::parLapply(NULL, res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
+
+  sorted_likelihood_list = sort(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])))
+
+  best_runs = which(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
+
+  out <- res[best_runs]
+
+  return(list(parameters[best_runs], likelihood_list, out, best_runs))
+
+
+}
+
 
 #' @export
 #' @useDynLib cotonou
