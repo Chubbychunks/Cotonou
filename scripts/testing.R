@@ -437,8 +437,6 @@ ranges = rbind(
   betaMtoF_noncomm = c(0.00144, 0.00626),
   # betaMtoF_noncomm = c(0, 0),
 
-
-  # RR_beta_GUD = c(1.43, 19.58),
   RR_beta_GUD = c(1.43, 5),
 
   RR_beta_FtM = c(0.5, 2),
@@ -469,18 +467,18 @@ ranges = rbind(
 
 
   # commercial partnerships
-  c_comm_1993_ProFSW = c(1000, 1800),
+  c_comm_1993_ProFSW = c(300, 1800),
   c_comm_2005_ProFSW = c(250, 600),
 
-  c_comm_1998_Client = c(7, 12),
-  c_comm_2015_Client = c(12, 17),
+  c_comm_1998_Client = c(7, 17),
+  c_comm_2015_Client = c(7, 17),
 
   #non commercial partnerships
   c_non_comm_1985_ProFSW = c(0.273, 0.468),
   c_non_comm_2016_ProFSW = c(0.273, 0.468),
 
-  c_noncomm_1998_Client = c(1.2, 2.5),
-  c_noncomm_2015_Client = c(5, 9),
+  c_noncomm_1998_Client = c(1, 9),
+  c_noncomm_2015_Client = c(1, 9),
 
   c_noncomm_1998_GPF = c(0.84, 1.05),
   c_noncomm_2008_GPF = c(0.5, 1),
@@ -493,11 +491,11 @@ ranges = rbind(
 
 
   who_believe_comm = c(0, 1),
+  rate_leave_pro_FSW = 0,
+  # rate_leave_pro_FSW = c(0, 1),
+  rate_leave_low_FSW = c(0, 1),
 
-  rate_leave_pro_FSW = c(0.2173913, 0.4347826),
-  rate_leave_low_FSW = c(0.2173913, 0.4347826),
-
-  rate_leave_client = c(0.05, 0.2),
+  rate_leave_client = c(0, 0.2),
   # rate_leave_client = 0,
 
   # condoms
