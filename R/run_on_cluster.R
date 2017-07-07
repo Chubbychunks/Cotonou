@@ -172,9 +172,10 @@ run_model_with_fit_cluster_pars_done <- function(parameters, outputs, prev_point
   best_runs = which(unlist(lapply(likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
   # best_runs = which(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
 
-  out <- res[best_runs]
+  # out <- res[best_runs]
 
-  return(list(parameters[best_runs], likelihood_list, out, best_runs))
+  # return(list(parameters[best_runs], likelihood_list, out, best_runs))
+  return(best_runs)
 
 
 }
