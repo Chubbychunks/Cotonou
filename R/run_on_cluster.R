@@ -158,19 +158,18 @@ run_model_with_fit_cluster_pars_done <- function(parameters, outputs, prev_point
 
 
   # this is the slowest part - simulating model
-  res = lapply(parameters, return_outputs, main_model, time = time, outputs = outputs)
-  # res = parallel::parLapply(NULL, parameters, return_outputs, main_model, time = time, outputs = outputs)
-
+  # res = lapply(parameters, return_outputs, main_model, time = time, outputs = outputs)
+  res = parallel::parLapply(NULL, parameters, return_outputs, main_model, time = time, outputs = outputs)
 
   # model fitting
-  likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
-  # likelihood_list = parallel::parLapply(NULL, res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
+  # likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
+  likelihood_list = parallel::parLapply(NULL, res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 
-  sorted_likelihood_list = sort(unlist(lapply(likelihood_list, function(x) x[[1]])))
-  # sorted_likelihood_list = sort(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])))
+  # sorted_likelihood_list = sort(unlist(lapply(likelihood_list, function(x) x[[1]])))
+  sorted_likelihood_list = sort(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])))
 
-  best_runs = which(unlist(lapply(likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
-  # best_runs = which(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
+  # best_runs = which(unlist(lapply(likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
+  best_runs = which(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
 
   # out <- res[best_runs]
 
