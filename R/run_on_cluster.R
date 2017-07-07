@@ -175,7 +175,7 @@ run_model_with_fit_cluster_pars_done <- function(parameters, outputs, prev_point
   # out <- res[best_runs]
 
   # return(list(parameters[best_runs], likelihood_list, out, best_runs))
-  return(parameters[best_runs])
+  return(max(sorted_likelihood_list), parameters[best_runs])
 
 
 }
