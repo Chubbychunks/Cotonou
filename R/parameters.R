@@ -703,6 +703,236 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
   lapply(samples_list, function(x) generate_parameters(parameters = x, Ncat = Ncat, set_null = set_null))
 }
 
+
+
+
+#' @export
+#' @useDynLib cotonou
+lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars = list(...), forced_pars = list(...), set_null= list(...), ranges = NULL, par_seq, condom_seq, groups_seq, years_seq) {
+
+
+  set_pars <- modifyList(set_pars, forced_pars)
+
+  # parameters that I have defined in ranges will be removed from set_pars and fixed pars (fixed pars below)
+  if(length(which(names(set_pars) %in% rownames(ranges))) > 0)
+    set_pars <- set_pars[-which(names(set_pars) %in% rownames(ranges))]
+
+
+  #fixed pars list i think for the fix parameters function
+  fixed_pars = list(
+    fraction_sexually_active_15_F = 0,
+    fraction_sexually_active_15_M = 0,
+
+    initial_Ntot = 286114,
+
+    frac_women_ProFSW = 0.0024,
+    frac_women_LowFSW = 0.0027,
+    frac_women_exFSW = 0.0024,
+
+    frac_men_client = 0.2,
+    frac_women_virgin = 0.1,
+    frac_men_virgin = 0.1,
+
+
+    fraction_F = 0.516,
+
+    rate_move_in = matrix(0, nrow = Ncat, ncol = Ncat),
+    rate_move_out = rep_len(0, Ncat),
+    epsilon_y = 0,
+    rate_enter_sexual_pop_F = 0.4,
+    rate_enter_sexual_pop_M = 0.4,
+
+    fraction_FSW_foreign = 0,
+    movement = 1,
+    alpha05 = rep_len(0.3,Ncat),
+    fc_y_comm_1985 = matrix(0.2, Ncat, Ncat),
+    fc_y_comm_1993 = matrix(0.5, Ncat, Ncat),
+    fc_y_comm_1995 = matrix(0.7, Ncat, Ncat),
+    fc_y_comm_1998 = matrix(0.3, Ncat, Ncat),
+    fc_y_comm_2002 = matrix(0.4, Ncat, Ncat),
+    fc_y_comm_2005 = matrix(0.1, Ncat, Ncat),
+    fc_y_comm_2008 = matrix(0.1, Ncat, Ncat),
+    fc_y_comm_2012 = matrix(0.6, Ncat, Ncat),
+    fc_y_comm_2015 = matrix(0.4, Ncat, Ncat),
+    fc_y_comm_2016 = matrix(0.4, Ncat, Ncat),
+
+    fc_y_noncomm_1985 = matrix(0.2, Ncat, Ncat),
+    fc_y_noncomm_1993 = matrix(0.2, Ncat, Ncat),
+    fc_y_noncomm_1998 = matrix(0.4, Ncat, Ncat),
+    fc_y_noncomm_2008 = matrix(0.3, Ncat, Ncat),
+    fc_y_noncomm_2011 = matrix(0.3, Ncat, Ncat),
+    fc_y_noncomm_2015 = matrix(0.5, Ncat, Ncat),
+    fc_y_noncomm_2016 = matrix(0.5, Ncat, Ncat),
+    c_comm_1985 = rep_len(2, Ncat),
+    c_comm_1993 = rep_len(2, Ncat),
+    c_comm_1995 = rep_len(2, Ncat),
+    c_comm_1998 = rep_len(2, Ncat),
+    c_comm_2002 = rep_len(2, Ncat),
+    c_comm_2005 = rep_len(2, Ncat),
+    c_comm_2008 = rep_len(2, Ncat),
+    c_comm_2012 = rep_len(2, Ncat),
+    c_comm_2015 = rep_len(2, Ncat),
+    c_comm_2016 = rep_len(2, Ncat),
+
+    c_noncomm_1985 = rep_len(1, Ncat),
+    c_noncomm_1993 = rep_len(1, Ncat),
+    c_noncomm_1995 = rep_len(1, Ncat),
+    c_noncomm_1998 = rep_len(1, Ncat),
+    c_noncomm_2002 = rep_len(1, Ncat),
+    c_noncomm_2005 = rep_len(1, Ncat),
+    c_noncomm_2008 = rep_len(1, Ncat),
+    c_noncomm_2012 = rep_len(1, Ncat),
+    c_noncomm_2015 = rep_len(1, Ncat),
+    c_noncomm_2016 = rep_len(1, Ncat),
+
+    betaMtoF_noncomm = 0.00193,
+    betaFtoM_noncomm = 0.00867,
+    betaMtoF_comm = 0.00193,
+    betaFtoM_comm = 0.00867,
+
+    muF = 0.02597403,
+    muM = 0.02739726,
+    RR_beta_FtM = 1,
+    RR_beta_GUD = 1,
+    RR_beta_circum = 0.44,
+    prev_ratio_FSW_GPF = 1,
+    prev_ratio_Client_GPM = 1,
+
+    who_believe_comm = 0,
+    init_clientN_from_PCR = 0,
+    beta_above_1 = 0,
+    ignore_ranges_fc_c = 0
+
+
+
+  )
+
+  if(length(which(names(fixed_pars) %in% rownames(ranges))) > 0)
+    fixed_pars <- fixed_pars[-which(names(fixed_pars) %in% rownames(ranges))]
+
+
+
+  mu <- matrix(rep(c(1/50, 1/42), Ncat), nrow = Ncat, byrow = TRUE, dimnames = list(rep("mu", Ncat), NULL))
+  omega <- if(Ncat == 9) matrix(c(0.0017, 0.0067, 0, 0, 0, 0, 0, 0, 0.1, 0.2, 0, 0, 0, 0, 0, 0, 0, 0), nrow = Ncat, byrow = TRUE, dimnames = list(rep("omega", Ncat), NULL)) else
+    matrix(rep(c(0.4, 0.6), Ncat), nrow = Ncat, byrow = TRUE, dimnames = list(rep("omega", Ncat), NULL))
+
+  # c_y_comm <- if(Ncat == 9) matrix(c(300, 1400, 40, 64, 0, 0, 0, 0, 18.67, 37.5, 0, 0, 0, 0, 0, 0, 0, 0), nrow = Ncat, byrow = TRUE, dimnames = list(rep("c_y_comm", Ncat), NULL)) else c(1, 3)
+
+  #these parameters need to be here so fix_parameters works? below are fixed...
+  S0_init = matrix(rep(c(4000, 4000), Ncat), nrow = Ncat, byrow = TRUE, dimnames = list(rep("S0_init", Ncat), NULL))
+  I01_init = matrix(rep(c(1000, 1000), Ncat), nrow = Ncat, byrow = TRUE, dimnames = list(rep("I01_init", Ncat), NULL))
+
+
+
+  N_init = if(Ncat == 9) matrix(c(672, 672, 757, 757, 130895, 130895, 672, 672, 27091, 27091, 100335, 100335, 14544, 14544, 11148, 11148, 0, 0), nrow = Ncat, byrow = TRUE, dimnames = list(rep("N_init", Ncat), NULL)) else c(300000, 300000)
+  #   c_comm = if(Ncat == 9) matrix(c(1,1,1,1,1,1,1,1,1,1,1,1,1,1), nrow = Ncat, byrow = TRUE, dimnames = list(rep("c_comm", Ncat), NULL)) else
+  #     matrix(rep(c(1,3), Ncat), nrow = Ncat, byrow = TRUE, dimnames = list(rep("c_comm", Ncat), NULL))
+  #   c_comm = if(Ncat == 9) matrix(c(272, 1439, 40, 64, 0, 0, 0, 0, 18.67, 37.5, 0, 0, 0, 0, 0, 0, 0, 0), nrow = Ncat, byrow = TRUE, dimnames = list(rep("c_comm", Ncat), NULL)) else
+  #     matrix(rep(c(1,3), Ncat), nrow = Ncat, byrow = TRUE, dimnames = list(rep("c_comm", Ncat), NULL))
+  #
+  #   c_noncomm = if(Ncat == 9) matrix(c(0.2729358, 0.4682779, 0.2729358, 0.4682779, 0.90, 1.02, 0.90, 1.02, 1.21, 2.5, 1.28, 1.40, 0, 0, 0, 0, 0, 0), nrow = Ncat, byrow = TRUE, dimnames = list(rep("c_noncomm", Ncat), NULL)) else
+  #     matrix(rep(c(1,3), Ncat), nrow = Ncat, byrow = TRUE, dimnames = list(rep("c_noncomm", Ncat), NULL))
+  #
+
+  old_ranges <- rbind(
+    # c_y_comm,
+
+    epsilon_1985 = c(0.059346131*1.5, 0.059346131*1.5),
+    epsilon_1992 = c(0.053594832*1.5, 0.053594832*1.5),
+    epsilon_2002 = c(0.026936907*1.5, 0.026936907*1.5),
+    epsilon_2013 = c(0.026936907*1.5, 0.026936907*1.5),
+    epsilon_2016 = c(0.026936907*1.5, 0.026936907*1.5),
+
+
+    rate_leave_pro_FSW = c(0.2, 0.2),
+    FSW_leave_Cotonou_fraction = c(0.05, 0.15),
+    rate_leave_low_FSW = c(0.1, 0.1),
+    rate_leave_client = c(0.05, 0.05),
+
+
+    betaMtoF = c(0.00086, 0.00433),
+    betaFtoM = c(0.00279, 0.02701),
+
+    prev_init_FSW = c(0.01318836, 0.06592892),
+    prev_init_rest = c(0.0003134459, 0.0029420363),
+    #     c_comm,
+    #     c_noncomm,
+    mu,
+
+    infect_ART = c(0.1, 0.7), # infectiousness RR when on ART
+    infect_acute = c(4, 18), # RR for acute phase
+
+    # gamma01 = c(1/0.5, 1/0.16), # rate
+    gamma01 = c(0.16, 0.5), # from Mathieu's parameters  IN YEARS
+    #     gamma01 = c(2, 6.25), # from Mathieu's parameters
+
+    SC_to_200_349 = c(2.2, 4.6), # seroconversion to CD4 stage 4 IN YEARS
+    #     SC_to_200_349 = c(1/4.6, 1/2.2), # seroconversion to CD4 stage 4
+
+    gamma04 = c(3.9, 5), # from Mathieu's parameters  IN YEARS
+    #     gamma04 = c(3.9, 5), # from Mathieu's parameters
+
+    ART_RR = c(2, 3), # from Mathieu's parameters  IN YEARS
+
+    # omega,
+
+    #below are fixed...
+    S0_init,
+    I01_init,
+    N_init
+
+
+  )
+
+  if (is.null(ranges)) {
+    ranges <- old_ranges
+  }
+
+  if (!is.null(sample)) {
+    ranges <- ranges[rownames(ranges) %in% sample,  drop=FALSE]
+  }
+  samples <- tgp::lhs(n, ranges)
+  nms <- rownames(ranges)
+  i <- split(seq_along(nms), nms)
+  f <- function(x) {
+    lapply(i, function(j) x[j])
+  }
+  samples_list <- apply(samples, 1, f)
+
+  #   print("ehre:")
+  #   print(samples_list)
+
+  samples_list <- parallel::parLapply(NULL, samples_list, function(x) modifyList(x, fixed_pars)) # btw earlier, fixed pars is replaced by ranges where they overlap
+
+  # HERE!
+  # samples_list <- lapply(samples_list, after_LHS, set_pars = set_pars)
+
+
+  samples_list <- parallel::parLapply(NULL, samples_list, function(x) modifyList(x, set_pars)) # set pars before fixed pars in order to get right fixed
+
+  #   print("ehre2:")
+  #   print(samples_list)
+  samples_list_test <<- samples_list
+
+  samples_list <- parallel::parLapply(NULL, samples_list, fix_parameters, Ncat = Ncat, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
+
+  samples_list_test_fixed <<- samples_list
+
+
+  # samples_list <- lapply(samples_list, function(x) modifyList(x, set_pars)) # set pars after fixed pars in order to get right set pars
+  samples_list <- parallel::parLapply(NULL, samples_list, function(x) modifyList(x, forced_pars)) # set pars after fixed pars in order to get right set pars
+
+
+  parallel::parLapply(NULL, samples_list, function(x) generate_parameters(parameters = x, Ncat = Ncat, set_null = set_null))
+}
+
+
+
+
+
+
+
+
 #' @export
 #' @useDynLib cotonou
 generate_parameters <- function(..., parameters = list(...), set_null = list(...), Ncat = 9, Nage = 1) {
