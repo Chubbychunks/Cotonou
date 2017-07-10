@@ -187,6 +187,7 @@ run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, 
     }
 
     print(max(sorted_likelihood_list))
+    print("mew")
 
     gc()
   }
