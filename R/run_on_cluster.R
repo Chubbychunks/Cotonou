@@ -33,7 +33,7 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points) {
   names(the_frac_N) = c("time", "Pro FSW", "Clients", "Virgin female", "Virgin male")
 
   likelihood_count <- 0
-##
+  ##
   frac_count <- 0
 
   if(all(!is.na(unlist(the_frac_N)))) {
@@ -154,10 +154,8 @@ run_model_with_fit_cluster <- function(number_simulations, par_seq, condom_seq, 
 
 #' @export
 #' @useDynLib cotonou
-run_model_with_fit_cluster_multiple <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points) {
+run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points) {
 
-
-  batch_size = 50
 
 
 
@@ -182,7 +180,11 @@ run_model_with_fit_cluster_multiple <- function(number_simulations, par_seq, con
     best_runs = which(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
 
     if(max(sorted_likelihood_list) > 0)
-      results_list = list(results_list, parameters[best_runs])
+    {
+      results_list[[i]] <- list(max = max(sorted_likelihood_list), pars = parameters[best_runs])
+    } else {
+      results_list[[i]] <- list(max = 0, pars = NULL)
+    }
 
     print(max(sorted_likelihood_list))
 
