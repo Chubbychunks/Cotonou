@@ -159,7 +159,10 @@ run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, 
 
 
 
-  results_list = list()
+  best_fit_pars = list()
+  max_fit = 1
+
+  # results_list = list()
   for(i in 1:(number_simulations/batch_size))
   {
     # LHS to create parameter sets
@@ -179,20 +182,29 @@ run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, 
 
     best_runs = which(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
 
-    if(max(sorted_likelihood_list) > 0)
+    # if(max(sorted_likelihood_list) > 0)
+    # {
+    #   results_list[[i]] <- list(max = max(sorted_likelihood_list), pars = parameters[best_runs])
+    # } else {
+    #   results_list[[i]] <- list(max = 0, pars = NULL)
+    # }
+
+    if(max(sorted_likelihood_list) > max_fit)
     {
-      results_list[[i]] <- list(max = max(sorted_likelihood_list), pars = parameters[best_runs])
-    } else {
-      results_list[[i]] <- list(max = 0, pars = NULL)
+      max_fit = max(sorted_likelihood_list)
+      best_fit_pars = parameters[best_runs]
+    } else if(max(sorted_likelihood_list) == max_fit)
+    {
+      best_fit_pars[(length(best_fit_pars) + 1 ):(length(best_fit_pars) + length(best_runs))] <- parameters[best_runs]
     }
 
-    print(max(sorted_likelihood_list))
-    print("mew")
+    print(max_fit)
+    # print(max(sorted_likelihood_list))
 
     gc()
   }
 
-  return(results_list)
+  return(list(max_fit, best_fit_pars))
 
 
 
