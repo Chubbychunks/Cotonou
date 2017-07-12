@@ -206,15 +206,71 @@ run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, 
 
   return(list(max_fit, best_fit_pars))
 
+  # return(list(parameters[best_runs], likelihood_list, out, best_runs))
+}
+
+#' @export
+#' @useDynLib cotonou
+run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points) {
 
 
 
 
+  best_fit_pars = list()
+  max_fit = 1
+
+  # results_list = list()
+  for(i in 1:(number_simulations/batch_size))
+  {
+    # LHS to create parameter sets
+    parameters <- cotonou::lhs_parameters(batch_size, set_pars = best_set, Ncat = 9, time = time,
+                                                   ranges = ranges, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
+
+
+    # pars = parameters[(batch_size * (i - 1) + 1):(batch_size * i)]
+
+    # this is the slowest part - simulating model
+    res = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
+
+    # model fitting
+    likelihood_list = lapply(res, cotonou::likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
+
+    sorted_likelihood_list = sort(unlist(lapply(likelihood_list, function(x) x[[1]])))
+
+    best_runs = which(unlist(lapply(likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
+
+    # if(max(sorted_likelihood_list) > 0)
+    # {
+    #   results_list[[i]] <- list(max = max(sorted_likelihood_list), pars = parameters[best_runs])
+    # } else {
+    #   results_list[[i]] <- list(max = 0, pars = NULL)
+    # }
+
+    if(max(sorted_likelihood_list) > max_fit)
+    {
+      max_fit = max(sorted_likelihood_list)
+      best_fit_pars = parameters[best_runs]
+    } else if(max(sorted_likelihood_list) == max_fit)
+    {
+      best_fit_pars[(length(best_fit_pars) + 1 ):(length(best_fit_pars) + length(best_runs))] <- parameters[best_runs]
+    }
+
+    # print(max_fit)
+    print(max(sorted_likelihood_list))
+
+    best_fit_pars_test <<- best_fit_pars
+
+
+    gc()
+  }
+
+  return(list(max_fit, best_fit_pars))
 
   # return(list(parameters[best_runs], likelihood_list, out, best_runs))
-
-
 }
+
+
+
 
 
 #' @export

@@ -30,7 +30,7 @@ devtools::test()
 
 require(ggplot2)
 require(reshape2)
-number_simulations = 1
+number_simulations = 30
 epi_start = 1986
 epi_end = 2016
 
@@ -1100,20 +1100,26 @@ ranges = rbind(
   epsilon_1985 = c(0.08, 0.08),
   epsilon_1992 = c(0.08, 0.08),
   epsilon_2002 = c(0.08, 0.08),
-  epsilon_2013 = c(0.08, 0.08),
-  epsilon_2016 = c(0.08, 0.08),
+  epsilon_2013 = c(0.07, 0.07),
+  epsilon_2016 = c(0.07, 0.07),
 
   fraction_FSW_foreign = c(0.9, 0.9),
 
   muF = c(0.01851852, 0.025),
   muM = c(0.01851852, 0.025),
 
-  betaMtoF_noncomm = c(0.00144, 0.00626),
+  # betaMtoF_noncomm = c(0.00144, 0.00626),
+
+  betaMtoF_noncomm = c(0.00086, 0.00626),
   # betaMtoF_noncomm = c(0, 0),
 
+  RR_beta_GUD = c(1.43, 5),
 
-  RR_beta_GUD = c(1.43, 19.58),
   RR_beta_FtM = c(0.5, 2),
+
+  RR_beta_circum = c(0.34, 0.72),
+  prev_ratio_FSW_GPF = c(1, 2),
+  prev_ratio_Client_GPM = c(1, 2),
 
   frac_women_ProFSW = c(0.0024, 0.0143),
   # frac_women_LowFSW = c(0.0024, 0.0067),
@@ -1137,18 +1143,18 @@ ranges = rbind(
 
 
   # commercial partnerships
-  c_comm_1993_ProFSW = c(1000, 1800),
+  c_comm_1993_ProFSW = c(300, 1800),
   c_comm_2005_ProFSW = c(250, 600),
 
-  c_comm_1998_Client = c(7, 12),
-  c_comm_2015_Client = c(12, 17),
+  c_comm_1998_Client = c(7, 17),
+  c_comm_2015_Client = c(7, 17),
 
   #non commercial partnerships
   c_non_comm_1985_ProFSW = c(0.273, 0.468),
   c_non_comm_2016_ProFSW = c(0.273, 0.468),
 
-  c_noncomm_1998_Client = c(1.2, 2.5),
-  c_noncomm_2015_Client = c(5, 9),
+  c_noncomm_1998_Client = c(1, 9),
+  c_noncomm_2015_Client = c(1, 9),
 
   c_noncomm_1998_GPF = c(0.84, 1.05),
   c_noncomm_2008_GPF = c(0.5, 1),
@@ -1162,10 +1168,10 @@ ranges = rbind(
 
   who_believe_comm = c(0, 1),
 
-  rate_leave_pro_FSW = c(0.2173913, 0.4347826),
-  rate_leave_low_FSW = c(0.2173913, 0.4347826),
+  rate_leave_pro_FSW = c(0, 1),
+  rate_leave_low_FSW = c(0, 1),
 
-  rate_leave_client = c(0.05, 0.2),
+  rate_leave_client = c(0, 0.2),
   # rate_leave_client = 0,
 
   # condoms
@@ -1248,6 +1254,9 @@ Ntot_data_points = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
 
 result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 # result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
+
+# with fit best runs
+unlist(lapply(result[[2]], function(x) x[[1]]))
 
 # removing those with too high betas
 beta_not_above_1 = which(unlist(lapply(result[[1]], function(x) x$beta_above_1)) == 0)
