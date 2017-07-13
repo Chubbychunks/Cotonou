@@ -707,7 +707,7 @@ require(reshape2)
 devtools::install_github("geidelberg/cotonou")
 
 
-number_simulations = 1
+number_simulations = 200
 epi_start = 1986
 epi_end = 2030
 
@@ -1099,9 +1099,9 @@ ranges = rbind(
   # NO HIV, CONSTANT POP GROWTH RATE
   epsilon_1985 = c(0.08, 0.08),
   epsilon_1992 = c(0.08, 0.08),
-  epsilon_2002 = c(0.08, 0.08),
-  epsilon_2013 = c(0.07, 0.07),
-  epsilon_2016 = c(0.07, 0.07),
+  epsilon_2002 = c(0.06, 0.07),
+  epsilon_2013 = c(0.04, 0.06),
+  epsilon_2016 = c(0.04, 0.06),
 
   fraction_FSW_foreign = c(0.9, 0.9),
 
@@ -1239,8 +1239,8 @@ frac_N_data_points = data.frame(time = c(1998, 2014,
                                              "Virgin male", "Virgin male", "Virgin male"))
 
 frac_N_discard_points = data.frame(variable = c("Pro FSW", "Clients", "Virgin female", "Virgin male"),
-                                   min = c(0.001237599, 0.094735687, 0.050019624, 0.042621372),
-                                   max = c(0.007374027, 0.193733511, 0.09281992, 0.060783889))
+                                   min = c(0.001237599, 0.1509*(1-0.515666224), 0.07896475*0.515666224, 0.07039551*(1-0.515666224)),
+                                   max = c(0.007374027, 0.40 * (1-0.515666224), 0.2*0.515666224, 0.17*(1-0.515666224)))
 
 # Ntot data points ------------------------------------------------------
 

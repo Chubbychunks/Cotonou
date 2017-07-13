@@ -101,8 +101,8 @@ Ntot_inc_former_FSW_nonCot = sum(N)
 output(Ntot_inc_former_FSW_nonCot) = Ntot_inc_former_FSW_nonCot
 
 # births due to population growth
-epsilon = interpolate(epsilon_t, epsilon_y, "linear")
-# epsilon = interpolate(epsilon_t, epsilon_y, "constant")
+# epsilon = interpolate(epsilon_t, epsilon_y, "linear")
+epsilon = interpolate(epsilon_t, epsilon_y, "constant")
 
 # new_people = if(Ncat == 9) epsilon * (N[1] + N[2] + N[3] + N[4] + N[5] + N[6] + N[7] + N[8] + N[9]) else epsilon * sum(N)
 new_people = epsilon * Ntot_inc_former_FSW_nonCot
