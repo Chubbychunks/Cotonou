@@ -707,7 +707,7 @@ require(reshape2)
 devtools::install_github("geidelberg/cotonou")
 
 
-number_simulations = 200
+number_simulations = 50
 epi_start = 1986
 epi_end = 2030
 
@@ -1110,16 +1110,18 @@ ranges = rbind(
 
   # betaMtoF_noncomm = c(0.00144, 0.00626),
 
-  betaMtoF_noncomm = c(0.00086, 0.00626),
+  betaMtoF_baseline = c(0.0006, 0.001),
   # betaMtoF_noncomm = c(0, 0),
 
-  RR_beta_GUD = c(1.43, 5),
-
   RR_beta_FtM = c(0.5, 2),
-
   RR_beta_circum = c(0.34, 0.72),
-  prev_ratio_FSW_GPF = c(1, 2),
-  prev_ratio_Client_GPM = c(1, 2),
+
+
+  prev_HSV2_FSW = c(1, 2),
+  prev_HSV2_Client = c(1, 2),
+  prev_HSV2_GPF = c(1, 2),
+  prev_HSV2_GPM = c(1, 2),
+  RR_beta_HSV2 = c(1.43, 5),
 
   frac_women_ProFSW = c(0.0024, 0.0143),
   # frac_women_LowFSW = c(0.0024, 0.0067),
@@ -1252,7 +1254,7 @@ Ntot_data_points = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
 
 #####################################################
 
-result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
+result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points)
 # result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 
 # with fit best runs

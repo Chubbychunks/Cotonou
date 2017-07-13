@@ -221,10 +221,10 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   )
 
 
-
-  y$betaFtoM_noncomm = y$betaMtoF_noncomm * y$RR_beta_FtM * y$RR_beta_circum
-  y$betaMtoF_comm = y$betaMtoF_noncomm * y$RR_beta_GUD * y$prev_ratio_FSW_GPF
-  y$betaFtoM_comm = y$betaMtoF_noncomm * y$RR_beta_FtM * y$RR_beta_circum * y$prev_ratio_Client_GPM * y$RR_beta_GUD
+  y$betaMtoF_noncomm = y$betaMtoF_baseline * (1 + RR_beta_HSV2 * prev_HSV2_GPF)
+  y$betaFtoM_noncomm = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + RR_beta_HSV2 * prev_HSV2_GPM)
+  y$betaMtoF_comm = y$betaMtoF_baseline * (1 + RR_beta_HSV2 * prev_HSV2_FSW)
+  y$betaFtoM_comm = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + RR_beta_HSV2 * prev_HSV2_Client)
 
   # if any beta becomes > 1, then make them all zero and flag it
   if(y$betaMtoF_noncomm * y$infect_acute >= 1 || y$betaMtoF_comm * y$infect_acute >= 1 || y$betaFtoM_noncomm * y$infect_acute >= 1 || y$betaFtoM_comm * y$infect_acute >= 1)
@@ -567,13 +567,18 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     betaMtoF_comm = 0.00193,
     betaFtoM_comm = 0.00867,
 
+    betaMtoF_baseline = 0.00081,
+
     muF = 0.02597403,
     muM = 0.02739726,
     RR_beta_FtM = 1,
-    RR_beta_GUD = 1,
     RR_beta_circum = 0.44,
-    prev_ratio_FSW_GPF = 1,
-    prev_ratio_Client_GPM = 1,
+
+    prev_HSV2_FSW = 1,
+    prev_HSV2_Client = 1,
+    prev_HSV2_GPF = 1,
+    prev_HSV2_GPM = 1,
+    RR_beta_HSV2 = 2,
 
     who_believe_comm = 0,
     init_clientN_from_PCR = 0,
@@ -1244,11 +1249,17 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    beta_noncomm = rep_len(0.001, Ncat),
                    muF = 0.02597403,
                    muM = 0.02739726,
-                   RR_beta_GUD = 1,
                    RR_beta_FtM = 1,
                    RR_beta_circum = 0.44,
-                   prev_ratio_FSW_GPF = 1,
-                   prev_ratio_Client_GPM = 1,
+
+                   prev_HSV2_FSW = 1,
+                   prev_HSV2_Client = 1,
+                   prev_HSV2_GPF = 1,
+                   prev_HSV2_GPM = 1,
+                   RR_beta_HSV2 = 2,
+                   betaMtoF_baseline = 0.00081,
+
+
                    who_believe_comm = 0,
                    init_clientN_from_PCR = 0,
                    fraction_sexually_active_15_F = 0,
