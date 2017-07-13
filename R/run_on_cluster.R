@@ -48,12 +48,12 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
 
   # if the run doesn't fit within the Ntot CIs, then set the frac_count to 0 so the run doesn't pass
   if(!(all(!is.na(x$Ntot)) &&
-     x$Ntot[which(time == 1992)] < Ntot_data_points[1, "upper"] && x$Ntot[which(time == 1992)] > Ntot_data_points[1, "lower"] &&
-     x$Ntot[which(time == 2002)] < Ntot_data_points[2, "upper"] && x$Ntot[which(time == 2002)] > Ntot_data_points[2, "lower"] &&
-     x$Ntot[which(time == 2013)] < Ntot_data_points[3, "upper"] && x$Ntot[which(time == 2013)] > Ntot_data_points[3, "lower"])) {
+       x$Ntot[which(time == 1992)] < Ntot_data_points[1, "upper"] && x$Ntot[which(time == 1992)] > Ntot_data_points[1, "lower"] &&
+       x$Ntot[which(time == 2002)] < Ntot_data_points[2, "upper"] && x$Ntot[which(time == 2002)] > Ntot_data_points[2, "lower"] &&
+       x$Ntot[which(time == 2013)] < Ntot_data_points[3, "upper"] && x$Ntot[which(time == 2013)] > Ntot_data_points[3, "lower"])) {
     frac_count <- 0
-    }
   }
+
 
 
   prev_fits = c()
@@ -234,7 +234,7 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
   {
     # LHS to create parameter sets
     parameters <- cotonou::lhs_parameters(batch_size, set_pars = best_set, Ncat = 9, time = time,
-                                                   ranges = ranges, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
+                                          ranges = ranges, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
 
 
     # pars = parameters[(batch_size * (i - 1) + 1):(batch_size * i)]
