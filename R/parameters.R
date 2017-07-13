@@ -221,10 +221,10 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   )
 
 
-  y$betaMtoF_noncomm = y$betaMtoF_baseline * (1 + RR_beta_HSV2 * prev_HSV2_GPF)
-  y$betaFtoM_noncomm = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + RR_beta_HSV2 * prev_HSV2_GPM)
-  y$betaMtoF_comm = y$betaMtoF_baseline * (1 + RR_beta_HSV2 * prev_HSV2_FSW)
-  y$betaFtoM_comm = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + RR_beta_HSV2 * prev_HSV2_Client)
+  y$betaMtoF_noncomm = y$betaMtoF_baseline * (1 + y$RR_beta_HSV2 * y$prev_HSV2_GPF)
+  y$betaFtoM_noncomm = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + y$RR_beta_HSV2 * y$prev_HSV2_GPM)
+  y$betaMtoF_comm = y$betaMtoF_baseline * (1 + y$RR_beta_HSV2 * y$prev_HSV2_FSW)
+  y$betaFtoM_comm = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + y$RR_beta_HSV2 * y$prev_HSV2_Client)
 
   # if any beta becomes > 1, then make them all zero and flag it
   if(y$betaMtoF_noncomm * y$infect_acute >= 1 || y$betaMtoF_comm * y$infect_acute >= 1 || y$betaFtoM_noncomm * y$infect_acute >= 1 || y$betaFtoM_comm * y$infect_acute >= 1)

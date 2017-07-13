@@ -707,7 +707,7 @@ require(reshape2)
 devtools::install_github("geidelberg/cotonou")
 
 
-number_simulations = 50
+number_simulations = 10
 epi_start = 1986
 epi_end = 2030
 
@@ -1117,11 +1117,11 @@ ranges = rbind(
   RR_beta_circum = c(0.34, 0.72),
 
 
-  prev_HSV2_FSW = c(1, 2),
-  prev_HSV2_Client = c(1, 2),
-  prev_HSV2_GPF = c(1, 2),
-  prev_HSV2_GPM = c(1, 2),
-  RR_beta_HSV2 = c(1.43, 5),
+  prev_HSV2_FSW = c(0.8687271, 0.9403027),
+  prev_HSV2_Client = c(0.1, 0.8687271),
+  prev_HSV2_GPF = c(0.2666742, 0.3236852),
+  prev_HSV2_GPM = c(0.09843545, 0.14108970),
+  RR_beta_HSV2 = c(1.4, 3.4),
 
   frac_women_ProFSW = c(0.0024, 0.0143),
   # frac_women_LowFSW = c(0.0024, 0.0067),
