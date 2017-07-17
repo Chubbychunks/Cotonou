@@ -79,22 +79,27 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
   # fitting to ART cov
   if(likelihood_count > 0)
   {
-    for(i in 1:length(ART_data_points_allgroups[,1]))
-    {
-      the_time = ART_data_points_allgroups[i, "time"]
-      if(x$ART_coverage_all[which(time == the_time)] > ART_data_points_allgroups[i, "Lower"] && x$ART_coverage_all[which(time == the_time)] < ART_data_points_allgroups[i, "Upper"]) {
-        likelihood_count <- likelihood_count + 1
+    if(all(!is.na(x$ART_coverage_all))){
+
+      for(i in 1:length(ART_data_points_allgroups[,1]))
+      {
+        the_time = ART_data_points_allgroups[i, "time"]
+        if(x$ART_coverage_all[which(time == the_time)] > ART_data_points_allgroups[i, "Lower"] && x$ART_coverage_all[which(time == the_time)] < ART_data_points_allgroups[i, "Upper"]) {
+          likelihood_count <- likelihood_count + 1
+        }
       }
     }
   }
   # fitting to ART cov
   if(likelihood_count > 0)
   {
-    for(i in 1:length(ART_data_points_FSW[,1]))
-    {
-      the_time = ART_data_points_FSW[i, "time"]
-      if(x$ART_coverage_FSW[which(time == the_time)] > ART_data_points_FSW[i, "Lower"] && x$ART_coverage_FSW[which(time == the_time)] < ART_data_points_FSW[i, "Upper"]) {
-        likelihood_count <- likelihood_count + 1
+    if(all(!is.na(x$ART_coverage_FSW))){
+      for(i in 1:length(ART_data_points_FSW[,1]))
+      {
+        the_time = ART_data_points_FSW[i, "time"]
+        if(x$ART_coverage_FSW[which(time == the_time)] > ART_data_points_FSW[i, "Lower"] && x$ART_coverage_FSW[which(time == the_time)] < ART_data_points_FSW[i, "Upper"]) {
+          likelihood_count <- likelihood_count + 1
+        }
       }
     }
   }

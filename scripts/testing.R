@@ -713,7 +713,7 @@ require(reshape2)
 devtools::install_github("geidelberg/cotonou")
 
 
-number_simulations = 5
+number_simulations = 200
 epi_start = 1986
 epi_end = 2030
 
@@ -1302,7 +1302,7 @@ Upper = c(0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8,
 
 ),
 variable = c("All", "All", "All", "All", "All", "All", "All",
-             "FSW", "FSW", "FSW", "FSW", "FSW", "FSW", "FSW"))
+             "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
 
 ART_data_points_all = data.frame(time = c(2010, 2011, 2012, 2013, 2014, 2015, 2016,
                                          2010, 2011, 2012, 2013, 2014, 2015, 2016,
@@ -1324,7 +1324,7 @@ Upper = c(0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8,
 variable = c("Women", "Women", "Women", "Women", "Women", "Women", "Women",
              "Men", "Men", "Men", "Men", "Men", "Men", "Men",
              "All", "All", "All", "All", "All", "All", "All",
-             "FSW", "FSW", "FSW", "FSW", "FSW", "FSW", "FSW"))
+             "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
 
 #####################################################
 
@@ -1371,13 +1371,13 @@ colnames(Ntot) = c("time", "Lower", "Median", "Upper")
 ART_coverage_women = t(apply(do.call(rbind, lapply(result[[3]], function(x) x$ART_coverage_women)), 2, cotonou::quantile_95))
 ART_coverage_men = t(apply(do.call(rbind, lapply(result[[3]], function(x) x$ART_coverage_men)), 2, cotonou::quantile_95))
 ART_coverage_FSW = t(apply(do.call(rbind, lapply(result[[3]], function(x) x$ART_coverage_FSW)), 2, cotonou::quantile_95))
-ART_coverage = rbind(ART_coverage_women, ART_coverage_men, ART_coverage_FSW)
-ART_coverage = data.frame(time, ART_coverage, rep(c("Women", "Men", "Pro FSW"), each = length(time)))
+ART_coverage_all = t(apply(do.call(rbind, lapply(result[[3]], function(x) x$ART_coverage_all)), 2, cotonou::quantile_95))
+ART_coverage = rbind(ART_coverage_women, ART_coverage_men, ART_coverage_FSW, ART_coverage_all)
+ART_coverage = data.frame(time, ART_coverage, rep(c("Women", "Men", "Pro FSW", "All"), each = length(time)))
 colnames(ART_coverage) = c("time", "Lower", "Median", "Upper", "variable")
-ART_coverage$variable = factor(ART_coverage$variable, levels = c("Pro FSW", "Women", "Men"))
+ART_coverage$variable = factor(ART_coverage$variable, levels = c("Pro FSW", "Women", "Men", "All"))
+ART_coverage = ART_coverage[ART_coverage$variable == "All" | ART_coverage$variable == "Pro FSW",]
 
-ART_coverage_all = data.frame(time, t(apply(do.call(rbind, lapply(result[[3]], function(x) x$ART_coverage_all)), 2, cotonou::quantile_95)), varaible = "All")
-names(ART_coverage_all) = c("time", "Lower", "Median", "Upper", "variable")
 #####################################################
 
 
@@ -1405,7 +1405,7 @@ ggplot(Ntot) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, 
 #   geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
 
 # # plot ART_coverage in all
-ggplot(ART_coverage_all) +
+ggplot(ART_coverage) +
   geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() +
   facet_wrap(~variable) + labs(y = "ART coverage ") +
   geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
