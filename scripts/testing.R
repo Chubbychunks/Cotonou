@@ -744,7 +744,9 @@ best_set = list(
   prev_init_FSW = 0.0326,
   prev_init_rest = 0.0012,
   # N_init = c(672, 757, 130895, 672, 27124, 100305, 14544, 11145, 0),
+  # fraction_F = 0.5,
   fraction_F = 0.515666224,
+
   epsilon_1985 = 0.059346131 * 1.5,
   epsilon_1992 = 0.053594832 * 1.5,
   epsilon_2002 = 0.026936907 * 1.5,
@@ -853,6 +855,16 @@ best_set = list(
 
   #TESTING
   testing_prob_t = c(1985, 2001, 2005, 2006, 2008, 2012, 2013, 2015, 2016),
+  # testing_prob_y = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 0, # 1985 columns are the risk groups
+  #                           0, 0, 0, 0, 0, 0, 0, 0, 0, # 2001
+  #                           0, 0, 0, 0, 0, 0, 0, 0, 0, # 2005
+  #                           0.142, 0.142, 0.142, 0.142, 0.142, 0.142, 0, 0, 0, # 2006 0.653/8 slope
+  #                           0.21, 0.21, 0.21, 0.21, 0.21, 0.21, 0, 0, 0, # 2008 3*0.653/8
+  #                           0.331, 0.331, 0.331, 0.331, 0.331, 0.331, 0, 0, 0, # 2012 7*0.653/8
+  #                           0.331, 0.331, 0.331, 0.331, 0.331, 0.331, 0, 0, 0, # 2013
+  #                           0.331, 0.331, 0.331, 0.331, 0.331, 0.331, 0, 0, 0, # 2015
+  #                           0.331, 0.331, 0.331, 0.331, 0.331, 0.331, 0, 0, 0), # 2016
+  # nrow = 9, ncol = 9, byrow = T),
   testing_prob_y = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 0, # 1985 columns are the risk groups
                             0, 0, 0, 0, 0, 0, 0, 0, 0, # 2001
                             0, 0, 0, 0, 0, 0, 0, 0, 0, # 2005
@@ -865,6 +877,11 @@ best_set = list(
                           nrow = 9, ncol = 9, byrow = T),
   #ART
   ART_prob_t = c(1985, 2002, 2005, 2016),
+  # ART_prob_y = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 0, # 1985
+  #                       0, 0, 0, 0, 0, 0, 0, 0, 0, # 2002
+  #                       0.1448571, 0.1448571, 0.1448571, 0.1448571, 0.1448571, 0.1448571, 0, 0, 0, # 2005 0.676/14 * 3
+  #                       0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0, 0, 0),
+  #                     nrow = 4, ncol = 9, byrow = T), # 2016 GP: (0.8+0.552)/2
   ART_prob_y = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 0, # 1985
                         0, 0, 0, 0, 0, 0, 0, 0, 0, # 2002
                         0, 0.1448571, 0.1448571, 0.1448571, 0.1448571, 0.1448571, 0, 0, 0, # 2005 0.676/14 * 3
@@ -1100,7 +1117,7 @@ best_set = list(
 
 ranges = rbind(
 
-    init_clientN_from_PCR = c(0,0),
+  init_clientN_from_PCR = c(0,0),
   # NO HIV, CONSTANT POP GROWTH RATE
   epsilon_1985 = c(0.08, 0.08),
   epsilon_1992 = c(0.08, 0.08),
@@ -1123,6 +1140,7 @@ ranges = rbind(
 
   RR_beta_FtM = c(0.5, 2),
   RR_beta_circum = c(0.34, 0.72),
+  # RR_beta_circum = c(1, 1),
 
 
   prev_HSV2_FSW = c(0.8687271, 0.9403027),
@@ -1144,8 +1162,10 @@ ranges = rbind(
   frac_men_client = c(0.196, 0.4),
 
 
-  frac_women_virgin = c(0.0972973, 0.18),
-  frac_men_virgin = c(0.08840413, 0.1255),
+  # frac_women_virgin = c(0.0972973, 0.18),
+  frac_women_virgin = c(0.1255, 0.1255),
+
+  frac_men_virgin = c(0.1255, 0.1255),
 
 
 
@@ -1209,7 +1229,7 @@ ranges = rbind(
 )
 
 # outputs -----------------------------------------------------------------
-outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women")
+outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho")
 
 
 # prev_points -------------------------------------------------------------
@@ -1271,18 +1291,25 @@ Ntot_data_points = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
 # ART coverage data points ------------------------------------------------
 
 ART_data_points = data.frame(time = c(2010, 2011, 2012, 2013, 2014, 2015, 2016,
+                                      2010, 2011, 2012, 2013, 2014, 2015, 2016,
                                       2010, 2011, 2012, 2013, 2014, 2015, 2016
 ),
 Lower = c(0.32, 0.4, 0.43, 0.38, 0.43, 0.49, 0.552,
+          0.32, 0.4, 0.43, 0.38, 0.43, 0.49, 0.552,
           0.32, 0.4, 0.43, 0.38, 0.43, 0.49, 0.552
 
 ),
 Upper = c(0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8,
+          0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8,
           0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8
 
 ),
 variable = c("Women", "Women", "Women", "Women", "Women", "Women", "Women",
-             "Men", "Men", "Men", "Men", "Men", "Men", "Men"))
+             "Men", "Men", "Men", "Men", "Men", "Men", "Men",
+             "All", "All", "All", "All", "All", "All", "All"))
+
+ART_data_points_all = ART_data_points[ART_data_points$variable == "All",]
+
 #####################################################
 
 result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points)
@@ -1333,6 +1360,8 @@ ART_coverage = data.frame(time, ART_coverage, rep(c("Women", "Men", "Pro FSW"), 
 colnames(ART_coverage) = c("time", "Lower", "Median", "Upper", "variable")
 ART_coverage$variable = factor(ART_coverage$variable, levels = c("Pro FSW", "Women", "Men"))
 
+ART_coverage_all = data.frame(time, t(apply(do.call(rbind, lapply(result[[3]], function(x) x$ART_coverage_all)), 2, cotonou::quantile_95)), varaible = "All")
+names(ART_coverage_all) = c("time", "Lower", "Median", "Upper", "variable")
 #####################################################
 
 
@@ -1354,11 +1383,16 @@ ggplot(Ntot) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, 
   theme_bw() + labs(y = "Total population size of Grand Cotonou") +
   geom_point(data = Ntot_data_points, aes(x = time, y = point, color = colour), size = I(2), shape = 15) + geom_errorbar(data = Ntot_data_points, aes(x = time, ymax = upper, ymin = lower, color = colour), width = 2)
 
-# plot prevalence in each group
-ggplot(ART_coverage) + geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() +
-  facet_wrap(~variable) + labs(y = "ART coverage ") +
-  geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
+# # plot ART_coverage in each group
+# ggplot(ART_coverage) + geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() +
+#   facet_wrap(~variable) + labs(y = "ART coverage ") +
+#   geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
 
+# # plot ART_coverage in all
+ggplot(ART_coverage_all) +
+  geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() +
+  facet_wrap(~variable) + labs(y = "ART coverage ") +
+  geom_errorbar(data = ART_data_points_all, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
 
 #  _____ ___ _____            ____ ___  ____  ____  _____ _        _  _____ ___ ___  _   _   ___ _   _ _____ ___
 # |  ___|_ _|_   _|    _     / ___/ _ \|  _ \|  _ \| ____| |      / \|_   _|_ _/ _ \| \ | | |_ _| \ | |  ___/ _ \
