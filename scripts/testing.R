@@ -1291,28 +1291,44 @@ Ntot_data_points = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
 # ART coverage data points ------------------------------------------------
 
 ART_data_points = data.frame(time = c(2010, 2011, 2012, 2013, 2014, 2015, 2016,
-                                      2010, 2011, 2012, 2013, 2014, 2015, 2016,
                                       2010, 2011, 2012, 2013, 2014, 2015, 2016
 ),
 Lower = c(0.32, 0.4, 0.43, 0.38, 0.43, 0.49, 0.552,
-          0.32, 0.4, 0.43, 0.38, 0.43, 0.49, 0.552,
-          0.32, 0.4, 0.43, 0.38, 0.43, 0.49, 0.552
+          0.0745, 0.0914, 0.1083, 0.1251, 0.1738, 0.4998, 0.5654
 
 ),
 Upper = c(0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8,
+          0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8
+
+),
+variable = c("All", "All", "All", "All", "All", "All", "All",
+             "FSW", "FSW", "FSW", "FSW", "FSW", "FSW", "FSW"))
+
+ART_data_points_all = data.frame(time = c(2010, 2011, 2012, 2013, 2014, 2015, 2016,
+                                         2010, 2011, 2012, 2013, 2014, 2015, 2016,
+                                         2010, 2011, 2012, 2013, 2014, 2015, 2016,
+                                         2010, 2011, 2012, 2013, 2014, 2015, 2016
+),
+Lower = c(0.32, 0.4, 0.43, 0.38, 0.43, 0.49, 0.552,
+          0.32, 0.4, 0.43, 0.38, 0.43, 0.49, 0.552,
+          0.32, 0.4, 0.43, 0.38, 0.43, 0.49, 0.552,
+          0.0745, 0.0914, 0.1083, 0.1251, 0.1738, 0.4998, 0.5654
+
+),
+Upper = c(0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8,
+          0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8,
           0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8,
           0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8
 
 ),
 variable = c("Women", "Women", "Women", "Women", "Women", "Women", "Women",
              "Men", "Men", "Men", "Men", "Men", "Men", "Men",
-             "All", "All", "All", "All", "All", "All", "All"))
-
-ART_data_points_all = ART_data_points[ART_data_points$variable == "All",]
+             "All", "All", "All", "All", "All", "All", "All",
+             "FSW", "FSW", "FSW", "FSW", "FSW", "FSW", "FSW"))
 
 #####################################################
 
-result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points)
+result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
 # result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 
 # with fit best runs
@@ -1392,7 +1408,7 @@ ggplot(Ntot) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, 
 ggplot(ART_coverage_all) +
   geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() +
   facet_wrap(~variable) + labs(y = "ART coverage ") +
-  geom_errorbar(data = ART_data_points_all, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
+  geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
 
 #  _____ ___ _____            ____ ___  ____  ____  _____ _        _  _____ ___ ___  _   _   ___ _   _ _____ ___
 # |  ___|_ _|_   _|    _     / ___/ _ \|  _ \|  _ \| ____| |      / \|_   _|_ _/ _ \| \ | | |_ _| \ | |  ___/ _ \

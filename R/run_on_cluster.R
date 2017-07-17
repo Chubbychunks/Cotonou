@@ -25,7 +25,7 @@ return_all_outputs <- function(p, gen, time) {
 
 #' @export
 #' @useDynLib cotonou
-likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points_all) {
+likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points) {
   the_prev = data.frame(time, x$prev_FSW, x$prev_LowFSW, x$prev_client, x$prev_women, x$prev_men)
   names(the_prev) = c("time", "Pro FSW", "Low-level FSW", "Clients", "Women", "Men")
 
@@ -78,10 +78,10 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
   # fitting to ART cov
   if(likelihood_count > 0)
   {
-    for(i in 1:length(ART_data_points_all[,1]))
+    for(i in 1:length(ART_data_points[,1]))
     {
-      the_time = ART_data_points_all[i, "time"]
-      if(x$ART_coverage_all[which(time == the_time)] > ART_data_points_all[i, "Lower"] && x$ART_coverage_all[which(time == the_time)] < ART_data_points_all[i, "Upper"]) {
+      the_time = ART_data_points[i, "time"]
+      if(x$ART_coverage_all[which(time == the_time)] > ART_data_points[i, "Lower"] && x$ART_coverage_all[which(time == the_time)] < ART_data_points[i, "Upper"]) {
         likelihood_count <- likelihood_count + 1
       }
     }
@@ -121,7 +121,7 @@ run_model <- function(number_simulations, par_seq, condom_seq, groups_seq, years
 
 #' @export
 #' @useDynLib cotonou
-run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points_all) {
+run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points) {
 
 
   parameters <- cotonou::lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
@@ -133,7 +133,7 @@ run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_s
 
 
 
-  likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points_all = ART_data_points_all)
+  likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
 
   sorted_likelihood_list = sort(unlist(lapply(likelihood_list, function(x) x[[1]])))
 
@@ -148,7 +148,7 @@ run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_s
 
 #' @export
 #' @useDynLib cotonou
-run_model_with_fit_cluster <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points_all) {
+run_model_with_fit_cluster <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points) {
 
 
   # LHS to create parameter sets
@@ -162,7 +162,7 @@ run_model_with_fit_cluster <- function(number_simulations, par_seq, condom_seq, 
 
 
   # model fitting
-  likelihood_list = parallel::parLapply(NULL, res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points_all = ART_data_points_all)
+  likelihood_list = parallel::parLapply(NULL, res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
 
   sorted_likelihood_list = sort(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])))
 
@@ -177,7 +177,7 @@ run_model_with_fit_cluster <- function(number_simulations, par_seq, condom_seq, 
 
 #' @export
 #' @useDynLib cotonou
-run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points_all) {
+run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points) {
 
 
 
@@ -199,7 +199,7 @@ run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, 
     res = parallel::parLapply(NULL, parameters, cotonou::return_outputs, main_model, time = time, outputs = outputs)
 
     # model fitting
-    likelihood_list = parallel::parLapply(NULL, res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points_all = ART_data_points_all)
+    likelihood_list = parallel::parLapply(NULL, res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
 
     sorted_likelihood_list = sort(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])))
 
@@ -234,7 +234,7 @@ run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, 
 
 #' @export
 #' @useDynLib cotonou
-run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points_all) {
+run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points) {
 
 
 
@@ -256,7 +256,7 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
     res = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
 
     # model fitting
-    likelihood_list = lapply(res, cotonou::likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points_all = ART_data_points_all)
+    likelihood_list = lapply(res, cotonou::likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
 
     sorted_likelihood_list = sort(unlist(lapply(likelihood_list, function(x) x[[1]])))
 
@@ -298,7 +298,7 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
 
 #' @export
 #' @useDynLib cotonou
-run_model_with_fit_cluster_pars_done <- function(parameters, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points_all) {
+run_model_with_fit_cluster_pars_done <- function(parameters, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points) {
 
 
   # this is the slowest part - simulating model
@@ -307,7 +307,7 @@ run_model_with_fit_cluster_pars_done <- function(parameters, outputs, prev_point
 
   # model fitting
   # likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
-  likelihood_list = parallel::parLapply(NULL, res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points_all = ART_data_points_all)
+  likelihood_list = parallel::parLapply(NULL, res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
 
   # sorted_likelihood_list = sort(unlist(lapply(likelihood_list, function(x) x[[1]])))
   sorted_likelihood_list = sort(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])))
@@ -325,7 +325,7 @@ run_model_with_fit_cluster_pars_done <- function(parameters, outputs, prev_point
 
 #' @export
 #' @useDynLib cotonou
-run_model_with_fit_for_correlations <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points_all) {
+run_model_with_fit_for_correlations <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points) {
 
   counter = 0
 
@@ -346,7 +346,7 @@ run_model_with_fit_for_correlations <- function(number_simulations, par_seq, con
 
 
   # likelihood_list = unlist(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
-  likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points_all)
+  likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points)
 
 
   # return(list(time, prev_points, res))
@@ -358,7 +358,7 @@ run_model_with_fit_for_correlations <- function(number_simulations, par_seq, con
 
 #' @export
 #' @useDynLib cotonou
-run_model_with_fit_for_correlations_cluster <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points_all) {
+run_model_with_fit_for_correlations_cluster <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points) {
 
 
   # parameters --------------------------------------------------------------
@@ -372,7 +372,7 @@ run_model_with_fit_for_correlations_cluster <- function(number_simulations, par_
 
 
   # likelihood_list = unlist(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
-  likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points_all = ART_data_points_all)
+  likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
 
 
   # return(list(time, prev_points, res))
