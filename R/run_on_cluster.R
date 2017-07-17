@@ -99,7 +99,7 @@ run_model <- function(number_simulations, par_seq, condom_seq, groups_seq, years
   # end of parameters --------------------------------------------------------------
 
 
-  res = lapply(parameters, return_outputs, main_model, time = time, outputs = outputs)
+  res = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
 
 
   return(list(parameters, res))

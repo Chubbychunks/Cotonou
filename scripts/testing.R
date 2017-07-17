@@ -425,25 +425,31 @@ ranges = rbind(
   # NO HIV, CONSTANT POP GROWTH RATE
   epsilon_1985 = c(0.08, 0.08),
   epsilon_1992 = c(0.08, 0.08),
-  epsilon_2002 = c(0.08, 0.08),
-  epsilon_2013 = c(0.08, 0.08),
-  epsilon_2016 = c(0.08, 0.08),
+  epsilon_2002 = c(0.06, 0.07),
+  epsilon_2013 = c(0.04, 0.06),
+  epsilon_2016 = c(0.04, 0.06),
 
   fraction_FSW_foreign = c(0.9, 0.9),
 
   muF = c(0.01851852, 0.025),
   muM = c(0.01851852, 0.025),
 
-  betaMtoF_noncomm = c(0.00144, 0.00626),
+  # betaMtoF_noncomm = c(0.00144, 0.00626),
+
+  betaMtoF_baseline = c(0.0006, 0.001),
   # betaMtoF_noncomm = c(0, 0),
 
-  RR_beta_GUD = c(1.43, 5),
-
   RR_beta_FtM = c(0.5, 2),
-
   RR_beta_circum = c(0.34, 0.72),
-  prev_ratio_FSW_GPF = c(1, 2),
-  prev_ratio_Client_GPM = c(1, 2),
+
+
+  prev_HSV2_FSW = c(0.8687271, 0.9403027),
+  prev_HSV2_Client = c(0.1, 0.8687271),
+  prev_HSV2_GPF = c(0.2666742, 0.3236852),
+  prev_HSV2_GPM = c(0.09843545, 0.14108970),
+
+  RR_beta_HSV2_comm = c(1.4, 2.1),
+  RR_beta_HSV2_noncomm = c(2.2, 3.4),
 
   frac_women_ProFSW = c(0.0024, 0.0143),
   # frac_women_LowFSW = c(0.0024, 0.0067),
@@ -491,8 +497,8 @@ ranges = rbind(
 
 
   who_believe_comm = c(0, 1),
-  rate_leave_pro_FSW = 0,
-  # rate_leave_pro_FSW = c(0, 1),
+
+  rate_leave_pro_FSW = c(0, 1),
   rate_leave_low_FSW = c(0, 1),
 
   rate_leave_client = c(0, 0.2),
@@ -707,7 +713,7 @@ require(reshape2)
 devtools::install_github("geidelberg/cotonou")
 
 
-number_simulations = 10
+number_simulations = 5
 epi_start = 1986
 epi_end = 2030
 
@@ -1089,13 +1095,12 @@ best_set = list(
 # best_set end ----------------------------------------------------------------
 
 
-# ranges and outputs ------------------------------------------------------------------
+# ranges ------------------------------------------------------------------
 
 
 ranges = rbind(
 
-
-  init_clientN_from_PCR = c(0,0),
+    init_clientN_from_PCR = c(0,0),
   # NO HIV, CONSTANT POP GROWTH RATE
   epsilon_1985 = c(0.08, 0.08),
   epsilon_1992 = c(0.08, 0.08),
@@ -1107,6 +1112,9 @@ ranges = rbind(
 
   muF = c(0.01851852, 0.025),
   muM = c(0.01851852, 0.025),
+
+
+  #BETA
 
   # betaMtoF_noncomm = c(0.00144, 0.00626),
 
@@ -1121,7 +1129,14 @@ ranges = rbind(
   prev_HSV2_Client = c(0.1, 0.8687271),
   prev_HSV2_GPF = c(0.2666742, 0.3236852),
   prev_HSV2_GPM = c(0.09843545, 0.14108970),
-  RR_beta_HSV2 = c(1.4, 3.4),
+
+  RR_beta_HSV2_comm = c(1.4, 2.1),
+  RR_beta_HSV2_noncomm = c(2.2, 3.4),
+
+  # ART
+  infect_ART = c(0.26 * 0.523, 0.99 * 0.523), # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
+  ART_RR = c(1.3, 3.45),
+
 
   frac_women_ProFSW = c(0.0024, 0.0143),
   # frac_women_LowFSW = c(0.0024, 0.0067),
@@ -1193,7 +1208,8 @@ ranges = rbind(
 
 )
 
-outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm")
+# outputs -----------------------------------------------------------------
+outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women")
 
 
 # prev_points -------------------------------------------------------------
@@ -1252,6 +1268,21 @@ Ntot_data_points = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
                               upper = c(465012.85, 783792.85, 1049984.5, 1298036.05, 1637471.2),
                               colour = c("data", "data", "data", "predicted", "predicted"))
 
+# ART coverage data points ------------------------------------------------
+
+ART_data_points = data.frame(time = c(2010, 2011, 2012, 2013, 2014, 2015, 2016,
+                                      2010, 2011, 2012, 2013, 2014, 2015, 2016
+),
+Lower = c(0.32, 0.4, 0.43, 0.38, 0.43, 0.49, 0.552,
+          0.32, 0.4, 0.43, 0.38, 0.43, 0.49, 0.552
+
+),
+Upper = c(0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8,
+          0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8
+
+),
+variable = c("Women", "Women", "Women", "Women", "Women", "Women", "Women",
+             "Men", "Men", "Men", "Men", "Men", "Men", "Men"))
 #####################################################
 
 result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points)
@@ -1293,6 +1324,15 @@ prev$variable = factor(prev$variable, levels = c("Pro FSW", "Low-level FSW", "Cl
 
 Ntot = data.frame(time, t(apply(do.call(rbind, lapply(result[[3]], function(x) x$Ntot)), 2, cotonou::quantile_95)))
 colnames(Ntot) = c("time", "Lower", "Median", "Upper")
+
+ART_coverage_women = t(apply(do.call(rbind, lapply(result[[3]], function(x) x$ART_coverage_women)), 2, cotonou::quantile_95))
+ART_coverage_men = t(apply(do.call(rbind, lapply(result[[3]], function(x) x$ART_coverage_men)), 2, cotonou::quantile_95))
+ART_coverage_FSW = t(apply(do.call(rbind, lapply(result[[3]], function(x) x$ART_coverage_FSW)), 2, cotonou::quantile_95))
+ART_coverage = rbind(ART_coverage_women, ART_coverage_men, ART_coverage_FSW)
+ART_coverage = data.frame(time, ART_coverage, rep(c("Women", "Men", "Pro FSW"), each = length(time)))
+colnames(ART_coverage) = c("time", "Lower", "Median", "Upper", "variable")
+ART_coverage$variable = factor(ART_coverage$variable, levels = c("Pro FSW", "Women", "Men"))
+
 #####################################################
 
 
@@ -1314,6 +1354,10 @@ ggplot(Ntot) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, 
   theme_bw() + labs(y = "Total population size of Grand Cotonou") +
   geom_point(data = Ntot_data_points, aes(x = time, y = point, color = colour), size = I(2), shape = 15) + geom_errorbar(data = Ntot_data_points, aes(x = time, ymax = upper, ymin = lower, color = colour), width = 2)
 
+# plot prevalence in each group
+ggplot(ART_coverage) + geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() +
+  facet_wrap(~variable) + labs(y = "ART coverage ") +
+  geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
 
 
 #  _____ ___ _____            ____ ___  ____  ____  _____ _        _  _____ ___ ___  _   _   ___ _   _ _____ ___
