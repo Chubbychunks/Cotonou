@@ -33,7 +33,7 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
   names(the_frac_N) = c("time", "Pro FSW", "Clients", "Virgin female", "Virgin male")
 
   ART_data_points_allgroups = ART_data_points[ART_data_points$variable == "All",]
-  ART_data_points_FSW = ART_data_points[ART_data_points$variable == "FSW",]
+  ART_data_points_FSW = ART_data_points[ART_data_points$variable == "Pro FSW",]
 
   likelihood_count <- 0
   ##
