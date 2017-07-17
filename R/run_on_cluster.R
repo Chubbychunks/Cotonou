@@ -32,7 +32,8 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
   the_frac_N = data.frame(time, x$frac_N[,c(1, 5, 7, 8)])
   names(the_frac_N) = c("time", "Pro FSW", "Clients", "Virgin female", "Virgin male")
 
-  ART_cov = data.frame(time, x$ART_coverage_all)
+  ART_data_points_allgroups = ART_data_points[ART_data_points$variable == "All",]
+  ART_data_points_FSW = ART_data_points[ART_data_points$variable == "FSW",]
 
   likelihood_count <- 0
   ##
@@ -78,10 +79,21 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
   # fitting to ART cov
   if(likelihood_count > 0)
   {
-    for(i in 1:length(ART_data_points[,1]))
+    for(i in 1:length(ART_data_points_allgroups[,1]))
     {
-      the_time = ART_data_points[i, "time"]
-      if(x$ART_coverage_all[which(time == the_time)] > ART_data_points[i, "Lower"] && x$ART_coverage_all[which(time == the_time)] < ART_data_points[i, "Upper"]) {
+      the_time = ART_data_points_allgroups[i, "time"]
+      if(x$ART_coverage_all[which(time == the_time)] > ART_data_points_allgroups[i, "Lower"] && x$ART_coverage_all[which(time == the_time)] < ART_data_points_allgroups[i, "Upper"]) {
+        likelihood_count <- likelihood_count + 1
+      }
+    }
+  }
+  # fitting to ART cov
+  if(likelihood_count > 0)
+  {
+    for(i in 1:length(ART_data_points_FSW[,1]))
+    {
+      the_time = ART_data_points_FSW[i, "time"]
+      if(x$ART_coverage_FSW[which(time == the_time)] > ART_data_points_FSW[i, "Lower"] && x$ART_coverage_FSW[which(time == the_time)] < ART_data_points_FSW[i, "Upper"]) {
         likelihood_count <- likelihood_count + 1
       }
     }
