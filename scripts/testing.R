@@ -1135,7 +1135,7 @@ ranges = rbind(
 
   # betaMtoF_noncomm = c(0.00144, 0.00626),
 
-  betaMtoF_baseline = c(0.0006, 0.001),
+  betaMtoF_baseline = c(0.0006, 0.00109),
   # betaMtoF_noncomm = c(0, 0),
 
   RR_beta_FtM = c(0.5, 2),
@@ -1162,10 +1162,8 @@ ranges = rbind(
   frac_men_client = c(0.196, 0.4),
 
 
-  # frac_women_virgin = c(0.0972973, 0.18),
-  frac_women_virgin = c(0.1255, 0.1255),
-
-  frac_men_virgin = c(0.1255, 0.1255),
+  frac_women_virgin = c(0.0972973, 0.18),
+  frac_men_virgin = c(0.08840413, 0.1255),
 
 
 
