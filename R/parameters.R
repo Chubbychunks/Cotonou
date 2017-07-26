@@ -341,7 +341,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     # BIRTHS
     # y$omega = c(
     #   y$fraction_F * y$frac_women_ProFSW * y$fraction_FSW_foreign, # some FSW come from outside Cotonou
-    #   y$fraction_F * y$frac_women_LowFSW * y$fraction_FSW_foreign, # BUT THIS IS SET TO 0 FOR NOW: ALL NEW PEOPLE ARE ALL BORN VIRGINS. NOT 0 ANYMORE
+    #   y$fraction_F * y$frac_women_LowFSW * y$fraction_FSW_foreign, #
     #   y$fraction_F * y$fraction_sexually_active_15_F,
     #   0,
     #   0,

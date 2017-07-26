@@ -1425,7 +1425,7 @@ require(reshape2)
 devtools::install_github("geidelberg/cotonou")
 
 
-number_simulations = 100
+number_simulations = 20
 epi_start = 1986
 epi_end = 2016
 
