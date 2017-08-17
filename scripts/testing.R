@@ -783,26 +783,26 @@ best_set = list(
 
 
 
-  n_comm = matrix(c(0, 0, 0, 0, 1.935, 0, 0, 0, 0, # from client sa per partner
-                    0, 0, 0, 0, 1.935, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    1.935, 1.935, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0),
-                  nrow = 9, ncol = 9, byrow = T),
-  n_noncomm = matrix(c(0, 0, 0, 0, 32.7, 0, 0, 0, 0,
-                       0, 0, 0, 0, 32.7, 0, 0, 0, 0, # could replace lowlevel with bargirls parameters
-                       0, 0, 0, 0, 39, 37.875, 0, 0, 0, #(36.75+39)/2
-                       0, 0, 0, 0, 39, 37.875, 0, 0, 0,
-                       32.7, 32.7, 39, 39, 0, 0, 0, 0, 0,
-                       0, 0, 37.875, 37.875, 0, 0, 0, 0, 0,
-                       0, 0, 0, 0, 0, 0, 0, 0, 0,
-                       0, 0, 0, 0, 0, 0, 0, 0, 0,
-                       0, 0, 0, 0, 0, 0, 0, 0, 0),
-                     nrow = 9, ncol = 9, byrow = T),
+  # n_comm = matrix(c(0, 0, 0, 0, 1.935, 0, 0, 0, 0, # from client sa per partner
+  #                   0, 0, 0, 0, 1.935, 0, 0, 0, 0,
+  #                   0, 0, 0, 0, 0, 0, 0, 0, 0,
+  #                   0, 0, 0, 0, 0, 0, 0, 0, 0,
+  #                   1.935, 1.935, 0, 0, 0, 0, 0, 0, 0,
+  #                   0, 0, 0, 0, 0, 0, 0, 0, 0,
+  #                   0, 0, 0, 0, 0, 0, 0, 0, 0,
+  #                   0, 0, 0, 0, 0, 0, 0, 0, 0,
+  #                   0, 0, 0, 0, 0, 0, 0, 0, 0),
+  #                 nrow = 9, ncol = 9, byrow = T),
+  # n_noncomm = matrix(c(0, 0, 0, 0, 32.7, 0, 0, 0, 0,
+  #                      0, 0, 0, 0, 32.7, 0, 0, 0, 0, # could replace lowlevel with bargirls parameters
+  #                      0, 0, 0, 0, 39, 37.875, 0, 0, 0, #(36.75+39)/2
+  #                      0, 0, 0, 0, 39, 37.875, 0, 0, 0,
+  #                      32.7, 32.7, 39, 39, 0, 0, 0, 0, 0,
+  #                      0, 0, 37.875, 37.875, 0, 0, 0, 0, 0,
+  #                      0, 0, 0, 0, 0, 0, 0, 0, 0,
+  #                      0, 0, 0, 0, 0, 0, 0, 0, 0,
+  #                      0, 0, 0, 0, 0, 0, 0, 0, 0),
+  #                    nrow = 9, ncol = 9, byrow = T),
   #think about transforming to matrix
   betaMtoF_comm = 0.00051, # RR circumcision = 0.44
   betaFtoM_comm = 0.02442*0.44,
@@ -1099,6 +1099,77 @@ best_set = list(
 
   fc_t_noncomm = c(1985, 1993, 1998, 2008, 2011, 2015, 2016),
 
+
+  n_y_comm_1985 = matrix(
+    c(0, 0, 0, 0, 1.01, 0, 0, 0, 0,
+      0, 0, 0, 0, 1.01, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      1.01, 1.01, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  n_y_comm_2002 = matrix(
+    c(0, 0, 0, 0, 1.01, 0, 0, 0, 0,
+      0, 0, 0, 0, 1.01, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      1.01, 1.01, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  n_y_comm_2016 = matrix(
+    c(0, 0, 0, 0, 1.01, 0, 0, 0, 0,
+      0, 0, 0, 0, 1.01, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      1.01, 1.01, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  n_t_comm = c(1985, 2002, 2016),
+
+
+  n_y_noncomm_1985 = matrix(
+    c(0, 0, 0, 0, 1.51, 0, 0, 0, 0,
+      0, 0, 0, 0, 1.51, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      1.51, 1.51, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  n_y_noncomm_2002 = matrix(
+    c(0, 0, 0, 0, 1.51, 0, 0, 0, 0,
+      0, 0, 0, 0, 1.51, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      1.51, 1.51, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  n_y_noncomm_2016 = matrix(
+    c(0, 0, 0, 0, 1.51, 0, 0, 0, 0,
+      0, 0, 0, 0, 1.51, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      1.51, 1.51, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
+  n_t_noncomm = c(1985, 2002, 2016),
 
   rate_leave_pro_FSW = 0.2,
   FSW_leave_Cotonou_fraction = 0.1,
@@ -1473,6 +1544,9 @@ variable = c("Women", "Women", "Women", "Women", "Women", "Women", "Women",
 
 result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
 # result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
+
+result[[1]][[1]]$n_comm
+
 
 # with fit best runs
 unlist(lapply(result[[2]], function(x) x[[1]]))

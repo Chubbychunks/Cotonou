@@ -323,6 +323,16 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$fc_y_noncomm = aperm(y$fc_y_noncomm, c(3, 1, 2))
 
 
+
+  y$n_y_comm = array(data = c(y$n_y_comm_1985, y$n_y_comm_2002,
+                               y$n_y_comm_2016), dim=c(Ncat, Ncat, 3))
+  y$n_y_noncomm = array(data = c(y$n_y_noncomm_1985, y$n_y_noncomm_2002,
+                              y$n_y_noncomm_2016), dim=c(Ncat, Ncat, 3))
+
+  y$n_y_comm = aperm(y$n_y_comm, c(3, 1, 2))
+  y$n_y_noncomm = aperm(y$n_y_noncomm, c(3, 1, 2))
+
+
   y$omega = N/sum(N)
 
 
@@ -458,6 +468,15 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$fc_y_noncomm <- abind::abind(y$fc_y_noncomm, y$fc_y_noncomm[length(y$fc_y_noncomm[,1,1]),,], along = 1)
   y$fc_t_noncomm <- c(y$fc_t_noncomm, max(y$time))
 
+
+  y$n_y_comm <- abind::abind(y$n_y_comm, y$n_y_comm[length(y$n_y_comm[,1,1]),,], along = 1)
+  y$n_t_comm <- c(y$n_t_comm, max(y$time))
+
+  y$n_y_noncomm <- abind::abind(y$n_y_noncomm, y$n_y_noncomm[length(y$n_y_noncomm[,1,1]),,], along = 1)
+  y$n_t_noncomm <- c(y$n_t_noncomm, max(y$time))
+
+
+
   y$zetaa_t <- c(y$zetaa_t, max(y$time))
   y$zetab_t <- c(y$zetab_t, max(y$time))
   y$zetac_t <- c(y$zetac_t, max(y$time))
@@ -540,6 +559,15 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     fc_y_noncomm_2011 = matrix(0.3, Ncat, Ncat),
     fc_y_noncomm_2015 = matrix(0.5, Ncat, Ncat),
     fc_y_noncomm_2016 = matrix(0.5, Ncat, Ncat),
+
+    n_y_comm_1985 = matrix(1.02, Ncat, Ncat),
+    n_y_comm_2002 = matrix(1.02, Ncat, Ncat),
+    n_y_comm_2016 = matrix(1.02, Ncat, Ncat),
+
+    n_y_noncomm_1985 = matrix(1.03, Ncat, Ncat),
+    n_y_nonomm_2002 = matrix(1.03, Ncat, Ncat),
+    n_y_noncomm_2016 = matrix(1.03, Ncat, Ncat),
+
     c_comm_1985 = rep_len(2, Ncat),
     c_comm_1993 = rep_len(2, Ncat),
     c_comm_1995 = rep_len(2, Ncat),
@@ -790,6 +818,14 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     c_noncomm_2012 = rep_len(1, Ncat),
     c_noncomm_2015 = rep_len(1, Ncat),
     c_noncomm_2016 = rep_len(1, Ncat),
+
+    n_y_comm_1985 = matrix(1.02, Ncat, Ncat),
+    n_y_comm_2002 = matrix(1.02, Ncat, Ncat),
+    n_y_comm_2016 = matrix(1.02, Ncat, Ncat),
+
+    n_y_noncomm_1985 = matrix(1.03, Ncat, Ncat),
+    n_y_nonomm_2002 = matrix(1.03, Ncat, Ncat),
+    n_y_noncomm_2016 = matrix(1.03, Ncat, Ncat),
 
     betaMtoF_noncomm = 0.00193,
     betaFtoM_noncomm = 0.00867,
@@ -1198,8 +1234,13 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    fP_y_noncomm = matrix(
                      rep(c(1, 1, 1, 1, 1), Ncat), ncol = Ncat),
 
-                   n_comm = matrix(1, ncol = Ncat, nrow = Ncat),
-                   n_noncomm = matrix(1, ncol = Ncat, nrow = Ncat),
+                   n_y_comm_1985 = matrix(1.02, Ncat, Ncat),
+                   n_y_comm_2002 = matrix(1.02, Ncat, Ncat),
+                   n_y_comm_2016 = matrix(1.02, Ncat, Ncat),
+
+                   n_y_noncomm_1985 = matrix(1.03, Ncat, Ncat),
+                   n_y_nonomm_2002 = matrix(1.03, Ncat, Ncat),
+                   n_y_noncomm_2016 = matrix(1.03, Ncat, Ncat),
 
                    #n = 0,
 
