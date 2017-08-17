@@ -299,6 +299,9 @@ fP_comm[] = interpolate(fP_t_comm, fP_y_comm, "linear")
 fc_noncomm[,] = interpolate(fc_t_noncomm, fc_y_noncomm, "linear")
 fP_noncomm[] = interpolate(fP_t_noncomm, fP_y_noncomm, "linear")
 
+n_comm[,] = interpolate(n_t_comm, n_y_comm, "linear")
+n_noncomm[,] = interpolate(n_t_noncomm, n_y_noncomm, "linear")
+
 
 zetaa[] = interpolate(zetaa_t, zetaa_y, "constant")
 zetab[] = interpolate(zetab_t, zetab_y, "constant")
@@ -828,8 +831,7 @@ eP1b[] = user()
 eP1c[] = user()
 eP1d[] = user()
 
-n_comm[,] = user()
-n_noncomm[,] = user()
+
 
 M_comm[,] = user()
 M_noncomm[,] = user()

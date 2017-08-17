@@ -710,8 +710,10 @@ remove.packages("cotonou")
 require(ggplot2)
 require(reshape2)
 
-devtools::install_github("geidelberg/cotonou")
+# devtools::install_github("geidelberg/cotonou")
 
+odin::odin_package(".") # looks for any models inside inst/odin
+devtools::load_all()
 
 number_simulations = 1
 epi_start = 1986
@@ -1545,7 +1547,7 @@ variable = c("Women", "Women", "Women", "Women", "Women", "Women", "Women",
 result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
 # result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
 
-result[[1]][[1]]$n_comm
+result[[1]][[1]]$n_y_comm
 
 
 # with fit best runs
