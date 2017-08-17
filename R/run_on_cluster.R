@@ -1,5 +1,21 @@
 #' @export
 #' @useDynLib cotonou
+just_parameters <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs) {
+
+
+  # parameters --------------------------------------------------------------
+  parameters <- cotonou::lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
+                                        ranges = ranges, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
+  # end of parameters --------------------------------------------------------------
+
+  return(list(parameters))
+
+}
+
+
+
+#' @export
+#' @useDynLib cotonou
 quantile_95 <- function(x) return(quantile(x, probs = c(0.025, 0.5, 0.975)))
 
 
