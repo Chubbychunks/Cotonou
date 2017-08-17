@@ -871,6 +871,18 @@ fP_y_noncomm[,] = user()
 dim(fP_t_noncomm) = user()
 dim(fP_y_noncomm) = user()
 
+
+
+n_t_comm[] = user()
+n_y_comm[,,] = user()
+dim(n_t_comm) = user()
+dim(n_y_comm) = user()
+n_t_noncomm[] = user()
+n_y_noncomm[,,] = user()
+dim(n_t_noncomm) = user()
+dim(n_y_noncomm) = user()
+
+
 dur_FSW = user()
 
 
