@@ -2479,14 +2479,26 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   for (int i = 0; i < main_model_p->dim_lambda_sum_1a; ++i) {
     main_model_p->lambda_sum_1a[i] = odin_sum2(main_model_p->lambda_1a, i, i, 0, main_model_p->dim_lambda_1a_2 - 1, main_model_p->dim_lambda_1a_1);
   }
+  for (int i = 0; i < main_model_p->dim_S1a; ++i) {
+    deriv_S1a[i] = main_model_p->E1a[i] - S1a[i] * main_model_p->lambda_sum_1a[i] - S1a[i] * main_model_p->mu[i];
+  }
   for (int i = 0; i < main_model_p->dim_lambda_sum_1b; ++i) {
     main_model_p->lambda_sum_1b[i] = odin_sum2(main_model_p->lambda_1b, i, i, 0, main_model_p->dim_lambda_1b_2 - 1, main_model_p->dim_lambda_1b_1);
+  }
+  for (int i = 0; i < main_model_p->dim_S1b; ++i) {
+    deriv_S1b[i] = main_model_p->E1b[i] - S1b[i] * main_model_p->lambda_sum_1b[i] - S1b[i] * main_model_p->mu[i];
   }
   for (int i = 0; i < main_model_p->dim_lambda_sum_1c; ++i) {
     main_model_p->lambda_sum_1c[i] = odin_sum2(main_model_p->lambda_1c, i, i, 0, main_model_p->dim_lambda_1c_2 - 1, main_model_p->dim_lambda_1c_1);
   }
+  for (int i = 0; i < main_model_p->dim_S1c; ++i) {
+    deriv_S1c[i] = main_model_p->E1c[i] - S1c[i] * main_model_p->lambda_sum_1c[i] - S1c[i] * main_model_p->mu[i];
+  }
   for (int i = 0; i < main_model_p->dim_lambda_sum_1d; ++i) {
     main_model_p->lambda_sum_1d[i] = odin_sum2(main_model_p->lambda_1d, i, i, 0, main_model_p->dim_lambda_1d_2 - 1, main_model_p->dim_lambda_1d_1);
+  }
+  for (int i = 0; i < main_model_p->dim_S1d; ++i) {
+    deriv_S1d[i] = main_model_p->E1d[i] - S1d[i] * main_model_p->lambda_sum_1d[i] - S1d[i] * main_model_p->mu[i];
   }
   for (int i = 0; i < main_model_p->dim_cumuInf; ++i) {
     deriv_cumuInf[i] = S0[i] * main_model_p->lambda_sum_0[i] + S1a[i] * main_model_p->lambda_sum_1a[i] + S1b[i] * main_model_p->lambda_sum_1b[i] + S1c[i] * main_model_p->lambda_sum_1c[i] + S1d[i] * main_model_p->lambda_sum_1d[i];
@@ -2494,26 +2506,6 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   for (int i = 0; i < main_model_p->dim_in_S0_1; ++i) {
     for (int j = 0; j < main_model_p->dim_in_S0_2; ++j) {
       main_model_p->in_S0[i + j * main_model_p->dim_in_S0_1] = (i == j ? 0 : main_model_p->rate_move_in[i + j * main_model_p->dim_rate_move_in_1] * S0[j]);
-    }
-  }
-  for (int i = 0; i < main_model_p->dim_in_S1a_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_in_S1a_2; ++j) {
-      main_model_p->in_S1a[i + j * main_model_p->dim_in_S1a_1] = (i == j ? 0 : main_model_p->rate_move_in[i + j * main_model_p->dim_rate_move_in_1] * S1a[j]);
-    }
-  }
-  for (int i = 0; i < main_model_p->dim_in_S1b_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_in_S1b_2; ++j) {
-      main_model_p->in_S1b[i + j * main_model_p->dim_in_S1b_1] = (i == j ? 0 : main_model_p->rate_move_in[i + j * main_model_p->dim_rate_move_in_1] * S1b[j]);
-    }
-  }
-  for (int i = 0; i < main_model_p->dim_in_S1c_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_in_S1c_2; ++j) {
-      main_model_p->in_S1c[i + j * main_model_p->dim_in_S1c_1] = (i == j ? 0 : main_model_p->rate_move_in[i + j * main_model_p->dim_rate_move_in_1] * S1c[j]);
-    }
-  }
-  for (int i = 0; i < main_model_p->dim_in_S1d_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_in_S1d_2; ++j) {
-      main_model_p->in_S1d[i + j * main_model_p->dim_in_S1d_1] = (i == j ? 0 : main_model_p->rate_move_in[i + j * main_model_p->dim_rate_move_in_1] * S1d[j]);
     }
   }
   for (int i = 0; i < main_model_p->dim_in_I01_1; ++i) {
@@ -2608,18 +2600,6 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   }
   for (int i = 0; i < main_model_p->dim_S0; ++i) {
     deriv_S0[i] = main_model_p->E0[i] - S0[i] * main_model_p->lambda_sum_0[i] - S0[i] * main_model_p->mu[i] + main_model_p->rate_move_out[i] * S0[i] + odin_sum2(main_model_p->in_S0, i, i, 0, main_model_p->dim_in_S0_2 - 1, main_model_p->dim_in_S0_1);
-  }
-  for (int i = 0; i < main_model_p->dim_S1a; ++i) {
-    deriv_S1a[i] = main_model_p->E1a[i] - S1a[i] * main_model_p->lambda_sum_1a[i] - S1a[i] * main_model_p->mu[i] + main_model_p->rate_move_out[i] * S1a[i] + odin_sum2(main_model_p->in_S1a, i, i, 0, main_model_p->dim_in_S1a_2 - 1, main_model_p->dim_in_S1a_1);
-  }
-  for (int i = 0; i < main_model_p->dim_S1b; ++i) {
-    deriv_S1b[i] = main_model_p->E1b[i] - S1b[i] * main_model_p->lambda_sum_1b[i] - S1b[i] * main_model_p->mu[i] + main_model_p->rate_move_out[i] * S1b[i] + odin_sum2(main_model_p->in_S1b, i, i, 0, main_model_p->dim_in_S1b_2 - 1, main_model_p->dim_in_S1b_1);
-  }
-  for (int i = 0; i < main_model_p->dim_S1c; ++i) {
-    deriv_S1c[i] = main_model_p->E1c[i] - S1c[i] * main_model_p->lambda_sum_1c[i] - S1c[i] * main_model_p->mu[i] + main_model_p->rate_move_out[i] * S1c[i] + odin_sum2(main_model_p->in_S1c, i, i, 0, main_model_p->dim_in_S1c_2 - 1, main_model_p->dim_in_S1c_1);
-  }
-  for (int i = 0; i < main_model_p->dim_S1d; ++i) {
-    deriv_S1d[i] = main_model_p->E1d[i] - S1d[i] * main_model_p->lambda_sum_1d[i] - S1d[i] * main_model_p->mu[i] + main_model_p->rate_move_out[i] * S1d[i] + odin_sum2(main_model_p->in_S1d, i, i, 0, main_model_p->dim_in_S1d_2 - 1, main_model_p->dim_in_S1d_1);
   }
   for (int i = 0; i < main_model_p->dim_I01; ++i) {
     deriv_I01[i] = S0[i] * main_model_p->lambda_sum_0[i] - I01[i] * (main_model_p->gamma01[i] + main_model_p->tau[i] + main_model_p->alpha01[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I01[i] + odin_sum2(main_model_p->in_I01, i, i, 0, main_model_p->dim_in_I01_2 - 1, main_model_p->dim_in_I01_1);

@@ -713,7 +713,7 @@ require(reshape2)
 devtools::install_github("geidelberg/cotonou")
 
 
-number_simulations = 200
+number_simulations = 1
 epi_start = 1986
 epi_end = 2030
 
@@ -1112,23 +1112,199 @@ best_set = list(
 # best_set end ----------------------------------------------------------------
 
 
+#
+# # ranges ------------------------------------------------------------------
+#
+#
+# ranges = rbind(
+#
+#   # initial_Ntot = c(1,2),
+#   init_clientN_from_PCR = c(0,0),
+#   # NO HIV, CONSTANT POP GROWTH RATE
+#   epsilon_1985 = c(0.08, 0.08),
+#   epsilon_1992 = c(0.08, 0.08),
+#   epsilon_2002 = c(0.06, 0.07),
+#   epsilon_2013 = c(0.04, 0.06),
+#   epsilon_2016 = c(0.04, 0.06),
+#
+#   fraction_FSW_foreign = c(0.9, 0.9),
+#
+#   muF = c(0.01851852, 0.025),
+#   muM = c(0.01851852, 0.025),
+#
+#
+#   #BETA
+#
+#   # betaMtoF_noncomm = c(0.00144, 0.00626),
+#
+#   betaMtoF_baseline = c(0.0006, 0.00109),
+#   # betaMtoF_noncomm = c(0, 0),
+#
+#   RR_beta_FtM = c(0.5, 2),
+#   RR_beta_circum = c(0.34, 0.72),
+#   # RR_beta_circum = c(1, 1),
+#
+#
+#   prev_HSV2_FSW = c(0.8687271, 0.9403027),
+#   prev_HSV2_Client = c(0.1, 0.8687271),
+#   prev_HSV2_GPF = c(0.2666742, 0.3236852),
+#   prev_HSV2_GPM = c(0.09843545, 0.14108970),
+#
+#   RR_beta_HSV2_comm = c(1.4, 2.1),
+#   RR_beta_HSV2_noncomm = c(2.2, 3.4),
+#
+#   # ART
+#   infect_ART = c(0.26 * 0.523, 0.99 * 0.523), # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
+#   ART_RR = c(1.3, 3.45),
+#
+#
+#   frac_women_ProFSW = c(0.0024, 0.0143),
+#   # frac_women_LowFSW = c(0.0024, 0.0067),
+#
+#   frac_women_exFSW = 0,
+#
+#   frac_men_client = c(0.196, 0.4),
+#
+#
+#   frac_women_virgin = c(0.0972973, 0.18),
+#   frac_men_virgin = c(0.08840413, 0.1255),
+#
+#
+#
+#   fraction_sexually_active_15_F = c(0.1387868, 0.153),
+#   fraction_sexually_active_15_M = c(0.2057087, 0.291),
+#
+#
+#   rate_enter_sexual_pop_F = c(1/(20-15), 1/(17-15)),
+#   rate_enter_sexual_pop_M = c(1/(20-15), 1/(17-15)),
+#
+#
+#
+#
+#   # commercial partnerships
+#   c_comm_1993_ProFSW = c(300, 1800),
+#   c_comm_2005_ProFSW = c(250, 600),
+#
+#   c_comm_1998_Client = c(7, 17),
+#   c_comm_2015_Client = c(7, 17),
+#
+#   #non commercial partnerships
+#   c_non_comm_1985_ProFSW = c(0.273, 0.468),
+#   c_non_comm_2016_ProFSW = c(0.273, 0.468),
+#
+#   c_noncomm_1998_Client = c(1, 9),
+#   c_noncomm_2015_Client = c(1, 9),
+#
+#   c_noncomm_1998_GPF = c(0.84, 1.05),
+#   c_noncomm_2008_GPF = c(0.5, 1),
+#
+#   c_noncomm_1998_GPM = c(1.14, 1.46),
+#   c_noncomm_2008_GPM = c(0.28, 1.24),
+#
+#
+#
+#
+#
+#   who_believe_comm = c(0, 1),
+#
+#   rate_leave_pro_FSW = c(0, 1),
+#   rate_leave_low_FSW = c(0, 1),
+#
+#   rate_leave_client = c(0, 0.2),
+#   # rate_leave_client = 0,
+#
+#   # condoms
+#
+#   fc_y_comm_1985_ProFSW_Client = c(0, 0),
+#   fc_y_comm_1993_ProFSW_Client = c(0.535, 0.687),
+#   fc_y_comm_2002_ProFSW_Client = c(0.872, 0.933),
+#
+#   fc_y_noncomm_1985_ProFSW_Client = c(0.27, 0.43),
+#   fc_y_noncomm_2016_ProFSW_Client = c(0.27, 0.43),
+#
+#   fc_y_noncomm_1985_GPM_GPF = 0,
+#   fc_y_noncomm_1998_GPM_GPF = c(0.0326087, 0.05042017),
+#   fc_y_noncomm_2011_GPM_GPF = c(0.161, 0.255)
+#
+#
+#
+# )
+#
+
+# ^ above is old ranges
+
+
 # ranges ------------------------------------------------------------------
 
-
+# yup
 ranges = rbind(
 
-  init_clientN_from_PCR = c(0,0),
-  # NO HIV, CONSTANT POP GROWTH RATE
+  # DEMOGRAPHIC
+
+  fraction_F = c(0.512, 0.52), # fraction of population born female
+  frac_women_ProFSW = c(0.0024, 0.0143), # fraction of women that are professional FSW
+  frac_women_exFSW = c(0.0024, 0.0143), # fraction of women that are low-level FSW
+  frac_men_client = c(0.151, 0.4), # fraction of men that are clients
+  frac_women_virgin = c(0.079, 0.2), # fraction of women that are virgins
+  frac_men_virgin = c(0.070, 0.17), # fraction of men that are virgins
+
+  prev_init_FSW = c(0.0132, 0.0659), # initial prevalence of FSW
+  prev_init_rest = c(0.000313, 0.00294), # initial prevalence of the other groups
+
+
+  # growth rates
   epsilon_1985 = c(0.08, 0.08),
   epsilon_1992 = c(0.08, 0.08),
   epsilon_2002 = c(0.06, 0.07),
   epsilon_2013 = c(0.04, 0.06),
   epsilon_2016 = c(0.04, 0.06),
 
+  muF = c(0.01851852, 0.025), # female mortality
+  muM = c(0.01851852, 0.025), # male mortality
+
+  rate_leave_pro_FSW = c(0, 1), # rate of exit of professional sex work
+  rate_leave_low_FSW = c(0, 1), # rate of exit of low level sex work
+  rate_leave_client = c(0, 0.189), # rate of exit of clients
+
+  rate_enter_sexual_pop_F = c(1/(20-15), 1/(17-15)), # rate of entering sexual population women
+  rate_enter_sexual_pop_M = c(1/(20-15), 1/(17-15)), # rate of entering sexual population men
+
+  fraction_sexually_active_15_F = c(0.119, 0.17), # fraction of 15 year old women sexually active
+  fraction_sexually_active_15_M = c(0.18, 0.35), # fraction of 15 year old men sexually active
+
+
+  # BEHAVIOURAL
+
+  # commercial partnerships
+  c_comm_1993_ProFSW = c(192, 1277),
+  c_comm_2005_ProFSW = c(81, 562),
+  # c_comm_2015_ProFSW = c(71, 501),
+
+  c_comm_1998_Client = c(8.39, 11.9),
+  c_comm_2012_Client = c(11.8, 15),
+  c_comm_2015_Client = c(14.5, 19.8),
+
+
+
+  #non commercial partnerships
+  c_non_comm_1985_ProFSW = c(0.31, 0.86),
+  c_non_comm_1985_LowFSW = c(0.41, 1.04),
+  c_non_comm_1985_Client= c(1.6, 7.9),
+
+  c_noncomm_1998_GPF = c(0.93, 0.99),
+  c_noncomm_2008_GPF = c(0.77, 0.82),
+
+  c_noncomm_1998_GPM = c(1.24, 1.43),
+  c_noncomm_2008_GPM = c(0.73, 0.84),
+
+
+
+
+  init_clientN_from_PCR = c(0,0),
+
   fraction_FSW_foreign = c(0.9, 0.9),
 
-  muF = c(0.01851852, 0.025),
-  muM = c(0.01851852, 0.025),
+
 
 
   #BETA
@@ -1144,7 +1320,7 @@ ranges = rbind(
 
 
   prev_HSV2_FSW = c(0.8687271, 0.9403027),
-  prev_HSV2_Client = c(0.1, 0.8687271),
+  prev_HSV2_Client = c(0.14, 0.8687271),
   prev_HSV2_GPF = c(0.2666742, 0.3236852),
   prev_HSV2_GPM = c(0.09843545, 0.14108970),
 
@@ -1156,46 +1332,12 @@ ranges = rbind(
   ART_RR = c(1.3, 3.45),
 
 
-  frac_women_ProFSW = c(0.0024, 0.0143),
-  # frac_women_LowFSW = c(0.0024, 0.0067),
-  frac_women_exFSW = c(0.0024, 0.0143),
-  frac_men_client = c(0.196, 0.4),
-
-
-  frac_women_virgin = c(0.0972973, 0.18),
-  frac_men_virgin = c(0.08840413, 0.1255),
-
-
-
-  fraction_sexually_active_15_F = c(0.1387868, 0.153),
-  fraction_sexually_active_15_M = c(0.2057087, 0.291),
-
-
-  rate_enter_sexual_pop_F = c(1/(20-15), 1/(17-15)),
-  rate_enter_sexual_pop_M = c(1/(20-15), 1/(17-15)),
 
 
 
 
-  # commercial partnerships
-  c_comm_1993_ProFSW = c(300, 1800),
-  c_comm_2005_ProFSW = c(250, 600),
 
-  c_comm_1998_Client = c(7, 17),
-  c_comm_2015_Client = c(7, 17),
 
-  #non commercial partnerships
-  c_non_comm_1985_ProFSW = c(0.273, 0.468),
-  c_non_comm_2016_ProFSW = c(0.273, 0.468),
-
-  c_noncomm_1998_Client = c(1, 9),
-  c_noncomm_2015_Client = c(1, 9),
-
-  c_noncomm_1998_GPF = c(0.84, 1.05),
-  c_noncomm_2008_GPF = c(0.5, 1),
-
-  c_noncomm_1998_GPM = c(1.14, 1.46),
-  c_noncomm_2008_GPM = c(0.28, 1.24),
 
 
 
@@ -1203,10 +1345,7 @@ ranges = rbind(
 
   who_believe_comm = c(0, 1),
 
-  rate_leave_pro_FSW = c(0, 1),
-  rate_leave_low_FSW = c(0, 1),
 
-  rate_leave_client = c(0, 0.2),
   # rate_leave_client = 0,
 
   # condoms
@@ -1225,6 +1364,12 @@ ranges = rbind(
 
 
 )
+
+
+
+
+
+
 
 # outputs -----------------------------------------------------------------
 outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho")

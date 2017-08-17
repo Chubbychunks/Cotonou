@@ -212,7 +212,7 @@ test_that("useful prep", {
   result2 = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
-  expect_true(sum(unlist(result1[c(grep("I[0-9]", names(result)))])) < sum(unlist(result2[c(grep("I[0-9]", names(result)))])))
+  expect_true(sum(unlist(result1[c(grep("I[0-9]", names(result1)))])) < sum(unlist(result2[c(grep("I[0-9]", names(result2)))])))
 
 })
 
@@ -244,7 +244,7 @@ test_that("beta 2", {
 
 # only clients infected, do females get infected?
 test_that("beta 3", {
-  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default[which(rownames(ranges_default) != "betaMtoF_noncomm"),], forced_pars = list(betaMtoF_noncomm = 0, time = time_default, I11_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0), I01_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0)))
+  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default[which(rownames(ranges_default) != "betaMtoF_noncomm"),], forced_pars = list(betaMtoF_comm = 0, betaMtoF_baseline = 0, movement = 0, time = time_default, I11_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0), I01_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0)))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
   xx <- result[c(grep("I01", names(result)), grep("I11", names(result)))]
@@ -1344,5 +1344,24 @@ test_that("if rate_leave_low_FSW is 0, then FSW low out should equal zero", {
 
 
   expect_true(all(result$rate_move_out[,2] == 0))
+
+})
+
+
+
+test_that("There should be no one but pro FSW on PrEP", {
+  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default,
+                               ranges = ranges_default,
+                               forced_pars = list(time = time_default,
+                                                  zetaa_y = matrix(rep(c(0.1, 0, 0, 0, 0, 0, 0, 0, 0), 5), nrow = 5, byrow = T),
+                                                  zetab_y = matrix(rep(c(0.1, 0, 0, 0, 0, 0, 0, 0, 0), 5), nrow = 5, byrow = T),
+                                                  zetac_y = matrix(rep(c(0.1, 0, 0, 0, 0, 0, 0, 0, 0), 5), nrow = 5, byrow = T)
+                                                  ))
+  result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
+
+
+
+
+  expect_true(sum(c(result$S1a[,2:9], result$S1b[,2:9], result$S1c[,2:9])) == 0)
 
 })
