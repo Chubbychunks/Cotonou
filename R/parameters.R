@@ -20,6 +20,9 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   if(y$ignore_ranges_fc_c == 0) {
 
 
+    y$n_y_comm_2002
+
+
     # CONDOMS
 
     what_we_got_condom = c()

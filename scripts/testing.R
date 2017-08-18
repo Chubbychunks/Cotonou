@@ -721,7 +721,7 @@ epi_end = 2030
 
 # setup -------------------------------------------------------------------
 par_seq = c("c_comm", "c_noncomm")
-condom_seq = c("fc_y_comm", "fc_y_noncomm")
+condom_seq = c("fc_y_comm", "fc_y_noncomm", "n_y_comm", "n_y_noncomm")
 groups_seq = c("ProFSW", "LowFSW", "GPF", "FormerFSW", "Client", "GPM", "VirginF", "VirginM", "FormerFSWoutside")
 years_seq = seq(1985, 2016)
 time <- seq(epi_start, epi_end, length.out = epi_end - epi_start + 1)
@@ -784,27 +784,6 @@ best_set = list(
   c_noncomm_2016 = c(0.3766285, 0.3766285, 0.7943578, 0.7943578, 6.258258, 0.7878543, 0, 0, 0),
 
 
-
-  # n_comm = matrix(c(0, 0, 0, 0, 1.935, 0, 0, 0, 0, # from client sa per partner
-  #                   0, 0, 0, 0, 1.935, 0, 0, 0, 0,
-  #                   0, 0, 0, 0, 0, 0, 0, 0, 0,
-  #                   0, 0, 0, 0, 0, 0, 0, 0, 0,
-  #                   1.935, 1.935, 0, 0, 0, 0, 0, 0, 0,
-  #                   0, 0, 0, 0, 0, 0, 0, 0, 0,
-  #                   0, 0, 0, 0, 0, 0, 0, 0, 0,
-  #                   0, 0, 0, 0, 0, 0, 0, 0, 0,
-  #                   0, 0, 0, 0, 0, 0, 0, 0, 0),
-  #                 nrow = 9, ncol = 9, byrow = T),
-  # n_noncomm = matrix(c(0, 0, 0, 0, 32.7, 0, 0, 0, 0,
-  #                      0, 0, 0, 0, 32.7, 0, 0, 0, 0, # could replace lowlevel with bargirls parameters
-  #                      0, 0, 0, 0, 39, 37.875, 0, 0, 0, #(36.75+39)/2
-  #                      0, 0, 0, 0, 39, 37.875, 0, 0, 0,
-  #                      32.7, 32.7, 39, 39, 0, 0, 0, 0, 0,
-  #                      0, 0, 37.875, 37.875, 0, 0, 0, 0, 0,
-  #                      0, 0, 0, 0, 0, 0, 0, 0, 0,
-  #                      0, 0, 0, 0, 0, 0, 0, 0, 0,
-  #                      0, 0, 0, 0, 0, 0, 0, 0, 0),
-  #                    nrow = 9, ncol = 9, byrow = T),
   #think about transforming to matrix
   betaMtoF_comm = 0.00051, # RR circumcision = 0.44
   betaFtoM_comm = 0.02442*0.44,
@@ -1103,33 +1082,33 @@ best_set = list(
 
 
   n_y_comm_1985 = matrix(
-    c(0, 0, 0, 0, 1.01, 0, 0, 0, 0,
-      0, 0, 0, 0, 1.01, 0, 0, 0, 0,
+    c(0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
-      1.01, 1.01, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
 
   n_y_comm_2002 = matrix(
-    c(0, 0, 0, 0, 1.01, 0, 0, 0, 0,
-      0, 0, 0, 0, 1.01, 0, 0, 0, 0,
+    c(0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
-      1.01, 1.01, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
 
   n_y_comm_2016 = matrix(
-    c(0, 0, 0, 0, 1.01, 0, 0, 0, 0,
-      0, 0, 0, 0, 1.01, 0, 0, 0, 0,
+    c(0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
-      1.01, 1.01, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1139,33 +1118,33 @@ best_set = list(
 
 
   n_y_noncomm_1985 = matrix(
-    c(0, 0, 0, 0, 1.51, 0, 0, 0, 0,
-      0, 0, 0, 0, 1.51, 0, 0, 0, 0,
+    c(0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
-      1.51, 1.51, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
 
   n_y_noncomm_2002 = matrix(
-    c(0, 0, 0, 0, 1.51, 0, 0, 0, 0,
-      0, 0, 0, 0, 1.51, 0, 0, 0, 0,
+    c(0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
-      1.51, 1.51, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
 
   n_y_noncomm_2016 = matrix(
-    c(0, 0, 0, 0, 1.51, 0, 0, 0, 0,
-      0, 0, 0, 0, 1.51, 0, 0, 0, 0,
+    c(0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
-      1.51, 1.51, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1432,8 +1411,15 @@ ranges = rbind(
 
   fc_y_noncomm_1985_GPM_GPF = 0,
   fc_y_noncomm_1998_GPM_GPF = c(0.0326087, 0.05042017),
-  fc_y_noncomm_2011_GPM_GPF = c(0.161, 0.255)
+  fc_y_noncomm_2011_GPM_GPF = c(0.161, 0.255),
 
+  n_y_comm_1985_ProFSW_Client = c(3.32, 3.32),
+  n_y_comm_2002_ProFSW_Client = c(3.32, 3.32),
+  n_y_noncomm_1985_GPF_GPM = c(1.3333, 1.3333),
+  n_y_noncomm_2002_GPF_GPM = c(1.3333, 1.3333),
+
+  n_y_noncomm_1985_GPM_GPF = c(2.3333, 2.3333),
+  n_y_noncomm_2002_GPM_GPF = c(2.3333, 2.3333)
 
 
 )
@@ -1445,7 +1431,7 @@ ranges = rbind(
 
 
 # outputs -----------------------------------------------------------------
-outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho")
+outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm")
 
 
 # prev_points -------------------------------------------------------------
@@ -1545,9 +1531,11 @@ variable = c("Women", "Women", "Women", "Women", "Women", "Women", "Women",
 #####################################################
 
 result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
-# result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points)
+# result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
+# result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 
-result[[1]][[1]]$n_y_comm
+result[[3]][[1]]$n_comm[4,,]
+result[[3]][[1]]$n_noncomm[34,,]
 
 
 # with fit best runs
