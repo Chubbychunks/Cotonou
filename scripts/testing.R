@@ -1417,7 +1417,7 @@ ranges = rbind(
   n_y_comm_2002_ProFSW_Client = c(5, 5),
 
   n_y_comm_1985_Client_ProFSW = c(10, 10),
-  n_y_comm_2002_Client_ProFSW = c(10, 10),
+  # n_y_comm_2002_Client_ProFSW = c(10, 10),
 
 
   n_y_noncomm_1985_GPF_GPM = c(1.3333, 1.3333),
@@ -1425,6 +1425,7 @@ ranges = rbind(
 
   n_y_noncomm_1985_GPM_GPF = c(2.3333, 2.3333),
   n_y_noncomm_2002_GPM_GPF = c(2.3333, 2.3333)
+
 
 
 )
@@ -1540,7 +1541,7 @@ result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, con
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 
 result[[3]][[1]]$n_comm[4,,]
-result[[3]][[1]]$n_noncomm[34,,]
+result[[3]][[1]]$n_noncomm[12,,]
 
 result[[3]][[1]]$fc_noncomm[45,,]
 

@@ -66,7 +66,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
       for(i in 1:length(par_counts[,1]))
       {
-        if(par_counts[i,"freq"] > 1)
+        if(par_counts[i,"freq"] > 0)
         {
           the_years = subset(d, c(par == par_counts[i, "par"] & group == par_counts[i, "group"] & group2 == par_counts[i, "group2"]), year)
 
@@ -106,22 +106,23 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
           # calculate the slopes between them
           # apply the slope and time difference to the pars in between
 
+          if(par_counts[i,"freq"] > 1) {
+            for(j in 1:(length(unlist(the_years))-1)) {
+              slope = (y[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j+1])][[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j+1])]][par_counts[i, "group"], par_counts[i, "group2"]] -
+                         y[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])][[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])]][par_counts[i, "group"], par_counts[i, "group2"]]) /
+                (years_seq[unlist(the_years)][j+1] - years_seq[unlist(the_years)][j])
 
-          for(j in 1:(length(unlist(the_years))-1)) {
-            slope = (y[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j+1])][[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j+1])]][par_counts[i, "group"], par_counts[i, "group2"]] -
-                       y[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])][[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])]][par_counts[i, "group"], par_counts[i, "group2"]]) /
-              (years_seq[unlist(the_years)][j+1] - years_seq[unlist(the_years)][j])
+              for(k in (years_seq[unlist(the_years)][j]+1):(years_seq[unlist(the_years)][j+1]-1))
+              {
+                if(paste0(condom_seq[par_counts[i, "par"]], "_", k) %in% names(y))
+                { y[paste0(condom_seq[par_counts[i, "par"]], "_", k)][[paste0(condom_seq[par_counts[i, "par"]], "_", k)]][par_counts[i, "group"], par_counts[i, "group2"]] = slope *
+                  (k - years_seq[unlist(the_years)][j]) +
+                  y[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])][[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])]][par_counts[i, "group"], par_counts[i, "group2"]]
 
-            for(k in (years_seq[unlist(the_years)][j]+1):(years_seq[unlist(the_years)][j+1]-1))
-            {
-              if(paste0(condom_seq[par_counts[i, "par"]], "_", k) %in% names(y))
-              { y[paste0(condom_seq[par_counts[i, "par"]], "_", k)][[paste0(condom_seq[par_counts[i, "par"]], "_", k)]][par_counts[i, "group"], par_counts[i, "group2"]] = slope *
-                (k - years_seq[unlist(the_years)][j]) +
-                y[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])][[paste0(condom_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])]][par_counts[i, "group"], par_counts[i, "group2"]]
-
-              # equalising complementary condom rate
-              y[paste0(condom_seq[par_counts[i, "par"]], "_", k)][[paste0(condom_seq[par_counts[i, "par"]], "_", k)]][par_counts[i, "group2"], par_counts[i, "group"]] =
-                y[paste0(condom_seq[par_counts[i, "par"]], "_", k)][[paste0(condom_seq[par_counts[i, "par"]], "_", k)]][par_counts[i, "group"], par_counts[i, "group2"]]}
+                # equalising complementary condom rate
+                y[paste0(condom_seq[par_counts[i, "par"]], "_", k)][[paste0(condom_seq[par_counts[i, "par"]], "_", k)]][par_counts[i, "group2"], par_counts[i, "group"]] =
+                  y[paste0(condom_seq[par_counts[i, "par"]], "_", k)][[paste0(condom_seq[par_counts[i, "par"]], "_", k)]][par_counts[i, "group"], par_counts[i, "group2"]]}
+              }
             }
           }
 
