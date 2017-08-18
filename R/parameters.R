@@ -24,6 +24,12 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     y$n_y_comm_1985_Client_LowFSW = y$n_y_comm_1985_Client_ProFSW
     y$n_y_comm_2002_Client_LowFSW = y$n_y_comm_2002_Client_ProFSW
 
+    # getting client condom with GPF same as GPF-GPM
+    y$fc_y_noncomm_1985_GPF_Client = y$fc_y_noncomm_1985_GPF_GPM
+    y$fc_y_noncomm_1998_GPF_Client = y$fc_y_noncomm_1998_GPF_GPM
+    y$fc_y_noncomm_2011_GPF_Client = y$fc_y_noncomm_2011_GPF_GPM
+
+
     # CONDOMS
 
     what_we_got_condom = c()
@@ -131,6 +137,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
     y[names(y)[grep("fc_y_", names(y))]] = lapply(invisible(y[names(y)[grep("fc_y_", names(y))]]), FormerFSWtoGPF)
 
+    y[names(y)[grep("n_y_", names(y))]] = lapply(invisible(y[names(y)[grep("n_y_", names(y))]]), FormerFSWtoGPF)
 
 
     ##########################################################################

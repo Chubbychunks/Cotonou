@@ -1409,9 +1409,9 @@ ranges = rbind(
   fc_y_noncomm_1985_ProFSW_Client = c(0.27, 0.43),
   fc_y_noncomm_2016_ProFSW_Client = c(0.27, 0.43),
 
-  fc_y_noncomm_1985_GPM_GPF = 0,
-  fc_y_noncomm_1998_GPM_GPF = c(0.0326087, 0.05042017),
-  fc_y_noncomm_2011_GPM_GPF = c(0.161, 0.255),
+  fc_y_noncomm_1985_GPF_GPM = 0,
+  fc_y_noncomm_1998_GPF_GPM = c(0.0326087, 0.05042017),
+  fc_y_noncomm_2011_GPF_GPM = c(0.161, 0.255),
 
   n_y_comm_1985_ProFSW_Client = c(5, 5),
   n_y_comm_2002_ProFSW_Client = c(5, 5),
@@ -1436,7 +1436,7 @@ ranges = rbind(
 
 
 # outputs -----------------------------------------------------------------
-outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm")
+outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm")
 
 
 # prev_points -------------------------------------------------------------
@@ -1542,6 +1542,7 @@ result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, con
 result[[3]][[1]]$n_comm[4,,]
 result[[3]][[1]]$n_noncomm[34,,]
 
+result[[3]][[1]]$fc_noncomm[45,,]
 
 # with fit best runs
 unlist(lapply(result[[2]], function(x) x[[1]]))
