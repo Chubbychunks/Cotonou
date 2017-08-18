@@ -20,6 +20,9 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   if(y$ignore_ranges_fc_c == 0) {
 
 
+    # getting client - low FSW n to be same as for pro fsw
+    y$n_y_comm_1985_Client_LowFSW = y$n_y_comm_1985_Client_ProFSW
+    y$n_y_comm_2002_Client_LowFSW = y$n_y_comm_2002_Client_ProFSW
 
     # CONDOMS
 
@@ -34,13 +37,11 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
       if(paste0(condom_seq[par], "_", years_seq[year], "_", groups_seq[group2], "_", groups_seq[group]) %in% names(y)) {
         av=(y[[which(paste0(condom_seq[par], "_", years_seq[year], "_", groups_seq[group], "_", groups_seq[group2]) == names(y))]] +
               y[[which(paste0(condom_seq[par], "_", years_seq[year], "_", groups_seq[group2], "_", groups_seq[group]) == names(y))]]) / 2;
-
         y[[which(paste0(condom_seq[par], "_", years_seq[year], "_", groups_seq[group], "_", groups_seq[group2]) == names(y))]] = av;
         y[[which(paste0(condom_seq[par], "_", years_seq[year], "_", groups_seq[group2], "_", groups_seq[group]) == names(y))]] = av;
-
       }
 
-
+      # replacing the non-group specific parameter to include these precisions
       y[paste0(condom_seq[par], "_", years_seq[year])][[paste0(condom_seq[par], "_", years_seq[year])]][group, group2] = y[paste0(condom_seq[par], "_", years_seq[year], "_", groups_seq[group], "_", groups_seq[group2])][[1]]
       y[paste0(condom_seq[par], "_", years_seq[year])][[paste0(condom_seq[par], "_", years_seq[year])]][group2, group] = y[paste0(condom_seq[par], "_", years_seq[year])][[paste0(condom_seq[par], "_", years_seq[year])]][group, group2]
       what_we_got_condom = rbind(what_we_got_condom, c(par, year, group, group2))
