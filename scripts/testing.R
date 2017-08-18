@@ -1413,8 +1413,13 @@ ranges = rbind(
   fc_y_noncomm_1998_GPM_GPF = c(0.0326087, 0.05042017),
   fc_y_noncomm_2011_GPM_GPF = c(0.161, 0.255),
 
-  n_y_comm_1985_ProFSW_Client = c(3.32, 3.32),
-  n_y_comm_2002_ProFSW_Client = c(3.32, 3.32),
+  n_y_comm_1985_ProFSW_Client = c(5, 5),
+  n_y_comm_2002_ProFSW_Client = c(5, 5),
+
+  n_y_comm_1985_Client_ProFSW = c(10, 10),
+  n_y_comm_2002_Client_ProFSW = c(10, 10),
+
+
   n_y_noncomm_1985_GPF_GPM = c(1.3333, 1.3333),
   n_y_noncomm_2002_GPF_GPM = c(1.3333, 1.3333),
 

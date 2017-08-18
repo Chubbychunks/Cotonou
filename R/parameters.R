@@ -20,8 +20,6 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   if(y$ignore_ranges_fc_c == 0) {
 
 
-    y$n_y_comm_2002
-
 
     # CONDOMS
 
@@ -31,6 +29,18 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     {for(group2 in 1:length(groups_seq))
     {for(par in 1:length(condom_seq))
     {if(paste0(condom_seq[par], "_", years_seq[year], "_", groups_seq[group], "_", groups_seq[group2]) %in% names(y)){
+
+      # average if the opposite value is there too - note must be same year...
+      if(paste0(condom_seq[par], "_", years_seq[year], "_", groups_seq[group2], "_", groups_seq[group]) %in% names(y)) {
+        av=(y[[which(paste0(condom_seq[par], "_", years_seq[year], "_", groups_seq[group], "_", groups_seq[group2]) == names(y))]] +
+              y[[which(paste0(condom_seq[par], "_", years_seq[year], "_", groups_seq[group2], "_", groups_seq[group]) == names(y))]]) / 2;
+
+        y[[which(paste0(condom_seq[par], "_", years_seq[year], "_", groups_seq[group], "_", groups_seq[group2]) == names(y))]] = av;
+        y[[which(paste0(condom_seq[par], "_", years_seq[year], "_", groups_seq[group2], "_", groups_seq[group]) == names(y))]] = av;
+
+      }
+
+
       y[paste0(condom_seq[par], "_", years_seq[year])][[paste0(condom_seq[par], "_", years_seq[year])]][group, group2] = y[paste0(condom_seq[par], "_", years_seq[year], "_", groups_seq[group], "_", groups_seq[group2])][[1]]
       y[paste0(condom_seq[par], "_", years_seq[year])][[paste0(condom_seq[par], "_", years_seq[year])]][group2, group] = y[paste0(condom_seq[par], "_", years_seq[year])][[paste0(condom_seq[par], "_", years_seq[year])]][group, group2]
       what_we_got_condom = rbind(what_we_got_condom, c(par, year, group, group2))
@@ -328,9 +338,9 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
 
   y$n_y_comm = array(data = c(y$n_y_comm_1985, y$n_y_comm_2002,
-                               y$n_y_comm_2016), dim=c(Ncat, Ncat, 3))
+                              y$n_y_comm_2016), dim=c(Ncat, Ncat, 3))
   y$n_y_noncomm = array(data = c(y$n_y_noncomm_1985, y$n_y_noncomm_2002,
-                              y$n_y_noncomm_2016), dim=c(Ncat, Ncat, 3))
+                                 y$n_y_noncomm_2016), dim=c(Ncat, Ncat, 3))
 
   y$n_y_comm = aperm(y$n_y_comm, c(3, 1, 2))
   y$n_y_noncomm = aperm(y$n_y_noncomm, c(3, 1, 2))
