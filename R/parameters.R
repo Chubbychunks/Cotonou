@@ -597,7 +597,7 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     n_y_comm_2016 = matrix(1.02, Ncat, Ncat),
 
     n_y_noncomm_1985 = matrix(1.03, Ncat, Ncat),
-    n_y_nonomm_2002 = matrix(1.03, Ncat, Ncat),
+    n_y_noncomm_2002 = matrix(1.03, Ncat, Ncat),
     n_y_noncomm_2015 = matrix(1.03, Ncat, Ncat),
 
     n_y_noncomm_2016 = matrix(1.03, Ncat, Ncat),
@@ -860,7 +860,7 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     n_y_comm_2016 = matrix(1.02, Ncat, Ncat),
 
     n_y_noncomm_1985 = matrix(1.03, Ncat, Ncat),
-    n_y_nonomm_2002 = matrix(1.03, Ncat, Ncat),
+    n_y_noncomm_2002 = matrix(1.03, Ncat, Ncat),
     n_y_noncomm_2015 = matrix(1.03, Ncat, Ncat),
 
     n_y_noncomm_2016 = matrix(1.03, Ncat, Ncat),
@@ -1279,7 +1279,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    n_y_comm_2016 = matrix(1.02, Ncat, Ncat),
 
                    n_y_noncomm_1985 = matrix(1.03, Ncat, Ncat),
-                   n_y_nonomm_2002 = matrix(1.03, Ncat, Ncat),
+                   n_y_noncomm_2002 = matrix(1.03, Ncat, Ncat),
                    n_y_noncomm_2015 = matrix(1.03, Ncat, Ncat),
 
                    n_y_noncomm_2016 = matrix(1.03, Ncat, Ncat),
