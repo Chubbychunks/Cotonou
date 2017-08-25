@@ -21,13 +21,14 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
 
     # getting client - low FSW n to be same as for pro fsw
-    y$n_y_comm_1985_Client_LowFSW = y$n_y_comm_1985_Client_ProFSW
-    y$n_y_comm_2002_Client_LowFSW = y$n_y_comm_2002_Client_ProFSW
+    # y$n_y_comm_1985_LowFSW_Client = y$n_y_comm_1985_ProFSW_Client
 
-    # getting client condom with GPF same as GPF-GPM
-    y$fc_y_noncomm_1985_GPF_Client = y$fc_y_noncomm_1985_GPF_GPM
-    y$fc_y_noncomm_1998_GPF_Client = y$fc_y_noncomm_1998_GPF_GPM
-    y$fc_y_noncomm_2011_GPF_Client = y$fc_y_noncomm_2011_GPF_GPM
+
+    y$n_y_noncomm_1985_LowFSW_Client = y$n_y_noncomm_1985_GPF_GPM
+
+
+    y$n_y_noncomm_1985_GPF_Client = y$n_y_noncomm_1985_GPF_GPM
+
 
 
     # getting low fsw condom with client for comm and noncomm partnerships same as pro fsw
@@ -37,6 +38,12 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
     y$fc_y_noncomm_1985_LowFSW_Client = y$fc_y_noncomm_1985_ProFSW_Client
     y$fc_y_noncomm_2016_LowFSW_Client = y$fc_y_noncomm_2016_ProFSW_Client
+
+
+    # getting client condom with GPF same as GPF-GPM
+    y$fc_y_noncomm_1985_GPF_Client = y$fc_y_noncomm_1985_GPF_GPM
+    y$fc_y_noncomm_1998_GPF_Client = y$fc_y_noncomm_1998_GPF_GPM
+    y$fc_y_noncomm_2011_GPF_Client = y$fc_y_noncomm_2011_GPF_GPM
 
     # CONDOMS
 

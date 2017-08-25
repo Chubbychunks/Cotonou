@@ -1125,7 +1125,7 @@ best_set = list(
       0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
 
-  n_t_comm = c(1985, 2002, 2016),
+  n_t_comm = c(1985, 2002, 2015, 2016),
 
 
   n_y_noncomm_1985 = matrix(
@@ -1172,7 +1172,7 @@ best_set = list(
           0, 0, 0, 0, 0, 0, 0, 0, 0,
           0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
 
-  n_t_noncomm = c(1985, 2002, 2016),
+  n_t_noncomm = c(1985, 2002, 2015, 2016),
 
   rate_leave_pro_FSW = 0.2,
   FSW_leave_Cotonou_fraction = 0.1,
@@ -1435,21 +1435,23 @@ ranges = rbind(
   fc_y_noncomm_1998_GPF_GPM = c(0.0326087, 0.05042017),
   fc_y_noncomm_2011_GPF_GPM = c(0.161, 0.255),
 
-  n_y_comm_1985_ProFSW_Client = c(5, 5),
-  n_y_comm_2002_ProFSW_Client = c(5, 5),
+  n_y_comm_1985_ProFSW_Client = c(1, 10.23),
+  # n_y_comm_2002_ProFSW_Client = c(5, 5),
 
-  n_y_comm_1985_Client_ProFSW = c(10, 10),
+  n_y_comm_1985_Client_ProFSW = c(1.45, 11.45),
   # n_y_comm_2002_Client_ProFSW = c(10, 10),
+
+  n_y_comm_1985_LowFSW_Client = c(1, 1),
+  n_y_comm_1985_Client_LowFSW = c(1, 1),
+
 
   n_y_noncomm_2002_ProFSW_Client = c(13, 20),
   n_y_noncomm_2015_ProFSW_Client = c(38.2, 60),
 
 
-  n_y_noncomm_1985_GPF_GPM = c(1.3333, 1.3333),
-  n_y_noncomm_2002_GPF_GPM = c(1.3333, 1.3333),
+  n_y_noncomm_1985_GPF_GPM = c(29, 43.7),
 
-  n_y_noncomm_1985_GPM_GPF = c(2.3333, 2.3333),
-  n_y_noncomm_2002_GPM_GPF = c(2.3333, 2.3333)
+  n_y_noncomm_1985_GPM_GPF = c(19.4, 46.7)
 
 
 
