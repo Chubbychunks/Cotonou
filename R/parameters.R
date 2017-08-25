@@ -30,6 +30,14 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     y$fc_y_noncomm_2011_GPF_Client = y$fc_y_noncomm_2011_GPF_GPM
 
 
+    # getting low fsw condom with client for comm and noncomm partnerships same as pro fsw
+    y$fc_y_comm_1985_LowFSW_Client = y$fc_y_comm_1985_ProFSW_Client
+    y$fc_y_comm_1993_LowFSW_Client = y$fc_y_comm_1993_ProFSW_Client
+    y$fc_y_comm_2002_LowFSW_Client = y$fc_y_comm_2002_ProFSW_Client
+
+    y$fc_y_noncomm_1985_LowFSW_Client = y$fc_y_noncomm_1985_ProFSW_Client
+    y$fc_y_noncomm_2016_LowFSW_Client = y$fc_y_noncomm_2016_ProFSW_Client
+
     # CONDOMS
 
     what_we_got_condom = c()
