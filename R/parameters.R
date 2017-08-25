@@ -20,13 +20,12 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   if(y$ignore_ranges_fc_c == 0) {
 
 
+    y$frac_women_exFSW = y$frac_women_ProFSW
+
+
     # getting client - low FSW n to be same as for pro fsw
     # y$n_y_comm_1985_LowFSW_Client = y$n_y_comm_1985_ProFSW_Client
-
-
     y$n_y_noncomm_1985_LowFSW_Client = y$n_y_noncomm_1985_GPF_GPM
-
-
     y$n_y_noncomm_1985_GPF_Client = y$n_y_noncomm_1985_GPF_GPM
 
 
@@ -458,10 +457,10 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
     y$rate_move_in[1,3] = (y$rate_leave_pro_FSW + y$muF) * y$prop_pro_FSW_GPF # moving from GPF to pro-FSW
     y$rate_move_in[2,3] = (y$rate_leave_low_FSW + y$muF) * y$prop_low_FSW_GPF # moving from GPF to low-FSW
-    y$rate_move_in[4,1] = y$rate_leave_pro_FSW * (1 - y$FSW_leave_Cotonou_fraction) # moving from pro-FSW to former FSW in Cot
-    y$rate_move_in[4,2] = y$rate_leave_low_FSW * (1 - y$FSW_leave_Cotonou_fraction) # moving from low-FSW to former FSW in Cot
-    y$rate_move_in[9,1] = y$rate_leave_pro_FSW * y$FSW_leave_Cotonou_fraction # moving from low-FSW to former FSW NOT in Cot
-    y$rate_move_in[9,2] = y$rate_leave_low_FSW * y$FSW_leave_Cotonou_fraction # moving from low-FSW to former FSW NOT in Cot
+    y$rate_move_in[4,1] = y$rate_leave_pro_FSW * (1 - y$fraction_FSW_foreign) # moving from pro-FSW to former FSW in Cot
+    y$rate_move_in[4,2] = y$rate_leave_low_FSW * (1 - y$fraction_FSW_foreign) # moving from low-FSW to former FSW in Cot
+    y$rate_move_in[9,1] = y$rate_leave_pro_FSW * y$fraction_FSW_foreign # moving from low-FSW to former FSW NOT in Cot
+    y$rate_move_in[9,2] = y$rate_leave_low_FSW * y$fraction_FSW_foreign # moving from low-FSW to former FSW NOT in Cot
 
 
     # MALE MOVEMENT
@@ -697,7 +696,6 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
 
 
     rate_leave_pro_FSW = c(0.2, 0.2),
-    FSW_leave_Cotonou_fraction = c(0.05, 0.15),
     rate_leave_low_FSW = c(0.1, 0.1),
     rate_leave_client = c(0.05, 0.05),
 
@@ -932,7 +930,6 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
 
 
     rate_leave_pro_FSW = c(0.2, 0.2),
-    FSW_leave_Cotonou_fraction = c(0.05, 0.15),
     rate_leave_low_FSW = c(0.1, 0.1),
     rate_leave_client = c(0.05, 0.05),
 
@@ -1320,7 +1317,6 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    prev_init_FSW = 0.04,
                    prev_init_rest = 0.0008,
                    rate_leave_pro_FSW = 0.2,
-                   FSW_leave_Cotonou_fraction = 0.1,
                    rate_leave_client = 0.05,
                    rate_leave_low_FSW = 0.1,
                    prop_client_GPM = 0.2430057, # 27091/111483

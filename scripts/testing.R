@@ -1313,11 +1313,17 @@ best_set = list(
 # yup
 ranges = rbind(
 
+  # MISC
+  init_clientN_from_PCR = c(0,0),
+
+
+
+
   # DEMOGRAPHIC
 
   fraction_F = c(0.512, 0.52), # fraction of population born female
   frac_women_ProFSW = c(0.0024, 0.0143), # fraction of women that are professional FSW
-  frac_women_exFSW = c(0.0024, 0.0143), # fraction of women that are low-level FSW
+  # frac_women_exFSW = c(0.0024, 0.0143), # fraction of women that are low-level FSW
   frac_men_client = c(0.151, 0.4), # fraction of men that are clients
   frac_women_virgin = c(0.079, 0.2), # fraction of women that are virgins
   frac_men_virgin = c(0.070, 0.17), # fraction of men that are virgins
@@ -1338,6 +1344,9 @@ ranges = rbind(
 
   rate_leave_pro_FSW = c(0, 1), # rate of exit of professional sex work
   rate_leave_low_FSW = c(0, 1), # rate of exit of low level sex work
+
+  fraction_FSW_foreign = c(0.5, 0.9),
+
   rate_leave_client = c(0, 0.189), # rate of exit of clients
 
   rate_enter_sexual_pop_F = c(1/(20-15), 1/(17-15)), # rate of entering sexual population women
@@ -1372,11 +1381,22 @@ ranges = rbind(
   c_noncomm_2008_GPM = c(0.73, 0.84),
 
 
+  # sex acts per partnership comm
+  n_y_comm_1985_ProFSW_Client = c(1, 10.23),
+  n_y_comm_1985_Client_ProFSW = c(1.45, 11.45),
+
+  n_y_comm_1985_LowFSW_Client = c(1, 1),
+  n_y_comm_1985_Client_LowFSW = c(1, 1),
+
+  # sex acts per partnership noncomm
+
+  n_y_noncomm_2002_ProFSW_Client = c(13, 20),
+  n_y_noncomm_2015_ProFSW_Client = c(38.2, 60),
+  n_y_noncomm_1985_GPF_GPM = c(29, 43.7),
+  n_y_noncomm_1985_GPM_GPF = c(19.4, 46.7),
 
 
-  init_clientN_from_PCR = c(0,0),
 
-  fraction_FSW_foreign = c(0.9, 0.9),
 
 
 
@@ -1433,25 +1453,9 @@ ranges = rbind(
 
   fc_y_noncomm_1985_GPF_GPM = 0,
   fc_y_noncomm_1998_GPF_GPM = c(0.0326087, 0.05042017),
-  fc_y_noncomm_2011_GPF_GPM = c(0.161, 0.255),
-
-  n_y_comm_1985_ProFSW_Client = c(1, 10.23),
-  # n_y_comm_2002_ProFSW_Client = c(5, 5),
-
-  n_y_comm_1985_Client_ProFSW = c(1.45, 11.45),
-  # n_y_comm_2002_Client_ProFSW = c(10, 10),
-
-  n_y_comm_1985_LowFSW_Client = c(1, 1),
-  n_y_comm_1985_Client_LowFSW = c(1, 1),
+  fc_y_noncomm_2011_GPF_GPM = c(0.161, 0.255)
 
 
-  n_y_noncomm_2002_ProFSW_Client = c(13, 20),
-  n_y_noncomm_2015_ProFSW_Client = c(38.2, 60),
-
-
-  n_y_noncomm_1985_GPF_GPM = c(29, 43.7),
-
-  n_y_noncomm_1985_GPM_GPF = c(19.4, 46.7)
 
 
 
