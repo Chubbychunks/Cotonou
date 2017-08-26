@@ -3,6 +3,7 @@
 export(FormerFSWtoGPF)
 export(fix_parameters)
 export(generate_parameters)
+export(just_parameters)
 export(lhs_parameters)
 export(lhs_parameters_parallel)
 export(likelihood_rough)
