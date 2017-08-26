@@ -36,7 +36,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     y$fc_y_comm_2002_LowFSW_Client = y$fc_y_comm_2002_ProFSW_Client
 
     y$fc_y_noncomm_1985_LowFSW_Client = y$fc_y_noncomm_1985_ProFSW_Client
-    y$fc_y_noncomm_2016_LowFSW_Client = y$fc_y_noncomm_2016_ProFSW_Client
+    y$fc_y_noncomm_2002_LowFSW_Client = y$fc_y_noncomm_2002_ProFSW_Client
 
 
     # getting client condom with GPF same as GPF-GPM
@@ -299,6 +299,9 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$gamma01 <- rep_len(y$gamma01, Ncat)
   y$gamma04 <- rep_len(y$gamma04, Ncat)
 
+  y$alpha03 <- rep_len(y$alpha03, Ncat)
+  y$alpha04 <- rep_len(y$alpha04, Ncat)
+  y$alpha05 <- rep_len(y$alpha05, Ncat)
 
   # y$omega <- y$omega/sum(y$omega)
 
@@ -310,11 +313,22 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$gamma43 <- y$gamma03
   y$gamma44 <- y$gamma04
 
+  y$alpha23 <- y$alpha03
+  y$alpha24 <- y$alpha04
+  y$alpha25 <- y$alpha05
+
+  y$alpha43 <- y$alpha03
+  y$alpha44 <- y$alpha04
+  y$alpha45 <- y$alpha05
+
   # progression is slowed by ART_RR
 
   y$gamma32 <- (y$gamma02)/y$ART_RR
   y$gamma33 <- (y$gamma03)/y$ART_RR
   y$gamma34 <- (y$gamma04)/y$ART_RR
+
+  y$alpha33 <- (y$alpha03)/y$ART_RR
+  y$alpha34 <- (y$alpha04)/y$ART_RR
   y$alpha35 <- (y$alpha05)/y$ART_RR
 
 
@@ -351,9 +365,9 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
   y$fc_y_comm = aperm(y$fc_y_comm, c(3, 1, 2))
 
-  y$fc_y_noncomm = array(data = c(y$fc_y_noncomm_1985, y$fc_y_noncomm_1993, y$fc_y_noncomm_1998,
+  y$fc_y_noncomm = array(data = c(y$fc_y_noncomm_1985, y$fc_y_noncomm_1993, y$fc_y_noncomm_1998, y$fc_y_noncomm_2002,
                                   y$fc_y_noncomm_2008, y$fc_y_noncomm_2011, y$fc_y_noncomm_2015,
-                                  y$fc_y_noncomm_2016), dim=c(Ncat, Ncat, 7))
+                                  y$fc_y_noncomm_2016), dim=c(Ncat, Ncat, 8))
 
 
   y$fc_y_noncomm = aperm(y$fc_y_noncomm, c(3, 1, 2))
@@ -377,6 +391,19 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     y$ec = rep_len(y$ec, 9)
   if(length(y$eP0) == 1)
     y$eP0 = rep_len(y$eP0, 9)
+  if(length(y$eP1a) == 1)
+    y$eP1a = rep_len(y$eP1a, 9)
+  if(length(y$eP1b) == 1)
+    y$eP1b = rep_len(y$eP1b, 9)
+  if(length(y$eP1c) == 1)
+    y$eP1c = rep_len(y$eP1c, 9)
+
+
+
+  y$phi2 = c(y$phi2[1], rep(y$dropout_rate_not_FSW, (Ncat-1)))
+  y$phi3 = y$phi2
+  y$phi4 = y$phi2
+  y$phi5 = y$phi2
 
 
 
@@ -591,6 +618,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     fc_y_noncomm_1985 = matrix(0.2, Ncat, Ncat),
     fc_y_noncomm_1993 = matrix(0.2, Ncat, Ncat),
     fc_y_noncomm_1998 = matrix(0.4, Ncat, Ncat),
+    fc_y_noncomm_2002 = matrix(0.3, Ncat, Ncat),
+
     fc_y_noncomm_2008 = matrix(0.3, Ncat, Ncat),
     fc_y_noncomm_2011 = matrix(0.3, Ncat, Ncat),
     fc_y_noncomm_2015 = matrix(0.5, Ncat, Ncat),
@@ -652,7 +681,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     who_believe_comm = 0,
     init_clientN_from_PCR = 0,
     beta_above_1 = 0,
-    ignore_ranges_fc_c = 0
+    ignore_ranges_fc_c = 0,
+    dropout_rate_not_FSW = 0.025
 
 
 
@@ -832,7 +862,9 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     fc_y_noncomm_1985 = matrix(0.2, Ncat, Ncat),
     fc_y_noncomm_1993 = matrix(0.2, Ncat, Ncat),
     fc_y_noncomm_1998 = matrix(0.4, Ncat, Ncat),
+    fc_y_noncomm_2002 = matrix(0.3, Ncat, Ncat),
     fc_y_noncomm_2008 = matrix(0.3, Ncat, Ncat),
+
     fc_y_noncomm_2011 = matrix(0.3, Ncat, Ncat),
     fc_y_noncomm_2015 = matrix(0.5, Ncat, Ncat),
     fc_y_noncomm_2016 = matrix(0.5, Ncat, Ncat),
@@ -886,7 +918,8 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     who_believe_comm = 0,
     init_clientN_from_PCR = 0,
     beta_above_1 = 0,
-    ignore_ranges_fc_c = 0
+    ignore_ranges_fc_c = 0,
+    dropout_rate_not_FSW = 0.025
 
 
 
@@ -1186,6 +1219,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    fc_y_noncomm_1985 = matrix(0.2, Ncat, Ncat),
                    fc_y_noncomm_1993 = matrix(0.2, Ncat, Ncat),
                    fc_y_noncomm_1998 = matrix(0.4, Ncat, Ncat),
+                   fc_y_noncomm_2002 = matrix(0.3, Ncat, Ncat),
                    fc_y_noncomm_2008 = matrix(0.3, Ncat, Ncat),
                    fc_y_noncomm_2011 = matrix(0.3, Ncat, Ncat),
                    fc_y_noncomm_2015 = matrix(0.5, Ncat, Ncat),
@@ -1199,7 +1233,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    fc_t_comm = c(1985, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015, 2016),
                    #                    fc_y_comm = matrix(
                    #                      rep(c(0.5, 0.5, 0.9, 0.99), Ncat), ncol = Ncat),
-                   fc_t_noncomm = c(1985, 1993, 1998, 2008, 2011, 2015, 2016),
+                   fc_t_noncomm = c(1985, 1993, 1998, 2002, 2008, 2011, 2015, 2016),
                    #                    fc_y_comm = matrix(
                    #                      rep(c(0.5, 0.5, 0.9, 0.99), Ncat), ncol = Ncat),
 
@@ -1353,7 +1387,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    fraction_sexually_active_15_F = 0,
                    fraction_sexually_active_15_M = 0,
                    beta_above_1 = 0,
-                   ignore_ranges_fc_c = 0
+                   ignore_ranges_fc_c = 0,
+                   dropout_rate_not_FSW = 0.025
 
 
 

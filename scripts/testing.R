@@ -1030,6 +1030,17 @@ best_set = list(
   # ((0.05042017+0.241404781)/2 + 0.4)/ 2 # average client GPF (gpf averaged from 2 estimtes)
   # ((0.05042017+0.241404781)/2 + (0.07103825+0.34838295)/2) / 2 # average gpm gpf
 
+  fc_y_noncomm_2002 = matrix(
+    c(0, 0, 0, 0, 0.365, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.365, 0, 0, 0, 0,
+      0, 0, 0, 0, 0.2729562, 0.1778115, 0, 0, 0,
+      0, 0, 0, 0, 0.2729562, 0.1778115, 0, 0, 0,
+      0.365, 0.365, 0.2729562, 0.2729562, 0, 0, 0, 0, 0,
+      0, 0, 0.1778115, 0.1778115, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9),
+
   fc_y_noncomm_2008 = matrix(
     c(0, 0, 0, 0, 0.365, 0, 0, 0, 0,
       0, 0, 0, 0, 0.365, 0, 0, 0, 0,
@@ -1078,7 +1089,7 @@ best_set = list(
 
   fc_t_comm = c(1985, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015, 2016),
 
-  fc_t_noncomm = c(1985, 1993, 1998, 2008, 2011, 2015, 2016),
+  fc_t_noncomm = c(1985, 1993, 1998, 2002, 2008, 2011, 2015, 2016),
 
 
   n_y_comm_1985 = matrix(
@@ -1178,6 +1189,7 @@ best_set = list(
   FSW_leave_Cotonou_fraction = 0.1,
   rate_leave_low_FSW = 0.1,
   rate_leave_client = 0.05,
+  dropout_rate_not_FSW = 0.025,
   replaceDeaths = 0,
   movement = 1
 
@@ -1315,15 +1327,12 @@ ranges = rbind(
 
   # MISC
   init_clientN_from_PCR = c(0,0),
-
-
-
+  who_believe_comm = c(0, 1),
 
   # DEMOGRAPHIC
 
   fraction_F = c(0.512, 0.52), # fraction of population born female
   frac_women_ProFSW = c(0.0024, 0.0143), # fraction of women that are professional FSW
-  # frac_women_exFSW = c(0.0024, 0.0143), # fraction of women that are low-level FSW
   frac_men_client = c(0.151, 0.4), # fraction of men that are clients
   frac_women_virgin = c(0.079, 0.2), # fraction of women that are virgins
   frac_men_virgin = c(0.070, 0.17), # fraction of men that are virgins
@@ -1396,60 +1405,49 @@ ranges = rbind(
   n_y_noncomm_1985_GPM_GPF = c(19.4, 46.7),
 
 
-
-
-
-
-
   #BETA
+  betaMtoF_baseline = c(0.0006, 0.00109), # baseline male to female transmission rate
+  RR_beta_FtM = c(0.53, 2), # RR for transmission female to male
+  RR_beta_HSV2_comm = c(1.4, 2.1), # RR for commercial sex acts where the susceptible individual is infected HSV2
+  RR_beta_HSV2_noncomm = c(2.2, 3.4), # RR for non commercial sex acts where the susceptible individual is infected HSV2
+  prev_HSV2_FSW = c(0.8687271, 0.9403027), # prevalence HSV2 in FSW
+  prev_HSV2_Client = c(0.14, 0.8687271), # prevalence HSV2 in clients
+  prev_HSV2_GPF = c(0.2666742, 0.3236852), # prevalence of HSV2 in GPF
+  prev_HSV2_GPM = c(0.09843545, 0.14108970), # prevalence of HSV2 in GPM
+  RR_beta_circum = c(0.34, 0.72), # RR for transmission if susceptible individual is circumcised
 
-  # betaMtoF_noncomm = c(0.00144, 0.00626),
 
-  betaMtoF_baseline = c(0.0006, 0.00109),
-  # betaMtoF_noncomm = c(0, 0),
+  # Progression parameters
 
-  RR_beta_FtM = c(0.5, 2),
-  RR_beta_circum = c(0.34, 0.72),
-  # RR_beta_circum = c(1, 1),
+  infect_acute = c(4.47, 18.81), # RR for transmission rate if infected is acute stage
+  infect_AIDS = c(4.45, 11.88), # RR for transmission rate if infected is in AIDS stage
 
-
-  prev_HSV2_FSW = c(0.8687271, 0.9403027),
-  prev_HSV2_Client = c(0.14, 0.8687271),
-  prev_HSV2_GPF = c(0.2666742, 0.3236852),
-  prev_HSV2_GPM = c(0.09843545, 0.14108970),
-
-  RR_beta_HSV2_comm = c(1.4, 2.1),
-  RR_beta_HSV2_noncomm = c(2.2, 3.4),
-
-  # ART
   infect_ART = c(0.26 * 0.523, 0.99 * 0.523), # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
+
+  ec = c(0.58, 0.95), # condom efficacy
+  eP1a = c(0.9, 0.9), # prep efficacy perfect adherence
+  eP1b = c(0, 0.9), # prep efficacy intermediate adherence
+  eP1c = c(0, 0), # prep efficacy poor adherence
+
+  SC_to_200_349 = c(2.2, 4.6),
+  gamma04 = c(3.9, 5),
+
+  alpha03 = c(0.03, 0.07),
+  alpha04 = c(0.05, 0.12),
+  alpha05 = c(0.23, 0.33),
+
   ART_RR = c(1.3, 3.45),
+  dropout_rate_not_FSW = c(0.0233, 0.274),
 
-
-
-
-
-
-
-
-
-
-
-
-
-  who_believe_comm = c(0, 1),
-
-
-  # rate_leave_client = 0,
 
   # condoms
 
   fc_y_comm_1985_ProFSW_Client = c(0, 0),
   fc_y_comm_1993_ProFSW_Client = c(0.535, 0.687),
-  fc_y_comm_2002_ProFSW_Client = c(0.872, 0.933),
+  fc_y_comm_2002_ProFSW_Client = c(0.536, 0.992),
 
-  fc_y_noncomm_1985_ProFSW_Client = c(0.27, 0.43),
-  fc_y_noncomm_2016_ProFSW_Client = c(0.27, 0.43),
+  fc_y_noncomm_1985_ProFSW_Client = c(0, 0),
+  fc_y_noncomm_2002_ProFSW_Client = c(0.19, 0.62),
 
   fc_y_noncomm_1985_GPF_GPM = 0,
   fc_y_noncomm_1998_GPF_GPM = c(0.0326087, 0.05042017),
@@ -1491,7 +1489,9 @@ prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005
                                    100*0.05898524, 100*0.068218538, 100*0.04293149, 100*0.034772131, 100*0.012660836, 100*0.006039259,
                                    100*0.024181624, 100*0.030073668, 100*0.012980254,
                                    100*0.022857312, 100*0.012427931, 100*0.007517563,
-                                   100*0.091838441, 100*0.026704897),
+                                   # 100*0.091838441, 100*0.026704897),
+                                   100*0, 100*0),
+
                          upper = c(3.3, 8.2, 19.2, 58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01,
                                    100*0.11561791, 100*0.115608811, 100*0.105215792, 100*0.090216628, 100*0.051602442, 100*0.035338436,
                                    100*0.047726245, 100*0.052817187, 100*0.035296286,
@@ -1570,6 +1570,7 @@ variable = c("Women", "Women", "Women", "Women", "Women", "Women", "Women",
 result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
 # result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
+
 
 result[[3]][[1]]$n_comm[4,,]
 result[[3]][[1]]$n_noncomm[12,,]
