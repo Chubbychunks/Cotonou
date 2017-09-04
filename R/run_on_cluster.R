@@ -255,6 +255,7 @@ run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, 
     }
 
     print(max_fit)
+    print(c(100*i/(number_simulations/batch_size), "%"))
     # print(max(sorted_likelihood_list))
 
     gc()
