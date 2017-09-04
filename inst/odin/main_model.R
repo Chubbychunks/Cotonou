@@ -389,6 +389,11 @@ output(E1d[]) = E1d
 deriv(cumuInf[]) = S0[i] * lambda_sum_0[i] + S1a[i] * lambda_sum_1a[i] + S1b[i] * lambda_sum_1b[i] + S1c[i] * lambda_sum_1c[i] + S1d[i] * lambda_sum_1d[i]
 deriv(OnPrEP[]) = zetaa[i] * S0[i] + zetab[i] * S0[i] + zetac[i] * S0[i]
 
+deriv(cumuHIVDeaths[]) = alpha01[i] * I01[i] + alpha11[i] * I11[i] + alpha02[i] * I02[i] + alpha03[i] * I03[i] + alpha04[i] * I04[i] +
+  alpha05[i] * I05[i] + alpha22[i] * I22[i] + alpha23[i] * I23[i] + alpha24[i] * I24[i] + alpha25[i] * I25[i] +
+  alpha32[i] * I32[i] + alpha33[i] * I33[i] + alpha34[i] * I34[i] + alpha35[i] * I35[i] +
+  alpha42[i] * I42[i] + alpha43[i] * I43[i] + alpha44[i] * I44[i] + alpha45[i] * I45[i]
+
 cumuInftot = sum(cumuInf)
 output(cumuInftot) = cumuInftot
 
@@ -717,6 +722,9 @@ I45_init[] = user()
 initial(cumuInf[]) = cumuInf_init[i]
 cumuInf_init[] = user()
 
+initial(cumuHIVDeaths[]) = 0
+
+
 initial(OnPrEP[]) = OnPrEP_init[i]
 OnPrEP_init[] = user()
 
@@ -985,7 +993,7 @@ dim(n_comm) = c(Ncat, Ncat)
 dim(n_noncomm) = c(Ncat, Ncat)
 
 
-
+dim(cumuHIVDeaths) = Ncat
 dim(cumuInf) = Ncat
 dim(OnPrEP) = Ncat
 
