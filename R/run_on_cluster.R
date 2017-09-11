@@ -48,8 +48,6 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
   the_frac_N = data.frame(time, x$frac_N[,c(1, 5, 7, 8)])
   names(the_frac_N) = c("time", "Pro FSW", "Clients", "Virgin female", "Virgin male")
 
-  ART_data_points_allgroups = ART_data_points[ART_data_points$variable == "All",]
-  ART_data_points_FSW = ART_data_points[ART_data_points$variable == "Pro FSW",]
 
   likelihood_count <- 0
   ##
@@ -92,34 +90,44 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
     }
   }
 
-  # fitting to ART cov
-  if(likelihood_count > 0)
-  {
-    if(all(!is.na(x$ART_coverage_all))){
 
-      for(i in 1:length(ART_data_points_allgroups[,1]))
-      {
-        the_time = ART_data_points_allgroups[i, "time"]
-        if(x$ART_coverage_all[which(time == the_time)] > ART_data_points_allgroups[i, "Lower"] && x$ART_coverage_all[which(time == the_time)] < ART_data_points_allgroups[i, "Upper"]) {
-          likelihood_count <- likelihood_count + 1
-        }
-      }
-    }
-  }
-  # fitting to ART cov
-  if(likelihood_count > 0)
+
+  if("All" %in% levels(ART_data_points$variable))
   {
-    if(all(!is.na(x$ART_coverage_FSW))){
-      for(i in 1:length(ART_data_points_FSW[,1]))
-      {
-        the_time = ART_data_points_FSW[i, "time"]
-        if(x$ART_coverage_FSW[which(time == the_time)] > ART_data_points_FSW[i, "Lower"] && x$ART_coverage_FSW[which(time == the_time)] < ART_data_points_FSW[i, "Upper"]) {
-          likelihood_count <- likelihood_count + 1
+    ART_data_points_allgroups = ART_data_points[ART_data_points$variable == "All",]
+    # fitting to ART cov
+    if(likelihood_count > 0)
+    {
+      if(all(!is.na(x$ART_coverage_all))){
+
+        for(i in 1:length(ART_data_points_allgroups[,1]))
+        {
+          the_time = ART_data_points_allgroups[i, "time"]
+          if(x$ART_coverage_all[which(time == the_time)] > ART_data_points_allgroups[i, "Lower"] && x$ART_coverage_all[which(time == the_time)] < ART_data_points_allgroups[i, "Upper"]) {
+            likelihood_count <- likelihood_count + 1
+          }
         }
       }
     }
   }
 
+  if("Pro FSW" %in% levels(ART_data_points$variable))
+  {
+    ART_data_points_FSW = ART_data_points[ART_data_points$variable == "Pro FSW",]
+    # fitting to ART cov
+    if(likelihood_count > 0)
+    {
+      if(all(!is.na(x$ART_coverage_FSW))){
+        for(i in 1:length(ART_data_points_FSW[,1]))
+        {
+          the_time = ART_data_points_FSW[i, "time"]
+          if(x$ART_coverage_FSW[which(time == the_time)] > ART_data_points_FSW[i, "Lower"] && x$ART_coverage_FSW[which(time == the_time)] < ART_data_points_FSW[i, "Upper"]) {
+            likelihood_count <- likelihood_count + 1
+          }
+        }
+      }
+    }
+  }
 
   return (list(likelihood_count, prev_fits))
   # return (list(likelihood_count, frac_count))
