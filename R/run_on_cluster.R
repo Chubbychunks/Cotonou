@@ -45,8 +45,8 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
   the_prev = data.frame(time, x$prev_FSW, x$prev_LowFSW, x$prev_client, x$prev_women, x$prev_men)
   names(the_prev) = c("time", "Pro FSW", "Low-level FSW", "Clients", "Women", "Men")
 
-  the_frac_N = data.frame(time, x$frac_N[,c(1, 5, 7, 8)])
-  names(the_frac_N) = c("time", "Pro FSW", "Clients", "Virgin female", "Virgin male")
+  the_frac_N = data.frame(time, x$frac_N[,c(1, 5, 7, 8, 2)])
+  names(the_frac_N) = c("time", "Pro FSW", "Clients", "Virgin female", "Virgin male", "Low-level FSW")
 
 
   likelihood_count <- 0
