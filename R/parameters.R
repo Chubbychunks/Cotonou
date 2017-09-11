@@ -397,7 +397,8 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     y$eP1b = rep_len(y$eP1b, 9)
   if(length(y$eP1c) == 1)
     y$eP1c = rep_len(y$eP1c, 9)
-
+  if(length(y$eP1d) == 1)
+    y$eP1d = rep_len(y$eP1d, 9)
 
 
   y$phi2 = c(y$phi2[1], rep(y$dropout_rate_not_FSW, (Ncat-1)))

@@ -648,3 +648,12 @@ outputs_default = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "a
 
 
 parameter_names = names(lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)[[1]])
+
+
+
+
+all_lambda_pars = c("c_comm", "p_comm", "N", "beta_comm", "R", "fc_comm",
+                    "fP_comm", "n_comm", "eP0", "eP1a", "eP1b", "eP1c", "eP1d", "ec", "fc_noncomm", "fP_noncomm",
+                    "n_noncomm", "c_noncomm", "p_noncomm", "infect_ART",
+                    "infect_acute", "infect_AIDS",  "beta_noncomm")
+
