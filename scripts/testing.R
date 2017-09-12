@@ -715,7 +715,7 @@ require(reshape2)
 odin::odin_package(".") # looks for any models inside inst/odin
 devtools::load_all()
 
-number_simulations = 1
+number_simulations = 100
 epi_start = 1986
 epi_end = 2030
 
