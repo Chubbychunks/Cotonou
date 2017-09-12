@@ -105,7 +105,8 @@ output(Ntot_inc_former_FSW_nonCot) = Ntot_inc_former_FSW_nonCot
 epsilon = interpolate(epsilon_t, epsilon_y, "constant")
 
 # new_people = if(Ncat == 9) epsilon * (N[1] + N[2] + N[3] + N[4] + N[5] + N[6] + N[7] + N[8] + N[9]) else epsilon * sum(N)
-new_people = epsilon * Ntot_inc_former_FSW_nonCot
+# new_people = epsilon * Ntot_inc_former_FSW_nonCot
+new_people = epsilon * Ntot
 
 
 # new entrants into each group
@@ -398,8 +399,8 @@ cumuInftot = sum(cumuInf)
 output(cumuInftot) = cumuInftot
 
 # fraction of group in each category INCLUDING FORMER FSW OUTSIDE BENIN
-frac_N[] = N[i] / Ntot_inc_former_FSW_nonCot
-frac_F[] = if(Ncat == 9) (N[1] + N[2] + N[3] + N[4] + N[7] + N[9])/ Ntot_inc_former_FSW_nonCot else 0
+frac_N[] = N[i] / Ntot#_inc_former_FSW_nonCot
+frac_F[] = if(Ncat == 9) (N[1] + N[2] + N[3] + N[4] + N[7])/ Ntot else 0
 frac_N_sexualpop[] = if(Ncat == 9) N[i] / (N[1] + N[2] + N[3] + N[4] + N[5] + N[6]) else 0
 
 frac_virgin = if(Ncat == 9) (N[7] + N[8])/(N[1] + N[2] + N[3] + N[4] + N[5] + N[6] + N[7] + N[8]) else 0
