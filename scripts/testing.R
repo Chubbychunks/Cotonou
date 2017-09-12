@@ -1333,6 +1333,8 @@ ranges = rbind(
 
   fraction_F = c(0.512, 0.52), # fraction of population born female
   frac_women_ProFSW = c(0.0024, 0.0143), # fraction of women that are professional FSW
+  frac_women_LowFSW = c(2, 5), # relative abundance of low FSW relative to pro FSW
+
   frac_men_client = c(0.151, 0.4), # fraction of men that are clients
   frac_women_virgin = c(0.079, 0.2), # fraction of women that are virgins
   frac_men_virgin = c(0.070, 0.17), # fraction of men that are virgins

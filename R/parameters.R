@@ -246,8 +246,8 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
   # fractions of groups at initialisation
   y$N_init = y$initial_Ntot*c(y$fraction_F*y$frac_women_ProFSW,
-                              y$fraction_F*y$frac_women_LowFSW,
-                              y$fraction_F - (y$fraction_F*y$frac_women_ProFSW + y$fraction_F*y$frac_women_LowFSW + y$fraction_F*y$frac_women_virgin + y$fraction_F*y$frac_women_exFSW),
+                              y$fraction_F*y$frac_women_ProFSW*y$frac_women_LowFSW,
+                              y$fraction_F - (y$fraction_F*y$frac_women_ProFSW + y$fraction_F*y$frac_women_ProFSW*y$frac_women_LowFSW + y$fraction_F*y$frac_women_virgin + y$fraction_F*y$frac_women_exFSW),
                               y$fraction_F*y$frac_women_exFSW,
                               (1-y$fraction_F)*y$frac_men_client,
                               (1 - y$fraction_F - ((1-y$fraction_F)*y$frac_men_client + (1-y$fraction_F) * y$frac_men_virgin)),
