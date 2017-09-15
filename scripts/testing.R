@@ -716,7 +716,7 @@ odin::odin_package(".") # looks for any models inside inst/odin
 devtools::load_all()
 
 
-number_simulations = 100
+number_simulations = 15
 epi_start = 1986
 epi_end = 2030
 
@@ -1255,15 +1255,20 @@ ranges = rbind(
   # c_comm_2015_ProFSW = c(71, 501),
 
   c_comm_1998_Client = c(8.39, 11.9),
-  c_comm_2012_Client = c(11.8, 15),
-  c_comm_2015_Client = c(14.5, 19.8),
+  # c_comm_2012_Client = c(11.8, 15),
+  # c_comm_2015_Client = c(14.5, 19.8),
+  c_comm_2015_Client = c(8.39, 11.9),
 
 
 
   #non commercial partnerships
-  c_non_comm_1985_ProFSW = c(0.31, 0.86),
-  c_non_comm_1985_LowFSW = c(0.41, 1.04),
-  c_non_comm_1985_Client= c(1.6, 7.9),
+  c_noncomm_1985_ProFSW = c(0.31, 0.86),
+  c_noncomm_1985_LowFSW = c(0.41, 1.04),
+  c_noncomm_1985_Client = c(1.6, 7.9),
+
+  c_noncomm_2015_ProFSW = c(0.31, 0.86),
+  c_noncomm_2015_LowFSW = c(0.41, 1.04),
+  c_noncomm_2015_Client = c(1.6, 7.9),
 
   c_noncomm_1998_GPF = c(0.93, 0.99),
   c_noncomm_2008_GPF = c(0.77, 0.82),
@@ -1282,7 +1287,7 @@ ranges = rbind(
   # sex acts per partnership noncomm
 
   n_y_noncomm_2002_ProFSW_Client = c(13, 20),
-  n_y_noncomm_2015_ProFSW_Client = c(38.2, 60),
+  # n_y_noncomm_2015_ProFSW_Client = c(38.2, 60),
   n_y_noncomm_1985_GPF_GPM = c(29, 43.7),
   n_y_noncomm_1985_GPM_GPF = c(19.4, 46.7),
 
@@ -1474,16 +1479,19 @@ variable = c("Women", "Women", "Women", "Women", "Women", "Women", "Women",
 result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 
+result[[3]] <- result[[2]]
+
+
 lapply(result[[1]], function(x) x$delete)
 
 
 lapply(result[[2]], function(x) x$c_comm_balanced)
 
-result[[2]][[3]]$frac_N
-
-
-mean(unlist(lapply(result[[2]], function(x) mean(x$c_comm_balanced[,5]))))
-
+# result[[2]][[3]]$frac_N
+#
+#
+# mean(unlist(lapply(result[[2]], function(x) mean(x$c_comm_balanced[,5]))))
+#
 
 #
 # result[[3]][[1]]$n_comm[4,,]
@@ -1493,11 +1501,11 @@ mean(unlist(lapply(result[[2]], function(x) mean(x$c_comm_balanced[,5]))))
 # result[[3]][[1]]$fc_noncomm[23,,]
 
 # with fit best runs
-unlist(lapply(result[[2]], function(x) x[[1]]))
-
-# removing those with too high betas
-beta_not_above_1 = which(unlist(lapply(result[[1]], function(x) x$beta_above_1)) == 0)
-result_adjusted = list(result[[1]][beta_not_above_1], result[[2]][beta_not_above_1])
+# unlist(lapply(result[[2]], function(x) x[[1]]))
+#
+# # removing those with too high betas
+# beta_not_above_1 = which(unlist(lapply(result[[1]], function(x) x$beta_above_1)) == 0)
+# result_adjusted = list(result[[1]][beta_not_above_1], result[[2]][beta_not_above_1])
 
 # unlist(result[[3]])
 
@@ -1541,7 +1549,7 @@ ART_coverage = ART_coverage[ART_coverage$variable == "All" | ART_coverage$variab
 
 #####################################################
 
-
+require(ggplot2)
 # plot fraction in each group
 ggplot(frac) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) +
   theme_bw() + labs(y = "Percent in each group (%)") +  facet_wrap(~variable, scales = "free") +

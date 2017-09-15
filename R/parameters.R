@@ -183,7 +183,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
     for(i in 1:length(par_counts[,1]))
     {
-      if(par_counts[i,"freq"] > 1)
+      if(par_counts[i,"freq"] > 0)
       {
         the_years = subset(d, c(par == par_counts[i, "par"] & group == par_counts[i, "group"]), year)
 
@@ -209,13 +209,15 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
           }
         }
 
+
+
         # interoplate between
         # take the years that have values
         # calculate the slopes between them
         # apply the slope and time difference to the pars in between
 
-        years_seq[unlist(the_years)]
 
+        if(par_counts[i,"freq"] > 1) {
         for(j in 1:(length(unlist(the_years))-1)) {
           slope = (y[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j+1])][[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j+1])]][par_counts[i, "group"]] -
                      y[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])][[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])]][par_counts[i, "group"]]) /
@@ -228,6 +230,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
                 (k - years_seq[unlist(the_years)][j]) +
                 y[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])][[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])]][par_counts[i, "group"]]
           }
+        }
         }
       }
     }
