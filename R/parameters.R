@@ -811,7 +811,7 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
   samples_list_test <<- samples_list
 
 
-  samples_list <- samples_list[!unlist(lapply(samples_list_test, function(x) x$delete))] # removing those runs which do not pass initial criteria
+  samples_list <- samples_list[!unlist(lapply(samples_list, function(x) x$delete))] # removing those runs which do not pass initial criteria
 
 
   lapply(samples_list, function(x) generate_parameters(parameters = x, Ncat = Ncat, set_null = set_null))
@@ -1070,7 +1070,7 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
 
 
 
-  samples_list <- samples_list[!unlist(parallel::parLapply(NULL, samples_list_test, function(x) x$delete))] # removing those runs which do not pass initial criteria
+  samples_list <- samples_list[!unlist(parallel::parLapply(NULL, samples_list, function(x) x$delete))] # removing those runs which do not pass initial criteria
 
   parallel::parLapply(NULL, samples_list, function(x) generate_parameters(parameters = x, Ncat = Ncat, set_null = set_null))
 }
