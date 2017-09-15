@@ -2481,8 +2481,8 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   for (int i = 0; i < main_model_p->dim_N; ++i) {
     main_model_p->N[i] = S0[i] + S1a[i] + S1b[i] + S1c[i] + S1d[i] + I01[i] + I11[i] + I02[i] + I03[i] + I04[i] + I05[i] + I22[i] + I23[i] + I24[i] + I25[i] + I32[i] + I33[i] + I34[i] + I35[i] + I42[i] + I43[i] + I44[i] + I45[i];
   }
-  double Ntot_inc_former_FSW_nonCot = odin_sum1(main_model_p->N, 0, main_model_p->dim_N - 1);
-  double new_people = main_model_p->epsilon * Ntot_inc_former_FSW_nonCot;
+  double Ntot = (main_model_p->Ncat == 9 ? (main_model_p->N[0] + main_model_p->N[1] + main_model_p->N[2] + main_model_p->N[3] + main_model_p->N[4] + main_model_p->N[5] + main_model_p->N[6] + main_model_p->N[7]) : odin_sum1(main_model_p->N, 0, main_model_p->dim_N - 1));
+  double new_people = main_model_p->epsilon * Ntot;
   for (int i = 0; i < main_model_p->dim_E1a; ++i) {
     main_model_p->E1a[i] = main_model_p->zetaa[i] * S0[i] - main_model_p->psia[i] * S1a[i] - main_model_p->kappaa[i] * S1a[i];
   }
@@ -2849,17 +2849,17 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     memcpy(output_fP_noncomm, main_model_p->fP_noncomm, main_model_p->dim_fP_noncomm * sizeof(double));
     memcpy(output_n_comm, main_model_p->n_comm, main_model_p->dim_n_comm * sizeof(double));
     memcpy(output_n_noncomm, main_model_p->n_noncomm, main_model_p->dim_n_noncomm * sizeof(double));
-    double Ntot = (main_model_p->Ncat == 9 ? (main_model_p->N[0] + main_model_p->N[1] + main_model_p->N[2] + main_model_p->N[3] + main_model_p->N[4] + main_model_p->N[5] + main_model_p->N[6] + main_model_p->N[7]) : odin_sum1(main_model_p->N, 0, main_model_p->dim_N - 1));
+    double Ntot_inc_former_FSW_nonCot = odin_sum1(main_model_p->N, 0, main_model_p->dim_N - 1);
     output[10] = Ntot_inc_former_FSW_nonCot;
     for (int i = 0; i < main_model_p->dim_new_people_in_group; ++i) {
       main_model_p->new_people_in_group[i] = new_people * main_model_p->omega[i];
     }
     memcpy(output_new_people_in_group, main_model_p->new_people_in_group, main_model_p->dim_new_people_in_group * sizeof(double));
     for (int i = 0; i < main_model_p->dim_frac_N; ++i) {
-      main_model_p->frac_N[i] = main_model_p->N[i] / Ntot_inc_former_FSW_nonCot;
+      main_model_p->frac_N[i] = main_model_p->N[i] / Ntot;
     }
     for (int i = 0; i < main_model_p->dim_frac_F; ++i) {
-      main_model_p->frac_F[i] = (main_model_p->Ncat == 9 ? (main_model_p->N[0] + main_model_p->N[1] + main_model_p->N[2] + main_model_p->N[3] + main_model_p->N[6] + main_model_p->N[8]) / Ntot_inc_former_FSW_nonCot : 0);
+      main_model_p->frac_F[i] = (main_model_p->Ncat == 9 ? (main_model_p->N[0] + main_model_p->N[1] + main_model_p->N[2] + main_model_p->N[3] + main_model_p->N[6]) / Ntot : 0);
     }
     for (int i = 0; i < main_model_p->dim_frac_N_sexualpop; ++i) {
       main_model_p->frac_N_sexualpop[i] = (main_model_p->Ncat == 9 ? main_model_p->N[i] / (main_model_p->N[0] + main_model_p->N[1] + main_model_p->N[2] + main_model_p->N[3] + main_model_p->N[4] + main_model_p->N[5]) : 0);
@@ -3077,16 +3077,16 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   double Ntot = (main_model_p->Ncat == 9 ? (main_model_p->N[0] + main_model_p->N[1] + main_model_p->N[2] + main_model_p->N[3] + main_model_p->N[4] + main_model_p->N[5] + main_model_p->N[6] + main_model_p->N[7]) : odin_sum1(main_model_p->N, 0, main_model_p->dim_N - 1));
   double Ntot_inc_former_FSW_nonCot = odin_sum1(main_model_p->N, 0, main_model_p->dim_N - 1);
   output[10] = Ntot_inc_former_FSW_nonCot;
-  double new_people = main_model_p->epsilon * Ntot_inc_former_FSW_nonCot;
+  double new_people = main_model_p->epsilon * Ntot;
   for (int i = 0; i < main_model_p->dim_new_people_in_group; ++i) {
     main_model_p->new_people_in_group[i] = new_people * main_model_p->omega[i];
   }
   memcpy(output_new_people_in_group, main_model_p->new_people_in_group, main_model_p->dim_new_people_in_group * sizeof(double));
   for (int i = 0; i < main_model_p->dim_frac_N; ++i) {
-    main_model_p->frac_N[i] = main_model_p->N[i] / Ntot_inc_former_FSW_nonCot;
+    main_model_p->frac_N[i] = main_model_p->N[i] / Ntot;
   }
   for (int i = 0; i < main_model_p->dim_frac_F; ++i) {
-    main_model_p->frac_F[i] = (main_model_p->Ncat == 9 ? (main_model_p->N[0] + main_model_p->N[1] + main_model_p->N[2] + main_model_p->N[3] + main_model_p->N[6] + main_model_p->N[8]) / Ntot_inc_former_FSW_nonCot : 0);
+    main_model_p->frac_F[i] = (main_model_p->Ncat == 9 ? (main_model_p->N[0] + main_model_p->N[1] + main_model_p->N[2] + main_model_p->N[3] + main_model_p->N[6]) / Ntot : 0);
   }
   for (int i = 0; i < main_model_p->dim_frac_N_sexualpop; ++i) {
     main_model_p->frac_N_sexualpop[i] = (main_model_p->Ncat == 9 ? main_model_p->N[i] / (main_model_p->N[0] + main_model_p->N[1] + main_model_p->N[2] + main_model_p->N[3] + main_model_p->N[4] + main_model_p->N[5]) : 0);

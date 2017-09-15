@@ -269,6 +269,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     y$betaFtoM_noncomm = 0
     y$betaMtoF_comm = 0
     y$betaFtoM_comm = 0
+    y$beta_above_1 = 1
   }
 
   y$epsilon_y = c(y$epsilon_1985, y$epsilon_1992, y$epsilon_2002, y$epsilon_2013, y$epsilon_2016)
@@ -683,7 +684,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     init_clientN_from_PCR = 0,
     beta_above_1 = 0,
     ignore_ranges_fc_c = 0,
-    dropout_rate_not_FSW = 0.025
+    dropout_rate_not_FSW = 0.025,
+    delete = 0
 
 
 
@@ -793,20 +795,41 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
 
   #   print("ehre2:")
   #   print(samples_list)
-  samples_list_test <<- samples_list
+  # samples_list_test <<- samples_list
 
   samples_list <- lapply(samples_list, fix_parameters, Ncat = Ncat, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
 
-  samples_list_test_fixed <<- samples_list
+  # samples_list_test_fixed <<- samples_list
 
 
   # samples_list <- lapply(samples_list, function(x) modifyList(x, set_pars)) # set pars after fixed pars in order to get right set pars
   samples_list <- lapply(samples_list, function(x) modifyList(x, forced_pars)) # set pars after fixed pars in order to get right set pars
 
+  samples_list <- lapply(samples_list, delete_parameter_sets)
+
+
+  samples_list_test <<- samples_list
+
+
+  samples_list <- samples_list[!unlist(lapply(samples_list_test, function(x) x$delete))] # removing those runs which do not pass initial criteria
+
 
   lapply(samples_list, function(x) generate_parameters(parameters = x, Ncat = Ncat, set_null = set_null))
 }
 
+#' @export
+#' @useDynLib cotonou
+delete_parameter_sets <- function(x) {
+  x$delete <- ifelse(x$beta_above_1 == 1, 1, # if beta is above 1 due to the various RRs
+
+                     # if believing FSW partner change rates, then remove runs where clients pop size too big or too small ONLY IF client size is fixed at start from PCR balancing
+                     ifelse(((x$c_comm_1985[1] * x$N_init[1] + x$c_comm_1985[2] * x$N_init[2])/ (x$c_comm_1985[5])) > (0.4 * sum(c(x$N_init[5], x$N_init[6], x$N_init[8]))) && (x$init_clientN_from_PCR == 1), 1,
+
+                            # if believing client partner change rates, we are now also believing pro FSW and altering low FSW. killing runs where frac of low fsw is too low
+                            ifelse(((x$c_comm_1985[5] * x$N_init[5] - x$c_comm_1985[2] * x$N_init[2])/ (x$c_comm_1985[1])) < (0.001237599* sum(x$N_init)) && (x$init_clientN_from_PCR == 0), 1, 0)))
+
+  return(x)
+}
 
 
 
@@ -920,7 +943,8 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     init_clientN_from_PCR = 0,
     beta_above_1 = 0,
     ignore_ranges_fc_c = 0,
-    dropout_rate_not_FSW = 0.025
+    dropout_rate_not_FSW = 0.025,
+    delete = 0
 
 
 
@@ -1030,16 +1054,23 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
 
   #   print("ehre2:")
   #   print(samples_list)
-  samples_list_test <<- samples_list
+  # samples_list_test <<- samples_list
 
   samples_list <- parallel::parLapply(NULL, samples_list, fix_parameters, Ncat = Ncat, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
 
-  samples_list_test_fixed <<- samples_list
+  # samples_list_test_fixed <<- samples_list
 
 
   # samples_list <- lapply(samples_list, function(x) modifyList(x, set_pars)) # set pars after fixed pars in order to get right set pars
   samples_list <- parallel::parLapply(NULL, samples_list, function(x) modifyList(x, forced_pars)) # set pars after fixed pars in order to get right set pars
 
+
+  samples_list <- parallel::parLapply(NULL, samples_list, delete_parameter_sets)
+
+
+
+
+  samples_list <- samples_list[!unlist(parallel::parLapply(NULL, samples_list_test, function(x) x$delete))] # removing those runs which do not pass initial criteria
 
   parallel::parLapply(NULL, samples_list, function(x) generate_parameters(parameters = x, Ncat = Ncat, set_null = set_null))
 }
@@ -1389,7 +1420,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    fraction_sexually_active_15_M = 0,
                    beta_above_1 = 0,
                    ignore_ranges_fc_c = 0,
-                   dropout_rate_not_FSW = 0.025
+                   dropout_rate_not_FSW = 0.025,
+                   delete = 0
 
 
 

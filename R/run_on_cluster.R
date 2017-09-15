@@ -8,7 +8,7 @@ just_parameters <- function(number_simulations, par_seq, condom_seq, groups_seq,
                                         ranges = ranges, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
   # end of parameters --------------------------------------------------------------
 
-  return(list(parameters))
+  return(parameters)
 
 }
 
