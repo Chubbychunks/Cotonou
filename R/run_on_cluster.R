@@ -365,6 +365,28 @@ run_model_with_fit_cluster_pars_done <- function(parameters, outputs, prev_point
 
 }
 
+
+#' @export
+#' @useDynLib cotonou
+run_model_with_fit_for_correlations_with_sets_already <- function(parameters, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points) {
+
+
+  res = lapply(parameters, function(x) {return_outputs(x, gen = main_model, time = time, outputs = outputs)})
+
+
+
+  # likelihood_list = unlist(lapply(res, likelihood_rough, time = time, prev_points = prev_points))
+  likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points)
+
+
+  # return(list(time, prev_points, res))
+
+  return(list(parameters, res, likelihood_list))
+
+
+}
+
+
 #' @export
 #' @useDynLib cotonou
 run_model_with_fit_for_correlations <- function(number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points) {
