@@ -226,6 +226,10 @@ run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, 
   best_fit_pars = list()
   max_fit = 1
 
+  ### minus 1
+  best_fit_pars_minus_1 = list()
+  max_fit_minus_1 = 0
+
   # results_list = list()
   for(i in 1:(number_simulations/batch_size))
   {
@@ -255,12 +259,27 @@ run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, 
 
     if(max(sorted_likelihood_list) > max_fit)
     {
+
+      ### minus 1
+      best_fit_pars_minus_1 = best_fit_pars
+      max_fit_minus_1 = max_fit
+
+
       max_fit = max(sorted_likelihood_list)
       best_fit_pars = parameters[best_runs]
+
     } else if(max(sorted_likelihood_list) == max_fit)
     {
       best_fit_pars[(length(best_fit_pars) + 1 ):(length(best_fit_pars) + length(best_runs))] <- parameters[best_runs]
     }
+
+    ### minus 1
+    if(max(sorted_likelihood_list) == max_fit_minus_1)
+    {
+      best_fit_pars_minus_1[(length(best_fit_pars_minus_1) + 1 ):(length(best_fit_pars_minus_1) + length(best_runs))] <- parameters[best_runs]
+
+    }
+
 
     print(max_fit)
     print(c(100*i/(number_simulations/batch_size), "%"))
@@ -284,6 +303,14 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
   best_fit_pars = list()
   max_fit = 1
 
+
+
+  ### minus 1
+  best_fit_pars_minus_1 = list()
+  max_fit_minus_1 = 0
+
+
+
   # results_list = list()
   for(i in 1:(number_simulations/batch_size))
   {
@@ -304,24 +331,32 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
 
     best_runs = which(unlist(lapply(likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
 
-    # if(max(sorted_likelihood_list) > 0)
-    # {
-    #   results_list[[i]] <- list(max = max(sorted_likelihood_list), pars = parameters[best_runs])
-    # } else {
-    #   results_list[[i]] <- list(max = 0, pars = NULL)
-    # }
 
     if(max(sorted_likelihood_list) > max_fit)
     {
+      ### minus 1
+      best_fit_pars_minus_1 = best_fit_pars
+      max_fit_minus_1 = max_fit
+
+
       max_fit = max(sorted_likelihood_list)
       best_fit_pars = parameters[best_runs]
+
     } else if(max(sorted_likelihood_list) == max_fit)
     {
       best_fit_pars[(length(best_fit_pars) + 1 ):(length(best_fit_pars) + length(best_runs))] <- parameters[best_runs]
     }
 
-    # print(max_fit)
-    print(max(sorted_likelihood_list))
+    ### minus 1
+    if(max(sorted_likelihood_list) == max_fit_minus_1)
+    {
+      best_fit_pars_minus_1[(length(best_fit_pars_minus_1) + 1 ):(length(best_fit_pars_minus_1) + length(best_runs))] <- parameters[best_runs]
+
+    }
+
+
+    print(max_fit)
+    print(c(100*i/(number_simulations/batch_size), "%"))
 
     best_fit_pars_test <<- best_fit_pars
 
@@ -329,7 +364,7 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
     gc()
   }
 
-  return(list(max_fit, best_fit_pars))
+  return(list(max_fit, best_fit_pars, max_fit_minus_1, best_fit_pars_minus_1))
 
   # return(list(parameters[best_runs], likelihood_list, out, best_runs))
 }

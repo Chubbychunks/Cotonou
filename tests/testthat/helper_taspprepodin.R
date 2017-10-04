@@ -102,6 +102,10 @@ best_set_default = list(
   SC_to_200_349 = 3.4,
   gamma04 = 4.45, #years
 
+  kappaa = rep(0.2, 9),
+  kappab = rep(0.2, 9),
+  kappac = rep(0.2, 9),
+
 
   alpha01 = rep_len(0, 9),
   alpha02 = rep_len(0, 9),
