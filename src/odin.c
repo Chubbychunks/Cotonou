@@ -6,41 +6,6 @@
 #include <R_ext/Rdynload.h>
 #include <stdbool.h>
 
-typedef enum {
-  CONSTANT,
-  LINEAR,
-  SPLINE
-} interpolate_type;
-
-typedef struct interpolate_data {
-  interpolate_type type;
-  size_t n;     // number of points
-  size_t ny;    // number of y entries per 'x' point
-  size_t i;     // index of last point checked
-  double *x;    // x points of interpolation
-  double *y;    // y points of interpolation
-  double *k;    // knots when using spline interpolation
-} interpolate_data;
-
-interpolate_data * interpolate_alloc(interpolate_type type, size_t n,
-                                     size_t ny, double *x, double *y);
-void interpolate_free(interpolate_data* obj);
-int interpolate_constant_run(double x, interpolate_data* obj, double *y);
-int interpolate_linear_run(double x, interpolate_data* obj, double *y);
-int interpolate_spline_run(double x, interpolate_data* obj, double *y);
-
-// Utility:
-int interpolate_search(double target, interpolate_data *obj);
-
-// Splines
-void spline_knots(size_t n, double *x, double* y, double *k, double **A);
-double spline_eval_i(size_t i, double x, double *xs, double *ys, double *ks);
-void gauss_solve(size_t n, double **A, double *x);
-void spline_knots_A(size_t n, double *x, double *y, double **A);
-
-// Interface:
-void odin_interpolate_check(size_t nx, size_t ny, size_t i, const char *name_arg, const char *name_target);
-
 // Collect together all the parameters and transient memory
 // required to run the model in a struct.
 typedef struct main_model_pars {
@@ -665,21 +630,21 @@ typedef struct main_model_pars {
   int dim_rate_move_out;
   double *rate_move_out;
   int offset_output_rate_move_out;
-  interpolate_data *interpolate_c_comm;
-  interpolate_data *interpolate_c_noncomm;
-  interpolate_data *interpolate_testing_prob;
-  interpolate_data *interpolate_ART_prob;
-  interpolate_data *interpolate_epsilon;
+  void *interpolate_c_comm;
+  void *interpolate_c_noncomm;
+  void *interpolate_testing_prob;
+  void *interpolate_ART_prob;
+  void *interpolate_epsilon;
   double epsilon;
-  interpolate_data *interpolate_zetaa;
-  interpolate_data *interpolate_zetab;
-  interpolate_data *interpolate_zetac;
-  interpolate_data *interpolate_fc_comm;
-  interpolate_data *interpolate_fP_comm;
-  interpolate_data *interpolate_fc_noncomm;
-  interpolate_data *interpolate_fP_noncomm;
-  interpolate_data *interpolate_n_comm;
-  interpolate_data *interpolate_n_noncomm;
+  void *interpolate_zetaa;
+  void *interpolate_zetab;
+  void *interpolate_zetac;
+  void *interpolate_fc_comm;
+  void *interpolate_fP_comm;
+  void *interpolate_fc_noncomm;
+  void *interpolate_fP_noncomm;
+  void *interpolate_n_comm;
+  void *interpolate_n_noncomm;
   int dim;
   int dim_output;
 } main_model_pars;
@@ -695,8 +660,20 @@ void odin_set_dim(SEXP target, int nd, ...);
 int get_user_int(SEXP user, const char *name, int default_value);
 void get_user_array(SEXP user, const char *name, bool is_real, void *dest, int nd, ...);
 SEXP get_list_element(SEXP list, const char *name);
+void odin_interpolate_check(size_t nx, size_t ny, size_t i, const char *name_arg, const char *name_target);
 double odin_sum1(double *x, int from_i, int to_i);
 double odin_sum2(double *x, int from_i, int to_i, int from_j, int to_j, int dim_x_1);
+#ifndef _CINTERPOLATE_H_
+#define _CINTERPOLATE_H_
+
+#include <stddef.h> // size_t
+
+void *cinterpolate_alloc(const char *type, size_t n, size_t ny,
+                         double *x, double *y);
+int cinterpolate_eval(double x, void *obj, double *y);
+void cinterpolate_free(void *obj);
+
+#endif
 double FOI_part(double I, double N, double beta, double RR, double fc, double fP, double n, double eP, double ec);
 double all_FOI_together(double c, double p, double S0, double S1a, double S1b, double S1c, double I01, double I11, double I02, double I03, double I04, double I05, double I22, double I23, double I24, double I25, double I32, double I33, double I34, double I35, double I42, double I43, double I44, double I45, double N, double beta, double R, double fc, double fP, double n, double eP, double ec, double infect_ART, double infect_acute, double infect_AIDS);
 double compute_lambda(double c_comm, double p_comm, double S0, double S1a, double S1b, double S1c, double I01, double I11, double I02, double I03, double I04, double I05, double I22, double I23, double I24, double I25, double I32, double I33, double I34, double I35, double I42, double I43, double I44, double I45, double N, double beta_comm, double R, double fc_comm, double fP_comm, double n_comm, double eP, double ec, double fc_noncomm, double fP_noncomm, double n_noncomm, double c_noncomm, double p_noncomm, double infect_ART, double infect_acute, double infect_AIDS,  double beta_noncomm);
@@ -2065,63 +2042,63 @@ SEXP main_model_set_user(main_model_pars *main_model_p, SEXP user) {
   get_user_array(user, "rate_move_out", true, main_model_p->rate_move_out, 1, main_model_p->dim_rate_move_out);
   odin_interpolate_check(main_model_p->dim_c_t_comm, main_model_p->dim_c_y_comm_1, 1, "c_y_comm", "c_comm");
   odin_interpolate_check(main_model_p->dim_c_comm, main_model_p->dim_c_y_comm_2, 2, "c_y_comm", "c_comm");
-  interpolate_free(main_model_p->interpolate_c_comm);
-  main_model_p->interpolate_c_comm = interpolate_alloc(LINEAR, main_model_p->dim_c_t_comm, main_model_p->dim_c_comm, main_model_p->c_t_comm, main_model_p->c_y_comm);
+  cinterpolate_free(main_model_p->interpolate_c_comm);
+  main_model_p->interpolate_c_comm = cinterpolate_alloc("linear", main_model_p->dim_c_t_comm, main_model_p->dim_c_comm, main_model_p->c_t_comm, main_model_p->c_y_comm);
   odin_interpolate_check(main_model_p->dim_c_t_noncomm, main_model_p->dim_c_y_noncomm_1, 1, "c_y_noncomm", "c_noncomm");
   odin_interpolate_check(main_model_p->dim_c_noncomm, main_model_p->dim_c_y_noncomm_2, 2, "c_y_noncomm", "c_noncomm");
-  interpolate_free(main_model_p->interpolate_c_noncomm);
-  main_model_p->interpolate_c_noncomm = interpolate_alloc(LINEAR, main_model_p->dim_c_t_noncomm, main_model_p->dim_c_noncomm, main_model_p->c_t_noncomm, main_model_p->c_y_noncomm);
+  cinterpolate_free(main_model_p->interpolate_c_noncomm);
+  main_model_p->interpolate_c_noncomm = cinterpolate_alloc("linear", main_model_p->dim_c_t_noncomm, main_model_p->dim_c_noncomm, main_model_p->c_t_noncomm, main_model_p->c_y_noncomm);
   odin_interpolate_check(main_model_p->dim_testing_prob_t, main_model_p->dim_testing_prob_y_1, 1, "testing_prob_y", "testing_prob");
   odin_interpolate_check(main_model_p->dim_testing_prob, main_model_p->dim_testing_prob_y_2, 2, "testing_prob_y", "testing_prob");
-  interpolate_free(main_model_p->interpolate_testing_prob);
-  main_model_p->interpolate_testing_prob = interpolate_alloc(LINEAR, main_model_p->dim_testing_prob_t, main_model_p->dim_testing_prob, main_model_p->testing_prob_t, main_model_p->testing_prob_y);
+  cinterpolate_free(main_model_p->interpolate_testing_prob);
+  main_model_p->interpolate_testing_prob = cinterpolate_alloc("linear", main_model_p->dim_testing_prob_t, main_model_p->dim_testing_prob, main_model_p->testing_prob_t, main_model_p->testing_prob_y);
   odin_interpolate_check(main_model_p->dim_ART_prob_t, main_model_p->dim_ART_prob_y_1, 1, "ART_prob_y", "ART_prob");
   odin_interpolate_check(main_model_p->dim_ART_prob, main_model_p->dim_ART_prob_y_2, 2, "ART_prob_y", "ART_prob");
-  interpolate_free(main_model_p->interpolate_ART_prob);
-  main_model_p->interpolate_ART_prob = interpolate_alloc(LINEAR, main_model_p->dim_ART_prob_t, main_model_p->dim_ART_prob, main_model_p->ART_prob_t, main_model_p->ART_prob_y);
+  cinterpolate_free(main_model_p->interpolate_ART_prob);
+  main_model_p->interpolate_ART_prob = cinterpolate_alloc("linear", main_model_p->dim_ART_prob_t, main_model_p->dim_ART_prob, main_model_p->ART_prob_t, main_model_p->ART_prob_y);
   odin_interpolate_check(main_model_p->dim_epsilon_t, main_model_p->dim_epsilon_y, 0, "epsilon_y", "epsilon");
-  interpolate_free(main_model_p->interpolate_epsilon);
-  main_model_p->interpolate_epsilon = interpolate_alloc(CONSTANT, main_model_p->dim_epsilon_t, 1, main_model_p->epsilon_t, main_model_p->epsilon_y);
+  cinterpolate_free(main_model_p->interpolate_epsilon);
+  main_model_p->interpolate_epsilon = cinterpolate_alloc("constant", main_model_p->dim_epsilon_t, 1, main_model_p->epsilon_t, main_model_p->epsilon_y);
   odin_interpolate_check(main_model_p->dim_zetaa_t, main_model_p->dim_zetaa_y_1, 1, "zetaa_y", "zetaa");
   odin_interpolate_check(main_model_p->dim_zetaa, main_model_p->dim_zetaa_y_2, 2, "zetaa_y", "zetaa");
-  interpolate_free(main_model_p->interpolate_zetaa);
-  main_model_p->interpolate_zetaa = interpolate_alloc(CONSTANT, main_model_p->dim_zetaa_t, main_model_p->dim_zetaa, main_model_p->zetaa_t, main_model_p->zetaa_y);
+  cinterpolate_free(main_model_p->interpolate_zetaa);
+  main_model_p->interpolate_zetaa = cinterpolate_alloc("constant", main_model_p->dim_zetaa_t, main_model_p->dim_zetaa, main_model_p->zetaa_t, main_model_p->zetaa_y);
   odin_interpolate_check(main_model_p->dim_zetab_t, main_model_p->dim_zetab_y_1, 1, "zetab_y", "zetab");
   odin_interpolate_check(main_model_p->dim_zetab, main_model_p->dim_zetab_y_2, 2, "zetab_y", "zetab");
-  interpolate_free(main_model_p->interpolate_zetab);
-  main_model_p->interpolate_zetab = interpolate_alloc(CONSTANT, main_model_p->dim_zetab_t, main_model_p->dim_zetab, main_model_p->zetab_t, main_model_p->zetab_y);
+  cinterpolate_free(main_model_p->interpolate_zetab);
+  main_model_p->interpolate_zetab = cinterpolate_alloc("constant", main_model_p->dim_zetab_t, main_model_p->dim_zetab, main_model_p->zetab_t, main_model_p->zetab_y);
   odin_interpolate_check(main_model_p->dim_zetac_t, main_model_p->dim_zetac_y_1, 1, "zetac_y", "zetac");
   odin_interpolate_check(main_model_p->dim_zetac, main_model_p->dim_zetac_y_2, 2, "zetac_y", "zetac");
-  interpolate_free(main_model_p->interpolate_zetac);
-  main_model_p->interpolate_zetac = interpolate_alloc(CONSTANT, main_model_p->dim_zetac_t, main_model_p->dim_zetac, main_model_p->zetac_t, main_model_p->zetac_y);
+  cinterpolate_free(main_model_p->interpolate_zetac);
+  main_model_p->interpolate_zetac = cinterpolate_alloc("constant", main_model_p->dim_zetac_t, main_model_p->dim_zetac, main_model_p->zetac_t, main_model_p->zetac_y);
   odin_interpolate_check(main_model_p->dim_fc_t_comm, main_model_p->dim_fc_y_comm_1, 1, "fc_y_comm", "fc_comm");
   odin_interpolate_check(main_model_p->dim_fc_comm_1, main_model_p->dim_fc_y_comm_2, 2, "fc_y_comm", "fc_comm");
   odin_interpolate_check(main_model_p->dim_fc_comm_2, main_model_p->dim_fc_y_comm_3, 3, "fc_y_comm", "fc_comm");
-  interpolate_free(main_model_p->interpolate_fc_comm);
-  main_model_p->interpolate_fc_comm = interpolate_alloc(LINEAR, main_model_p->dim_fc_t_comm, main_model_p->dim_fc_comm, main_model_p->fc_t_comm, main_model_p->fc_y_comm);
+  cinterpolate_free(main_model_p->interpolate_fc_comm);
+  main_model_p->interpolate_fc_comm = cinterpolate_alloc("linear", main_model_p->dim_fc_t_comm, main_model_p->dim_fc_comm, main_model_p->fc_t_comm, main_model_p->fc_y_comm);
   odin_interpolate_check(main_model_p->dim_fP_t_comm, main_model_p->dim_fP_y_comm_1, 1, "fP_y_comm", "fP_comm");
   odin_interpolate_check(main_model_p->dim_fP_comm, main_model_p->dim_fP_y_comm_2, 2, "fP_y_comm", "fP_comm");
-  interpolate_free(main_model_p->interpolate_fP_comm);
-  main_model_p->interpolate_fP_comm = interpolate_alloc(LINEAR, main_model_p->dim_fP_t_comm, main_model_p->dim_fP_comm, main_model_p->fP_t_comm, main_model_p->fP_y_comm);
+  cinterpolate_free(main_model_p->interpolate_fP_comm);
+  main_model_p->interpolate_fP_comm = cinterpolate_alloc("linear", main_model_p->dim_fP_t_comm, main_model_p->dim_fP_comm, main_model_p->fP_t_comm, main_model_p->fP_y_comm);
   odin_interpolate_check(main_model_p->dim_fc_t_noncomm, main_model_p->dim_fc_y_noncomm_1, 1, "fc_y_noncomm", "fc_noncomm");
   odin_interpolate_check(main_model_p->dim_fc_noncomm_1, main_model_p->dim_fc_y_noncomm_2, 2, "fc_y_noncomm", "fc_noncomm");
   odin_interpolate_check(main_model_p->dim_fc_noncomm_2, main_model_p->dim_fc_y_noncomm_3, 3, "fc_y_noncomm", "fc_noncomm");
-  interpolate_free(main_model_p->interpolate_fc_noncomm);
-  main_model_p->interpolate_fc_noncomm = interpolate_alloc(LINEAR, main_model_p->dim_fc_t_noncomm, main_model_p->dim_fc_noncomm, main_model_p->fc_t_noncomm, main_model_p->fc_y_noncomm);
+  cinterpolate_free(main_model_p->interpolate_fc_noncomm);
+  main_model_p->interpolate_fc_noncomm = cinterpolate_alloc("linear", main_model_p->dim_fc_t_noncomm, main_model_p->dim_fc_noncomm, main_model_p->fc_t_noncomm, main_model_p->fc_y_noncomm);
   odin_interpolate_check(main_model_p->dim_fP_t_noncomm, main_model_p->dim_fP_y_noncomm_1, 1, "fP_y_noncomm", "fP_noncomm");
   odin_interpolate_check(main_model_p->dim_fP_noncomm, main_model_p->dim_fP_y_noncomm_2, 2, "fP_y_noncomm", "fP_noncomm");
-  interpolate_free(main_model_p->interpolate_fP_noncomm);
-  main_model_p->interpolate_fP_noncomm = interpolate_alloc(LINEAR, main_model_p->dim_fP_t_noncomm, main_model_p->dim_fP_noncomm, main_model_p->fP_t_noncomm, main_model_p->fP_y_noncomm);
+  cinterpolate_free(main_model_p->interpolate_fP_noncomm);
+  main_model_p->interpolate_fP_noncomm = cinterpolate_alloc("linear", main_model_p->dim_fP_t_noncomm, main_model_p->dim_fP_noncomm, main_model_p->fP_t_noncomm, main_model_p->fP_y_noncomm);
   odin_interpolate_check(main_model_p->dim_n_t_comm, main_model_p->dim_n_y_comm_1, 1, "n_y_comm", "n_comm");
   odin_interpolate_check(main_model_p->dim_n_comm_1, main_model_p->dim_n_y_comm_2, 2, "n_y_comm", "n_comm");
   odin_interpolate_check(main_model_p->dim_n_comm_2, main_model_p->dim_n_y_comm_3, 3, "n_y_comm", "n_comm");
-  interpolate_free(main_model_p->interpolate_n_comm);
-  main_model_p->interpolate_n_comm = interpolate_alloc(LINEAR, main_model_p->dim_n_t_comm, main_model_p->dim_n_comm, main_model_p->n_t_comm, main_model_p->n_y_comm);
+  cinterpolate_free(main_model_p->interpolate_n_comm);
+  main_model_p->interpolate_n_comm = cinterpolate_alloc("linear", main_model_p->dim_n_t_comm, main_model_p->dim_n_comm, main_model_p->n_t_comm, main_model_p->n_y_comm);
   odin_interpolate_check(main_model_p->dim_n_t_noncomm, main_model_p->dim_n_y_noncomm_1, 1, "n_y_noncomm", "n_noncomm");
   odin_interpolate_check(main_model_p->dim_n_noncomm_1, main_model_p->dim_n_y_noncomm_2, 2, "n_y_noncomm", "n_noncomm");
   odin_interpolate_check(main_model_p->dim_n_noncomm_2, main_model_p->dim_n_y_noncomm_3, 3, "n_y_noncomm", "n_noncomm");
-  interpolate_free(main_model_p->interpolate_n_noncomm);
-  main_model_p->interpolate_n_noncomm = interpolate_alloc(LINEAR, main_model_p->dim_n_t_noncomm, main_model_p->dim_n_noncomm, main_model_p->n_t_noncomm, main_model_p->n_y_noncomm);
+  cinterpolate_free(main_model_p->interpolate_n_noncomm);
+  main_model_p->interpolate_n_noncomm = cinterpolate_alloc("linear", main_model_p->dim_n_t_noncomm, main_model_p->dim_n_noncomm, main_model_p->n_t_noncomm, main_model_p->n_y_noncomm);
   main_model_p->dim = main_model_p->offset_I45 + main_model_p->dim_I45;
   main_model_p->dim_output = main_model_p->offset_output_rate_move_out + main_model_p->dim_rate_move_out;
   return R_NilValue;
@@ -2344,20 +2321,20 @@ void main_model_finalize(SEXP main_model_ptr) {
     Free(main_model_p->sum_in_S0);
     Free(main_model_p->rate_move_in);
     Free(main_model_p->rate_move_out);
-    interpolate_free(main_model_p->interpolate_c_comm);
-    interpolate_free(main_model_p->interpolate_c_noncomm);
-    interpolate_free(main_model_p->interpolate_testing_prob);
-    interpolate_free(main_model_p->interpolate_ART_prob);
-    interpolate_free(main_model_p->interpolate_epsilon);
-    interpolate_free(main_model_p->interpolate_zetaa);
-    interpolate_free(main_model_p->interpolate_zetab);
-    interpolate_free(main_model_p->interpolate_zetac);
-    interpolate_free(main_model_p->interpolate_fc_comm);
-    interpolate_free(main_model_p->interpolate_fP_comm);
-    interpolate_free(main_model_p->interpolate_fc_noncomm);
-    interpolate_free(main_model_p->interpolate_fP_noncomm);
-    interpolate_free(main_model_p->interpolate_n_comm);
-    interpolate_free(main_model_p->interpolate_n_noncomm);
+    cinterpolate_free(main_model_p->interpolate_c_comm);
+    cinterpolate_free(main_model_p->interpolate_c_noncomm);
+    cinterpolate_free(main_model_p->interpolate_testing_prob);
+    cinterpolate_free(main_model_p->interpolate_ART_prob);
+    cinterpolate_free(main_model_p->interpolate_epsilon);
+    cinterpolate_free(main_model_p->interpolate_zetaa);
+    cinterpolate_free(main_model_p->interpolate_zetab);
+    cinterpolate_free(main_model_p->interpolate_zetac);
+    cinterpolate_free(main_model_p->interpolate_fc_comm);
+    cinterpolate_free(main_model_p->interpolate_fP_comm);
+    cinterpolate_free(main_model_p->interpolate_fc_noncomm);
+    cinterpolate_free(main_model_p->interpolate_fP_noncomm);
+    cinterpolate_free(main_model_p->interpolate_n_comm);
+    cinterpolate_free(main_model_p->interpolate_n_noncomm);
     Free(main_model_p);
     R_ClearExternalPtr(main_model_ptr);
   }
@@ -2452,26 +2429,26 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   double *deriv_I43 = dstatedt + main_model_p->offset_I43;
   double *deriv_I44 = dstatedt + main_model_p->offset_I44;
   double *deriv_I45 = dstatedt + main_model_p->offset_I45;
-  interpolate_linear_run(t, main_model_p->interpolate_c_comm, main_model_p->c_comm);
-  interpolate_linear_run(t, main_model_p->interpolate_c_noncomm, main_model_p->c_noncomm);
-  interpolate_linear_run(t, main_model_p->interpolate_testing_prob, main_model_p->testing_prob);
-  interpolate_linear_run(t, main_model_p->interpolate_ART_prob, main_model_p->ART_prob);
+  cinterpolate_eval(t, main_model_p->interpolate_c_comm, main_model_p->c_comm);
+  cinterpolate_eval(t, main_model_p->interpolate_c_noncomm, main_model_p->c_noncomm);
+  cinterpolate_eval(t, main_model_p->interpolate_testing_prob, main_model_p->testing_prob);
+  cinterpolate_eval(t, main_model_p->interpolate_ART_prob, main_model_p->ART_prob);
   for (int i = 0; i < main_model_p->dim_tau; ++i) {
     main_model_p->tau[i] = -log(1 - main_model_p->testing_prob[i]);
   }
   for (int i = 0; i < main_model_p->dim_rho; ++i) {
     main_model_p->rho[i] = -log(1 - main_model_p->ART_prob[i]);
   }
-  interpolate_constant_run(t, main_model_p->interpolate_epsilon, &(main_model_p->epsilon));
-  interpolate_constant_run(t, main_model_p->interpolate_zetaa, main_model_p->zetaa);
-  interpolate_constant_run(t, main_model_p->interpolate_zetab, main_model_p->zetab);
-  interpolate_constant_run(t, main_model_p->interpolate_zetac, main_model_p->zetac);
-  interpolate_linear_run(t, main_model_p->interpolate_fc_comm, main_model_p->fc_comm);
-  interpolate_linear_run(t, main_model_p->interpolate_fP_comm, main_model_p->fP_comm);
-  interpolate_linear_run(t, main_model_p->interpolate_fc_noncomm, main_model_p->fc_noncomm);
-  interpolate_linear_run(t, main_model_p->interpolate_fP_noncomm, main_model_p->fP_noncomm);
-  interpolate_linear_run(t, main_model_p->interpolate_n_comm, main_model_p->n_comm);
-  interpolate_linear_run(t, main_model_p->interpolate_n_noncomm, main_model_p->n_noncomm);
+  cinterpolate_eval(t, main_model_p->interpolate_epsilon, &(main_model_p->epsilon));
+  cinterpolate_eval(t, main_model_p->interpolate_zetaa, main_model_p->zetaa);
+  cinterpolate_eval(t, main_model_p->interpolate_zetab, main_model_p->zetab);
+  cinterpolate_eval(t, main_model_p->interpolate_zetac, main_model_p->zetac);
+  cinterpolate_eval(t, main_model_p->interpolate_fc_comm, main_model_p->fc_comm);
+  cinterpolate_eval(t, main_model_p->interpolate_fP_comm, main_model_p->fP_comm);
+  cinterpolate_eval(t, main_model_p->interpolate_fc_noncomm, main_model_p->fc_noncomm);
+  cinterpolate_eval(t, main_model_p->interpolate_fP_noncomm, main_model_p->fP_noncomm);
+  cinterpolate_eval(t, main_model_p->interpolate_n_comm, main_model_p->n_comm);
+  cinterpolate_eval(t, main_model_p->interpolate_n_noncomm, main_model_p->n_noncomm);
   for (int i = 0; i < main_model_p->dim_cumuHIVDeaths; ++i) {
     deriv_cumuHIVDeaths[i] = main_model_p->alpha01[i] * I01[i] + main_model_p->alpha11[i] * I11[i] + main_model_p->alpha02[i] * I02[i] + main_model_p->alpha03[i] * I03[i] + main_model_p->alpha04[i] * I04[i] + main_model_p->alpha05[i] * I05[i] + main_model_p->alpha22[i] * I22[i] + main_model_p->alpha23[i] * I23[i] + main_model_p->alpha24[i] * I24[i] + main_model_p->alpha25[i] * I25[i] + main_model_p->alpha32[i] * I32[i] + main_model_p->alpha33[i] * I33[i] + main_model_p->alpha34[i] * I34[i] + main_model_p->alpha35[i] * I35[i] + main_model_p->alpha42[i] * I42[i] + main_model_p->alpha43[i] * I43[i] + main_model_p->alpha44[i] * I44[i] + main_model_p->alpha45[i] * I45[i];
   }
@@ -2574,14 +2551,26 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   for (int i = 0; i < main_model_p->dim_lambda_sum_1a; ++i) {
     main_model_p->lambda_sum_1a[i] = odin_sum2(main_model_p->lambda_1a, i, i, 0, main_model_p->dim_lambda_1a_2 - 1, main_model_p->dim_lambda_1a_1);
   }
+  for (int i = 0; i < main_model_p->dim_S1a; ++i) {
+    deriv_S1a[i] = main_model_p->E1a[i] - S1a[i] * main_model_p->lambda_sum_1a[i] - S1a[i] * main_model_p->mu[i];
+  }
   for (int i = 0; i < main_model_p->dim_lambda_sum_1b; ++i) {
     main_model_p->lambda_sum_1b[i] = odin_sum2(main_model_p->lambda_1b, i, i, 0, main_model_p->dim_lambda_1b_2 - 1, main_model_p->dim_lambda_1b_1);
+  }
+  for (int i = 0; i < main_model_p->dim_S1b; ++i) {
+    deriv_S1b[i] = main_model_p->E1b[i] - S1b[i] * main_model_p->lambda_sum_1b[i] - S1b[i] * main_model_p->mu[i];
   }
   for (int i = 0; i < main_model_p->dim_lambda_sum_1c; ++i) {
     main_model_p->lambda_sum_1c[i] = odin_sum2(main_model_p->lambda_1c, i, i, 0, main_model_p->dim_lambda_1c_2 - 1, main_model_p->dim_lambda_1c_1);
   }
+  for (int i = 0; i < main_model_p->dim_S1c; ++i) {
+    deriv_S1c[i] = main_model_p->E1c[i] - S1c[i] * main_model_p->lambda_sum_1c[i] - S1c[i] * main_model_p->mu[i];
+  }
   for (int i = 0; i < main_model_p->dim_lambda_sum_1d; ++i) {
     main_model_p->lambda_sum_1d[i] = odin_sum2(main_model_p->lambda_1d, i, i, 0, main_model_p->dim_lambda_1d_2 - 1, main_model_p->dim_lambda_1d_1);
+  }
+  for (int i = 0; i < main_model_p->dim_S1d; ++i) {
+    deriv_S1d[i] = main_model_p->E1d[i] - S1d[i] * main_model_p->lambda_sum_1d[i] - S1d[i] * main_model_p->mu[i];
   }
   for (int i = 0; i < main_model_p->dim_cumuInf; ++i) {
     deriv_cumuInf[i] = S0[i] * main_model_p->lambda_sum_0[i] + S1a[i] * main_model_p->lambda_sum_1a[i] + S1b[i] * main_model_p->lambda_sum_1b[i] + S1c[i] * main_model_p->lambda_sum_1c[i] + S1d[i] * main_model_p->lambda_sum_1d[i];
@@ -2589,26 +2578,6 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   for (int i = 0; i < main_model_p->dim_in_S0_1; ++i) {
     for (int j = 0; j < main_model_p->dim_in_S0_2; ++j) {
       main_model_p->in_S0[i + j * main_model_p->dim_in_S0_1] = (i == j ? 0 : main_model_p->rate_move_in[i + j * main_model_p->dim_rate_move_in_1] * S0[j]);
-    }
-  }
-  for (int i = 0; i < main_model_p->dim_in_S1a_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_in_S1a_2; ++j) {
-      main_model_p->in_S1a[i + j * main_model_p->dim_in_S1a_1] = (i == j ? 0 : main_model_p->rate_move_in[i + j * main_model_p->dim_rate_move_in_1] * S1a[j]);
-    }
-  }
-  for (int i = 0; i < main_model_p->dim_in_S1b_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_in_S1b_2; ++j) {
-      main_model_p->in_S1b[i + j * main_model_p->dim_in_S1b_1] = (i == j ? 0 : main_model_p->rate_move_in[i + j * main_model_p->dim_rate_move_in_1] * S1b[j]);
-    }
-  }
-  for (int i = 0; i < main_model_p->dim_in_S1c_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_in_S1c_2; ++j) {
-      main_model_p->in_S1c[i + j * main_model_p->dim_in_S1c_1] = (i == j ? 0 : main_model_p->rate_move_in[i + j * main_model_p->dim_rate_move_in_1] * S1c[j]);
-    }
-  }
-  for (int i = 0; i < main_model_p->dim_in_S1d_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_in_S1d_2; ++j) {
-      main_model_p->in_S1d[i + j * main_model_p->dim_in_S1d_1] = (i == j ? 0 : main_model_p->rate_move_in[i + j * main_model_p->dim_rate_move_in_1] * S1d[j]);
     }
   }
   for (int i = 0; i < main_model_p->dim_in_I01_1; ++i) {
@@ -2703,18 +2672,6 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   }
   for (int i = 0; i < main_model_p->dim_S0; ++i) {
     deriv_S0[i] = main_model_p->E0[i] - S0[i] * main_model_p->lambda_sum_0[i] - S0[i] * main_model_p->mu[i] + main_model_p->rate_move_out[i] * S0[i] + odin_sum2(main_model_p->in_S0, i, i, 0, main_model_p->dim_in_S0_2 - 1, main_model_p->dim_in_S0_1);
-  }
-  for (int i = 0; i < main_model_p->dim_S1a; ++i) {
-    deriv_S1a[i] = main_model_p->E1a[i] - S1a[i] * main_model_p->lambda_sum_1a[i] - S1a[i] * main_model_p->mu[i] + main_model_p->rate_move_out[i] * S1a[i] + odin_sum2(main_model_p->in_S1a, i, i, 0, main_model_p->dim_in_S1a_2 - 1, main_model_p->dim_in_S1a_1);
-  }
-  for (int i = 0; i < main_model_p->dim_S1b; ++i) {
-    deriv_S1b[i] = main_model_p->E1b[i] - S1b[i] * main_model_p->lambda_sum_1b[i] - S1b[i] * main_model_p->mu[i] + main_model_p->rate_move_out[i] * S1b[i] + odin_sum2(main_model_p->in_S1b, i, i, 0, main_model_p->dim_in_S1b_2 - 1, main_model_p->dim_in_S1b_1);
-  }
-  for (int i = 0; i < main_model_p->dim_S1c; ++i) {
-    deriv_S1c[i] = main_model_p->E1c[i] - S1c[i] * main_model_p->lambda_sum_1c[i] - S1c[i] * main_model_p->mu[i] + main_model_p->rate_move_out[i] * S1c[i] + odin_sum2(main_model_p->in_S1c, i, i, 0, main_model_p->dim_in_S1c_2 - 1, main_model_p->dim_in_S1c_1);
-  }
-  for (int i = 0; i < main_model_p->dim_S1d; ++i) {
-    deriv_S1d[i] = main_model_p->E1d[i] - S1d[i] * main_model_p->lambda_sum_1d[i] - S1d[i] * main_model_p->mu[i] + main_model_p->rate_move_out[i] * S1d[i] + odin_sum2(main_model_p->in_S1d, i, i, 0, main_model_p->dim_in_S1d_2 - 1, main_model_p->dim_in_S1d_1);
   }
   for (int i = 0; i < main_model_p->dim_I01; ++i) {
     deriv_I01[i] = S0[i] * main_model_p->lambda_sum_0[i] - I01[i] * (main_model_p->gamma01[i] + main_model_p->tau[i] + main_model_p->alpha01[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I01[i] + odin_sum2(main_model_p->in_I01, i, i, 0, main_model_p->dim_in_I01_2 - 1, main_model_p->dim_in_I01_1);
@@ -3031,12 +2988,12 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   double *output_sum_in_S0 = output + main_model_p->offset_output_sum_in_S0;
   double *output_rate_move_in = output + main_model_p->offset_output_rate_move_in;
   double *output_rate_move_out = output + main_model_p->offset_output_rate_move_out;
-  interpolate_linear_run(t, main_model_p->interpolate_c_comm, main_model_p->c_comm);
-  interpolate_linear_run(t, main_model_p->interpolate_c_noncomm, main_model_p->c_noncomm);
+  cinterpolate_eval(t, main_model_p->interpolate_c_comm, main_model_p->c_comm);
+  cinterpolate_eval(t, main_model_p->interpolate_c_noncomm, main_model_p->c_noncomm);
   output[0] = main_model_p->who_believe_comm;
-  interpolate_linear_run(t, main_model_p->interpolate_testing_prob, main_model_p->testing_prob);
+  cinterpolate_eval(t, main_model_p->interpolate_testing_prob, main_model_p->testing_prob);
   memcpy(output_testing_prob, main_model_p->testing_prob, main_model_p->dim_testing_prob * sizeof(double));
-  interpolate_linear_run(t, main_model_p->interpolate_ART_prob, main_model_p->ART_prob);
+  cinterpolate_eval(t, main_model_p->interpolate_ART_prob, main_model_p->ART_prob);
   memcpy(output_ART_prob, main_model_p->ART_prob, main_model_p->dim_ART_prob * sizeof(double));
   for (int i = 0; i < main_model_p->dim_tau; ++i) {
     main_model_p->tau[i] = -log(1 - main_model_p->testing_prob[i]);
@@ -3061,13 +3018,13 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   memcpy(output_c_noncomm, main_model_p->c_noncomm, main_model_p->dim_c_noncomm * sizeof(double));
   output[7] = main_model_p->Nage;
   output[8] = main_model_p->dur_FSW;
-  interpolate_constant_run(t, main_model_p->interpolate_epsilon, &(main_model_p->epsilon));
+  cinterpolate_eval(t, main_model_p->interpolate_epsilon, &(main_model_p->epsilon));
   output[9] = main_model_p->epsilon;
-  interpolate_constant_run(t, main_model_p->interpolate_zetaa, main_model_p->zetaa);
+  cinterpolate_eval(t, main_model_p->interpolate_zetaa, main_model_p->zetaa);
   memcpy(output_zetaa, main_model_p->zetaa, main_model_p->dim_zetaa * sizeof(double));
-  interpolate_constant_run(t, main_model_p->interpolate_zetab, main_model_p->zetab);
+  cinterpolate_eval(t, main_model_p->interpolate_zetab, main_model_p->zetab);
   memcpy(output_zetab, main_model_p->zetab, main_model_p->dim_zetab * sizeof(double));
-  interpolate_constant_run(t, main_model_p->interpolate_zetac, main_model_p->zetac);
+  cinterpolate_eval(t, main_model_p->interpolate_zetac, main_model_p->zetac);
   memcpy(output_zetac, main_model_p->zetac, main_model_p->dim_zetac * sizeof(double));
   memcpy(output_omega, main_model_p->omega, main_model_p->dim_omega * sizeof(double));
   memcpy(output_mu, main_model_p->mu, main_model_p->dim_mu * sizeof(double));
@@ -3079,17 +3036,17 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   memcpy(output_alpha35, main_model_p->alpha35, main_model_p->dim_alpha35 * sizeof(double));
   memcpy(output_beta_comm, main_model_p->beta_comm, main_model_p->dim_beta_comm * sizeof(double));
   memcpy(output_beta_noncomm, main_model_p->beta_noncomm, main_model_p->dim_beta_noncomm * sizeof(double));
-  interpolate_linear_run(t, main_model_p->interpolate_fc_comm, main_model_p->fc_comm);
+  cinterpolate_eval(t, main_model_p->interpolate_fc_comm, main_model_p->fc_comm);
   memcpy(output_fc_comm, main_model_p->fc_comm, main_model_p->dim_fc_comm * sizeof(double));
-  interpolate_linear_run(t, main_model_p->interpolate_fP_comm, main_model_p->fP_comm);
+  cinterpolate_eval(t, main_model_p->interpolate_fP_comm, main_model_p->fP_comm);
   memcpy(output_fP_comm, main_model_p->fP_comm, main_model_p->dim_fP_comm * sizeof(double));
-  interpolate_linear_run(t, main_model_p->interpolate_fc_noncomm, main_model_p->fc_noncomm);
+  cinterpolate_eval(t, main_model_p->interpolate_fc_noncomm, main_model_p->fc_noncomm);
   memcpy(output_fc_noncomm, main_model_p->fc_noncomm, main_model_p->dim_fc_noncomm * sizeof(double));
-  interpolate_linear_run(t, main_model_p->interpolate_fP_noncomm, main_model_p->fP_noncomm);
+  cinterpolate_eval(t, main_model_p->interpolate_fP_noncomm, main_model_p->fP_noncomm);
   memcpy(output_fP_noncomm, main_model_p->fP_noncomm, main_model_p->dim_fP_noncomm * sizeof(double));
-  interpolate_linear_run(t, main_model_p->interpolate_n_comm, main_model_p->n_comm);
+  cinterpolate_eval(t, main_model_p->interpolate_n_comm, main_model_p->n_comm);
   memcpy(output_n_comm, main_model_p->n_comm, main_model_p->dim_n_comm * sizeof(double));
-  interpolate_linear_run(t, main_model_p->interpolate_n_noncomm, main_model_p->n_noncomm);
+  cinterpolate_eval(t, main_model_p->interpolate_n_noncomm, main_model_p->n_noncomm);
   memcpy(output_n_noncomm, main_model_p->n_noncomm, main_model_p->dim_n_noncomm * sizeof(double));
   for (int i = 0; i < main_model_p->dim_N; ++i) {
     main_model_p->N[i] = S0[i] + S1a[i] + S1b[i] + S1c[i] + S1d[i] + I01[i] + I11[i] + I02[i] + I03[i] + I04[i] + I05[i] + I22[i] + I23[i] + I24[i] + I25[i] + I32[i] + I33[i] + I34[i] + I35[i] + I42[i] + I43[i] + I44[i] + I45[i];
@@ -5337,6 +5294,19 @@ SEXP get_list_element(SEXP list, const char *name) {
   }
   return ret;
 }
+void odin_interpolate_check(size_t nx, size_t ny, size_t i, const char *name_arg, const char *name_target) {
+  if (nx != ny) {
+    if (i == 0) {
+      // vector case
+      Rf_error("Expected %s to have length %d (for %s)",
+               name_arg, nx, name_target);
+    } else {
+      // array case
+      Rf_error("Expected dimension %d of %s to have size %d (for %s)",
+               i, name_arg, nx, name_target);
+    }
+  }
+}
 double odin_sum1(double *x, int from_i, int to_i) {
   double tot = 0.0;
   for (int i = from_i; i <= to_i; ++i) {
@@ -5353,6 +5323,44 @@ double odin_sum2(double *x, int from_i, int to_i, int from_j, int to_j, int dim_
     }
   }
   return tot;
+}
+// This construction is to help odin
+#ifndef _CINTERPOLATE_H_
+#include <cinterpolate/cinterpolate.h>
+#endif
+
+#include <R_ext/Rdynload.h>
+
+void * cinterpolate_alloc(const char *type, size_t n, size_t ny,
+                          double *x, double *y) {
+  typedef void* interpolate_alloc_t(const char *, size_t, size_t,
+                                    double*, double*);
+  static interpolate_alloc_t *fun;
+  if (fun == NULL) {
+    fun = (interpolate_alloc_t*)
+      R_GetCCallable("cinterpolate", "interpolate_alloc");
+  }
+  return fun(type, n, ny, x, y);
+}
+
+int cinterpolate_eval(double x, void *obj, double *y) {
+  typedef int interpolate_eval_t(double, void*, double*);
+  static interpolate_eval_t *fun;
+  if (fun == NULL) {
+    fun = (interpolate_eval_t*)
+      R_GetCCallable("cinterpolate", "interpolate_eval");
+  }
+  return fun(x, obj, y);
+}
+
+void cinterpolate_free(void *obj) {
+  typedef int interpolate_free_t(void*);
+  static interpolate_free_t *fun;
+  if (fun == NULL) {
+    fun = (interpolate_free_t*)
+      R_GetCCallable("cinterpolate", "interpolate_free");
+  }
+  fun(obj);
 }
 double FOI_part(double I, double N, double beta, double RR, double fc, double fP, double n, double eP, double ec) {
   
@@ -5393,276 +5401,4 @@ double all_FOI_together(double c, double p, double S0, double S1a, double S1b, d
 }
 double compute_lambda(double c_comm, double p_comm, double S0, double S1a, double S1b, double S1c, double I01, double I11, double I02, double I03, double I04, double I05, double I22, double I23, double I24, double I25, double I32, double I33, double I34, double I35, double I42, double I43, double I44, double I45, double N, double beta_comm, double R, double fc_comm, double fP_comm, double n_comm, double eP, double ec, double fc_noncomm, double fP_noncomm, double n_noncomm, double c_noncomm, double p_noncomm, double infect_ART, double infect_acute, double infect_AIDS,  double beta_noncomm) {
   return all_FOI_together(c_comm, p_comm, S0, S1a, S1b, S1c, I01, I11, I02, I03, I04, I05, I22, I23, I24, I25, I32, I33, I34, I35, I42, I43, I44, I45, N, beta_comm, R, fc_comm, fP_comm, n_comm, eP, ec, infect_ART, infect_acute, infect_AIDS) + all_FOI_together(c_noncomm, p_noncomm, S0, S1a, S1b, S1c, I01, I11, I02, I03, I04, I05, I22, I23, I24, I25, I32, I33, I34, I35, I42, I43, I44, I45, N, beta_noncomm, R, fc_noncomm, fP_noncomm, n_noncomm, eP, ec, infect_ART, infect_acute, infect_AIDS);
-}
-
-interpolate_data * interpolate_alloc(interpolate_type type,
-                                     size_t n, size_t ny,
-                                     double *x, double *y) {
-  interpolate_data * ret = Calloc(1, interpolate_data);
-  ret->type = type;
-  ret->n = n;
-  ret->ny = ny;
-  ret->i = 0;
-  ret->x = (double*) Calloc(n, double);
-  ret->y = (double*) Calloc(n * ny, double);
-  ret->k = NULL;
-  memcpy(ret->x, x, sizeof(double) * n);
-  memcpy(ret->y, y, sizeof(double) * n * ny);
-
-  if (type == SPLINE) {
-    ret->k = (double*) Calloc(n * ny, double);
-    // Some transient space for the A matrix:
-    double **A = (double**)R_alloc(n, sizeof(double*));
-    for (size_t i = 0; i < n; ++i) {
-      A[i] = (double*)R_alloc(n + 1, sizeof(double));
-      memset(A[i], 0, (n + 1) * sizeof(double));
-    }
-    for (size_t i = 0; i < ny; ++i) {
-      spline_knots(n, ret->x, ret->y + i * n, ret->k + i * n, A);
-    }
-  }
-  return ret;
-}
-
-void interpolate_free(interpolate_data* obj) {
-  if (obj) {
-    Free(obj->x);
-    Free(obj->y);
-    Free(obj->k);
-    Free(obj);
-  }
-}
-
-// int interpolate_run(double x, interpolate_data *obj, double *y) {
-// do a switch here...
-//}
-
-// Constant
-int interpolate_constant_run(double x, interpolate_data *obj, double *y) {
-  // Do a hunt/bisect search here
-  int i = interpolate_search(x, obj);
-  // In theory we might be able to handle this, but it's simpler to
-  // forbid it I think.  In odin we'll do a check that the
-  // interpolation times span the entire range of integration times.
-  if (i < 0) {
-    for (size_t j = 0; j < obj->ny; ++j) {
-      y[j] = NA_REAL;
-    }
-    return -1;
-  } else if (i == (int) obj->n) { // off the rhs
-    i = obj->n - 1;
-  }
-  // TODO: In general, I wonder if this should be dealt with in interpolate
-  // search?
-  //
-  // NOTE: In the R function 'approx' there is an argument 'f' that
-  // deals with the 'ties' case more gracefully.  This is like the
-  // default f=0, omitting this becomes like the option f=1.
-  if (i != (int)obj->n - 1 && obj->x[i + 1] == x) {
-    ++i;
-  }
-
-  double *y0 = obj->y + i;
-  for (size_t j = 0; j < obj->ny; ++j, y0 += obj->n) {
-    y[j] = *y0;
-  }
-  return 0;
-}
-
-// Linear
-int interpolate_linear_run(double x, interpolate_data* obj, double *y) {
-  int i = interpolate_search(x, obj);
-  // In theory we might be able to handle this, but it's simpler to
-  // forbid it I think.  In odin we'll do a check that the
-  // interpolation times span the entire range of integration times.
-  if (i < 0 || i == (int)obj->n) { // off the lhs or rhs
-    for (size_t j = 0; j < obj->ny; ++j) {
-      y[j] = NA_REAL;
-    }
-    return -1;
-  }
-
-  // Here we need to compute some things.
-  //
-  // TODO: deal with the case where i+1 is out of bounds; in that
-  // case, it must be the case that x0 is equal to x.  This affects y1
-  // in the same way.
-  double x0 = obj->x[i], x1 = obj->x[i + 1];
-  double scal = (x - x0) / (x1 - x0);
-
-  double *y0 = obj->y + i;
-  double *y1 = y0 + 1;
-
-  for (size_t j = 0; j < obj->ny; ++j, y0 += obj->n, y1 += obj->n) {
-    y[j] = *y0 + (*y1 - *y0) * scal;
-  }
-
-  return 0;
-}
-
-// Spline
-int interpolate_spline_run(double x, interpolate_data* obj, double *y) {
-  int i = interpolate_search(x, obj);
-  if (i < 0 || i == (int)obj->n) { // off the lhs or rhs
-    for (size_t j = 0; j < obj->ny; ++j) {
-      y[j] = NA_REAL;
-    }
-    return -1;
-  }
-  double *ys = obj->y, *ks = obj->k;
-  for (size_t j = 0; j < obj->ny; ++j, ys += obj->n, ks += obj->n) {
-    y[j] = spline_eval_i(i, x, obj->x, ys, ks);
-  }
-  return 0;
-}
-
-int interpolate_search(double target, interpolate_data *obj) {
-  int i0 = (int)obj->i, i1 = (int)obj->i, inc = 1;
-  size_t n = obj->n;
-  double *x = obj->x;
-
-  if (x[i0] <= target) { // advance up until we hit the top
-    if (i0 == (int)n - 1) { // guess is already *at* the top.
-      return n;
-    }
-    i1 = i0 + inc;
-    while (x[i1] < target) {
-      i0 = i1;
-      inc *= 2;
-      i1 += inc;
-      if (i1 >= (int)n) { // off the end of the buffer
-        i1 = n - 1;
-        if (x[i1] < target) {
-          return n;
-        }
-        break;
-      }
-    }
-  } else { // advance down
-    if (i0 == 0) { // guess is already at the bottom
-      return -1;
-    }
-    i0 = i0 - inc;
-    while (x[i0] > target) {
-      i1 = i0;
-      inc *= 2;
-      if (i0 < inc) {
-        i0 = 0;
-        if (x[i0] > target) {
-          return -1;
-        }
-        break;
-      }
-      i0 -= inc;
-    }
-  }
-
-  // Need to deal specially with this case apparently, but not sure
-  // why.  It's possible that this only needs doing on one of the
-  // early exits from the above loops.
-  if (i1 - i0 == 1 && x[i1] < target) {
-    obj->i = (size_t)i1;
-    return i1;
-  }
-
-  while (i1 - i0 > 1) {
-    int i2 = (i1 + i0) / 2;
-    if (x[i2] < target) {
-      i0 = i2;
-    } else {
-      i1 = i2;
-    }
-  }
-
-  obj->i = (size_t)i0;
-  return i0;
-}
-
-// Spline support
-void spline_knots(size_t n, double *x, double *y, double *k, double **A) {
-  spline_knots_A(n, x, y, A);
-  gauss_solve(n, A, k);
-}
-
-double spline_eval_i(size_t i, double x, double *xs, double *ys, double *ks) {
-  double t = (x - xs[i]) / (xs[i + 1] - xs[i]);
-  double a =  ks[i] * (xs[i + 1] - xs[i]) - (ys[i + 1] - ys[i]);
-  double b = -ks[i + 1] * (xs[i + 1] - xs[i]) + (ys[i + 1] - ys[i]);
-  return (1 - t) * ys[i] + t * ys[i + 1] + t * (1 - t) * (a * (1 - t) + b * t);
-}
-
-void spline_knots_A(size_t n, double *x, double *y, double **A) {
-  n--;
-  for (size_t i = 1; i < n; i++) {
-    A[i][i-1] = 1 / (x[i] - x[i-1]);
-    A[i][i  ] = 2 * (1 / (x[i] - x[i-1]) + 1 / (x[i+1] - x[i])) ;
-    A[i][i+1] = 1 / (x[i+1] - x[i]);
-    A[i][n+1] = 3 *
-      ((y[i]   - y[i-1]) / ((x[i  ] - x[i-1]) * (x[i  ] - x[i-1])) +
-       (y[i+1] - y[i  ]) / ((x[i+1] - x[i  ]) * (x[i+1] - x[i  ])));
-  }
-  A[0][0  ] = 2 / (x[1] - x[0]);
-  A[0][1  ] = 1 / (x[1] - x[0]);
-  A[0][n+1] = 3 * (y[1] - y[0]) / ((x[1] - x[0]) * (x[1] - x[0]));
-  A[n][n-1] = 1 / (x[n] - x[n-1]);
-  A[n][n  ] = 2 / (x[n] - x[n-1]);
-  A[n][n+1] = 3 * (y[n] - y[n-1]) / ((x[n] - x[n-1]) * (x[n] - x[n-1]));
-}
-
-// TODO: probably move to proper matrix at some point, rather than
-// double pointer which is ugly to allocate (or allocate it in one
-// blob).
-void gauss_solve(size_t n, double **A, double *x) {
-  size_t m = n;
-  for (size_t k = 0; k < m; k++) { // column
-    // pivot for column
-    size_t i_max = 0;
-    double i_max_val = -1000000; // -DBL_MAX
-    for (size_t i = k; i < m; i++) {
-      if (A[i][k] > i_max_val) {
-        i_max = i;
-        i_max_val = A[i][k];
-      }
-    }
-    if (A[i_max][k] == 0) {
-      Rf_error("matrix is singular!");
-    };
-    // Swap rows:
-    double *tmp = A[k];
-    A[k] = A[i_max];
-    A[i_max] = tmp;
-    // for all rows below pivot
-    for (size_t i = k + 1; i < m; i++) {
-      for (size_t j = k + 1; j < m + 1; j++) {
-        A[i][j] = A[i][j] - A[k][j] * (A[i][k] / A[k][k]);
-      }
-      A[i][k] = 0;
-    }
-  }
-  // NOTE: Some ints here...
-  for (int i = m - 1; i >= 0; i--) { // rows = columns
-    double v = A[i][m] / A[i][i];
-    x[i] = v;
-    for (int j = i - 1; j >= 0; j--) { // rows
-      A[j][m] -= A[j][i] * v;
-      A[j][i] = 0;
-    }
-  }
-}
-
-// check here, given information on the type, that we have at least 1
-// point for type 0, 2 for type 1, and 3 for type 2.  That should work
-// pretty happily.
-void odin_interpolate_check(size_t nx, size_t ny, size_t i, const char *name_arg, const char *name_target) {
-  if (nx != ny) {
-    if (i == 0) {
-      // vector case
-      Rf_error("Expected %s to have length %d (for %s)",
-               name_arg, nx, name_target);
-    } else {
-      // array case
-      Rf_error("Expected dimension %d of %s to have size %d (for %s)",
-               i, name_arg, nx, name_target);
-    }
-  }
 }

@@ -745,6 +745,23 @@ test_that("B check 0", {
 # c_comm_balanced? contained in the above test tbh
 
 
+# p makes sense?
+
+test_that("p makes sense", {
+  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
+  result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
+  true_vec = c()
+  for(i in 1:length(time_default))
+    true_vec[i] = all(round(rowSums(result$p_comm[i,,]), 4) %in% seq(0, 1))
+  expect_true(all(true_vec))
+
+  for(i in 1:length(time_default))
+    true_vec[i] = all(round(rowSums(result$p_noncomm[i,,]), 4) %in% seq(0, 1))
+  expect_true(all(true_vec))
+
+})
+
+
 
 # CALCULATING PREVALENCE
 ###################################################################################################################################
