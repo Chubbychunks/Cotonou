@@ -262,6 +262,8 @@ dim(noncomm_partnerships_requested) = c(Ncat, Ncat)
 # p_comm[,] = if(M_comm[i, j] == 0) 0 else M_comm[i, j] * N[j] * c_comm_balanced[j] / sum(comm_partnerships_requested[i,])
 # p_noncomm[,] = if(M_noncomm[i, j] == 0) 0 else M_noncomm[i, j] * N[j] * c_noncomm_balanced[j] / sum(noncomm_partnerships_requested[i,])
 #
+p_comm[,] = user()
+p_noncomm[,] = user()
 
 
 

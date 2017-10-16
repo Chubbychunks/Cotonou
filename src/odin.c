@@ -1444,12 +1444,14 @@ SEXP main_model_set_user(main_model_pars *main_model_p, SEXP user) {
   main_model_p->dim_p_comm = main_model_p->dim_p_comm_1 * main_model_p->dim_p_comm_2;
   main_model_p->p_comm = (double*) Calloc(main_model_p->dim_p_comm, double);
   main_model_p->offset_output_p_comm = main_model_p->offset_output_beta_noncomm + main_model_p->dim_beta_noncomm;
+  get_user_array(user, "p_comm", true, main_model_p->p_comm, 2, main_model_p->dim_p_comm_1, main_model_p->dim_p_comm_2);
   Free(main_model_p->p_noncomm);
   main_model_p->dim_p_noncomm_1 = main_model_p->Ncat;
   main_model_p->dim_p_noncomm_2 = main_model_p->Ncat;
   main_model_p->dim_p_noncomm = main_model_p->dim_p_noncomm_1 * main_model_p->dim_p_noncomm_2;
   main_model_p->p_noncomm = (double*) Calloc(main_model_p->dim_p_noncomm, double);
   main_model_p->offset_output_p_noncomm = main_model_p->offset_output_p_comm + main_model_p->dim_p_comm;
+  get_user_array(user, "p_noncomm", true, main_model_p->p_noncomm, 2, main_model_p->dim_p_noncomm_1, main_model_p->dim_p_noncomm_2);
   Free(main_model_p->ec);
   main_model_p->dim_ec = main_model_p->Ncat;
   main_model_p->ec = (double*) Calloc(main_model_p->dim_ec, double);
@@ -2500,26 +2502,6 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     int i = 3;
     main_model_p->c_noncomm_balanced[i] = (main_model_p->Ncat == 9 ? main_model_p->c_noncomm_balanced[2] : main_model_p->c_noncomm_balanced[3]);
   }
-  for (int i = 0; i < main_model_p->dim_comm_partnerships_requested_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_comm_partnerships_requested_2; ++j) {
-      main_model_p->comm_partnerships_requested[i + j * main_model_p->dim_comm_partnerships_requested_1] = main_model_p->N[j] * main_model_p->c_comm_balanced[j] * main_model_p->M_comm[i + j * main_model_p->dim_M_comm_1];
-    }
-  }
-  for (int i = 0; i < main_model_p->dim_p_comm_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_p_comm_2; ++j) {
-      main_model_p->p_comm[i + j * main_model_p->dim_p_comm_1] = (main_model_p->M_comm[i + j * main_model_p->dim_M_comm_1] == 0 ? 0 : main_model_p->M_comm[i + j * main_model_p->dim_M_comm_1] * main_model_p->N[j] * main_model_p->c_comm_balanced[j] / odin_sum2(main_model_p->comm_partnerships_requested, i, i, 0, main_model_p->dim_comm_partnerships_requested_2 - 1, main_model_p->dim_comm_partnerships_requested_1));
-    }
-  }
-  for (int i = 0; i < main_model_p->dim_noncomm_partnerships_requested_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_noncomm_partnerships_requested_2; ++j) {
-      main_model_p->noncomm_partnerships_requested[i + j * main_model_p->dim_noncomm_partnerships_requested_1] = main_model_p->N[j] * main_model_p->c_noncomm_balanced[j] * main_model_p->M_noncomm[i + j * main_model_p->dim_M_noncomm_1];
-    }
-  }
-  for (int i = 0; i < main_model_p->dim_p_noncomm_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_p_noncomm_2; ++j) {
-      main_model_p->p_noncomm[i + j * main_model_p->dim_p_noncomm_1] = (main_model_p->M_noncomm[i + j * main_model_p->dim_M_noncomm_1] == 0 ? 0 : main_model_p->M_noncomm[i + j * main_model_p->dim_M_noncomm_1] * main_model_p->N[j] * main_model_p->c_noncomm_balanced[j] / odin_sum2(main_model_p->noncomm_partnerships_requested, i, i, 0, main_model_p->dim_noncomm_partnerships_requested_2 - 1, main_model_p->dim_noncomm_partnerships_requested_1));
-    }
-  }
   for (int i = 0; i < main_model_p->dim_lambda_0_1; ++i) {
     for (int j = 0; j < main_model_p->dim_lambda_0_2; ++j) {
       main_model_p->lambda_0[i + j * main_model_p->dim_lambda_0_1] = (i == j ? 0 : compute_lambda(main_model_p->c_comm_balanced[i], main_model_p->p_comm[i + j * main_model_p->dim_p_comm_1], S0[j], S1a[j], S1b[j], S1c[j], I01[j], I11[j], I02[j], I03[j], I04[j], I05[j], I22[j], I23[j], I24[j], I25[j], I32[j], I33[j], I34[j], I35[j], I42[j], I43[j], I44[j], I45[j], main_model_p->N[j], main_model_p->beta_comm[i], main_model_p->R, main_model_p->fc_comm[i + j * main_model_p->dim_fc_comm_1], main_model_p->fP_comm[i], main_model_p->n_comm[i + j * main_model_p->dim_n_comm_1], main_model_p->eP0[i], main_model_p->ec[i], main_model_p->fc_noncomm[i + j * main_model_p->dim_fc_noncomm_1], main_model_p->fP_noncomm[i], main_model_p->n_noncomm[i + j * main_model_p->dim_n_noncomm_1], main_model_p->c_noncomm_balanced[i], main_model_p->p_noncomm[i + j * main_model_p->dim_p_noncomm_1], main_model_p->infect_ART, main_model_p->infect_acute, main_model_p->infect_AIDS, main_model_p->beta_noncomm[i]));
@@ -2820,6 +2802,8 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     memcpy(output_alpha35, main_model_p->alpha35, main_model_p->dim_alpha35 * sizeof(double));
     memcpy(output_beta_comm, main_model_p->beta_comm, main_model_p->dim_beta_comm * sizeof(double));
     memcpy(output_beta_noncomm, main_model_p->beta_noncomm, main_model_p->dim_beta_noncomm * sizeof(double));
+    memcpy(output_p_comm, main_model_p->p_comm, main_model_p->dim_p_comm * sizeof(double));
+    memcpy(output_p_noncomm, main_model_p->p_noncomm, main_model_p->dim_p_noncomm * sizeof(double));
     memcpy(output_fc_comm, main_model_p->fc_comm, main_model_p->dim_fc_comm * sizeof(double));
     memcpy(output_fP_comm, main_model_p->fP_comm, main_model_p->dim_fP_comm * sizeof(double));
     memcpy(output_fc_noncomm, main_model_p->fc_noncomm, main_model_p->dim_fc_noncomm * sizeof(double));
@@ -2873,16 +2857,12 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     output[19] = B_check_comm;
     memcpy(output_c_comm_balanced, main_model_p->c_comm_balanced, main_model_p->dim_c_comm_balanced * sizeof(double));
     double B_check_noncomm = (main_model_p->Ncat == 9 ? main_model_p->c_noncomm_balanced[0] * main_model_p->N[0] + main_model_p->c_noncomm_balanced[1] * main_model_p->N[1] + main_model_p->c_noncomm_balanced[2] * main_model_p->N[2] + main_model_p->c_noncomm_balanced[3] * main_model_p->N[3] - main_model_p->c_noncomm_balanced[4] * main_model_p->N[4] - main_model_p->c_noncomm_balanced[5] * main_model_p->N[5] : 1);
-    output[20] = B_check_noncomm;
-    memcpy(output_c_noncomm_balanced, main_model_p->c_noncomm_balanced, main_model_p->dim_c_noncomm_balanced * sizeof(double));
-    memcpy(output_theta, main_model_p->theta, main_model_p->dim_theta * sizeof(double));
-    memcpy(output_p_comm, main_model_p->p_comm, main_model_p->dim_p_comm * sizeof(double));
-    memcpy(output_M_comm, main_model_p->M_comm, main_model_p->dim_M_comm * sizeof(double));
     for (int i = 0; i < main_model_p->dim_lambda_1; ++i) {
       for (int j = 0; j < main_model_p->dim_lambda_2; ++j) {
         main_model_p->lambda[i + j * main_model_p->dim_lambda_1] = (i == j ? 0 : compute_lambda(main_model_p->c_comm_balanced[i], main_model_p->p_comm[i + j * main_model_p->dim_p_comm_1], S0[j], S1a[j], S1b[j], S1c[j], I01[j], I11[j], I02[j], I03[j], I04[j], I05[j], I22[j], I23[j], I24[j], I25[j], I32[j], I33[j], I34[j], I35[j], I42[j], I43[j], I44[j], I45[j], main_model_p->N[j], main_model_p->beta_comm[i], main_model_p->R, main_model_p->fc_comm[i + j * main_model_p->dim_fc_comm_1], main_model_p->fP_comm[i], main_model_p->n_comm[i + j * main_model_p->dim_n_comm_1], main_model_p->eP[i], main_model_p->ec[i], main_model_p->fc_noncomm[i + j * main_model_p->dim_fc_noncomm_1], main_model_p->fP_noncomm[i], main_model_p->n_noncomm[i + j * main_model_p->dim_n_noncomm_1], main_model_p->c_noncomm_balanced[i], main_model_p->p_noncomm[i + j * main_model_p->dim_p_noncomm_1], main_model_p->infect_ART, main_model_p->infect_acute, main_model_p->infect_AIDS, main_model_p->beta_noncomm[i]));
       }
     }
+    output[20] = B_check_noncomm;
     memcpy(output_lambda, main_model_p->lambda, main_model_p->dim_lambda * sizeof(double));
     memcpy(output_lambda_0, main_model_p->lambda_0, main_model_p->dim_lambda_0 * sizeof(double));
     memcpy(output_lambda_1a, main_model_p->lambda_1a, main_model_p->dim_lambda_1a * sizeof(double));
@@ -2894,7 +2874,9 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     memcpy(output_lambda_sum_1b, main_model_p->lambda_sum_1b, main_model_p->dim_lambda_sum_1b * sizeof(double));
     memcpy(output_lambda_sum_1c, main_model_p->lambda_sum_1c, main_model_p->dim_lambda_sum_1c * sizeof(double));
     memcpy(output_lambda_sum_1d, main_model_p->lambda_sum_1d, main_model_p->dim_lambda_sum_1d * sizeof(double));
-    memcpy(output_p_noncomm, main_model_p->p_noncomm, main_model_p->dim_p_noncomm * sizeof(double));
+    memcpy(output_c_noncomm_balanced, main_model_p->c_noncomm_balanced, main_model_p->dim_c_noncomm_balanced * sizeof(double));
+    memcpy(output_theta, main_model_p->theta, main_model_p->dim_theta * sizeof(double));
+    memcpy(output_M_comm, main_model_p->M_comm, main_model_p->dim_M_comm * sizeof(double));
     memcpy(output_M_noncomm, main_model_p->M_noncomm, main_model_p->dim_M_noncomm * sizeof(double));
     for (int i = 0; i < main_model_p->dim_sum_in_S0; ++i) {
       main_model_p->sum_in_S0[i] = odin_sum2(main_model_p->in_S0, i, i, 0, main_model_p->dim_in_S0_2 - 1, main_model_p->dim_in_S0_1);
@@ -3036,6 +3018,8 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   memcpy(output_alpha35, main_model_p->alpha35, main_model_p->dim_alpha35 * sizeof(double));
   memcpy(output_beta_comm, main_model_p->beta_comm, main_model_p->dim_beta_comm * sizeof(double));
   memcpy(output_beta_noncomm, main_model_p->beta_noncomm, main_model_p->dim_beta_noncomm * sizeof(double));
+  memcpy(output_p_comm, main_model_p->p_comm, main_model_p->dim_p_comm * sizeof(double));
+  memcpy(output_p_noncomm, main_model_p->p_noncomm, main_model_p->dim_p_noncomm * sizeof(double));
   cinterpolate_eval(t, main_model_p->interpolate_fc_comm, main_model_p->fc_comm);
   memcpy(output_fc_comm, main_model_p->fc_comm, main_model_p->dim_fc_comm * sizeof(double));
   cinterpolate_eval(t, main_model_p->interpolate_fP_comm, main_model_p->fP_comm);
@@ -3140,31 +3124,6 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
     main_model_p->c_noncomm_balanced[i] = (main_model_p->Ncat == 9 ? main_model_p->c_noncomm_balanced[2] : main_model_p->c_noncomm_balanced[3]);
   }
   double B_check_noncomm = (main_model_p->Ncat == 9 ? main_model_p->c_noncomm_balanced[0] * main_model_p->N[0] + main_model_p->c_noncomm_balanced[1] * main_model_p->N[1] + main_model_p->c_noncomm_balanced[2] * main_model_p->N[2] + main_model_p->c_noncomm_balanced[3] * main_model_p->N[3] - main_model_p->c_noncomm_balanced[4] * main_model_p->N[4] - main_model_p->c_noncomm_balanced[5] * main_model_p->N[5] : 1);
-  output[20] = B_check_noncomm;
-  memcpy(output_c_noncomm_balanced, main_model_p->c_noncomm_balanced, main_model_p->dim_c_noncomm_balanced * sizeof(double));
-  memcpy(output_theta, main_model_p->theta, main_model_p->dim_theta * sizeof(double));
-  for (int i = 0; i < main_model_p->dim_comm_partnerships_requested_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_comm_partnerships_requested_2; ++j) {
-      main_model_p->comm_partnerships_requested[i + j * main_model_p->dim_comm_partnerships_requested_1] = main_model_p->N[j] * main_model_p->c_comm_balanced[j] * main_model_p->M_comm[i + j * main_model_p->dim_M_comm_1];
-    }
-  }
-  for (int i = 0; i < main_model_p->dim_p_comm_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_p_comm_2; ++j) {
-      main_model_p->p_comm[i + j * main_model_p->dim_p_comm_1] = (main_model_p->M_comm[i + j * main_model_p->dim_M_comm_1] == 0 ? 0 : main_model_p->M_comm[i + j * main_model_p->dim_M_comm_1] * main_model_p->N[j] * main_model_p->c_comm_balanced[j] / odin_sum2(main_model_p->comm_partnerships_requested, i, i, 0, main_model_p->dim_comm_partnerships_requested_2 - 1, main_model_p->dim_comm_partnerships_requested_1));
-    }
-  }
-  memcpy(output_p_comm, main_model_p->p_comm, main_model_p->dim_p_comm * sizeof(double));
-  memcpy(output_M_comm, main_model_p->M_comm, main_model_p->dim_M_comm * sizeof(double));
-  for (int i = 0; i < main_model_p->dim_noncomm_partnerships_requested_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_noncomm_partnerships_requested_2; ++j) {
-      main_model_p->noncomm_partnerships_requested[i + j * main_model_p->dim_noncomm_partnerships_requested_1] = main_model_p->N[j] * main_model_p->c_noncomm_balanced[j] * main_model_p->M_noncomm[i + j * main_model_p->dim_M_noncomm_1];
-    }
-  }
-  for (int i = 0; i < main_model_p->dim_p_noncomm_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_p_noncomm_2; ++j) {
-      main_model_p->p_noncomm[i + j * main_model_p->dim_p_noncomm_1] = (main_model_p->M_noncomm[i + j * main_model_p->dim_M_noncomm_1] == 0 ? 0 : main_model_p->M_noncomm[i + j * main_model_p->dim_M_noncomm_1] * main_model_p->N[j] * main_model_p->c_noncomm_balanced[j] / odin_sum2(main_model_p->noncomm_partnerships_requested, i, i, 0, main_model_p->dim_noncomm_partnerships_requested_2 - 1, main_model_p->dim_noncomm_partnerships_requested_1));
-    }
-  }
   for (int i = 0; i < main_model_p->dim_lambda_1; ++i) {
     for (int j = 0; j < main_model_p->dim_lambda_2; ++j) {
       main_model_p->lambda[i + j * main_model_p->dim_lambda_1] = (i == j ? 0 : compute_lambda(main_model_p->c_comm_balanced[i], main_model_p->p_comm[i + j * main_model_p->dim_p_comm_1], S0[j], S1a[j], S1b[j], S1c[j], I01[j], I11[j], I02[j], I03[j], I04[j], I05[j], I22[j], I23[j], I24[j], I25[j], I32[j], I33[j], I34[j], I35[j], I42[j], I43[j], I44[j], I45[j], main_model_p->N[j], main_model_p->beta_comm[i], main_model_p->R, main_model_p->fc_comm[i + j * main_model_p->dim_fc_comm_1], main_model_p->fP_comm[i], main_model_p->n_comm[i + j * main_model_p->dim_n_comm_1], main_model_p->eP[i], main_model_p->ec[i], main_model_p->fc_noncomm[i + j * main_model_p->dim_fc_noncomm_1], main_model_p->fP_noncomm[i], main_model_p->n_noncomm[i + j * main_model_p->dim_n_noncomm_1], main_model_p->c_noncomm_balanced[i], main_model_p->p_noncomm[i + j * main_model_p->dim_p_noncomm_1], main_model_p->infect_ART, main_model_p->infect_acute, main_model_p->infect_AIDS, main_model_p->beta_noncomm[i]));
@@ -3210,6 +3169,7 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   for (int i = 0; i < main_model_p->dim_lambda_sum_1d; ++i) {
     main_model_p->lambda_sum_1d[i] = odin_sum2(main_model_p->lambda_1d, i, i, 0, main_model_p->dim_lambda_1d_2 - 1, main_model_p->dim_lambda_1d_1);
   }
+  output[20] = B_check_noncomm;
   memcpy(output_lambda, main_model_p->lambda, main_model_p->dim_lambda * sizeof(double));
   memcpy(output_lambda_0, main_model_p->lambda_0, main_model_p->dim_lambda_0 * sizeof(double));
   memcpy(output_lambda_1a, main_model_p->lambda_1a, main_model_p->dim_lambda_1a * sizeof(double));
@@ -3221,7 +3181,9 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   memcpy(output_lambda_sum_1b, main_model_p->lambda_sum_1b, main_model_p->dim_lambda_sum_1b * sizeof(double));
   memcpy(output_lambda_sum_1c, main_model_p->lambda_sum_1c, main_model_p->dim_lambda_sum_1c * sizeof(double));
   memcpy(output_lambda_sum_1d, main_model_p->lambda_sum_1d, main_model_p->dim_lambda_sum_1d * sizeof(double));
-  memcpy(output_p_noncomm, main_model_p->p_noncomm, main_model_p->dim_p_noncomm * sizeof(double));
+  memcpy(output_c_noncomm_balanced, main_model_p->c_noncomm_balanced, main_model_p->dim_c_noncomm_balanced * sizeof(double));
+  memcpy(output_theta, main_model_p->theta, main_model_p->dim_theta * sizeof(double));
+  memcpy(output_M_comm, main_model_p->M_comm, main_model_p->dim_M_comm * sizeof(double));
   memcpy(output_M_noncomm, main_model_p->M_noncomm, main_model_p->dim_M_noncomm * sizeof(double));
   for (int i = 0; i < main_model_p->dim_in_S0_1; ++i) {
     for (int j = 0; j < main_model_p->dim_in_S0_2; ++j) {
