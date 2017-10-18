@@ -303,6 +303,8 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$gamma01 <- rep_len(y$gamma01, Ncat)
   y$gamma04 <- rep_len(y$gamma04, Ncat)
 
+  y$gamma11 <- y$gamma01 # loss to follow up same as normal movement?
+
   y$alpha03 <- rep_len(y$alpha03, Ncat)
   y$alpha04 <- rep_len(y$alpha04, Ncat)
   y$alpha05 <- rep_len(y$alpha05, Ncat)

@@ -37,8 +37,8 @@ devtools::test()
 
 
 
-number_simulations = 500
-batch_size = 20
+number_simulations = 1
+batch_size = 1
 epi_start = 1986
 # epi_end = 2030
 epi_end = 2025
@@ -850,16 +850,53 @@ variable = c("Women", "Women", "Women", "Women", "Women", "Women", "Women",
 
 
 
+hm=T
+count = 0
+while(hm == T)
+{
+  count=count+1
+  parameters <- cotonou::lhs_parameters(1, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, set_pars = best_set,
+                                      # ranges = ranges[which(rownames(ranges) != "rate_leave_pro_FSW"),],
+                                      ranges = ranges,
+                                      forced_pars = list(time = time,
+                                                         movement = 0))
 
 
-result <- cotonou::run_model_with_fit_multiple(batch_size, number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs,
-                                                         prev_points = prev_points_FSW_only_even_less_2, frac_N_discard_points = frac_N_discard_points,
-                                                         Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points_FSW)
+parameters_without = parameters
+parameters_with = parameters
+
+result_without = cotonou::run_model_for_tests(number_simulations = 1, time = time, parameters = parameters_without)[[1]]
+
+
+parameters_with[[1]]$zetaa_y = matrix(c(rep(0, 9), 0.5, rep(0, 9-1), rep(0, 9), rep(0, 9), rep(0, 9)), ncol = 9, byrow = T)
+parameters_with[[1]]$zetab_y = matrix(c(rep(0, 9), 0.5, rep(0, 9-1), rep(0, 9), rep(0, 9), rep(0, 9)), ncol = 9, byrow = T)
+parameters_with[[1]]$zetac_y = matrix(c(rep(0, 9), 0.5, rep(0, 9-1), rep(0, 9), rep(0, 9), rep(0, 9)), ncol = 9, byrow = T)
+
+
+result_with = cotonou::run_model_for_tests(number_simulations = 1, time = time, parameters = parameters_with)[[1]]
+
+result_with$who_believe_comm
+result_with$cumuInf[40,]
+result_without$cumuInf[40,]
+hm = result_with$cumuInf[40,][1] < result_without$cumuInf[40,][1]
+}
+count
+result_with$who_believe_comm
+result_with$cumuInf[40,]
+result_without$cumuInf[40,]
+
+
+result_with$cumuHIVDeaths[,1]
+result_without$cumuHIVDeaths[,1]
+
+result_with$I01
 
 
 
-result[[1]]
-result[[3]]
+#
+
+
+result_with$M_noncomm[2,,]
 
 result[[4]]
 
@@ -874,6 +911,24 @@ result[[4]]
 #############################################################################################
 #############################################################################################
 #test
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #  ____                 __                        ____ _ _   _   _       _
 # |  _ \ _   _ _ __    / _|_ __ ___  _ __ ___    / ___(_) |_| | | |_   _| |__
