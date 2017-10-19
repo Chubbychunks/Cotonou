@@ -2685,7 +2685,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     deriv_S1d[i] = main_model_p->E1d[i] - S1d[i] * main_model_p->lambda_sum_1d[i] - S1d[i] * main_model_p->mu[i] + main_model_p->rate_move_out[i] * S1d[i] + odin_sum2(main_model_p->in_S1d, i, i, 0, main_model_p->dim_in_S1d_2 - 1, main_model_p->dim_in_S1d_1);
   }
   for (int i = 0; i < main_model_p->dim_I01; ++i) {
-    deriv_I01[i] = S0[i] * main_model_p->lambda_sum_0[i] - I01[i] * (main_model_p->gamma01[i] + main_model_p->tau[i] + main_model_p->alpha01[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I01[i] + odin_sum2(main_model_p->in_I01, i, i, 0, main_model_p->dim_in_I01_2 - 1, main_model_p->dim_in_I01_1);
+    deriv_I01[i] = S0[i] * main_model_p->lambda_sum_0[i] + S1d[i] * main_model_p->lambda_sum_1d[i] - I01[i] * (main_model_p->gamma01[i] + main_model_p->tau[i] + main_model_p->alpha01[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I01[i] + odin_sum2(main_model_p->in_I01, i, i, 0, main_model_p->dim_in_I01_2 - 1, main_model_p->dim_in_I01_1);
   }
   for (int i = 0; i < main_model_p->dim_I11; ++i) {
     deriv_I11[i] = S1a[i] * main_model_p->lambda_sum_1a[i] + S1b[i] * main_model_p->lambda_sum_1b[i] + S1c[i] * main_model_p->lambda_sum_1c[i] - I11[i] * (main_model_p->gamma11[i] + main_model_p->RR_test_onPrEP * main_model_p->tau[i] + main_model_p->alpha11[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I11[i] + odin_sum2(main_model_p->in_I11, i, i, 0, main_model_p->dim_in_I11_2 - 1, main_model_p->dim_in_I11_1);
