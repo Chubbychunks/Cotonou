@@ -148,11 +148,7 @@ in_I43[,] <- if (i == j) 0 else rate_move_in[i, j] * I43[j]
 in_I44[,] <- if (i == j) 0 else rate_move_in[i, j] * I44[j]
 in_I45[,] <- if (i == j) 0 else rate_move_in[i, j] * I45[j]
 
-sum_in_S0[] = sum(in_S0[i, ])
-output(sum_in_S0[]) = sum_in_S0
 
-# output(in_S0[,]) = in_S0
-# output(in_I01[,]) = in_I01
 
 ##
 
@@ -635,9 +631,7 @@ output(beta_noncomm[]) = beta_noncomm
 output(alpha05[]) = alpha05
 output(alpha35[]) = alpha35
 
-# output(in_S0[, ]) = in_S0
 
-# output(sum_in_S0[]) = sum_in_S0
 
 # INCIDENCE RATE
 
@@ -1102,13 +1096,6 @@ dim(M_noncomm) = c(Ncat, Ncat)
 
 
 
-
-# rate_leave_FSW = user()
-# rate_move_GPF_pFSW = user()
-# rate_leave_client = user()
-
-
-
 dim(in_S0) <- c(Ncat, Ncat)
 dim(in_S1a) <- c(Ncat, Ncat)
 dim(in_S1b) <- c(Ncat, Ncat)
@@ -1135,6 +1122,5 @@ dim(in_I43) <- c(Ncat, Ncat)
 dim(in_I44) <- c(Ncat, Ncat)
 dim(in_I45) <- c(Ncat, Ncat)
 
-dim(sum_in_S0) <- Ncat
 dim(rate_move_in) <- c(Ncat, Ncat)
 dim(rate_move_out) <- Ncat
