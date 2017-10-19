@@ -63,7 +63,7 @@ deriv(S1c[]) = E1c[i] - S1c[i] * lambda_sum_1c[i] - S1c[i] * mu[i] + rate_move_o
 deriv(S1d[]) = E1d[i] - S1d[i] * lambda_sum_1d[i] - S1d[i] * mu[i] + rate_move_out[i] * S1d[i] + sum(in_S1d[i, ])
 
 #primary infection
-deriv(I01[]) = S0[i] * lambda_sum_0[i] - I01[i] * (gamma01[i] + tau[i] + alpha01[i] + mu[i]) + rate_move_out[i] * I01[i] + sum(in_I01[i, ])
+deriv(I01[]) = S0[i] * lambda_sum_0[i] + S1d[i] * lambda_sum_1d[i] - I01[i] * (gamma01[i] + tau[i] + alpha01[i] + mu[i]) + rate_move_out[i] * I01[i] + sum(in_I01[i, ])
 deriv(I11[]) = S1a[i] * lambda_sum_1a[i] + S1b[i] * lambda_sum_1b[i] + S1c[i] * lambda_sum_1c[i] -
   I11[i] * (gamma11[i] + RR_test_onPrEP*tau[i] + alpha11[i] + mu[i]) + rate_move_out[i] * I11[i] + sum(in_I11[i, ])
 

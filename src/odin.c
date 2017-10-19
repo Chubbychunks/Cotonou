@@ -619,9 +619,6 @@ typedef struct main_model_pars {
   int dim_in_I45_1;
   int dim_in_I45_2;
   double *in_I45;
-  int dim_sum_in_S0;
-  double *sum_in_S0;
-  int offset_output_sum_in_S0;
   int dim_rate_move_in;
   int dim_rate_move_in_1;
   int dim_rate_move_in_2;
@@ -897,7 +894,6 @@ SEXP main_model_create(SEXP user, SEXP odin_use_dde) {
   main_model_p->in_I43 = NULL;
   main_model_p->in_I44 = NULL;
   main_model_p->in_I45 = NULL;
-  main_model_p->sum_in_S0 = NULL;
   main_model_p->rate_move_in = NULL;
   main_model_p->rate_move_out = NULL;
   SEXP main_model_ptr = PROTECT(R_MakeExternalPtr(main_model_p, R_NilValue, R_NilValue));
@@ -2024,16 +2020,12 @@ SEXP main_model_set_user(main_model_pars *main_model_p, SEXP user) {
   main_model_p->dim_in_I45_2 = main_model_p->Ncat;
   main_model_p->dim_in_I45 = main_model_p->dim_in_I45_1 * main_model_p->dim_in_I45_2;
   main_model_p->in_I45 = (double*) Calloc(main_model_p->dim_in_I45, double);
-  Free(main_model_p->sum_in_S0);
-  main_model_p->dim_sum_in_S0 = main_model_p->Ncat;
-  main_model_p->sum_in_S0 = (double*) Calloc(main_model_p->dim_sum_in_S0, double);
-  main_model_p->offset_output_sum_in_S0 = main_model_p->offset_output_M_noncomm + main_model_p->dim_M_noncomm;
   Free(main_model_p->rate_move_in);
   main_model_p->dim_rate_move_in_1 = main_model_p->Ncat;
   main_model_p->dim_rate_move_in_2 = main_model_p->Ncat;
   main_model_p->dim_rate_move_in = main_model_p->dim_rate_move_in_1 * main_model_p->dim_rate_move_in_2;
   main_model_p->rate_move_in = (double*) Calloc(main_model_p->dim_rate_move_in, double);
-  main_model_p->offset_output_rate_move_in = main_model_p->offset_output_sum_in_S0 + main_model_p->dim_sum_in_S0;
+  main_model_p->offset_output_rate_move_in = main_model_p->offset_output_M_noncomm + main_model_p->dim_M_noncomm;
   get_user_array(user, "rate_move_in", true, main_model_p->rate_move_in, 2, main_model_p->dim_rate_move_in_1, main_model_p->dim_rate_move_in_2);
   Free(main_model_p->rate_move_out);
   main_model_p->dim_rate_move_out = main_model_p->Ncat;
@@ -2318,7 +2310,6 @@ void main_model_finalize(SEXP main_model_ptr) {
     Free(main_model_p->in_I43);
     Free(main_model_p->in_I44);
     Free(main_model_p->in_I45);
-    Free(main_model_p->sum_in_S0);
     Free(main_model_p->rate_move_in);
     Free(main_model_p->rate_move_out);
     cinterpolate_free(main_model_p->interpolate_c_comm);
@@ -2803,7 +2794,6 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     double *output_theta = output + main_model_p->offset_output_theta;
     double *output_M_comm = output + main_model_p->offset_output_M_comm;
     double *output_M_noncomm = output + main_model_p->offset_output_M_noncomm;
-    double *output_sum_in_S0 = output + main_model_p->offset_output_sum_in_S0;
     double *output_rate_move_in = output + main_model_p->offset_output_rate_move_in;
     double *output_rate_move_out = output + main_model_p->offset_output_rate_move_out;
     output[0] = main_model_p->who_believe_comm;
@@ -2916,10 +2906,6 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     memcpy(output_lambda_sum_1d, main_model_p->lambda_sum_1d, main_model_p->dim_lambda_sum_1d * sizeof(double));
     memcpy(output_p_noncomm, main_model_p->p_noncomm, main_model_p->dim_p_noncomm * sizeof(double));
     memcpy(output_M_noncomm, main_model_p->M_noncomm, main_model_p->dim_M_noncomm * sizeof(double));
-    for (int i = 0; i < main_model_p->dim_sum_in_S0; ++i) {
-      main_model_p->sum_in_S0[i] = odin_sum2(main_model_p->in_S0, i, i, 0, main_model_p->dim_in_S0_2 - 1, main_model_p->dim_in_S0_1);
-    }
-    memcpy(output_sum_in_S0, main_model_p->sum_in_S0, main_model_p->dim_sum_in_S0 * sizeof(double));
     memcpy(output_rate_move_in, main_model_p->rate_move_in, main_model_p->dim_rate_move_in * sizeof(double));
     memcpy(output_rate_move_out, main_model_p->rate_move_out, main_model_p->dim_rate_move_out * sizeof(double));
   }
@@ -3005,7 +2991,6 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   double *output_theta = output + main_model_p->offset_output_theta;
   double *output_M_comm = output + main_model_p->offset_output_M_comm;
   double *output_M_noncomm = output + main_model_p->offset_output_M_noncomm;
-  double *output_sum_in_S0 = output + main_model_p->offset_output_sum_in_S0;
   double *output_rate_move_in = output + main_model_p->offset_output_rate_move_in;
   double *output_rate_move_out = output + main_model_p->offset_output_rate_move_out;
   cinterpolate_eval(t, main_model_p->interpolate_c_comm, main_model_p->c_comm);
@@ -3243,15 +3228,6 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   memcpy(output_lambda_sum_1d, main_model_p->lambda_sum_1d, main_model_p->dim_lambda_sum_1d * sizeof(double));
   memcpy(output_p_noncomm, main_model_p->p_noncomm, main_model_p->dim_p_noncomm * sizeof(double));
   memcpy(output_M_noncomm, main_model_p->M_noncomm, main_model_p->dim_M_noncomm * sizeof(double));
-  for (int i = 0; i < main_model_p->dim_in_S0_1; ++i) {
-    for (int j = 0; j < main_model_p->dim_in_S0_2; ++j) {
-      main_model_p->in_S0[i + j * main_model_p->dim_in_S0_1] = (i == j ? 0 : main_model_p->rate_move_in[i + j * main_model_p->dim_rate_move_in_1] * S0[j]);
-    }
-  }
-  for (int i = 0; i < main_model_p->dim_sum_in_S0; ++i) {
-    main_model_p->sum_in_S0[i] = odin_sum2(main_model_p->in_S0, i, i, 0, main_model_p->dim_in_S0_2 - 1, main_model_p->dim_in_S0_1);
-  }
-  memcpy(output_sum_in_S0, main_model_p->sum_in_S0, main_model_p->dim_sum_in_S0 * sizeof(double));
   memcpy(output_rate_move_in, main_model_p->rate_move_in, main_model_p->dim_rate_move_in * sizeof(double));
   memcpy(output_rate_move_out, main_model_p->rate_move_out, main_model_p->dim_rate_move_out * sizeof(double));
 }
@@ -3294,7 +3270,7 @@ SEXP main_model_deriv_r(SEXP main_model_ptr, SEXP t, SEXP state) {
 // This will mostly be useful for debugging.
 SEXP main_model_contents(SEXP main_model_ptr) {
   main_model_pars *main_model_p = main_model_get_pointer(main_model_ptr, 1);
-  SEXP state = PROTECT(allocVector(VECSXP, 638));
+  SEXP state = PROTECT(allocVector(VECSXP, 635));
   SET_VECTOR_ELT(state, 0, ScalarInteger(main_model_p->odin_use_dde));
   SET_VECTOR_ELT(state, 1, ScalarReal(main_model_p->replaceDeaths));
   SET_VECTOR_ELT(state, 2, ScalarInteger(main_model_p->dim_c_t_comm));
@@ -4159,25 +4135,21 @@ SEXP main_model_contents(SEXP main_model_ptr) {
   SET_VECTOR_ELT(state, 609, allocVector(REALSXP, main_model_p->dim_in_I45));
   memcpy(REAL(VECTOR_ELT(state, 609)), main_model_p->in_I45, main_model_p->dim_in_I45 * sizeof(double));
   odin_set_dim(VECTOR_ELT(state, 609), 2, main_model_p->dim_in_I45_1, main_model_p->dim_in_I45_2);
-  SET_VECTOR_ELT(state, 610, ScalarInteger(main_model_p->dim_sum_in_S0));
-  SET_VECTOR_ELT(state, 611, allocVector(REALSXP, main_model_p->dim_sum_in_S0));
-  memcpy(REAL(VECTOR_ELT(state, 611)), main_model_p->sum_in_S0, main_model_p->dim_sum_in_S0 * sizeof(double));
-  SET_VECTOR_ELT(state, 612, ScalarInteger(main_model_p->offset_output_sum_in_S0));
-  SET_VECTOR_ELT(state, 613, ScalarInteger(main_model_p->dim_rate_move_in));
-  SET_VECTOR_ELT(state, 614, ScalarInteger(main_model_p->dim_rate_move_in_1));
-  SET_VECTOR_ELT(state, 615, ScalarInteger(main_model_p->dim_rate_move_in_2));
-  SET_VECTOR_ELT(state, 616, allocVector(REALSXP, main_model_p->dim_rate_move_in));
-  memcpy(REAL(VECTOR_ELT(state, 616)), main_model_p->rate_move_in, main_model_p->dim_rate_move_in * sizeof(double));
-  odin_set_dim(VECTOR_ELT(state, 616), 2, main_model_p->dim_rate_move_in_1, main_model_p->dim_rate_move_in_2);
-  SET_VECTOR_ELT(state, 617, ScalarInteger(main_model_p->offset_output_rate_move_in));
-  SET_VECTOR_ELT(state, 618, ScalarInteger(main_model_p->dim_rate_move_out));
-  SET_VECTOR_ELT(state, 619, allocVector(REALSXP, main_model_p->dim_rate_move_out));
-  memcpy(REAL(VECTOR_ELT(state, 619)), main_model_p->rate_move_out, main_model_p->dim_rate_move_out * sizeof(double));
-  SET_VECTOR_ELT(state, 620, ScalarInteger(main_model_p->offset_output_rate_move_out));
-  SET_VECTOR_ELT(state, 626, ScalarReal(main_model_p->epsilon));
-  SET_VECTOR_ELT(state, 636, ScalarInteger(main_model_p->dim));
-  SET_VECTOR_ELT(state, 637, ScalarInteger(main_model_p->dim_output));
-  SEXP state_names = PROTECT(allocVector(STRSXP, 638));
+  SET_VECTOR_ELT(state, 610, ScalarInteger(main_model_p->dim_rate_move_in));
+  SET_VECTOR_ELT(state, 611, ScalarInteger(main_model_p->dim_rate_move_in_1));
+  SET_VECTOR_ELT(state, 612, ScalarInteger(main_model_p->dim_rate_move_in_2));
+  SET_VECTOR_ELT(state, 613, allocVector(REALSXP, main_model_p->dim_rate_move_in));
+  memcpy(REAL(VECTOR_ELT(state, 613)), main_model_p->rate_move_in, main_model_p->dim_rate_move_in * sizeof(double));
+  odin_set_dim(VECTOR_ELT(state, 613), 2, main_model_p->dim_rate_move_in_1, main_model_p->dim_rate_move_in_2);
+  SET_VECTOR_ELT(state, 614, ScalarInteger(main_model_p->offset_output_rate_move_in));
+  SET_VECTOR_ELT(state, 615, ScalarInteger(main_model_p->dim_rate_move_out));
+  SET_VECTOR_ELT(state, 616, allocVector(REALSXP, main_model_p->dim_rate_move_out));
+  memcpy(REAL(VECTOR_ELT(state, 616)), main_model_p->rate_move_out, main_model_p->dim_rate_move_out * sizeof(double));
+  SET_VECTOR_ELT(state, 617, ScalarInteger(main_model_p->offset_output_rate_move_out));
+  SET_VECTOR_ELT(state, 623, ScalarReal(main_model_p->epsilon));
+  SET_VECTOR_ELT(state, 633, ScalarInteger(main_model_p->dim));
+  SET_VECTOR_ELT(state, 634, ScalarInteger(main_model_p->dim_output));
+  SEXP state_names = PROTECT(allocVector(STRSXP, 635));
   SET_STRING_ELT(state_names, 0, mkChar("odin_use_dde"));
   SET_STRING_ELT(state_names, 1, mkChar("replaceDeaths"));
   SET_STRING_ELT(state_names, 2, mkChar("dim_c_t_comm"));
@@ -4788,34 +4760,31 @@ SEXP main_model_contents(SEXP main_model_ptr) {
   SET_STRING_ELT(state_names, 607, mkChar("dim_in_I45_1"));
   SET_STRING_ELT(state_names, 608, mkChar("dim_in_I45_2"));
   SET_STRING_ELT(state_names, 609, mkChar("in_I45"));
-  SET_STRING_ELT(state_names, 610, mkChar("dim_sum_in_S0"));
-  SET_STRING_ELT(state_names, 611, mkChar("sum_in_S0"));
-  SET_STRING_ELT(state_names, 612, mkChar("offset_output_sum_in_S0"));
-  SET_STRING_ELT(state_names, 613, mkChar("dim_rate_move_in"));
-  SET_STRING_ELT(state_names, 614, mkChar("dim_rate_move_in_1"));
-  SET_STRING_ELT(state_names, 615, mkChar("dim_rate_move_in_2"));
-  SET_STRING_ELT(state_names, 616, mkChar("rate_move_in"));
-  SET_STRING_ELT(state_names, 617, mkChar("offset_output_rate_move_in"));
-  SET_STRING_ELT(state_names, 618, mkChar("dim_rate_move_out"));
-  SET_STRING_ELT(state_names, 619, mkChar("rate_move_out"));
-  SET_STRING_ELT(state_names, 620, mkChar("offset_output_rate_move_out"));
-  SET_STRING_ELT(state_names, 621, mkChar("interpolate_c_comm"));
-  SET_STRING_ELT(state_names, 622, mkChar("interpolate_c_noncomm"));
-  SET_STRING_ELT(state_names, 623, mkChar("interpolate_testing_prob"));
-  SET_STRING_ELT(state_names, 624, mkChar("interpolate_ART_prob"));
-  SET_STRING_ELT(state_names, 625, mkChar("interpolate_epsilon"));
-  SET_STRING_ELT(state_names, 626, mkChar("epsilon"));
-  SET_STRING_ELT(state_names, 627, mkChar("interpolate_zetaa"));
-  SET_STRING_ELT(state_names, 628, mkChar("interpolate_zetab"));
-  SET_STRING_ELT(state_names, 629, mkChar("interpolate_zetac"));
-  SET_STRING_ELT(state_names, 630, mkChar("interpolate_fc_comm"));
-  SET_STRING_ELT(state_names, 631, mkChar("interpolate_fP_comm"));
-  SET_STRING_ELT(state_names, 632, mkChar("interpolate_fc_noncomm"));
-  SET_STRING_ELT(state_names, 633, mkChar("interpolate_fP_noncomm"));
-  SET_STRING_ELT(state_names, 634, mkChar("interpolate_n_comm"));
-  SET_STRING_ELT(state_names, 635, mkChar("interpolate_n_noncomm"));
-  SET_STRING_ELT(state_names, 636, mkChar("dim"));
-  SET_STRING_ELT(state_names, 637, mkChar("dim_output"));
+  SET_STRING_ELT(state_names, 610, mkChar("dim_rate_move_in"));
+  SET_STRING_ELT(state_names, 611, mkChar("dim_rate_move_in_1"));
+  SET_STRING_ELT(state_names, 612, mkChar("dim_rate_move_in_2"));
+  SET_STRING_ELT(state_names, 613, mkChar("rate_move_in"));
+  SET_STRING_ELT(state_names, 614, mkChar("offset_output_rate_move_in"));
+  SET_STRING_ELT(state_names, 615, mkChar("dim_rate_move_out"));
+  SET_STRING_ELT(state_names, 616, mkChar("rate_move_out"));
+  SET_STRING_ELT(state_names, 617, mkChar("offset_output_rate_move_out"));
+  SET_STRING_ELT(state_names, 618, mkChar("interpolate_c_comm"));
+  SET_STRING_ELT(state_names, 619, mkChar("interpolate_c_noncomm"));
+  SET_STRING_ELT(state_names, 620, mkChar("interpolate_testing_prob"));
+  SET_STRING_ELT(state_names, 621, mkChar("interpolate_ART_prob"));
+  SET_STRING_ELT(state_names, 622, mkChar("interpolate_epsilon"));
+  SET_STRING_ELT(state_names, 623, mkChar("epsilon"));
+  SET_STRING_ELT(state_names, 624, mkChar("interpolate_zetaa"));
+  SET_STRING_ELT(state_names, 625, mkChar("interpolate_zetab"));
+  SET_STRING_ELT(state_names, 626, mkChar("interpolate_zetac"));
+  SET_STRING_ELT(state_names, 627, mkChar("interpolate_fc_comm"));
+  SET_STRING_ELT(state_names, 628, mkChar("interpolate_fP_comm"));
+  SET_STRING_ELT(state_names, 629, mkChar("interpolate_fc_noncomm"));
+  SET_STRING_ELT(state_names, 630, mkChar("interpolate_fP_noncomm"));
+  SET_STRING_ELT(state_names, 631, mkChar("interpolate_n_comm"));
+  SET_STRING_ELT(state_names, 632, mkChar("interpolate_n_noncomm"));
+  SET_STRING_ELT(state_names, 633, mkChar("dim"));
+  SET_STRING_ELT(state_names, 634, mkChar("dim_output"));
   setAttrib(state, R_NamesSymbol, state_names);
   UNPROTECT(2);
   return state;
@@ -4890,8 +4859,8 @@ SEXP main_model_variable_order(SEXP main_model_ptr) {
 SEXP main_model_output_order(SEXP main_model_ptr) {
   main_model_pars *main_model_p = main_model_get_pointer(main_model_ptr, 1);
   int *tmp;
-  SEXP state_len = PROTECT(allocVector(VECSXP, 79));
-  SEXP state_names = PROTECT(allocVector(STRSXP, 79));
+  SEXP state_len = PROTECT(allocVector(VECSXP, 78));
+  SEXP state_names = PROTECT(allocVector(STRSXP, 78));
   SET_VECTOR_ELT(state_len, 0, R_NilValue);
   SET_STRING_ELT(state_names, 0, mkChar("who_believe_comm"));
   SET_VECTOR_ELT(state_len, 1, R_NilValue);
@@ -5089,15 +5058,13 @@ SEXP main_model_output_order(SEXP main_model_ptr) {
   tmp[0] = main_model_p->dim_M_noncomm_1;
   tmp[1] = main_model_p->dim_M_noncomm_2;
   SET_STRING_ELT(state_names, 75, mkChar("M_noncomm"));
-  SET_VECTOR_ELT(state_len, 76, ScalarInteger(main_model_p->dim_sum_in_S0));
-  SET_STRING_ELT(state_names, 76, mkChar("sum_in_S0"));
-  SET_VECTOR_ELT(state_len, 77, allocVector(INTSXP, 2));
-  tmp = INTEGER(VECTOR_ELT(state_len, 77));
+  SET_VECTOR_ELT(state_len, 76, allocVector(INTSXP, 2));
+  tmp = INTEGER(VECTOR_ELT(state_len, 76));
   tmp[0] = main_model_p->dim_rate_move_in_1;
   tmp[1] = main_model_p->dim_rate_move_in_2;
-  SET_STRING_ELT(state_names, 77, mkChar("rate_move_in"));
-  SET_VECTOR_ELT(state_len, 78, ScalarInteger(main_model_p->dim_rate_move_out));
-  SET_STRING_ELT(state_names, 78, mkChar("rate_move_out"));
+  SET_STRING_ELT(state_names, 76, mkChar("rate_move_in"));
+  SET_VECTOR_ELT(state_len, 77, ScalarInteger(main_model_p->dim_rate_move_out));
+  SET_STRING_ELT(state_names, 77, mkChar("rate_move_out"));
   setAttrib(state_len, R_NamesSymbol, state_names);
   UNPROTECT(2);
   return state_len;
