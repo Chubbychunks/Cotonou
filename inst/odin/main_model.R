@@ -49,11 +49,11 @@ config(include) = "FOI.c"
 replaceDeaths = user()
 
 # births and prep movement
-E0[] = if(replaceDeaths == 1) mu[i] * N[i] + alphaItot[i] + new_people_in_group[i] - S0[i] * (zetaa[i] + zetab[i] + zetac[i]) else new_people_in_group[i] - S0[i] * (zetaa[i] + zetab[i] + zetac[i])
+E0[] = if(replaceDeaths == 1) mu[i] * N[i] + alphaItot[i] + new_people_in_group[i] - S0[i] * zeta[i] else new_people_in_group[i] - S0[i] * zeta[i]
 # note that replaceDeaths = 1 is now meaningless
-E1a[] = zetaa[i] * S0[i] - psia[i] * S1a[i] - kappaa[i] * S1a[i]
-E1b[] = zetab[i] * S0[i] + psia[i] * S1a[i] - psib[i] * S1b[i]  - kappab[i] * S1b[i]
-E1c[] = zetac[i] * S0[i] + psib[i] * S1b[i] - kappac[i] * S1c[i]
+E1a[] = zeta[i] * fPa * S0[i] - psia[i] * S1a[i] - kappaa[i] * S1a[i]
+E1b[] = zeta[i] * fPb * S0[i] + psia[i] * S1a[i] - psib[i] * S1b[i]  - kappab[i] * S1b[i]
+E1c[] = zeta[i] * fPc * S0[i] + psib[i] * S1b[i] - kappac[i] * S1c[i]
 E1d[] = kappaa[i] * S1a[i] + kappab[i] * S1b[i] + kappac[i] * S1c[i]
 
 

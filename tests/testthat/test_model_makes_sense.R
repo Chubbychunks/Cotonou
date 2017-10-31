@@ -97,10 +97,10 @@ test_that("omega adds to 1", {
 
 test_that("omega keeps consistent population?", {
 
-  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default, forced_pars = list(omega = c(0.01, 0.02, 0.3, 0.1, 0.12, 0.25, 0.1, 0.1, 0), beta_comm = c(0,0,0,0,0,0,0,0,0), beta_noncomm = c(0,0,0,0,0,0,0,0,0),
-                                                                                                                                                                                                                                                            S0_init = c(100*0.01, 100*0.02, 100*0.3, 100*0.1, 100*0.12, 100*0.25, 100*0.1, 100*0.1, 100*0),
-                                                                                                                                                                                                                                                            I01_init = c(100*0.01, 100*0.02, 100*0.3, 100*0.1, 100*0.12, 100*0.25, 100*0.1, 100*0.1, 100*0),
-                                                                                                                                                                                                                                                            time = time_default, replaceDeaths = 1, movement = 0))
+  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default,
+                               forced_pars = list(omega = c(0.01, 0.02, 0.3, 0.1, 0.12, 0.25, 0.1, 0.1, 0), beta_comm = c(0,0,0,0,0,0,0,0,0), beta_noncomm = c(0,0,0,0,0,0,0,0,0),
+                                                  I01_init = c(100*0.01, 100*0.02, 100*0.3, 100*0.1, 100*0.12, 100*0.25, 100*0.1, 100*0.1, 100*0),
+                                                  time = time_default, replaceDeaths = 1, movement = 0))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
