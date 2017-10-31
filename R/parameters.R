@@ -328,13 +328,13 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
   # progression is slowed by ART_RR
 
-  y$gamma32 <- (y$gamma02)/y$ART_RR
-  y$gamma33 <- (y$gamma03)/y$ART_RR
-  y$gamma34 <- (y$gamma04)/y$ART_RR
+  y$gamma32 <- (y$gamma02)/y$ART_RR_prog
+  y$gamma33 <- (y$gamma03)/y$ART_RR_prog
+  y$gamma34 <- (y$gamma04)/y$ART_RR_prog
 
-  y$alpha33 <- (y$alpha03)/y$ART_RR
-  y$alpha34 <- (y$alpha04)/y$ART_RR
-  y$alpha35 <- (y$alpha05)/y$ART_RR
+  y$alpha33 <- (y$alpha03)/y$ART_RR_mort
+  y$alpha34 <- (y$alpha04)/y$ART_RR_mort
+  y$alpha35 <- (y$alpha05)/y$ART_RR_mort
 
 
   # print(y$fc_y_comm_1993)
@@ -748,7 +748,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     gamma04 = c(3.9, 5), # from Mathieu's parameters  IN YEARS
     #     gamma04 = c(3.9, 5), # from Mathieu's parameters
 
-    ART_RR = c(2, 3), # from Mathieu's parameters  IN YEARS
+    ART_RR_prog = c(2, 3), # from Mathieu's parameters  IN YEARS
+    ART_RR_mort = c(2, 3), # from Mathieu's parameters  IN YEARS
 
     # omega,
 
@@ -1010,7 +1011,8 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     gamma04 = c(3.9, 5), # from Mathieu's parameters  IN YEARS
     #     gamma04 = c(3.9, 5), # from Mathieu's parameters
 
-    ART_RR = c(2, 3), # from Mathieu's parameters  IN YEARS
+    ART_RR_prog = c(2, 3), # from Mathieu's parameters  IN YEARS
+    ART_RR_mort = c(2, 3), # from Mathieu's parameters  IN YEARS
 
     # omega,
 
@@ -1364,7 +1366,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
                    #                    p = matrix(1, NAge, NAge),
 
-                   ART_RR = 2.5, # survival extension cofactor
+                   ART_RR_prog = 2.5, # survival extension cofactor
+                   ART_RR_mort = 2.5, # survival extension cofactor
 
                    infect_ART = 0.4, # infectiousness RR when on ART
                    infect_acute = 9, # RR for acute phase

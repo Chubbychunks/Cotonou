@@ -178,7 +178,8 @@ best_set_default = list(
   phi3 = c(0.105360516, rep_len(0.025,8)),
   phi4 = c(0.105360516, rep_len(0.025,8)),
   phi5 = c(0.105360516, rep_len(0.025,8)),
-  ART_RR = (1.3+3.45)/2,
+  ART_RR_prog = (1.3+3.45)/2,
+  ART_RR_mort = (1.3+3.45)/2,
 
   #CONDOM
 
@@ -623,7 +624,9 @@ ranges_default = rbind(
   alpha04 = c(0.05, 0.12),
   alpha05 = c(0.23, 0.33),
 
-  ART_RR = c(1.3, 3.45),
+  ART_RR_prog = c(1.3, 3.45),
+  ART_RR_mort = c(1.3, 3.45),
+
   dropout_rate_not_FSW = c(0.0233, 0.274),
 
 
