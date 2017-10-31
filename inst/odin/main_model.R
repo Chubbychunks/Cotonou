@@ -268,6 +268,8 @@ p_noncomm[,] = if(M_noncomm[i, j] == 0) 0 else M_noncomm[i, j] * N[j] * c_noncom
 # INTERPOLATING FUNCTIONS
 ##############################################################################
 
+
+
 testing_prob_t[] = user()
 testing_prob_y[,] = user()
 dim(testing_prob_t) = user()
@@ -362,6 +364,11 @@ RR_test_onPrEP = user()
 RR_test_CD4200 = user()
 
 tau[] = -log(1-testing_prob[i])
+
+
+test_rate_prep[] = user()
+dim(test_rate_prep) = Ncat
+
 
 # ART
 ##############################################################################

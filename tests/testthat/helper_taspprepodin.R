@@ -140,6 +140,9 @@ best_set_default = list(
   psib = rep_len(0.1,9),
 
   #TESTING
+
+  test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
+
   testing_prob_t = c(1985, 2001, 2005, 2006, 2008, 2012, 2013, 2015, 2016),
   # testing_prob_y = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 0, # 1985 columns are the risk groups
   #                           0, 0, 0, 0, 0, 0, 0, 0, 0, # 2001

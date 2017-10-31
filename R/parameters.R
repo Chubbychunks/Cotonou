@@ -1173,6 +1173,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    testing_prob_y = matrix(
                      rep(c(0, 0.1, 0.2, 0.4, 0.5, 0.7, 0.5, 0.8, 0.7), Ncat), ncol = Ncat),
 
+                   test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
+
                    RR_test_onPrEP = 2,
                    RR_test_CD4200 = 2,
                    RR_ART_CD4200 = 2,
