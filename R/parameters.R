@@ -548,7 +548,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$ART_prob_y <- rbind(y$ART_prob_y, y$ART_prob_y[nrow(y$ART_prob_y),])
   y$ART_prob_t <- c(y$ART_prob_t, max(y$time))
 
-  y$f
+  y$fPb = 1 - y$fPa - y$fPc
 
 
   return(y)
@@ -678,7 +678,11 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     beta_above_1 = 0,
     ignore_ranges_fc_c = 0,
     dropout_rate_not_FSW = 0.025,
-    delete = 0
+    delete = 0,
+    nu = 0.02222222,
+    PrEPOnOff = 0,
+    fPa = 0.5,
+    fPc = 0.4
 
 
 
@@ -940,7 +944,10 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     ignore_ranges_fc_c = 0,
     dropout_rate_not_FSW = 0.025,
     delete = 0,
-    nu = 0.02222222
+    nu = 0.02222222,
+    PrEPOnOff = 0,
+    fPa = 0.5,
+    fPc = 0.4
 
 
 
@@ -1174,6 +1181,11 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                      rep(c(0, 0.1, 0.2, 0.4, 0.5, 0.7, 0.5, 0.8, 0.7), Ncat), ncol = Ncat),
 
                    test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
+                   sigma = c(1, 0, 0, 0, 0, 0, 0, 0, 0),
+                   prep_intervention_t = c(1985, 2013, 2015, 2016),
+                   prep_intervention_y = matrix(c(rep(0, Ncat), 1, rep(0, Ncat-1), rep(0, Ncat), rep(0, Ncat)), ncol = Ncat, byrow = T),
+                   PrEPOnOff = 0,
+
 
                    RR_test_onPrEP = 2,
                    RR_test_CD4200 = 2,
@@ -1423,7 +1435,9 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    ignore_ranges_fc_c = 0,
                    dropout_rate_not_FSW = 0.025,
                    delete = 0,
-                   nu = 0.02222222
+                   nu = 0.02222222,
+                   fPa = 0.5,
+                   fPc = 0.4
 
 
 

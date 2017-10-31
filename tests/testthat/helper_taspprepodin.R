@@ -142,6 +142,9 @@ best_set_default = list(
   #TESTING
 
   test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
+  sigma = c(1, 0, 0, 0, 0, 0, 0, 0, 0),
+  prep_intervention_t = c(1985, 2013, 2015, 2016),
+  prep_intervention_y = matrix(c(rep(0, 9), 1, rep(0, 9-1), rep(0, 9), rep(0, 9)), ncol = 9, byrow = T),
 
   testing_prob_t = c(1985, 2001, 2005, 2006, 2008, 2012, 2013, 2015, 2016),
   # testing_prob_y = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 0, # 1985 columns are the risk groups
