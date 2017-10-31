@@ -49,7 +49,8 @@ config(include) = "FOI.c"
 replaceDeaths = user()
 
 # births and prep movement
-E0[] = if(replaceDeaths == 1) mu[i] * N[i] + alphaItot[i] + new_people * omega[i] - S0[i] * (zetaa[i] + zetab[i] + zetac[i]) else new_people_in_group[i] - S0[i] * (zetaa[i] + zetab[i] + zetac[i])
+E0[] = if(replaceDeaths == 1) mu[i] * N[i] + alphaItot[i] + new_people_in_group[i] - S0[i] * (zetaa[i] + zetab[i] + zetac[i]) else new_people_in_group[i] - S0[i] * (zetaa[i] + zetab[i] + zetac[i])
+# note that replaceDeaths = 1 is now meaningless
 E1a[] = zetaa[i] * S0[i] - psia[i] * S1a[i] - kappaa[i] * S1a[i]
 E1b[] = zetab[i] * S0[i] + psia[i] * S1a[i] - psib[i] * S1b[i]  - kappab[i] * S1b[i]
 E1c[] = zetac[i] * S0[i] + psib[i] * S1b[i] - kappac[i] * S1c[i]
@@ -104,9 +105,6 @@ output(Ntot_inc_former_FSW_nonCot) = Ntot_inc_former_FSW_nonCot
 # epsilon = interpolate(epsilon_t, epsilon_y, "linear")
 epsilon = interpolate(epsilon_t, epsilon_y, "constant")
 
-# new_people = if(Ncat == 9) epsilon * (N[1] + N[2] + N[3] + N[4] + N[5] + N[6] + N[7] + N[8] + N[9]) else epsilon * sum(N)
-# new_people = epsilon * Ntot_inc_former_FSW_nonCot
-new_people = epsilon * Ntot
 
 
 # new entrants into each group
@@ -575,7 +573,6 @@ output(ART_coverage_all) = ART_coverage_all
 output(Ncat) = Ncat
 output(omega[]) = omega
 output(Ntot) = Ntot
-output(new_people) = new_people
 output(B_check_comm) = B_check_comm
 output(B_check_noncomm) = B_check_noncomm
 
