@@ -938,7 +938,9 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     beta_above_1 = 0,
     ignore_ranges_fc_c = 0,
     dropout_rate_not_FSW = 0.025,
-    delete = 0
+    delete = 0,
+    nu = 0.02222222
+
 
 
 
@@ -1415,7 +1417,9 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    beta_above_1 = 0,
                    ignore_ranges_fc_c = 0,
                    dropout_rate_not_FSW = 0.025,
-                   delete = 0
+                   delete = 0,
+                   nu = 0.02222222
+
 
 
 

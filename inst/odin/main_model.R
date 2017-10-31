@@ -49,7 +49,7 @@ config(include) = "FOI.c"
 replaceDeaths = user()
 
 # births and prep movement
-E0[] = if(replaceDeaths == 1) mu[i] * N[i] + alphaItot[i] + new_people * omega[i] - S0[i] * (zetaa[i] + zetab[i] + zetac[i]) else new_people * omega[i] - S0[i] * (zetaa[i] + zetab[i] + zetac[i])
+E0[] = if(replaceDeaths == 1) mu[i] * N[i] + alphaItot[i] + new_people * omega[i] - S0[i] * (zetaa[i] + zetab[i] + zetac[i]) else new_people_in_group[i] - S0[i] * (zetaa[i] + zetab[i] + zetac[i])
 E1a[] = zetaa[i] * S0[i] - psia[i] * S1a[i] - kappaa[i] * S1a[i]
 E1b[] = zetab[i] * S0[i] + psia[i] * S1a[i] - psib[i] * S1b[i]  - kappab[i] * S1b[i]
 E1c[] = zetac[i] * S0[i] + psib[i] * S1b[i] - kappac[i] * S1c[i]
@@ -110,7 +110,10 @@ new_people = epsilon * Ntot
 
 
 # new entrants into each group
-new_people_in_group[] = new_people * omega[i]
+new_people_in_group[] = (epsilon + mu[i] + nu) * Ntot * omega[i]
+
+
+
 dim(new_people_in_group) = Ncat
 output(new_people_in_group[]) = new_people_in_group
 
@@ -636,6 +639,7 @@ output(alpha35[]) = alpha35
 # INCIDENCE RATE
 
 # = no. disease onsets / sum of "person-time" at risk
+output(nu) = nu
 
 output(mu[]) = mu
 output(gamma01[]) = gamma01
@@ -756,6 +760,8 @@ OnPrEP_init[] = user()
 infect_ART = user()
 infect_acute = user()
 infect_AIDS = user()
+
+nu = user()
 
 mu[] = user()
 gamma01[] = user()
