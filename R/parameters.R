@@ -309,7 +309,6 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$alpha04 <- rep_len(y$alpha04, Ncat)
   y$alpha05 <- rep_len(y$alpha05, Ncat)
 
-  # y$omega <- y$omega/sum(y$omega)
 
   y$gamma22 <- y$gamma02
   y$gamma23 <- y$gamma03
@@ -418,21 +417,10 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
     y$who_believe_comm = round(y$who_believe_comm)
 
-    # BIRTHS
-    # y$omega = c(
-    #   y$fraction_F * y$frac_women_ProFSW * y$fraction_FSW_foreign, # some FSW come from outside Cotonou
-    #   y$fraction_F * y$frac_women_LowFSW * y$fraction_FSW_foreign, #
-    #   y$fraction_F * y$fraction_sexually_active_15_F,
-    #   0,
-    #   0,
-    #   (1 - y$fraction_F) * y$fraction_sexually_active_15_M,
-    #   y$fraction_F * (1 - y$frac_women_ProFSW * y$fraction_FSW_foreign - y$frac_women_LowFSW * y$fraction_FSW_foreign - y$fraction_sexually_active_15_F),
-    #   (1 - y$fraction_F) * (1 -  y$fraction_sexually_active_15_M),
-    #   0)
 
     y$omega = c(
       y$fraction_F * y$frac_women_ProFSW * y$fraction_FSW_foreign, # some FSW come from outside Cotonou
-      y$fraction_F * y$frac_women_LowFSW * y$frac_women_ProFSW * y$fraction_FSW_foreign, # BUT THIS IS SET TO 0 FOR NOW: ALL NEW PEOPLE ARE ALL BORN VIRGINS. NOT 0 ANYMORE
+      y$fraction_F * y$frac_women_LowFSW * y$frac_women_ProFSW * y$fraction_FSW_foreign,
       y$fraction_F - y$fraction_F * (1-y$fraction_sexually_active_15_F) - y$fraction_F * y$frac_women_ProFSW * y$fraction_FSW_foreign - y$fraction_F * y$frac_women_LowFSW * y$frac_women_ProFSW * y$fraction_FSW_foreign,
       0,
       0,
