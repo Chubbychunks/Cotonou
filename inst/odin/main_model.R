@@ -49,7 +49,7 @@ config(include) = "FOI.c"
 replaceDeaths = user()
 
 # births and prep movement
-E0[] = if(replaceDeaths == 1) mu[i] * N[i] + alphaItot[i] + new_people_in_group[i] - S0[i] * zeta[i] else new_people_in_group[i] - S0[i] * zeta[i]
+E0[] = if(replaceDeaths == 1) mu[i] * N[i] + nu * N[i] + alphaItot[i] + epsilon * Ntot * omega[i] - S0[i] * zeta[i] else new_people_in_group[i] - S0[i] * zeta[i]
 # note that replaceDeaths = 1 is now meaningless
 E1a[] = zeta[i] * fPa * S0[i] - psia[i] * S1a[i] - kappaa[i] * S1a[i]
 E1b[] = zeta[i] * fPb * S0[i] + psia[i] * S1a[i] - psib[i] * S1b[i]  - kappab[i] * S1b[i]
@@ -105,7 +105,8 @@ output(Ntot_inc_former_FSW_nonCot) = Ntot_inc_former_FSW_nonCot
 # epsilon = interpolate(epsilon_t, epsilon_y, "linear")
 epsilon = interpolate(epsilon_t, epsilon_y, "constant")
 
-
+new_people = epsilon * Ntot
+output(new_people) = new_people
 
 # new entrants into each group
 new_people_in_group[] = (epsilon + mu[i] + nu) * Ntot * omega[i]
