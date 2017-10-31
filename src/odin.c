@@ -2675,73 +2675,73 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     }
   }
   for (int i = 0; i < main_model_p->dim_S0; ++i) {
-    deriv_S0[i] = main_model_p->E0[i] - S0[i] * main_model_p->lambda_sum_0[i] - S0[i] * main_model_p->mu[i] + main_model_p->rate_move_out[i] * S0[i] + odin_sum2(main_model_p->in_S0, i, i, 0, main_model_p->dim_in_S0_2 - 1, main_model_p->dim_in_S0_1);
+    deriv_S0[i] = main_model_p->E0[i] - S0[i] * main_model_p->lambda_sum_0[i] - S0[i] * main_model_p->mu[i] - S0[i] * main_model_p->nu + main_model_p->rate_move_out[i] * S0[i] + odin_sum2(main_model_p->in_S0, i, i, 0, main_model_p->dim_in_S0_2 - 1, main_model_p->dim_in_S0_1);
   }
   for (int i = 0; i < main_model_p->dim_S1a; ++i) {
-    deriv_S1a[i] = main_model_p->E1a[i] - S1a[i] * main_model_p->lambda_sum_1a[i] - S1a[i] * main_model_p->mu[i] + main_model_p->rate_move_out[i] * S1a[i] + odin_sum2(main_model_p->in_S1a, i, i, 0, main_model_p->dim_in_S1a_2 - 1, main_model_p->dim_in_S1a_1);
+    deriv_S1a[i] = main_model_p->E1a[i] - S1a[i] * main_model_p->lambda_sum_1a[i] - S1a[i] * main_model_p->mu[i] - S1a[i] * main_model_p->nu + main_model_p->rate_move_out[i] * S1a[i] + odin_sum2(main_model_p->in_S1a, i, i, 0, main_model_p->dim_in_S1a_2 - 1, main_model_p->dim_in_S1a_1);
   }
   for (int i = 0; i < main_model_p->dim_S1b; ++i) {
-    deriv_S1b[i] = main_model_p->E1b[i] - S1b[i] * main_model_p->lambda_sum_1b[i] - S1b[i] * main_model_p->mu[i] + main_model_p->rate_move_out[i] * S1b[i] + odin_sum2(main_model_p->in_S1b, i, i, 0, main_model_p->dim_in_S1b_2 - 1, main_model_p->dim_in_S1b_1);
+    deriv_S1b[i] = main_model_p->E1b[i] - S1b[i] * main_model_p->lambda_sum_1b[i] - S1b[i] * main_model_p->mu[i] - S1b[i] * main_model_p->nu + main_model_p->rate_move_out[i] * S1b[i] + odin_sum2(main_model_p->in_S1b, i, i, 0, main_model_p->dim_in_S1b_2 - 1, main_model_p->dim_in_S1b_1);
   }
   for (int i = 0; i < main_model_p->dim_S1c; ++i) {
-    deriv_S1c[i] = main_model_p->E1c[i] - S1c[i] * main_model_p->lambda_sum_1c[i] - S1c[i] * main_model_p->mu[i] + main_model_p->rate_move_out[i] * S1c[i] + odin_sum2(main_model_p->in_S1c, i, i, 0, main_model_p->dim_in_S1c_2 - 1, main_model_p->dim_in_S1c_1);
+    deriv_S1c[i] = main_model_p->E1c[i] - S1c[i] * main_model_p->lambda_sum_1c[i] - S1c[i] * main_model_p->mu[i] - S1c[i] * main_model_p->nu + main_model_p->rate_move_out[i] * S1c[i] + odin_sum2(main_model_p->in_S1c, i, i, 0, main_model_p->dim_in_S1c_2 - 1, main_model_p->dim_in_S1c_1);
   }
   for (int i = 0; i < main_model_p->dim_S1d; ++i) {
-    deriv_S1d[i] = main_model_p->E1d[i] - S1d[i] * main_model_p->lambda_sum_1d[i] - S1d[i] * main_model_p->mu[i] + main_model_p->rate_move_out[i] * S1d[i] + odin_sum2(main_model_p->in_S1d, i, i, 0, main_model_p->dim_in_S1d_2 - 1, main_model_p->dim_in_S1d_1);
+    deriv_S1d[i] = main_model_p->E1d[i] - S1d[i] * main_model_p->lambda_sum_1d[i] - S1d[i] * main_model_p->mu[i] - S1d[i] * main_model_p->nu + main_model_p->rate_move_out[i] * S1d[i] + odin_sum2(main_model_p->in_S1d, i, i, 0, main_model_p->dim_in_S1d_2 - 1, main_model_p->dim_in_S1d_1);
   }
   for (int i = 0; i < main_model_p->dim_I01; ++i) {
-    deriv_I01[i] = S0[i] * main_model_p->lambda_sum_0[i] + S1d[i] * main_model_p->lambda_sum_1d[i] - I01[i] * (main_model_p->gamma01[i] + main_model_p->tau[i] + main_model_p->alpha01[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I01[i] + odin_sum2(main_model_p->in_I01, i, i, 0, main_model_p->dim_in_I01_2 - 1, main_model_p->dim_in_I01_1);
+    deriv_I01[i] = S0[i] * main_model_p->lambda_sum_0[i] + S1d[i] * main_model_p->lambda_sum_1d[i] - I01[i] * (main_model_p->gamma01[i] + main_model_p->tau[i] + main_model_p->alpha01[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I01[i] + odin_sum2(main_model_p->in_I01, i, i, 0, main_model_p->dim_in_I01_2 - 1, main_model_p->dim_in_I01_1);
   }
   for (int i = 0; i < main_model_p->dim_I11; ++i) {
-    deriv_I11[i] = S1a[i] * main_model_p->lambda_sum_1a[i] + S1b[i] * main_model_p->lambda_sum_1b[i] + S1c[i] * main_model_p->lambda_sum_1c[i] - I11[i] * (main_model_p->gamma11[i] + main_model_p->RR_test_onPrEP * main_model_p->tau[i] + main_model_p->alpha11[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I11[i] + odin_sum2(main_model_p->in_I11, i, i, 0, main_model_p->dim_in_I11_2 - 1, main_model_p->dim_in_I11_1);
+    deriv_I11[i] = S1a[i] * main_model_p->lambda_sum_1a[i] + S1b[i] * main_model_p->lambda_sum_1b[i] + S1c[i] * main_model_p->lambda_sum_1c[i] - I11[i] * (main_model_p->gamma11[i] + main_model_p->RR_test_onPrEP * main_model_p->tau[i] + main_model_p->alpha11[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I11[i] + odin_sum2(main_model_p->in_I11, i, i, 0, main_model_p->dim_in_I11_2 - 1, main_model_p->dim_in_I11_1);
   }
   for (int i = 0; i < main_model_p->dim_I02; ++i) {
-    deriv_I02[i] = main_model_p->gamma01[i] * I01[i] + main_model_p->gamma11[i] * I11[i] - I02[i] * (main_model_p->gamma02[i] + main_model_p->tau[i] + main_model_p->alpha02[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I02[i] + odin_sum2(main_model_p->in_I02, i, i, 0, main_model_p->dim_in_I02_2 - 1, main_model_p->dim_in_I02_1);
+    deriv_I02[i] = main_model_p->gamma01[i] * I01[i] + main_model_p->gamma11[i] * I11[i] - I02[i] * (main_model_p->gamma02[i] + main_model_p->tau[i] + main_model_p->alpha02[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I02[i] + odin_sum2(main_model_p->in_I02, i, i, 0, main_model_p->dim_in_I02_2 - 1, main_model_p->dim_in_I02_1);
   }
   for (int i = 0; i < main_model_p->dim_I03; ++i) {
-    deriv_I03[i] = main_model_p->gamma02[i] * I02[i] - I03[i] * (main_model_p->gamma03[i] + main_model_p->tau[i] + main_model_p->alpha03[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I03[i] + odin_sum2(main_model_p->in_I03, i, i, 0, main_model_p->dim_in_I03_2 - 1, main_model_p->dim_in_I03_1);
+    deriv_I03[i] = main_model_p->gamma02[i] * I02[i] - I03[i] * (main_model_p->gamma03[i] + main_model_p->tau[i] + main_model_p->alpha03[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I03[i] + odin_sum2(main_model_p->in_I03, i, i, 0, main_model_p->dim_in_I03_2 - 1, main_model_p->dim_in_I03_1);
   }
   for (int i = 0; i < main_model_p->dim_I04; ++i) {
-    deriv_I04[i] = main_model_p->gamma03[i] * I03[i] - I04[i] * (main_model_p->gamma04[i] + main_model_p->tau[i] + main_model_p->alpha04[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I04[i] + odin_sum2(main_model_p->in_I04, i, i, 0, main_model_p->dim_in_I04_2 - 1, main_model_p->dim_in_I04_1);
+    deriv_I04[i] = main_model_p->gamma03[i] * I03[i] - I04[i] * (main_model_p->gamma04[i] + main_model_p->tau[i] + main_model_p->alpha04[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I04[i] + odin_sum2(main_model_p->in_I04, i, i, 0, main_model_p->dim_in_I04_2 - 1, main_model_p->dim_in_I04_1);
   }
   for (int i = 0; i < main_model_p->dim_I05; ++i) {
-    deriv_I05[i] = main_model_p->gamma04[i] * I04[i] - I05[i] * (main_model_p->RR_test_CD4200 * main_model_p->tau[i] + main_model_p->alpha05[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I05[i] + odin_sum2(main_model_p->in_I05, i, i, 0, main_model_p->dim_in_I05_2 - 1, main_model_p->dim_in_I05_1);
+    deriv_I05[i] = main_model_p->gamma04[i] * I04[i] - I05[i] * (main_model_p->RR_test_CD4200 * main_model_p->tau[i] + main_model_p->alpha05[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I05[i] + odin_sum2(main_model_p->in_I05, i, i, 0, main_model_p->dim_in_I05_2 - 1, main_model_p->dim_in_I05_1);
   }
   for (int i = 0; i < main_model_p->dim_I22; ++i) {
-    deriv_I22[i] = main_model_p->tau[i] * I01[i] + main_model_p->RR_test_onPrEP * main_model_p->tau[i] * I11[i] + main_model_p->tau[i] * I02[i] - I22[i] * (main_model_p->gamma22[i] + main_model_p->rho[i] + main_model_p->alpha22[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I22[i] + odin_sum2(main_model_p->in_I22, i, i, 0, main_model_p->dim_in_I22_2 - 1, main_model_p->dim_in_I22_1);
+    deriv_I22[i] = main_model_p->tau[i] * I01[i] + main_model_p->RR_test_onPrEP * main_model_p->tau[i] * I11[i] + main_model_p->tau[i] * I02[i] - I22[i] * (main_model_p->gamma22[i] + main_model_p->rho[i] + main_model_p->alpha22[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I22[i] + odin_sum2(main_model_p->in_I22, i, i, 0, main_model_p->dim_in_I22_2 - 1, main_model_p->dim_in_I22_1);
   }
   for (int i = 0; i < main_model_p->dim_I23; ++i) {
-    deriv_I23[i] = main_model_p->gamma22[i] * I22[i] + main_model_p->tau[i] * I03[i] - I23[i] * (main_model_p->gamma23[i] + main_model_p->rho[i] + main_model_p->alpha23[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I23[i] + odin_sum2(main_model_p->in_I23, i, i, 0, main_model_p->dim_in_I23_2 - 1, main_model_p->dim_in_I23_1);
+    deriv_I23[i] = main_model_p->gamma22[i] * I22[i] + main_model_p->tau[i] * I03[i] - I23[i] * (main_model_p->gamma23[i] + main_model_p->rho[i] + main_model_p->alpha23[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I23[i] + odin_sum2(main_model_p->in_I23, i, i, 0, main_model_p->dim_in_I23_2 - 1, main_model_p->dim_in_I23_1);
   }
   for (int i = 0; i < main_model_p->dim_I24; ++i) {
-    deriv_I24[i] = main_model_p->gamma23[i] * I23[i] + main_model_p->tau[i] * I04[i] - I24[i] * (main_model_p->gamma24[i] + main_model_p->rho[i] + main_model_p->alpha24[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I24[i] + odin_sum2(main_model_p->in_I24, i, i, 0, main_model_p->dim_in_I24_2 - 1, main_model_p->dim_in_I24_1);
+    deriv_I24[i] = main_model_p->gamma23[i] * I23[i] + main_model_p->tau[i] * I04[i] - I24[i] * (main_model_p->gamma24[i] + main_model_p->rho[i] + main_model_p->alpha24[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I24[i] + odin_sum2(main_model_p->in_I24, i, i, 0, main_model_p->dim_in_I24_2 - 1, main_model_p->dim_in_I24_1);
   }
   for (int i = 0; i < main_model_p->dim_I25; ++i) {
-    deriv_I25[i] = main_model_p->gamma24[i] * I24[i] + main_model_p->RR_test_CD4200 * main_model_p->tau[i] * I05[i] - I25[i] * (main_model_p->RR_ART_CD4200 * main_model_p->rho[i] + main_model_p->alpha25[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I25[i] + odin_sum2(main_model_p->in_I25, i, i, 0, main_model_p->dim_in_I25_2 - 1, main_model_p->dim_in_I25_1);
+    deriv_I25[i] = main_model_p->gamma24[i] * I24[i] + main_model_p->RR_test_CD4200 * main_model_p->tau[i] * I05[i] - I25[i] * (main_model_p->RR_ART_CD4200 * main_model_p->rho[i] + main_model_p->alpha25[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I25[i] + odin_sum2(main_model_p->in_I25, i, i, 0, main_model_p->dim_in_I25_2 - 1, main_model_p->dim_in_I25_1);
   }
   for (int i = 0; i < main_model_p->dim_I32; ++i) {
-    deriv_I32[i] = main_model_p->rho[i] * (I22[i] + I42[i]) - I32[i] * (main_model_p->gamma32[i] + main_model_p->phi2[i] + main_model_p->alpha32[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I32[i] + odin_sum2(main_model_p->in_I32, i, i, 0, main_model_p->dim_in_I32_2 - 1, main_model_p->dim_in_I32_1);
+    deriv_I32[i] = main_model_p->rho[i] * (I22[i] + I42[i]) - I32[i] * (main_model_p->gamma32[i] + main_model_p->phi2[i] + main_model_p->alpha32[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I32[i] + odin_sum2(main_model_p->in_I32, i, i, 0, main_model_p->dim_in_I32_2 - 1, main_model_p->dim_in_I32_1);
   }
   for (int i = 0; i < main_model_p->dim_I33; ++i) {
-    deriv_I33[i] = main_model_p->gamma32[i] * I32[i] + main_model_p->rho[i] * (I23[i] + I43[i]) - I33[i] * (main_model_p->gamma33[i] + main_model_p->phi3[i] + main_model_p->alpha33[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I33[i] + odin_sum2(main_model_p->in_I33, i, i, 0, main_model_p->dim_in_I33_2 - 1, main_model_p->dim_in_I33_1);
+    deriv_I33[i] = main_model_p->gamma32[i] * I32[i] + main_model_p->rho[i] * (I23[i] + I43[i]) - I33[i] * (main_model_p->gamma33[i] + main_model_p->phi3[i] + main_model_p->alpha33[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I33[i] + odin_sum2(main_model_p->in_I33, i, i, 0, main_model_p->dim_in_I33_2 - 1, main_model_p->dim_in_I33_1);
   }
   for (int i = 0; i < main_model_p->dim_I34; ++i) {
-    deriv_I34[i] = main_model_p->gamma33[i] * I33[i] + main_model_p->rho[i] * (I24[i] + I44[i]) - I34[i] * (main_model_p->gamma34[i] + main_model_p->phi4[i] + main_model_p->alpha34[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I34[i] + odin_sum2(main_model_p->in_I34, i, i, 0, main_model_p->dim_in_I34_2 - 1, main_model_p->dim_in_I34_1);
+    deriv_I34[i] = main_model_p->gamma33[i] * I33[i] + main_model_p->rho[i] * (I24[i] + I44[i]) - I34[i] * (main_model_p->gamma34[i] + main_model_p->phi4[i] + main_model_p->alpha34[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I34[i] + odin_sum2(main_model_p->in_I34, i, i, 0, main_model_p->dim_in_I34_2 - 1, main_model_p->dim_in_I34_1);
   }
   for (int i = 0; i < main_model_p->dim_I35; ++i) {
-    deriv_I35[i] = main_model_p->gamma34[i] * I34[i] + main_model_p->RR_ART_CD4200 * main_model_p->rho[i] * (I25[i] + I45[i]) - I35[i] * (main_model_p->phi5[i] + main_model_p->alpha35[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I35[i] + odin_sum2(main_model_p->in_I35, i, i, 0, main_model_p->dim_in_I35_2 - 1, main_model_p->dim_in_I35_1);
+    deriv_I35[i] = main_model_p->gamma34[i] * I34[i] + main_model_p->RR_ART_CD4200 * main_model_p->rho[i] * (I25[i] + I45[i]) - I35[i] * (main_model_p->phi5[i] + main_model_p->alpha35[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I35[i] + odin_sum2(main_model_p->in_I35, i, i, 0, main_model_p->dim_in_I35_2 - 1, main_model_p->dim_in_I35_1);
   }
   for (int i = 0; i < main_model_p->dim_I42; ++i) {
-    deriv_I42[i] = main_model_p->phi2[i] * I32[i] - I42[i] * (main_model_p->gamma42[i] + main_model_p->rho[i] + main_model_p->alpha42[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I42[i] + odin_sum2(main_model_p->in_I42, i, i, 0, main_model_p->dim_in_I42_2 - 1, main_model_p->dim_in_I42_1);
+    deriv_I42[i] = main_model_p->phi2[i] * I32[i] - I42[i] * (main_model_p->gamma42[i] + main_model_p->rho[i] + main_model_p->alpha42[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I42[i] + odin_sum2(main_model_p->in_I42, i, i, 0, main_model_p->dim_in_I42_2 - 1, main_model_p->dim_in_I42_1);
   }
   for (int i = 0; i < main_model_p->dim_I43; ++i) {
-    deriv_I43[i] = main_model_p->gamma42[i] * I42[i] + main_model_p->phi3[i] * I33[i] - I43[i] * (main_model_p->gamma43[i] + main_model_p->rho[i] + main_model_p->alpha43[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I43[i] + odin_sum2(main_model_p->in_I43, i, i, 0, main_model_p->dim_in_I43_2 - 1, main_model_p->dim_in_I43_1);
+    deriv_I43[i] = main_model_p->gamma42[i] * I42[i] + main_model_p->phi3[i] * I33[i] - I43[i] * (main_model_p->gamma43[i] + main_model_p->rho[i] + main_model_p->alpha43[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I43[i] + odin_sum2(main_model_p->in_I43, i, i, 0, main_model_p->dim_in_I43_2 - 1, main_model_p->dim_in_I43_1);
   }
   for (int i = 0; i < main_model_p->dim_I44; ++i) {
-    deriv_I44[i] = main_model_p->gamma43[i] * I43[i] + main_model_p->phi4[i] * I34[i] - I44[i] * (main_model_p->gamma44[i] + main_model_p->rho[i] + main_model_p->alpha44[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I44[i] + odin_sum2(main_model_p->in_I44, i, i, 0, main_model_p->dim_in_I44_2 - 1, main_model_p->dim_in_I44_1);
+    deriv_I44[i] = main_model_p->gamma43[i] * I43[i] + main_model_p->phi4[i] * I34[i] - I44[i] * (main_model_p->gamma44[i] + main_model_p->rho[i] + main_model_p->alpha44[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I44[i] + odin_sum2(main_model_p->in_I44, i, i, 0, main_model_p->dim_in_I44_2 - 1, main_model_p->dim_in_I44_1);
   }
   for (int i = 0; i < main_model_p->dim_I45; ++i) {
-    deriv_I45[i] = main_model_p->gamma44[i] * I44[i] + main_model_p->phi5[i] * I35[i] - I45[i] * (main_model_p->RR_ART_CD4200 * main_model_p->rho[i] + main_model_p->alpha45[i] + main_model_p->mu[i]) + main_model_p->rate_move_out[i] * I45[i] + odin_sum2(main_model_p->in_I45, i, i, 0, main_model_p->dim_in_I45_2 - 1, main_model_p->dim_in_I45_1);
+    deriv_I45[i] = main_model_p->gamma44[i] * I44[i] + main_model_p->phi5[i] * I35[i] - I45[i] * (main_model_p->RR_ART_CD4200 * main_model_p->rho[i] + main_model_p->alpha45[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I45[i] + odin_sum2(main_model_p->in_I45, i, i, 0, main_model_p->dim_in_I45_2 - 1, main_model_p->dim_in_I45_1);
   }
   if (output != NULL) {
     double *output_c_comm = output + 21;
