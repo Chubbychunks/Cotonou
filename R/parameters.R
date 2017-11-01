@@ -682,7 +682,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     nu = 0.02222222,
     PrEPOnOff = 0,
     fPa = 0.5,
-    fPc = 0.4
+    fPc = 0.4,
+    iota = rep_len(0.1, 9)
 
 
 
@@ -948,7 +949,8 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     nu = 0.02222222,
     PrEPOnOff = 0,
     fPa = 0.5,
-    fPc = 0.4
+    fPc = 0.4,
+    iota = rep_len(0.1, 9)
 
 
 
@@ -1439,7 +1441,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    delete = 0,
                    nu = 0.02222222,
                    fPa = 0.5,
-                   fPc = 0.4
+                   fPc = 0.4,
+                   iota = rep_len(0.1, 9)
 
 
 

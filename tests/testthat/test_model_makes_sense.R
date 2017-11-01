@@ -1810,10 +1810,7 @@ test_that("if rate_leave_low_FSW is 0, then FSW low out should equal zero", {
 test_that("There should be no one but pro FSW on PrEP", {
   parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default,
                                ranges = ranges_default,
-                               forced_pars = list(time = time_default,
-                                                  zetaa_y = matrix(rep(c(0.1, 0, 0, 0, 0, 0, 0, 0, 0), 5), nrow = 5, byrow = T),
-                                                  zetab_y = matrix(rep(c(0.1, 0, 0, 0, 0, 0, 0, 0, 0), 5), nrow = 5, byrow = T),
-                                                  zetac_y = matrix(rep(c(0.1, 0, 0, 0, 0, 0, 0, 0, 0), 5), nrow = 5, byrow = T)
+                               forced_pars = list(time = time_default
                                                   ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1821,5 +1818,19 @@ test_that("There should be no one but pro FSW on PrEP", {
 
 
   expect_true(sum(c(result$S1a[,2:9], result$S1b[,2:9], result$S1c[,2:9])) == 0)
+
+})
+
+test_that("fPs sum to 1", {
+  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default,
+                               ranges = ranges_default,
+                               forced_pars = list(time = time_default
+                               ))
+  result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
+
+
+
+
+  expect_true(all(colSums(do.call(rbind, result[c("fPa", "fPb", "fPc")])) == 1))
 
 })
