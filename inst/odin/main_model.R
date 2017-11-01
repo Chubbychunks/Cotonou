@@ -50,7 +50,6 @@ replaceDeaths = user()
 
 # births and prep movement
 E0[] = if(replaceDeaths == 1) mu[i] * N[i] + nu * N[i] + alphaItot[i] + epsilon * Ntot * omega[i] - S0[i] * zeta[i] else new_people_in_group[i] - S0[i] * zeta[i]
-# note that replaceDeaths = 1 is now meaningless
 E1a[] = zeta[i] * fPa * S0[i] - psia[i] * S1a[i] - kappaa[i] * S1a[i]
 E1b[] = zeta[i] * fPb * S0[i] + psia[i] * S1a[i] - psib[i] * S1b[i]  - kappab[i] * S1b[i]
 E1c[] = zeta[i] * fPc * S0[i] + psib[i] * S1b[i] - kappac[i] * S1c[i]
@@ -312,6 +311,7 @@ n_noncomm[,] = interpolate(n_t_noncomm, n_y_noncomm, "linear")
 zeta[] = test_rate_prep[i] * sigma[i] * prep_intervention[i] * PrEPOnOff
 
 PrEPOnOff = user()
+output(PrEPOnOff) = PrEPOnOff
 fPa = user()
 fPb = user()
 fPc = user()
@@ -416,7 +416,8 @@ output(E1c[]) = E1c
 output(E1d[]) = E1d
 
 deriv(cumuInf[]) = S0[i] * lambda_sum_0[i] + S1a[i] * lambda_sum_1a[i] + S1b[i] * lambda_sum_1b[i] + S1c[i] * lambda_sum_1c[i] + S1d[i] * lambda_sum_1d[i]
-deriv(OnPrEP[]) = zetaa[i] * S0[i] + zetab[i] * S0[i] + zetac[i] * S0[i]
+# deriv(OnPrEP[]) = zetaa[i] * S0[i] + zetab[i] * S0[i] + zetac[i] * S0[i]
+deriv(OnPrEP[]) = zeta[i] * S0[i]
 
 deriv(cumuHIVDeaths[]) = alpha01[i] * I01[i] + alpha11[i] * I11[i] + alpha02[i] * I02[i] + alpha03[i] * I03[i] + alpha04[i] * I04[i] +
   alpha05[i] * I05[i] + alpha22[i] * I22[i] + alpha23[i] * I23[i] + alpha24[i] * I24[i] + alpha25[i] * I25[i] +

@@ -99,7 +99,7 @@ test_that("omega keeps consistent population?", {
 
   parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default,
                                forced_pars = list(omega = c(0.01, 0.02, 0.3, 0.1, 0.12, 0.25, 0.1, 0.1, 0), beta_comm = c(0,0,0,0,0,0,0,0,0), beta_noncomm = c(0,0,0,0,0,0,0,0,0),
-                                                  S0_init = c(100*0.01, 100*0.02, 100*0.3, 100*0.1, 100*0.12, 100*0.25, 100*0.1, 100*0.1, 100*0),I01_init = 0*c(100*0.01, 100*0.02, 100*0.3, 100*0.1, 100*0.12, 100*0.25, 100*0.1, 100*0.1, 100*0),
+                                                  S0_init = c(100*0.01, 100*0.02, 100*0.3, 100*0.1, 100*0.12, 100*0.25, 100*0.1, 100*0.1, 100*0),I01_init = c(100*0.01, 100*0.02, 100*0.3, 100*0.1, 100*0.12, 100*0.25, 100*0.1, 100*0.1, 100*0),
                                                   time = time_default, replaceDeaths = 1, movement = 0))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -201,7 +201,7 @@ test_that("useless prep", {
 
 test_that("useful prep", {
 
-  parameters <- lhs_parameters(1, I11_init = rep(1000, 9), I01_init = rep(1000, 9), zetaa_y = matrix(rep(0.1, 45), ncol = 9), zetab_y = matrix(rep(0.1, 45), ncol = 9), zetac_y = matrix(rep(0.1, 45), ncol = 9),
+  parameters <- lhs_parameters(1, PrEPOnOff = 1, I11_init = rep(1000, 9), I01_init = rep(1000, 9), zetaa_y = matrix(rep(0.1, 45), ncol = 9), zetab_y = matrix(rep(0.1, 45), ncol = 9), zetac_y = matrix(rep(0.1, 45), ncol = 9),
                                zetaa_t = c(1985, 2013, 2015, 2016, 2020), zetab_t = c(1985, 2013, 2015, 2016, 2020), zetac_t = c(1985, 2013, 2015, 2016, 2020),
                                eP0 = rep(0, 9), eP1a = rep(0.1, 9), eP1b = rep(0.1, 9), eP1c = rep(0.1, 9), eP1d = rep(0, 9), par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
   result1 = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
@@ -246,7 +246,10 @@ test_that("beta 2", {
 
 # only clients infected, do females get infected?
 test_that("beta 3", {
-  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default[which(rownames(ranges_default) != "betaMtoF_noncomm"),], forced_pars = list(betaMtoF_comm = 0, betaMtoF_baseline = 0, movement = 0, time = time_default, I11_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0), I01_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0)))
+  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default,
+                               ranges = ranges_default[which(rownames(ranges_default) != "betaMtoF_baseline"),],
+                               forced_pars = list(betaMtoF_comm = 0, betaMtoF_noncomm = 0, betaMtoF_baseline = 0, movement = 0,
+                                                  time = time_default, I11_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0), I01_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0)))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
   xx <- result[c(grep("I01", names(result)), grep("I11", names(result)))]
@@ -272,7 +275,13 @@ test_that("R 1", {
 # only group 1 infected, does group 2 get infected if n = 0?
 test_that("n 1", {
   parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(betaMtoF_noncomm = 0.001, n_comm = matrix(c(0), nrow = 9, ncol = 9), n_noncomm = matrix(c(0), nrow = 9, ncol = 9),
+                               forced_pars = list(betaMtoF_noncomm = 0.001,
+
+                                                  # n_comm = matrix(c(0), nrow = 9, ncol = 9), n_noncomm = matrix(c(0), nrow = 9, ncol = 9),
+                                                  n_y_noncomm_1985 = matrix(0, ncol=9, nrow=9), n_y_noncomm_2002 = matrix(0, ncol=9, nrow=9), n_y_noncomm_2015 = matrix(0, ncol=9, nrow=9), n_y_noncomm_2016 = matrix(0, ncol=9, nrow=9),
+                                                  n_y_comm_1985 = matrix(0, ncol=9, nrow=9), n_y_comm_2002 = matrix(0, ncol=9, nrow=9), n_y_comm_2015 = matrix(0, ncol=9, nrow=9), n_y_comm_2016 = matrix(0, ncol=9, nrow=9),
+
+
                                                   time = time_default, I11_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0), I01_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0)))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -297,7 +306,11 @@ test_that("n 2", {
 test_that("n 3", {
 
   parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(betaMtoF_noncomm = 0.001, n_y_comm_2002 = matrix(c(0), nrow = 9, ncol = 9), n_y_noncomm_2002 = matrix(c(0), nrow = 9, ncol = 9),
+                               forced_pars = list(betaMtoF_noncomm = 0.001,
+                                                  # n_y_comm_2002 = matrix(c(0), nrow = 9, ncol = 9), n_y_noncomm_2002 = matrix(c(0), nrow = 9, ncol = 9),
+                                                  n_y_noncomm_1985 = matrix(0, ncol=9, nrow=9), n_y_noncomm_2002 = matrix(0, ncol=9, nrow=9), n_y_noncomm_2015 = matrix(0, ncol=9, nrow=9), n_y_noncomm_2016 = matrix(0, ncol=9, nrow=9),
+                                                  n_y_comm_1985 = matrix(0, ncol=9, nrow=9), n_y_comm_2002 = matrix(0, ncol=9, nrow=9), n_y_comm_2015 = matrix(0, ncol=9, nrow=9), n_y_comm_2016 = matrix(0, ncol=9, nrow=9),
+
                                                   time = time_default, I11_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0), I01_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0)))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -336,6 +349,7 @@ test_that("fc ec 1", {
                                  fc_y_comm_2015 = matrix(1, ncol=9,nrow=9), fc_y_comm_2016 = matrix(1, ncol=9,nrow=9),
                                  fc_t_comm = c(1985, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015, 2016, 2020),
                                  fc_y_noncomm_1985 = matrix(1, ncol=9,nrow=9), fc_y_noncomm_1993 = matrix(1, ncol=9,nrow=9), fc_y_noncomm_1998 = matrix(1, ncol=9,nrow=9),
+                                 fc_y_noncomm_2002 = matrix(1, ncol=9,nrow=9),
                                  fc_y_noncomm_2008 = matrix(1, ncol=9,nrow=9), fc_y_noncomm_2011 = matrix(1, ncol=9,nrow=9), fc_y_noncomm_2015 = matrix(1, ncol=9,nrow=9),
                                  fc_y_noncomm_2016 = matrix(1, ncol=9,nrow=9), fc_t_noncomm = c(1985, 1993, 1998, 2002, 2008, 2011, 2015, 2016, 2020),
                                  ec = rep(1, 9), ignore_ranges_fc_c = 1,
@@ -430,7 +444,7 @@ test_that("fc ec 2", {
 # NOTE KAPPA AND ZETA MUST BE 0!
 test_that("fP eP 1", {
   parameters <- lhs_parameters(1, Ncat = 9, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(
+                               forced_pars = list(PrEPOnOff = 1,
                                  eP0 = rep(1, 9), eP1a = rep(1, 9), eP1b = rep(1, 9), eP1c = rep(1, 9),
                                  fP_y_comm = matrix(1, nrow = 5, ncol = 9), fP_y_noncomm = matrix(1, nrow = 5, ncol = 9),
                                  fP_t_comm = c(1985, 2014, 2015, 2016, 2030),  fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
@@ -448,7 +462,7 @@ test_that("fP eP 1", {
 # PREP efficacy is NOT 1 and frequency of PREP use is 1 - some infections
 test_that("fP eP 1b", {
   parameters <- lhs_parameters(1, Ncat = 9, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(betaMtF_noncomm = 0.001,
+                               forced_pars = list(PrEPOnOff = 1, betaMtF_noncomm = 0.001,
                                  eP0 = rep(0.9, 9), eP1a = rep(1, 9), eP1b = rep(1, 9), eP1c = rep(1, 9),
                                  fP_y_comm = matrix(1, nrow = 5, ncol = 9), fP_y_noncomm = matrix(1, nrow = 5, ncol = 9),
                                  fP_t_comm = c(1985, 2014, 2015, 2016, 2030),  fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
@@ -462,12 +476,16 @@ test_that("fP eP 1b", {
   expect_true(sum(c(xx$I01[,5], xx$I11[,5], xx$I01[,6], xx$I11[,6])) > 0)
 
   parameters <- lhs_parameters(1, Ncat = 9, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(betaMtF_noncomm = 0.001,
-                                 eP0 = rep(1, 9), eP1a = rep(0.9, 9), eP1b = rep(1, 9), eP1c = rep(1, 9), zetaa_y = matrix(0.1, ncol = 9, nrow = 5),
+                               forced_pars = list(PrEPOnOff = 1, betaMtF_noncomm = 0.001,
+                                 eP0 = rep(1, 9), eP1a = rep(0.9, 9), eP1b = rep(1, 9), eP1c = rep(1, 9), eP1d = rep(1, 9),
                                  fP_y_comm = matrix(1, nrow = 5, ncol = 9), fP_y_noncomm = matrix(1, nrow = 5, ncol = 9),
                                  fP_t_comm = c(1985, 2014, 2015, 2016, 2030),  fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1,
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
 
                                  time = time_default, I11_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0), I01_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0)))
 
@@ -476,12 +494,16 @@ test_that("fP eP 1b", {
   expect_true(sum(c(xx$I01[,5], xx$I11[,5], xx$I01[,6], xx$I11[,6])) > 0)
 
   parameters <- lhs_parameters(1, Ncat = 9, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(betaMtF_noncomm = 0.001,
-                                 eP0 = rep(1, 9), eP1a = rep(1, 9), eP1b = rep(0.9, 9), eP1c = rep(1, 9), zetab_y = matrix(0.1, ncol = 9, nrow = 5),
+                               forced_pars = list(PrEPOnOff = 1, betaMtF_noncomm = 0.001,
+                                 eP0 = rep(1, 9), eP1a = rep(1, 9), eP1b = rep(0.9, 9), eP1c = rep(1, 9), eP1d = rep(1, 9),
                                  fP_y_comm = matrix(1, nrow = 5, ncol = 9), fP_y_noncomm = matrix(1, nrow = 5, ncol = 9),
                                  fP_t_comm = c(1985, 2014, 2015, 2016, 2030),  fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1,
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
 
                                  time = time_default, I11_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0), I01_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0)))
 
@@ -490,12 +512,16 @@ test_that("fP eP 1b", {
   expect_true(sum(c(xx$I01[,5], xx$I11[,5], xx$I01[,6], xx$I11[,6])) > 0)
 
   parameters <- lhs_parameters(1, Ncat = 9, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(betaMtF_noncomm = 0.001,
-                                 eP0 = rep(1, 9), eP1a = rep(1, 9), eP1b = rep(1, 9), eP1c = rep(0.9, 9), zetac_y = matrix(0.1, ncol = 9, nrow = 5),
+                               forced_pars = list(PrEPOnOff = 1, betaMtF_noncomm = 0.001,
+                                 eP0 = rep(1, 9), eP1a = rep(1, 9), eP1b = rep(1, 9), eP1c = rep(0.9, 9), eP1d = rep(1, 9),
                                  fP_y_comm = matrix(1, nrow = 5, ncol = 9), fP_y_noncomm = matrix(1, nrow = 5, ncol = 9),
                                  fP_t_comm = c(1985, 2014, 2015, 2016, 2030),  fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1,
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
 
                                  time = time_default, I11_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0), I01_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0)))
 
@@ -506,15 +532,20 @@ test_that("fP eP 1b", {
 
 })
 
-# PrEP efficacy is 1 and frequency of condom use is NOT 1 - some infections
+# PrEP efficacy is 1 and frequency of prep use is NOT 1 - some infections
 test_that("fP eP 1c", {
   parameters <- lhs_parameters(1, Ncat = 9, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(
-                                 eP0 = rep(1, 9), eP1a = rep(1, 9), eP1b = rep(1, 9), eP1c = rep(1, 9),
+                               forced_pars = list(PrEPOnOff = 1,
+                                 eP0 = rep(1, 9), eP1a = rep(1, 9), eP1b = rep(1, 9), eP1c = rep(1, 9), eP1d = rep(1, 9),
                                  fP_y_comm = matrix(0.99, nrow = 5, ncol = 9), fP_y_noncomm = matrix(1, nrow = 5, ncol = 9),
                                  fP_t_comm = c(1985, 2014, 2015, 2016, 2030),  fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1,
+
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
 
                                  time = time_default, I11_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0), I01_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0)))
 
@@ -527,12 +558,16 @@ test_that("fP eP 1c", {
 # only group 2 infected, does group 1 get infected?
 test_that("fP eP 2", {
   parameters <- lhs_parameters(1, Ncat = 9, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(
-                                 eP0 = rep(1, 9), eP1a = rep(1, 9), eP1b = rep(1, 9), eP1c = rep(1, 9),
+                               forced_pars = list(PrEPOnOff = 1,
+                                 eP0 = rep(1, 9), eP1a = rep(1, 9), eP1b = rep(1, 9), eP1c = rep(1, 9), eP1d = rep(1, 9),
                                  fP_y_comm = matrix(1, nrow = 5, ncol = 9), fP_y_noncomm = matrix(1, nrow = 5, ncol = 9),
                                  fP_t_comm = c(1985, 2014, 2015, 2016, 2030),  fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1,
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
 
                                  time = time_default, I11_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0), I01_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0)))
 
@@ -543,13 +578,20 @@ test_that("fP eP 2", {
 
 test_that("fP eP 2b", {
   parameters <- lhs_parameters(1, Ncat = 9, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(
-                                 eP0 = rep(0.9, 9), eP1a = rep(1, 9), eP1b = rep(1, 9), eP1c = rep(1, 9),
+                               forced_pars = list(PrEPOnOff = 1,
+                                 eP0 = rep(0.9, 9), eP1a = rep(1, 9), eP1b = rep(1, 9), eP1c = rep(1, 9), eP1d = rep(1, 9),
                                  fP_y_comm = matrix(1, nrow = 5, ncol = 9), fP_y_noncomm = matrix(1, nrow = 5, ncol = 9),
                                  fP_t_comm = c(1985, 2014, 2015, 2016, 2030),  fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1,
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+
                                  time = time_default, I11_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0), I01_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0)))
+
+
 
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
   xx <- result[c(grep("I01", names(result)), grep("I11", names(result)))]
@@ -557,13 +599,17 @@ test_that("fP eP 2b", {
   expect_true(sum(c(xx$I01[,1], xx$I11[,1], xx$I01[,2], xx$I11[,2], xx$I01[,3], xx$I11[,3], xx$I01[,4], xx$I11[,4])) > 0)
 
   parameters <- lhs_parameters(1, Ncat = 9, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(
-                                 eP0 = rep(1, 9), eP1a = rep(0.9, 9), eP1b = rep(1, 9), eP1c = rep(1, 9), zetaa_y = matrix(0.1, ncol = 9, nrow = 5),
+                               forced_pars = list(PrEPOnOff = 1,
+                                 eP0 = rep(1, 9), eP1a = rep(0.9, 9), eP1b = rep(1, 9), eP1c = rep(1, 9), eP1d = rep(1, 9), zetaa_y = matrix(0.1, ncol = 9, nrow = 5),
                                  fP_y_comm = matrix(1, nrow = 5, ncol = 9), fP_y_noncomm = matrix(1, nrow = 5, ncol = 9),
                                  fP_t_comm = c(1985, 2014, 2015, 2016, 2030),  fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
 
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1,
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
 
                                  time = time_default, I11_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0), I01_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0)))
 
@@ -572,12 +618,17 @@ test_that("fP eP 2b", {
   expect_true(sum(c(xx$I01[,1], xx$I11[,1], xx$I01[,2], xx$I11[,2], xx$I01[,3], xx$I11[,3], xx$I01[,4], xx$I11[,4])) > 0)
 
   parameters <- lhs_parameters(1, Ncat = 9, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(
-                                 eP0 = rep(1, 9), eP1a = rep(1, 9), eP1b = rep(0.9, 9), eP1c = rep(1, 9), zetab_y = matrix(0.1, ncol = 9, nrow = 5),
+                               forced_pars = list(PrEPOnOff = 1,
+                                 eP0 = rep(1, 9), eP1a = rep(1, 9), eP1b = rep(0.9, 9), eP1c = rep(1, 9), eP1d = rep(1, 9), zetab_y = matrix(0.1, ncol = 9, nrow = 5),
                                  fP_y_comm = matrix(1, nrow = 5, ncol = 9), fP_y_noncomm = matrix(1, nrow = 5, ncol = 9),
                                  fP_t_comm = c(1985, 2014, 2015, 2016, 2030),  fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1,
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+
                                  time = time_default, I11_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0), I01_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0)))
 
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
@@ -585,12 +636,18 @@ test_that("fP eP 2b", {
   expect_true(sum(c(xx$I01[,1], xx$I11[,1], xx$I01[,2], xx$I11[,2], xx$I01[,3], xx$I11[,3], xx$I01[,4], xx$I11[,4])) > 0)
 
   parameters <- lhs_parameters(1, Ncat = 9, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(
-                                 eP0 = rep(1, 9), eP1a = rep(1, 9), eP1b = rep(1, 9), eP1c = rep(0.9, 9), zetac_y = matrix(0.1, ncol = 9, nrow = 5),
+                               forced_pars = list(PrEPOnOff = 1,
+                                 eP0 = rep(1, 9), eP1a = rep(1, 9), eP1b = rep(1, 9), eP1c = rep(0.9, 9), eP1d = rep(1, 9), zetac_y = matrix(0.1, ncol = 9, nrow = 5),
                                  fP_y_comm = matrix(1, nrow = 5, ncol = 9), fP_y_noncomm = matrix(1, nrow = 5, ncol = 9),
                                  fP_t_comm = c(1985, 2014, 2015, 2016, 2030),  fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1,
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+
+
                                  time = time_default, I11_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0), I01_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0)))
 
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
@@ -669,9 +726,44 @@ test_that("CD4 200-349 to CD4 <200 to zero", {
 
 # PREP
 
+test_that("prep", {
+  relevant_parameters = parameter_names[c(grep("zeta", parameter_names))]
+  parameters <- lhs_parameters(1,
+
+
+
+                               I11_init = rep(0, 9), set_null = relevant_parameters, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
+                               forced_pars = list(time = time_default,
+                               prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                               sigma = c(1,1,1,1,1,1,1,1,1),
+                               test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                               PrEPOnOff = 1
+
+
+                               ))
+  result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
+
+  xx <- result[c(grep("I11", names(result)), grep("S1", names(result)))]
+  N <- rowSums(do.call(cbind, xx))
+  expect_true(all(diff(N) != 0))
+})
+
+
 test_that("no prep", {
   relevant_parameters = parameter_names[c(grep("zeta", parameter_names))]
-  parameters <- lhs_parameters(1, I11_init = rep(0, 9), set_null = relevant_parameters, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
+  parameters <- lhs_parameters(1,
+
+
+
+                               I11_init = rep(0, 9), set_null = relevant_parameters, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
+                               forced_pars = list(time = time_default,
+                                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                                  sigma = c(1,1,1,1,1,1,1,1,1),
+                                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                                  PrEPOnOff = 0
+
+
+                               ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
   xx <- result[c(grep("I11", names(result)), grep("S1", names(result)))]
@@ -682,7 +774,15 @@ test_that("no prep", {
 test_that("prep increases", {
 
   parameters <- lhs_parameters(1, I11_init = rep(0, 9), zetaa_y = matrix(c(0, 0, 0, 0, 1, 1, 0, 0, 0), byrow = F, ncol=9, nrow = 5), zetab_y = matrix(c(0, 0, 0, 0, 1, 1, 0, 0, 0), byrow = F, ncol=9, nrow = 5), zetac_y = matrix(c(0, 0, 0, 0, 1, 1, 0, 0, 0), byrow = F, ncol=9, nrow = 5),
-                               par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
+                               par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
+                               forced_pars = list(time = time_default,
+                                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                                  sigma = c(1,1,1,1,1,1,1,1,1),
+                                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                                  PrEPOnOff = 1
+
+
+                               ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
   xx <- result[c(grep("I11", names(result)), grep("S1", names(result)))]
@@ -1040,7 +1140,13 @@ test_that("fP vs prevalence", {
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1,
-                                 zetaa_y = array(data=c(0.2), dim = c(5, 9))
+                                 zetaa_y = array(data=c(0.2), dim = c(5, 9)),
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
+
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1065,7 +1171,11 @@ test_that("fP vs prevalence", {
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1,
-                                 zetaa_y = array(data=c(0.2), dim = c(5, 9))
+                                 zetaa_y = array(data=c(0.2), dim = c(5, 9)),
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1092,7 +1202,12 @@ test_that("eP vs prevalence", {
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1,
-                                 zetaa_y = array(data=c(0.2), dim = c(5, 9)), betaMtF_noncomm = 0.001, eP0 = rep(0.9, 9)
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1,
+                                 betaMtF_noncomm = 0.001, eP0 = rep(0.9, 9)
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1113,7 +1228,11 @@ test_that("eP vs prevalence", {
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001, eP1a = rep(0.9, 9),
-                                 zetaa_y = array(data=c(0.2), dim = c(5, 9))
+                                 zetaa_y = array(data=c(0.2), dim = c(5, 9)),
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1134,7 +1253,11 @@ test_that("eP vs prevalence", {
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1,betaMtF_noncomm = 0.001, eP1b = rep(0.9, 9),
-                                 zetaa_y = array(data=c(0.2), dim = c(5, 9))
+                                 zetaa_y = array(data=c(0.2), dim = c(5, 9)),
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1154,7 +1277,11 @@ test_that("eP vs prevalence", {
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001, eP1c = rep(0.9, 9),
-                                 zetaa_y = array(data=c(0.2), dim = c(5, 9))
+                                 zetaa_y = array(data=c(0.2), dim = c(5, 9)),
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1173,8 +1300,12 @@ test_that("eP vs prevalence", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001, eP1d = rep(0.9, 9), eP0 = rep(0.9, 9),
-                                 zetaa_y = array(data=c(0.2), dim = c(5, 9)), zetab_y = array(data=c(0.2), dim = c(5, 9)), zetac_y = array(data=c(0.2), dim = c(5, 9))
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001,
+                                 eP1d = rep(0.9, 9), eP0 = rep(0.9, 9),
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
                                ))
   p1 <- parameters
 
@@ -1212,16 +1343,19 @@ test_that("zeta vs prevalence", {
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001, eP1d = rep(0.9, 9), eP0 = rep(0.9, 9),
-                                 zetaa_y = array(data=c(0.2), dim = c(5, 9)), zetab_y = array(data=c(0.2), dim = c(5, 9)), zetac_y = array(data=c(0.2), dim = c(5, 9))
+                                 prep_intervention_y = matrix(c(0.1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
   xx <- result[c(grep("I[0-9][0-9]", names(result)))]
   N1 <- rowSums(do.call(cbind, xx))
 
-  newpars <- lhs_parameters(1, set_null = "zetaa_y", par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)[[1]]$zetaa_y
+  newpars <- lhs_parameters(1, set_null = "sigma", par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)[[1]]$sigma
 
-  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(zetaa_y = newpars)))
+  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(sigma = newpars)))
 
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1238,7 +1372,10 @@ test_that("zeta vs prevalence", {
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001, eP1d = rep(0.9, 9), eP0 = rep(0.9, 9),
-                                 zetaa_y = array(data=c(0.2), dim = c(5, 9)), zetab_y = array(data=c(0.2), dim = c(5, 9)), zetac_y = array(data=c(0.2), dim = c(5, 9))
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1263,7 +1400,10 @@ test_that("zeta vs prevalence", {
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001, eP1d = rep(0.9, 9), eP0 = rep(0.9, 9),
-                                 zetaa_y = array(data=c(0.2), dim = c(5, 9)), zetab_y = array(data=c(0.2), dim = c(5, 9)), zetac_y = array(data=c(0.2), dim = c(5, 9))
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1286,7 +1426,10 @@ test_that("zeta vs prevalence", {
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),kappaa = rep(0, 9), kappab = rep(0, 9), kappac = rep(0, 9),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001, eP1d = rep(0.9, 9), eP0 = rep(0.9, 9),
-                                 zetaa_y = array(data=c(0.2), dim = c(5, 9)), zetab_y = array(data=c(0.2), dim = c(5, 9)), zetac_y = array(data=c(0.2), dim = c(5, 9))
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 

@@ -929,6 +929,7 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     betaFtoM_noncomm = 0.00867,
     betaMtoF_comm = 0.00193,
     betaFtoM_comm = 0.00867,
+    betaMtoF_baseline = 0.00081,
 
     muF = 0.02597403,
     muM = 0.02739726,
