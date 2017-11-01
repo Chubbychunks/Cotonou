@@ -1342,8 +1342,12 @@ test_that("zeta vs prevalence", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001, eP1d = rep(0.9, 9), eP0 = rep(0.9, 9),
-                                 prep_intervention_y = matrix(c(0.1), ncol=9, nrow=4),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001,
+
+                                 eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
+                                 eP1d = rep(0, 9), eP0 = rep(0, 9),
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
                                  PrEPOnOff = 1
@@ -1371,7 +1375,10 @@ test_that("zeta vs prevalence", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001, eP1d = rep(0.9, 9), eP0 = rep(0.9, 9),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001,
+                                 eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
+                                 eP1d = rep(0, 9), eP0 = rep(0, 9),
+
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
@@ -1379,10 +1386,10 @@ test_that("zeta vs prevalence", {
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
-  xx <- result[c(grep("I[0-9][0-9]", names(result)))]
+  xx <- result[c(grep("cumuInf", names(result)))]
   N1 <- rowSums(do.call(cbind, xx))
 
-  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(zetaa_y =  x$zetaa_y * 0.5)))
+  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(sigma =  x$sigma * 0.5)))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
@@ -1399,7 +1406,10 @@ test_that("zeta vs prevalence", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001, eP1d = rep(0.9, 9), eP0 = rep(0.9, 9),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001,
+                                 eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
+                                 eP1d = rep(0, 9), eP0 = rep(0, 9),
+
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
@@ -1407,10 +1417,10 @@ test_that("zeta vs prevalence", {
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
-  xx <- result[c(grep("I[0-9][0-9]", names(result)))]
+  xx <- result[c(grep("cumuInf", names(result)))]
   N1 <- rowSums(do.call(cbind, xx))
 
-  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(zetab_y =  x$zetab_y * 0.5)))
+  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(test_rate_prep =  x$test_rate_prep * 0.5)))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
@@ -1425,7 +1435,10 @@ test_that("zeta vs prevalence", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),kappaa = rep(0, 9), kappab = rep(0, 9), kappac = rep(0, 9),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001, eP1d = rep(0.9, 9), eP0 = rep(0.9, 9),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001,
+                                 eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
+                                 eP1d = rep(0, 9), eP0 = rep(0, 9),
+
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
@@ -1433,10 +1446,10 @@ test_that("zeta vs prevalence", {
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
-  xx <- result[c(grep("I[0-9][0-9]", names(result)))]
+  xx <- result[c(grep("cumuInf", names(result)))]
   N1 <- rowSums(do.call(cbind, xx))
 
-  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(zetac_y =  x$zetac_y * 0.5)))
+  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(PrEPOnOff =  x$PrEPOnOff * 0)))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
@@ -1464,7 +1477,19 @@ test_that("zeta vs prevalence", {
 
 test_that("ART vs prevalence", {
 
-  parameters <- lhs_parameters(1,  betaMtF_noncomm = 0.001, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
+  parameters <- lhs_parameters(1,  par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
+                               forced_pars = list(
+                                 time = time_default,
+                                 n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),kappaa = rep(0, 9), kappab = rep(0, 9), kappac = rep(0, 9),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001,
+                                 eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
+                                 eP1d = rep(0, 9), eP0 = rep(0, 9),
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
+                               ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
   xx <- result[c(grep("I[0-9][0-9]", names(result)))]
@@ -1485,7 +1510,19 @@ test_that("ART vs prevalence", {
 
 test_that("testing vs prevalence", {
 
-  parameters <- lhs_parameters(1, betaMtF_noncomm = 0.001, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
+  parameters <- lhs_parameters(1,  par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
+                               forced_pars = list(
+                                 time = time_default,
+                                 n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),kappaa = rep(0, 9), kappab = rep(0, 9), kappac = rep(0, 9),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001,
+                                 eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
+                                 eP1d = rep(0, 9), eP0 = rep(0, 9),
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
+                               ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
   xx <- result[c(grep("I[0-9][0-9]", names(result)))]
@@ -1511,13 +1548,27 @@ test_that("testing vs prevalence", {
 
 test_that("adherence movements vs infections", {
 
-  parameters <- lhs_parameters(1, betaMtF_noncomm = 0.001, eP1a = rep(0.9, 9), eP1b = rep(0.5, 9), eP1c = rep(0.1, 9), par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
+  parameters <- lhs_parameters(1,  par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
+                               forced_pars = list(
+                                 time = time_default,
+                                 n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),kappaa = rep(0, 9), kappab = rep(0, 9), kappac = rep(0, 9),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001,
+                                 eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
+                                 eP1d = rep(0, 9), eP0 = rep(0, 9),
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
+                               ))
+
+
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
-  xx <- result[c(grep("I[0-9][0-9]", names(result)))]
+  xx <- result[c(grep("cumuInf", names(result)))]
   N1 <- rowSums(do.call(cbind, xx))
 
-  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(psia =  x$psia * 0.5)))
+  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(psia =  x$psia * 2)))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
@@ -1527,13 +1578,25 @@ test_that("adherence movements vs infections", {
   expect_true(sum(N2) > sum(N1))
 
 
-  parameters <- lhs_parameters(1, eP1a = rep(0.9, 9), eP1b = rep(0.5, 9), eP1c = rep(0.1, 9), par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
+  parameters <- lhs_parameters(1,  par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
+                               forced_pars = list(
+                                 time = time_default,
+                                 n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),kappaa = rep(0, 9), kappab = rep(0, 9), kappac = rep(0, 9),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001,
+                                 eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
+                                 eP1d = rep(0, 9), eP0 = rep(0, 9),
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
+                               ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
-  xx <- result[c(grep("I[0-9][0-9]", names(result)))]
+  xx <- result[c(grep("cumuInf", names(result)))]
   N1 <- rowSums(do.call(cbind, xx))
 
-  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(psib =  x$psib * 0.5)))
+  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(psib =  x$psib * 2)))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
@@ -1548,13 +1611,26 @@ test_that("adherence movements vs infections", {
 
 
 test_that("prep dropout vs infections", {
-  parameters <- lhs_parameters(1, eP1a = rep(0.9, 9), eP1b = rep(0.5, 9), eP1c = rep(0.1, 9), par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
+  parameters <- lhs_parameters(1,  par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
+                               forced_pars = list(
+                                 time = time_default,
+                                 n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),kappaa = rep(0.1, 9), kappab = rep(0.1, 9), kappac = rep(0.1, 9),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001,
+                                 eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
+                                 eP1d = rep(0, 9), eP0 = rep(0, 9),
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
+                               ))
+
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
-  xx <- result[c(grep("I[0-9][0-9]", names(result)))]
+  xx <- result[c(grep("cumuInf", names(result)))]
   N1 <- rowSums(do.call(cbind, xx))
 
-  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(kappaa =  x$kappaa * 0.5)))
+  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(kappaa =  x$kappaa * 2)))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
@@ -1563,13 +1639,28 @@ test_that("prep dropout vs infections", {
 
   expect_true(sum(N2) > sum(N1))
 
-  parameters <- lhs_parameters(1, eP1a = rep(0.9, 9), eP1b = rep(0.5, 9), eP1c = rep(0.1, 9), par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
+
+
+  parameters <- lhs_parameters(1,  par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
+                               forced_pars = list(
+                                 time = time_default,
+                                 n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),kappaa = rep(0.1, 9), kappab = rep(0.1, 9), kappac = rep(0.1, 9),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001,
+                                 eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
+                                 eP1d = rep(0, 9), eP0 = rep(0, 9),
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
+                               ))
+
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
-  xx <- result[c(grep("I[0-9][0-9]", names(result)))]
+  xx <- result[c(grep("cumuInf", names(result)))]
   N1 <- rowSums(do.call(cbind, xx))
 
-  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(kappab =  x$kappab * 0.5)))
+  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(kappab =  x$kappab * 2)))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
@@ -1578,13 +1669,26 @@ test_that("prep dropout vs infections", {
 
   expect_true(sum(N2) > sum(N1))
 
-  parameters <- lhs_parameters(1, eP1a = rep(0.9, 9), eP1b = rep(0.5, 9), eP1c = rep(0.1, 9), par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
+  parameters <- lhs_parameters(1,  par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
+                               forced_pars = list(
+                                 time = time_default,
+                                 n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),kappaa = rep(0.1, 9), kappab = rep(0.1, 9), kappac = rep(0.1, 9),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001,
+                                 eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
+                                 eP1d = rep(0, 9), eP0 = rep(0, 9),
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
+                               ))
+
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
-  xx <- result[c(grep("I[0-9][0-9]", names(result)))]
+  xx <- result[c(grep("cumuInf", names(result)))]
   N1 <- rowSums(do.call(cbind, xx))
 
-  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(kappac =  x$kappac * 0.5)))
+  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(kappac =  x$kappac * 2)))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
@@ -1592,6 +1696,37 @@ test_that("prep dropout vs infections", {
   N2 <- rowSums(do.call(cbind, xx))
 
   expect_true(sum(N2) > sum(N1))
+
+
+  parameters <- lhs_parameters(1,  par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
+                               forced_pars = list(
+                                 time = time_default,
+                                 n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),kappaa = rep(0.1, 9), kappab = rep(0.1, 9), kappac = rep(0.1, 9),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001,
+                                 eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
+                                 eP1d = rep(0, 9), eP0 = rep(0, 9),
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
+                               ))
+
+  result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
+
+  xx <- result[c(grep("cumuInf", names(result)))]
+  N1 <- rowSums(do.call(cbind, xx))
+
+  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(kappa1 =  x$kappa1 * 2)))
+  result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
+
+
+  xx <- result[c(grep("cumuInf", names(result)))]
+  N2 <- rowSums(do.call(cbind, xx))
+
+  expect_true(sum(N2) > sum(N1))
+
+
 })
 
 
@@ -1599,10 +1734,23 @@ test_that("prep dropout vs infections", {
 
 test_that("ART dropout vs prevalence", {
 
-  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
+  parameters <- lhs_parameters(1,  par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
+                               forced_pars = list(
+                                 time = time_default,
+                                 n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),kappaa = rep(0.1, 9), kappab = rep(0.1, 9), kappac = rep(0.1, 9),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, betaMtF_noncomm = 0.001,
+                                 eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
+                                 eP1d = rep(0, 9), eP0 = rep(0, 9),
+
+                                 prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
+                                 sigma = c(1,1,1,1,1,1,1,1,1),
+                                 test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 PrEPOnOff = 1
+                               ))
+
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
-  xx <- result[c(grep("I[0-9][0-9]", names(result)))]
+  xx <- result[c(grep("cumuInf", names(result)))]
   N1 <- rowSums(do.call(cbind, xx))
 
   parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(phi2 =  x$phi2 * 2)))

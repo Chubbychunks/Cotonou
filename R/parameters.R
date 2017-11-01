@@ -1285,6 +1285,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    kappaa = c(0.2, rep_len(0,(Ncat-1))),
                    kappab = c(0.2, rep_len(0,(Ncat-1))),
                    kappac = c(0.2, rep_len(0,(Ncat-1))),
+                   kappa1 = c(0.2, rep_len(0,(Ncat-1))),
 
 
                    alpha01 = rep_len(0.01,Ncat),

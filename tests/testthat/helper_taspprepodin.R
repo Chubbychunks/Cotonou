@@ -105,6 +105,7 @@ best_set_default = list(
   kappaa = rep(0.2, 9),
   kappab = rep(0.2, 9),
   kappac = rep(0.2, 9),
+  kappa1 = rep(0.2, 9),
 
 
   alpha01 = rep_len(0, 9),

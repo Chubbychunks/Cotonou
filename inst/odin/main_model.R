@@ -63,9 +63,10 @@ deriv(S1c[]) = E1c[i] - S1c[i] * lambda_sum_1c[i] - S1c[i] * mu[i] - S1c[i] * nu
 deriv(S1d[]) = E1d[i] - S1d[i] * lambda_sum_1d[i] - S1d[i] * mu[i] - S1d[i] * nu + rate_move_out[i] * S1d[i] + sum(in_S1d[i, ])
 
 #primary infection
-deriv(I01[]) = S0[i] * lambda_sum_0[i] + S1d[i] * lambda_sum_1d[i] - I01[i] * (gamma01[i] + tau[i] + alpha01[i] + mu[i] + nu) + rate_move_out[i] * I01[i] + sum(in_I01[i, ])
+deriv(I01[]) = S0[i] * lambda_sum_0[i] + S1d[i] * lambda_sum_1d[i] - I01[i] * (gamma01[i] + tau[i] + alpha01[i] + mu[i] + nu) + rate_move_out[i] * I01[i] + sum(in_I01[i, ]) +
+  kappa1[i] * I11[i]
 deriv(I11[]) = S1a[i] * lambda_sum_1a[i] + S1b[i] * lambda_sum_1b[i] + S1c[i] * lambda_sum_1c[i] -
-  I11[i] * (gamma11[i] + RR_test_onPrEP*tau[i] + alpha11[i] + mu[i] + nu) + rate_move_out[i] * I11[i] + sum(in_I11[i, ])
+  I11[i] * (gamma11[i] + test_rate_prep[i] + kappa1[i] + alpha11[i] + mu[i] + nu) + rate_move_out[i] * I11[i] + sum(in_I11[i, ])
 
 #chronic
 deriv(I02[]) = gamma01[i] * I01[i] + gamma11[i] * I11[i] - I02[i] * (gamma02[i] + tau[i] + alpha02[i] + mu[i] + nu) + rate_move_out[i] * I02[i] + sum(in_I02[i, ])
@@ -661,7 +662,10 @@ output(beta_noncomm[]) = beta_noncomm
 output(alpha05[]) = alpha05
 output(alpha35[]) = alpha35
 
-
+output(alpha02[]) = alpha02
+output(alpha22[]) = alpha22
+output(alpha01[]) = alpha01
+output(alpha11[]) = alpha11
 
 # INCIDENCE RATE
 
@@ -670,10 +674,14 @@ output(nu) = nu
 
 output(mu[]) = mu
 output(gamma01[]) = gamma01
+output(gamma11[]) = gamma11
 
 output(kappaa[]) = kappaa
 output(kappab[]) = kappab
 output(kappac[]) = kappac
+
+
+output(kappa1[]) = kappa1
 
 output(Nage) = Nage
 output(dur_FSW) = dur_FSW
@@ -822,7 +830,7 @@ psib[] = user()
 
 
 
-
+kappa1[] = user()
 kappaa[] = user()
 kappab[] = user()
 kappac[] = user()
@@ -978,6 +986,7 @@ dim(prep_intervention_y) = user()
 dim(kappaa) = Ncat
 dim(kappab) = Ncat
 dim(kappac) = Ncat
+dim(kappa1) = Ncat
 
 dim(alpha01) = Ncat
 dim(alpha02) = Ncat
