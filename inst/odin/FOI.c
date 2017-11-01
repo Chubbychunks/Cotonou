@@ -1,5 +1,5 @@
 double FOI_part(double I, double N, double beta, double RR, double fc, double fP, double n, double eP, double ec) {
-  
+
   return I * (1 -
               pow(1 -                       beta * RR, n * (1 - fc) * (1 - fP)) *
               pow(1 - (1 - ec) *            beta * RR, n *      fc  * (1 - fP)) *
@@ -17,19 +17,19 @@ double all_FOI_together(double c, double p, double S0, double S1a, double S1b, d
           FOI_part(I03, N, beta, R, fc, fP, n, eP, ec) +
           FOI_part(I04, N, beta, R, fc, fP, n, eP, ec) +
           FOI_part(I05, N, beta, infect_AIDS, fc, fP, n, eP, ec) +
-          
+
           FOI_part(I11, N, beta, infect_acute, fc, fP, n, eP, ec) +
-          
+
           FOI_part(I22, N, beta, R, fc, fP, n, eP, ec) +
           FOI_part(I23, N, beta, R, fc, fP, n, eP, ec) +
           FOI_part(I24, N, beta, R, fc, fP, n, eP, ec) +
           FOI_part(I25, N, beta, infect_AIDS, fc, fP, n, eP, ec) +
-          
+
           FOI_part(I32, N, beta, infect_ART, fc, fP, n, eP, ec) +
           FOI_part(I33, N, beta, infect_ART, fc, fP, n, eP, ec) +
           FOI_part(I34, N, beta, infect_ART, fc, fP, n, eP, ec) +
-          FOI_part(I35, N, beta, infect_ART*infect_AIDS, fc, fP, n, eP, ec) +
-          
+          FOI_part(I35, N, beta, infect_ART, fc, fP, n, eP, ec) +
+
           FOI_part(I42, N, beta, R, fc, fP, n, eP, ec) +
           FOI_part(I43, N, beta, R, fc, fP, n, eP, ec) +
           FOI_part(I44, N, beta, R, fc, fP, n, eP, ec) +
