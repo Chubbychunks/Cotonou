@@ -555,6 +555,15 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$fPb = 1 - y$fPa - y$fPc
 
 
+
+  # ART and efficacy
+  y$viral_supp_y[1,] = y$viral_supp_y_1986_rest
+  y$viral_supp_y[2,] = c(y$viral_supp_y_2014_ProFSW, rep_len(y$viral_supp_y_1986_rest, 8))
+  y$viral_supp_y[3,] = y$viral_supp_y[2,]
+
+  y$infect_ART_y = y$viral_supp_y
+  y$infect_ART_t = y$viral_supp_t
+
   return(y)
 }
 
@@ -689,7 +698,11 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     PrEPOnOff = 0,
     fPa = 0.5,
     fPc = 0.4,
-    iota = rep_len(0.1, 9)
+    iota = rep_len(0.1, 9),
+    viral_supp_t = c(1986, 2015, 2016),
+    viral_supp_y = matrix(0, nrow = 3, ncol = 9),
+    viral_supp_y_1986_rest = 0.6,
+    viral_supp_y_2014_ProFSW = 0.7
 
 
 
@@ -746,7 +759,7 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     #     c_noncomm,
     mu,
 
-    infect_ART = c(0.1, 0.7), # infectiousness RR when on ART
+    eff_ART = c(0.96, 1), # infectiousness RR when on ART
     infect_acute = c(4, 18), # RR for acute phase
 
     # gamma01 = c(1/0.5, 1/0.16), # rate
@@ -956,7 +969,11 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     PrEPOnOff = 0,
     fPa = 0.5,
     fPc = 0.4,
-    iota = rep_len(0.1, 9)
+    iota = rep_len(0.1, 9),
+    viral_supp_t = c(1986, 2015, 2016),
+    viral_supp_y = matrix(0, nrow = 3, ncol = 9),
+    viral_supp_y_1986_rest = 0.6,
+    viral_supp_y_2014_ProFSW = 0.7
 
 
 
@@ -1014,7 +1031,7 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     #     c_noncomm,
     mu,
 
-    infect_ART = c(0.1, 0.7), # infectiousness RR when on ART
+    eff_ART = c(0.96, 1), # infectiousness RR when on ART
     infect_acute = c(4, 18), # RR for acute phase
 
     # gamma01 = c(1/0.5, 1/0.16), # rate
@@ -1393,7 +1410,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    ART_RR_prog = 2.5, # survival extension cofactor
                    ART_RR_mort = 2.5, # survival extension cofactor
 
-                   infect_ART = 0.4, # infectiousness RR when on ART
+                   infect_ART = c(0, rep_len(0, 8)),
                    infect_acute = 9, # RR for acute phase
                    infect_AIDS = 7.27, # RR for AIDS phase
 
@@ -1451,8 +1468,11 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    nu = 0.02222222,
                    fPa = 0.5,
                    fPc = 0.4,
-                   iota = rep_len(0.1, 9)
-
+                   iota = rep_len(0.1, 9),
+                   viral_supp_t = c(1986, 2015, 2016),
+                   viral_supp_y = matrix(0, nrow = 3, ncol = 9),
+                   viral_supp_y_1986_rest = 0.6,
+                   viral_supp_y_2014_ProFSW = 0.7
 
 
 

@@ -116,7 +116,7 @@ best_set = list(
 
   infect_acute = 9, # RR for acute phase
   infect_AIDS = 2, #7.27, # RR for AIDS phase
-  infect_ART = 0.9 * 0.523, # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
+  infect_ART = c(0, rep_len(0, 8)),
   ec = rep_len(0.8, 9), # from kate's paper on nigeria SD couples
   eP0 = c(0, rep_len(0, 8)), # assumptions!
   eP1a = c(0.9, rep_len(0, 8)),
@@ -634,7 +634,7 @@ ranges = rbind(
   infect_acute = c(4.47, 18.81), # RR for transmission rate if infected is acute stage
   infect_AIDS = c(4.45, 11.88), # RR for transmission rate if infected is in AIDS stage
 
-  infect_ART = c(0.26 * 0.523, 0.99 * 0.523), # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
+  eff_ART = c(0.96, 1),
 
   ec = c(0.58, 0.95), # condom efficacy
   eP1a = c(0.9, 0.9), # prep efficacy perfect adherence
@@ -1030,7 +1030,7 @@ best_set = list(
 
   infect_acute = 9, # RR for acute phase
   infect_AIDS = 2, #7.27, # RR for AIDS phase
-  infect_ART = 0.9 * 0.523, # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
+  infect_ART = c(0, rep_len(0, 8)),
   ec = rep_len(0.8, 9), # from kate's paper on nigeria SD couples
   eP0 = c(0, rep_len(0, 8)), # assumptions!
   eP1a = c(0.9, rep_len(0, 8)),
@@ -1548,7 +1548,7 @@ ranges = rbind(
   infect_acute = c(4.47, 18.81), # RR for transmission rate if infected is acute stage
   infect_AIDS = c(4.45, 11.88), # RR for transmission rate if infected is in AIDS stage
 
-  infect_ART = c(0.26 * 0.523, 0.99 * 0.523), # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
+  eff_ART = c(0.96, 1),
 
   ec = c(0.58, 0.95), # condom efficacy
   eP1a = c(0.9, 0.9), # prep efficacy perfect adherence
@@ -2084,8 +2084,7 @@ best_set = list(
 
   infect_acute = 9, # RR for acute phase
   infect_AIDS = 2, #7.27, # RR for AIDS phase
-  infect_ART = 0.9 * 0.523, # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
-  ec = rep_len(0.8, 9), # from kate's paper on nigeria SD couples
+  c(0, rep_len(0, 8)),  ec = rep_len(0.8, 9), # from kate's paper on nigeria SD couples
   eP0 = c(0, rep_len(0, 8)), # assumptions!
   eP1a = c(0.9, rep_len(0, 8)),
   eP1b = c(0.45, rep_len(0, 8)),
@@ -2674,7 +2673,7 @@ best_set = list(
 
   infect_acute = 9, # RR for acute phase
   infect_AIDS = 2, #7.27, # RR for AIDS phase
-  infect_ART = 0.9 * 0.523, # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
+  infect_ART =  c(0, rep_len(0, 8)),
   ec = rep_len(0.8, 9), # from kate's paper on nigeria SD couples
   eP0 = c(0, rep_len(0, 8)), # assumptions!
   eP1a = c(0.9, rep_len(0, 8)),
@@ -3357,7 +3356,7 @@ best_set = list(
 
   infect_acute = 9, # RR for acute phase
   infect_AIDS = 2, #7.27, # RR for AIDS phase
-  infect_ART = 0.9 * 0.523, # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
+  infect_ART =  c(0, rep_len(0, 8)),
   ec = rep_len(0.8, 9), # from kate's paper on nigeria SD couples
   eP0 = c(0, rep_len(0, 8)), # assumptions!
   eP1a = c(0.9, rep_len(0, 8)),
@@ -4047,7 +4046,7 @@ best_set = list(
 
   infect_acute = 9, # RR for acute phase
   infect_AIDS = 2, #7.27, # RR for AIDS phase
-  infect_ART = 0.9 * 0.523, # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
+  infect_ART =  c(0, rep_len(0, 8)),
   ec = rep_len(0.8, 9), # from kate's paper on nigeria SD couples
   eP0 = c(0, rep_len(0, 8)), # assumptions!
   eP1a = c(0.9, rep_len(0, 8)),

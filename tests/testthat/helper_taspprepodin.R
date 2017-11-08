@@ -91,7 +91,7 @@ best_set_default = list(
 
   infect_acute = 9, # RR for acute phase
   infect_AIDS = 2, #7.27, # RR for AIDS phase
-  infect_ART = 0.9 * 0.523, # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
+  infect_ART =  c(0, rep_len(0, 8)),
   ec = rep_len(0.8, 9), # from kate's paper on nigeria SD couples
   eP0 = c(0, rep_len(0, 8)), # assumptions!
   eP1a = c(0.9, rep_len(0, 8)),
@@ -553,7 +553,7 @@ ranges_default = rbind(
   infect_acute = c(4.47, 18.81), # RR for transmission rate if infected is acute stage
   infect_AIDS = c(4.45, 11.88), # RR for transmission rate if infected is in AIDS stage
 
-  infect_ART = c(0.26 * 0.523, 0.99 * 0.523), # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
+  eff_ART = c(0.96, 1), # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
 
   ec = c(0.58, 0.95), # condom efficacy
   eP1a = c(0.9, 0.9), # prep efficacy perfect adherence
@@ -584,7 +584,10 @@ ranges_default = rbind(
 
   fc_y_noncomm_1985_GPF_GPM = 0,
   fc_y_noncomm_1998_GPF_GPM = c(0.0326087, 0.05042017),
-  fc_y_noncomm_2011_GPF_GPM = c(0.161, 0.255)
+  fc_y_noncomm_2011_GPF_GPM = c(0.161, 0.255),
+
+  viral_supp_y_2014_ProFSW = c(0.91, 0.92),
+  viral_supp_y_1986_rest = c(0.1, 0.2)
 
 
 
