@@ -561,7 +561,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$viral_supp_y[2,] = c(y$viral_supp_y_2014_ProFSW, rep_len(y$viral_supp_y_1986_rest, 8))
   y$viral_supp_y[3,] = y$viral_supp_y[2,]
 
-  y$infect_ART_y = y$viral_supp_y
+  y$infect_ART_y = y$viral_supp_y * y$ART_eff
   y$infect_ART_t = y$viral_supp_t
 
   return(y)
@@ -702,7 +702,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     viral_supp_t = c(1986, 2015, 2016),
     viral_supp_y = matrix(0, nrow = 3, ncol = 9),
     viral_supp_y_1986_rest = 0.6,
-    viral_supp_y_2014_ProFSW = 0.7
+    viral_supp_y_2014_ProFSW = 0.7,
+    ART_eff = 0.98
 
 
 
@@ -973,7 +974,8 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     viral_supp_t = c(1986, 2015, 2016),
     viral_supp_y = matrix(0, nrow = 3, ncol = 9),
     viral_supp_y_1986_rest = 0.6,
-    viral_supp_y_2014_ProFSW = 0.7
+    viral_supp_y_2014_ProFSW = 0.7,
+    ART_eff = 0.98
 
 
 
@@ -1472,7 +1474,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    viral_supp_t = c(1986, 2015, 2016),
                    viral_supp_y = matrix(0, nrow = 3, ncol = 9),
                    viral_supp_y_1986_rest = 0.6,
-                   viral_supp_y_2014_ProFSW = 0.7
+                   viral_supp_y_2014_ProFSW = 0.7,
+                   ART_eff = 0.98
 
 
 
