@@ -259,8 +259,8 @@ test_that("beta 3", {
 # R
 # if R is 0, no infections
 test_that("R 1", {
-  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(time = time_default, I11_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0), I01_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0), R = 0, infect_ART = 0, infect_acute = 0, infect_AIDS = 0))
+  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default[which(rownames(ranges_default) != "ART_eff"),],
+                               forced_pars = list(time = time_default, I11_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0), I01_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0), R = 0, ART_eff = 0, infect_acute = 0, infect_AIDS = 0))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
   xx <- result[c(grep("I01", names(result)), grep("I11", names(result)))]
@@ -963,6 +963,33 @@ test_that("R vs prevalence", {
 
   expect_true(sum(N2) > sum(N1))
 })
+
+
+
+# increase art RR, increase overall prevalence
+
+test_that("ART_eff vs prevalence", {
+  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default[which(rownames(ranges_default) != "ART_eff"),],
+                               forced_pars = list(
+                                 time = time_default, ART_eff = 0.1,
+                                 n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1
+                               ))
+  result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
+
+  xx <- result[c(grep("cumuInf", names(result)))]
+  N1 <- rowSums(do.call(cbind, xx))
+
+  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(infect_ART_y =  x$infect_ART_y * 1.01)))
+  result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
+
+  xx <- result[c(grep("cumuInf", names(result)))]
+  N2 <- rowSums(do.call(cbind, xx))
+
+  expect_true(sum(N2) > sum(N1))
+})
+
+
 
 # increase n, increase overall prevalence
 
