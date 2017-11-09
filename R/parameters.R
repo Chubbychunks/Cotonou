@@ -564,6 +564,11 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$infect_ART_y = y$viral_supp_y * y$ART_eff
   y$infect_ART_t = y$viral_supp_t
 
+
+  y$rho = c(y$ART_recruit_rate_FSW, rep_len(y$ART_recruit_rate_rest, 5), 0, 0, 0)
+  y$iota = c(y$ART_reinit_rate_FSW, rep_len(y$ART_reinit_rate_rest, 5), 0, 0, 0)
+
+
   return(y)
 }
 
@@ -698,12 +703,16 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     PrEPOnOff = 0,
     fPa = 0.5,
     fPc = 0.4,
-    iota = rep_len(0.1, 9),
+    iota  = c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0, 0, 0),
     viral_supp_t = c(1986, 2015, 2016),
     viral_supp_y = matrix(0, nrow = 3, ncol = 9),
     viral_supp_y_1986_rest = 0.6,
     viral_supp_y_2014_ProFSW = 0.7,
-    ART_eff = 0.98
+    ART_eff = 0.98,
+    rho = c(0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0, 0, 0),
+    ART_recruit_rate = 0.2,
+    ART_reinit_rate = 0.1,
+    RR_test_CD4200 = 5.4
 
 
 
@@ -970,12 +979,16 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     PrEPOnOff = 0,
     fPa = 0.5,
     fPc = 0.4,
-    iota = rep_len(0.1, 9),
+    iota  = c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0, 0, 0),
     viral_supp_t = c(1986, 2015, 2016),
     viral_supp_y = matrix(0, nrow = 3, ncol = 9),
     viral_supp_y_1986_rest = 0.6,
     viral_supp_y_2014_ProFSW = 0.7,
-    ART_eff = 0.98
+    ART_eff = 0.98,
+    rho = c(0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0, 0, 0),
+    ART_recruit_rate = 0.2,
+    ART_reinit_rate = 0.1,
+    RR_test_CD4200 = 5.4
 
 
 
@@ -1132,6 +1145,19 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    frac_women_virgin = 0.1,
                    frac_men_virgin = 0.1,
 
+
+
+                   ART_eligible_CD4_above_500_t = c(1985, 2005, 2012, 2015, 2016),
+                   ART_eligible_CD4_350_500_t = c(1985, 2005, 2012, 2015, 2016),
+                   ART_eligible_CD4_200_349_t = c(1985, 2005, 2012, 2015, 2016),
+                   ART_eligible_CD4_below_200_t = c(1985, 2005, 2012, 2015, 2016),
+
+                   ART_eligible_CD4_above_500_y = c(0.1, 0.1, 0.1, 0.1, 0.1),
+                   ART_eligible_CD4_350_500_y = c(0.1, 0.1, 0.1, 0.1, 0.1),
+                   ART_eligible_CD4_200_349_y = c(0.1, 0.1, 0.1, 0.1, 0.1),
+                   ART_eligible_CD4_below_200_y = c(0.7, 0.7, 0.7, 0.7, 0.7),
+
+
                    #                    epsilon_t_comm = c(1985, 1991.99, 1992, 2001.99, 2002, 2012.99, 2013, 2016),
                    #                    epsilon_y_comm = c(0.059346131, 0.059346131, 0.053594832, 0.053594832, 0.026936907, 0.026936907, 0.026936907, 0.026936907),
                    epsilon_t = c(1985, 1992, 2002, 2013, 2016),
@@ -1192,9 +1218,11 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
 
 
-                   ART_prob_t = c(1985, 2002, 2005, 2016),
+                   ART_prob_t = c(1985, 2005, 2012, 2015),
                    ART_prob_y = matrix(
                      rep(c(0, 0, 0.2, 0.4), Ncat), ncol = Ncat),
+
+                   rho = c(0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0, 0, 0),
 
                    phi2 = rep_len(0.004,Ncat), # sort out later
                    phi3 = rep_len(0.004,Ncat),
@@ -1216,7 +1244,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
 
                    RR_test_onPrEP = 2,
-                   RR_test_CD4200 = 2,
+                   RR_test_CD4200 = 5.4,
                    RR_ART_CD4200 = 2,
 
                    tau01 = rep_len(1,Ncat),
@@ -1470,12 +1498,14 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    nu = 0.02222222,
                    fPa = 0.5,
                    fPc = 0.4,
-                   iota = rep_len(0.1, 9),
+                   iota  = c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0, 0, 0),
                    viral_supp_t = c(1986, 2015, 2016),
                    viral_supp_y = matrix(0, nrow = 3, ncol = 9),
                    viral_supp_y_1986_rest = 0.6,
                    viral_supp_y_2014_ProFSW = 0.7,
-                   ART_eff = 0.98
+                   ART_eff = 0.98,
+                   ART_recruit_rate = 0.2,
+                   ART_reinit_rate = 0.1
 
 
 

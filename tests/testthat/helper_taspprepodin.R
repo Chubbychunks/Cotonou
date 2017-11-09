@@ -588,7 +588,14 @@ ranges_default = rbind(
 
   viral_supp_y_2014_ProFSW = c(0.91, 0.92),
   viral_supp_y_1986_rest = c(0.1, 0.2),
-  ART_eff = c(0.96, 1)
+  ART_eff = c(0.96, 1),
+
+  ART_recruit_rate_FSW = c(0.5, 1.5),
+  ART_recruit_rate_rest = c(0.5, 1.5),
+
+  ART_reinit_rate_FSW = c(0.25, 1.5),
+  ART_reinit_rate_rest = c(0.25, 1.5)
+
 
 
 

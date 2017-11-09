@@ -806,7 +806,7 @@ test_that("no testing", {
 # NO ART
 
 test_that("no ART", {
-  relevant_parameters = parameter_names[c(grep("ART_prob_y", parameter_names))]
+  relevant_parameters = parameter_names[c(grep("rho", parameter_names))]
   parameters <- lhs_parameters(1, set_null = relevant_parameters, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
