@@ -961,10 +961,6 @@ devtools::load_all()
 
 
 
-number_simulations = 25
-epi_start = 1986
-epi_end = 2025
-
 
 
 number_simulations = 10
@@ -1447,7 +1443,10 @@ best_set = list(
   rate_leave_client = 0.05,
   dropout_rate_not_FSW = 0.025,
   replaceDeaths = 0,
-  movement = 1
+  movement = 1,
+
+  ART_recruit_rate_rest = 0.2,
+  ART_reinit_rate_FSW = 0.25
 
 )
 
@@ -1771,7 +1770,7 @@ variable = c("Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
 
 #####################################################
 
-# result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
+result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
 # result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 

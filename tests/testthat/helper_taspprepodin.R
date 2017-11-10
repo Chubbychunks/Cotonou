@@ -440,7 +440,10 @@ best_set_default = list(
   rate_leave_client = 0.05,
   dropout_rate_not_FSW = 0.025,
   replaceDeaths = 0,
-  movement = 1
+  movement = 1,
+
+  ART_recruit_rate_rest = 0.2,
+  ART_reinit_rate_FSW = 0.25
 
 )
 
