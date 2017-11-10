@@ -955,9 +955,23 @@ odin::odin_package(".") # looks for any models inside inst/odin
 devtools::load_all()
 
 
+
+
+
+
+
+
 number_simulations = 25
 epi_start = 1986
-epi_end = 2030
+epi_end = 2025
+
+
+
+number_simulations = 10
+# batch_size = 1000
+epi_start = 1986
+# epi_end = 2030
+epi_end = 2025
 
 # setup -------------------------------------------------------------------
 par_seq = c("c_comm", "c_noncomm")
@@ -965,6 +979,8 @@ condom_seq = c("fc_y_comm", "fc_y_noncomm", "n_y_comm", "n_y_noncomm")
 groups_seq = c("ProFSW", "LowFSW", "GPF", "FormerFSW", "Client", "GPM", "VirginF", "VirginM", "FormerFSWoutside")
 years_seq = seq(1985, 2016)
 time <- seq(epi_start, epi_end, length.out = epi_end - epi_start + 1)
+#####################################################
+
 # this is the best set of parameters (the fixed ones)
 # best_set ----------------------------------------------------------------
 
@@ -1030,7 +1046,7 @@ best_set = list(
 
   infect_acute = 9, # RR for acute phase
   infect_AIDS = 2, #7.27, # RR for AIDS phase
-  infect_ART = c(0, rep_len(0, 8)),
+  infect_ART = 0.9 * 0.523, # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
   ec = rep_len(0.8, 9), # from kate's paper on nigeria SD couples
   eP0 = c(0, rep_len(0, 8)), # assumptions!
   eP1a = c(0.9, rep_len(0, 8)),
@@ -1435,7 +1451,6 @@ best_set = list(
 
 )
 
-# best_set end ----------------------------------------------------------------
 
 
 #
@@ -1473,7 +1488,7 @@ ranges = rbind(
   muM = c(0.01851852, 0.025), # male mortality
 
   rate_leave_pro_FSW = c(0, 1), # rate of exit of professional sex work
-  rate_leave_low_FSW = c(0, 1), # rate of exit of low level sex work ONLY ONE PARAMETERS??
+  rate_leave_low_FSW = c(0, 1), # rate of exit of low level sex work
 
   fraction_FSW_foreign = c(0.5, 0.9),
 
@@ -1548,7 +1563,7 @@ ranges = rbind(
   infect_acute = c(4.47, 18.81), # RR for transmission rate if infected is acute stage
   infect_AIDS = c(4.45, 11.88), # RR for transmission rate if infected is in AIDS stage
 
-  eff_ART = c(0.96, 1),
+  infect_ART = c(0.26 * 0.523, 0.99 * 0.523), # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
 
   ec = c(0.58, 0.95), # condom efficacy
   eP1a = c(0.9, 0.9), # prep efficacy perfect adherence
@@ -1592,7 +1607,7 @@ ranges = rbind(
 
 
 # outputs -----------------------------------------------------------------
-outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm")
+outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
 
 
 # prev_points -------------------------------------------------------------
@@ -1627,6 +1642,39 @@ prev_points_all = prev_points
 prev_points = prev_points[-c(1,2,3),]
 
 
+
+prev_points_extended_low = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,
+                                               1998, 2002, 2005, 2008, 2012, 2015,
+                                               1998, 2008, 2011,
+                                               1998, 2008, 2011,
+                                               2012, 2015),
+                                      variable = c(rep("Pro FSW", 11),
+                                                   rep("Clients", 6),
+                                                   rep("Women", 3),
+                                                   rep("Men", 3),
+                                                   rep("Low-level FSW", 2)),
+                                      value = c(3.3, 8.2, 19.2, 53.3, 48.7, 40.6, 38.9, 34.8, 29.3, 27.4, 18.7,
+                                                100*0.084, 9, 6.9, 5.8, 100*0.028, 100*0.016,
+                                                100*0.035, 100*0.04, 2.2,
+                                                100*0.033, 100*0.02, 1.6,
+                                                100*0.084, 100*0.043),
+                                      lower = c(3.3, 8.2, 19.2, 48.02, 43.02, 36.58, 31.97, 30.42, 24.93, 23.01, 15.71,
+                                                100*0.05898524, 100*0.068218538, 100*0.04293149, 100*0.034772131, 100*0.012660836, 100*0.006039259,
+                                                100*0.024181624, 100*0.030073668, 100*0.012980254,
+                                                100*0.022857312, 100*0.012427931, 100*0.007517563,
+                                                100*0, 100*0),
+
+                                      upper = c(3.3, 8.2, 19.2, 58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01,
+                                                100*0.11561791, 100*0.115608811, 100*0.105215792, 100*0.090216628, 100*0.051602442, 100*0.035338436,
+                                                100*0.047726245, 100*0.052817187, 100*0.035296286,
+                                                100*0.047183668, 100*0.029774338, 100*0.028546718,
+                                                100*0.120857355, 100*0.069311506))
+
+
+
+
+
+
 prev_points_FSW_only = data.frame(time = c(1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015
 ),
 variable = c(rep("Pro FSW", 8)
@@ -1637,6 +1685,10 @@ lower = c(48.02, 43.02, 36.58, 31.97, 30.42, 24.93, 23.01, 15.71
 ),
 upper = c(58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01))
 
+
+
+
+prev_points_FSW_only_even_less_2 = prev_points_FSW_only[c(1, 4, 6, 8),]
 
 # frac N data points ------------------------------------------------------
 frac_N_data_points = data.frame(time = c(1998, 2014,
@@ -1652,9 +1704,14 @@ frac_N_data_points = data.frame(time = c(1998, 2014,
                                              "Virgin female", "Virgin female", "Virgin female",
                                              "Virgin male", "Virgin male", "Virgin male"))
 
+# frac_N_discard_points = data.frame(variable = c("Pro FSW", "Clients", "Virgin female", "Virgin male", "Low-level FSW"),
+#                                    min = c(0.001237599, 0.1509*(1-0.515666224), 0.07896475*0.515666224, 0.07039551*(1-0.515666224), 2*0.001237599),
+#                                    max = c(0.007374027, 0.40 * (1-0.515666224), 0.2*0.515666224, 0.17*(1-0.515666224), 5*0.007374027))
+
 frac_N_discard_points = data.frame(variable = c("Pro FSW", "Clients", "Virgin female", "Virgin male", "Low-level FSW"),
                                    min = c(0.001237599, 0.1509*(1-0.515666224), 0.07896475*0.515666224, 0.07039551*(1-0.515666224), 2*0.001237599),
-                                   max = c(0.007374027, 0.40 * (1-0.515666224), 0.2*0.515666224, 0.17*(1-0.515666224), 5*0.007374027))
+                                   max = c(1.43*0.515666224/2, 0.40 * (1-0.515666224), 0.2*0.515666224, 0.17*(1-0.515666224), 5*0.007374027))
+
 
 # Ntot data points ------------------------------------------------------
 
@@ -1667,55 +1724,55 @@ Ntot_data_points = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
 # ART coverage data points ------------------------------------------------
 
 ART_data_points = data.frame(time = c(2010, 2011, 2012, 2013, 2014, 2015, 2016,
-                                      2010, 2011, 2012, 2013, 2014, 2015, 2016
+                                      2010, 2013, 2014, 2015, 2016
 ),
 Lower = c(0.32, 0.4, 0.43, 0.38, 0.43, 0.49, 0.552,
-          0.0745, 0.0914, 0.1083, 0.1251, 0.1738, 0.4998, 0.5654
+          7.5,	12.5,	17.4,	50.0,	56.1
 
 ),
 Upper = c(0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8,
-          0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8
+          0.522449, 0.620408, 0.702041, 0.8, 0.8
 
 ),
 variable = c("All", "All", "All", "All", "All", "All", "All",
-             "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
+             "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
 
-ART_data_points_FSW = data.frame(time = c(2010, 2011, 2012, 2013, 2014, 2015, 2016
+ART_data_points_FSW = data.frame(time = c(2010, 2013, 2014, 2015, 2016
 ),
-Lower = c(0.0745, 0.0914, 0.1083, 0.1251, 0.1738, 0.4998, 0.5654
-
-),
-Upper = c(0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8
+Lower = c(7.5,	12.5,	17.4,	50.0,	56.1
 
 ),
-variable = c("Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
+Upper = c(0.522449, 0.620408, 0.702041, 0.8, 0.8
+
+),
+variable = c("Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
 
 ART_data_points_all = data.frame(time = c(2010, 2011, 2012, 2013, 2014, 2015, 2016,
                                           2010, 2011, 2012, 2013, 2014, 2015, 2016,
                                           2010, 2011, 2012, 2013, 2014, 2015, 2016,
-                                          2010, 2011, 2012, 2013, 2014, 2015, 2016
+                                          2010, 2013, 2014, 2015, 2016
 ),
 Lower = c(0.32, 0.4, 0.43, 0.38, 0.43, 0.49, 0.552,
           0.32, 0.4, 0.43, 0.38, 0.43, 0.49, 0.552,
           0.32, 0.4, 0.43, 0.38, 0.43, 0.49, 0.552,
-          0.0745, 0.0914, 0.1083, 0.1251, 0.1738, 0.4998, 0.5654
+          7.5,	12.5,	17.4,	50.0,	56.1
 
 ),
 Upper = c(0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8,
           0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8,
           0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8,
-          0.522449, 0.653061, 0.702041, 0.620408, 0.702041, 0.8, 0.8
+          0.522449, 0.620408, 0.702041, 0.8, 0.8
 
 ),
 variable = c("Women", "Women", "Women", "Women", "Women", "Women", "Women",
              "Men", "Men", "Men", "Men", "Men", "Men", "Men",
              "All", "All", "All", "All", "All", "All", "All",
-             "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
+             "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
 
 #####################################################
 
 # result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
-result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
+# result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 
 result[[3]] <- result[[2]]
