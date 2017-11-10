@@ -1053,6 +1053,10 @@ best_set = list(
   eP1c = c(0, rep_len(0, 8)),
   eP1d = c(0, rep_len(0, 8)),
 
+
+
+
+
   # gamma01 = 0.4166667, #years
   # gamma04 = 4.45, #years
   #
@@ -1077,6 +1081,12 @@ best_set = list(
   # alpha44 = rep_len(0.08, 9),
   # alpha45 = rep_len(0.27, 9),
 
+
+  test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
+  sigma = c(1, 0, 0, 0, 0, 0, 0, 0, 0),
+  prep_intervention_t = c(1985, 2013, 2015, 2016),
+  prep_intervention_y = matrix(c(rep(0, 9), 1, rep(0, 9-1), rep(0, 9), rep(0, 9)), ncol = 9, byrow = T),
+  PrEPOnOff = 0,
 
   #PREP
   zetaa_t = c(1985, 2013, 2015, 2016),
@@ -1550,8 +1560,8 @@ ranges = rbind(
   n_y_comm_1985_ProFSW_Client = c(1, 3.3),
   # n_y_comm_1985_Client_ProFSW = c(1.45, 11.45),
 
-  # n_y_comm_1985_LowFSW_Client = c(1, 1),
-  # n_y_comm_1985_Client_LowFSW = c(1, 1),
+  n_y_comm_1985_LowFSW_Client = c(1, 1),
+  n_y_comm_1985_Client_LowFSW = c(1, 1),
 
   # sex acts per partnership noncomm
 

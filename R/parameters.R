@@ -25,7 +25,9 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
     # getting client - low FSW n to be same as for pro fsw
     # y$n_y_comm_1985_LowFSW_Client = y$n_y_comm_1985_ProFSW_Client
-    y$n_y_noncomm_1985_LowFSW_Client = y$n_y_noncomm_1985_GPF_GPM
+    y$n_y_noncomm_2002_LowFSW_Client = y$n_y_noncomm_2002_ProFSW_Client
+    y$n_y_noncomm_2015_LowFSW_Client = y$n_y_noncomm_2015_ProFSW_Client
+
     y$n_y_noncomm_1985_GPF_Client = y$n_y_noncomm_1985_GPF_GPM
 
 
