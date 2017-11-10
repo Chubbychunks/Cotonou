@@ -1049,29 +1049,30 @@ best_set = list(
   eP1b = c(0.45, rep_len(0, 8)),
   eP1c = c(0, rep_len(0, 8)),
   eP1d = c(0, rep_len(0, 8)),
-  gamma01 = 0.4166667, #years
-  SC_to_200_349 = 3.4,
-  gamma04 = 4.45, #years
 
+  # gamma01 = 0.4166667, #years
+  # gamma04 = 4.45, #years
+  #
 
   alpha01 = rep_len(0, 9),
+  alpha11 = rep_len(0, 9),
   alpha02 = rep_len(0, 9),
-  alpha03 = rep_len(0.05, 9),
-  alpha04 = rep_len(0.08, 9),
-  alpha05 = rep_len(0.27, 9), #1/2.9
+  alpha03 = 0.03,
+  alpha04 = 0.07,
+  alpha05 = 2,
   alpha11 = rep_len(0, 9),
   alpha22 = rep_len(0, 9),
-  alpha23 = rep_len(0.05, 9),
-  alpha24 = rep_len(0.08, 9),
-  alpha25 = rep_len(0.27, 9),
+  # alpha23 = rep_len(0.05, 9),
+  # alpha24 = rep_len(0.08, 9),
+  # alpha25 = rep_len(0.27, 9),
   alpha32 = rep_len(0, 9),
-  alpha33 = rep_len(0.05, 9),
-  alpha34 = rep_len(0.08, 9),
-  alpha35 = rep_len(0.27, 9),
+  # alpha33 = rep_len(0.05, 9),
+  # alpha34 = rep_len(0.08, 9),
+  # alpha35 = rep_len(0.27, 9),
   alpha42 = rep_len(0, 9),
-  alpha43 = rep_len(0.05, 9),
-  alpha44 = rep_len(0.08, 9),
-  alpha45 = rep_len(0.27, 9),
+  # alpha43 = rep_len(0.05, 9),
+  # alpha44 = rep_len(0.08, 9),
+  # alpha45 = rep_len(0.27, 9),
 
 
   #PREP
@@ -1121,11 +1122,10 @@ best_set = list(
                         0.6739, 0.676, 0.676, 0.676, 0.676, 0.676, 0, 0, 0),
                       nrow = 4, ncol = 9, byrow = T), # 2016 GP: (0.8+0.552)/2
   RR_ART_CD4200 = 5.39,
-  phi2 = c(0.105360516, rep_len(0.025,8)), # former sex workers drop out rate??!
-  phi3 = c(0.105360516, rep_len(0.025,8)),
-  phi4 = c(0.105360516, rep_len(0.025,8)),
-  phi5 = c(0.105360516, rep_len(0.025,8)),
-  ART_RR = (1.3+3.45)/2,
+  # phi2 = c(0.105360516, rep_len(0.025,8)), # former sex workers drop out rate??!
+  # phi3 = c(0.105360516, rep_len(0.025,8)),
+  # phi4 = c(0.105360516, rep_len(0.025,8)),
+  # phi5 = c(0.105360516, rep_len(0.025,8)),
 
   #CONDOM
 
@@ -1572,15 +1572,11 @@ ranges = rbind(
   eP1b = c(0, 0.9), # prep efficacy intermediate adherence
   eP1c = c(0, 0), # prep efficacy poor adherence
 
-  SC_to_200_349 = c(2.2, 4.6),
-  gamma04 = c(3.9, 5),
 
-  alpha03 = c(0.03, 0.07),
-  alpha04 = c(0.05, 0.12),
-  alpha05 = c(0.23, 0.33),
+  alpha03 = c(0.01, 0.05),
 
-  ART_RR = c(1.3, 3.45),
   dropout_rate_not_FSW = c(0.0233, 0.274),
+  dropout_rate_FSW = c(0.0233, 0.274),
 
 
   # condoms

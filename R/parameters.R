@@ -289,6 +289,8 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   #dur_primary_phase, dur_200_349 input as a DURATION
   #SC_to_death input as a duration
 
+  y$ART_RR_mort = y$ART_RR_prog
+
   y$gamma01 = 1/y$dur_primary_phase
   y$gamma02 = 2/(y$SC_to_death - y$dur_primary_phase - y$dur_200_349 - y$dur_below_200)
   y$gamma03 = y$gamma02
@@ -399,7 +401,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     y$eP1d = c(y$eP1d, rep_len(0, 8))
 
 
-  y$phi2 = c(y$phi2[1], rep(y$dropout_rate_not_FSW, (Ncat-1)))
+  y$phi2 = c(y$dropout_rate_FSW, rep(y$dropout_rate_not_FSW, (Ncat-1)))
   y$phi3 = y$phi2
   y$phi4 = y$phi2
   y$phi5 = y$phi2
@@ -691,6 +693,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     beta_above_1 = 0,
     ignore_ranges_fc_c = 0,
     dropout_rate_not_FSW = 0.025,
+    dropout_rate_FSW = 0.025,
+
     delete = 0,
     nu = 0.02222222,
     PrEPOnOff = 0,
@@ -769,14 +773,13 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     dur_primary_phase = c(0.16, 0.5), # from Mathieu's parameters  IN YEARS
     #     dur_primary_phase = c(2, 6.25), # from Mathieu's parameters
 
-    SC_to_death = c(2.2, 4.6), # seroconversion to CD4 stage 4 IN YEARS
-    #     SC_to_death = c(1/4.6, 1/2.2), # seroconversion to CD4 stage 4
+    SC_to_death = c(8.7, 12.3),
 
     dur_200_349 = c(3.9, 5), # from Mathieu's parameters  IN YEARS
     #     dur_200_349 = c(3.9, 5), # from Mathieu's parameters
 
-    ART_RR_prog = c(2, 3), # from Mathieu's parameters  IN YEARS
-    ART_RR_mort = c(2, 3), # from Mathieu's parameters  IN YEARS
+    ART_RR_prog = c(8.8, 12.1),
+    # ART_RR_mort = c(2, 3),
 
     # omega,
 
@@ -967,6 +970,8 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     beta_above_1 = 0,
     ignore_ranges_fc_c = 0,
     dropout_rate_not_FSW = 0.025,
+    dropout_rate_FSW = 0.025,
+
     delete = 0,
     nu = 0.02222222,
     PrEPOnOff = 0,
@@ -1046,14 +1051,13 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     dur_primary_phase = c(0.16, 0.5), # from Mathieu's parameters  IN YEARS
     #     dur_primary_phase = c(2, 6.25), # from Mathieu's parameters
 
-    SC_to_death = c(2.2, 4.6), # seroconversion to CD4 stage 4 IN YEARS
-    #     SC_to_death = c(1/4.6, 1/2.2), # seroconversion to CD4 stage 4
+    SC_to_death = c(8.7, 12.3),
 
     dur_200_349 = c(3.9, 5), # from Mathieu's parameters  IN YEARS
     #     dur_200_349 = c(3.9, 5), # from Mathieu's parameters
 
-    ART_RR_prog = c(2, 3), # from Mathieu's parameters  IN YEARS
-    ART_RR_mort = c(2, 3), # from Mathieu's parameters  IN YEARS
+    ART_RR_prog = c(8.8, 12.1),
+    # ART_RR_mort = c(2, 3),
 
     # omega,
 
@@ -1336,8 +1340,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    kappa1 = c(0.2, rep_len(0,(Ncat-1))),
 
 
-                   alpha01 = rep_len(0.01,Ncat),
-                   alpha02 = rep_len(0.01,Ncat),
+                   alpha01 = rep_len(0,Ncat),
+                   alpha02 = rep_len(0,Ncat),
                    alpha03 = 0.03,
                    alpha04 = 0.07,
                    dur_below_200 = rep_len(0.3, Ncat),
@@ -1430,8 +1434,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
                    #                    p = matrix(1, NAge, NAge),
 
-                   ART_RR_prog = 2.5, # survival extension cofactor
-                   ART_RR_mort = 2.5, # survival extension cofactor
+                   ART_RR_prog = 10, # survival extension cofactor
+                   # ART_RR_mort = 2.5, # survival extension cofactor
 
                    infect_ART = c(0, rep_len(0, 8)),
                    infect_acute = 9, # RR for acute phase
@@ -1487,6 +1491,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    beta_above_1 = 0,
                    ignore_ranges_fc_c = 0,
                    dropout_rate_not_FSW = 0.025,
+                   dropout_rate_FSW = 0.025,
+
                    delete = 0,
                    nu = 0.02222222,
                    fPa = 0.5,

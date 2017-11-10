@@ -106,7 +106,7 @@ test_that("omega keeps consistent population?", {
   xx <- result[grep("frac_N", names(result))] # grepping all the Ss and Is
 
 
-  expect_true(all(abs(diff(xx$frac_N))<10^-12))
+  expect_true(all(abs(diff(xx$frac_N))<10^-5))
   expect_equal(as.numeric(xx$frac_N[1,]), as.numeric(xx$frac_N[2,]))
 })
 
@@ -122,7 +122,7 @@ test_that("omega keeps consistent population even with HIV? recruitment to PrEP 
   xx <- result[grep("frac_N", names(result))] # grepping all the Ss and Is
 
 
-  expect_true(all(abs(diff(xx$frac_N))<10^-12))
+  expect_true(all(abs(diff(xx$frac_N))<10^-5))
   expect_equal(as.numeric(xx$frac_N[1,]), as.numeric(xx$frac_N[2,]))
 })
 
@@ -1518,10 +1518,10 @@ test_that("ART vs prevalence", {
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
-  xx <- result[c(grep("I[0-9][0-9]", names(result)))]
+  xx <- result[c(grep("cumuInf", names(result)))]
   N1 <- rowSums(do.call(cbind, xx))
 
-  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(ART_prob_y =  x$ART_prob_y * 0.5)))
+  parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(rho =  x$rho * 0.5)))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 

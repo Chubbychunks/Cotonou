@@ -98,9 +98,10 @@ best_set_default = list(
   eP1b = c(0.45, rep_len(0, 8)),
   eP1c = c(0, rep_len(0, 8)),
   eP1d = c(0, rep_len(0, 8)),
-  dur_primary_phase = 0.4166667, #years
+
+  dur_primary_phase = 0.4166667, # years
   SC_to_death = 10,
-  dur_200_349 = 4.45, #years
+  dur_200_349 = 4.45, # years
 
   kappaa = rep(0.2, 9),
   kappab = rep(0.2, 9),
@@ -110,8 +111,8 @@ best_set_default = list(
 
   alpha01 = rep_len(0, 9),
   alpha02 = rep_len(0, 9),
-  alpha03 = rep_len(0.05, 9),
-  alpha04 = rep_len(0.08, 9),
+  alpha03 = 0.03,
+  alpha04 = 0.07,
   dur_below_200 = rep_len(0.27, 9), #1/2.9
   alpha11 = rep_len(0, 9),
   alpha22 = rep_len(0, 9),
@@ -185,8 +186,8 @@ best_set_default = list(
   phi3 = c(0.105360516, rep_len(0.025,8)),
   phi4 = c(0.105360516, rep_len(0.025,8)),
   phi5 = c(0.105360516, rep_len(0.025,8)),
-  ART_RR_prog = (1.3+3.45)/2,
-  ART_RR_mort = (1.3+3.45)/2,
+  ART_RR_prog = 10,
+  # ART_RR_mort = (1.3+3.45)/2,
 
   #CONDOM
 
@@ -439,6 +440,8 @@ best_set_default = list(
   rate_leave_low_FSW = 0.1,
   rate_leave_client = 0.05,
   dropout_rate_not_FSW = 0.025,
+  dropout_rate_FSW = 0.025,
+
   replaceDeaths = 0,
   movement = 1,
 
@@ -566,17 +569,19 @@ ranges_default = rbind(
   eP1b = c(0, 0.9), # prep efficacy intermediate adherence
   eP1c = c(0, 0), # prep efficacy poor adherence
 
-  SC_to_death = c(2.2, 4.6),
+  SC_to_death = c(8.7, 12.3),
   dur_200_349 = c(3.9, 5),
 
   alpha03 = c(0.03, 0.07),
   alpha04 = c(0.05, 0.12),
   dur_below_200 = c(0.23, 0.33),
 
-  ART_RR_prog = c(1.3, 3.45),
-  ART_RR_mort = c(1.3, 3.45),
+  ART_RR_prog = c(8.8, 12.1),
+  # ART_RR_mort = c(1.3, 3.45),
 
   dropout_rate_not_FSW = c(0.0233, 0.274),
+  dropout_rate_FSW = c(0.0233, 0.274),
+
 
 
   # condoms

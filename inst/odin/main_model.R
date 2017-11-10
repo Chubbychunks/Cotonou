@@ -439,7 +439,6 @@ output(iota[]) = iota
 
 iota[] = user()
 
-RR_ART_CD4200 = user()
 
 # rho[] = -log(1-ART_prob[i])
 
