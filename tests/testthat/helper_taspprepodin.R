@@ -442,8 +442,11 @@ best_set_default = list(
   replaceDeaths = 0,
   movement = 1,
 
-  ART_recruit_rate_rest = 0.2,
-  ART_reinit_rate_FSW = 0.25
+  ART_recruit_rate_rest = 0.25,
+  ART_recruit_rate_FSW = 0.25,
+
+  ART_reinit_rate_FSW = 0.2,
+  ART_reinit_rate_rest = 0.2
 
 )
 
