@@ -99,7 +99,7 @@ best_set_default = list(
   eP1c = c(0, rep_len(0, 8)),
   eP1d = c(0, rep_len(0, 8)),
   gamma01 = 0.4166667, #years
-  SC_to_200_349 = 3.4,
+  SC_to_death = 3.4,
   gamma04 = 4.45, #years
 
   kappaa = rep(0.2, 9),
@@ -566,7 +566,7 @@ ranges_default = rbind(
   eP1b = c(0, 0.9), # prep efficacy intermediate adherence
   eP1c = c(0, 0), # prep efficacy poor adherence
 
-  SC_to_200_349 = c(2.2, 4.6),
+  SC_to_death = c(2.2, 4.6),
   gamma04 = c(3.9, 5),
 
   alpha03 = c(0.03, 0.07),

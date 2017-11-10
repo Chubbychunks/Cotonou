@@ -287,16 +287,16 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   # BIOLOGICAL
 
   #gamma01, gamma04 input as a DURATION
-  #SC_to_200_349 input as a duration
+  #SC_to_death input as a duration
 
   # parameters dependent on others
-  prog_rate = 2/(y$SC_to_200_349 - y$gamma01)
+  prog_rate = 2/(y$SC_to_death - y$gamma01)
   y$gamma02 = rep_len(prog_rate, Ncat)
   y$gamma03 = rep_len(prog_rate, Ncat)
 
   # converting durations into rates
   y$gamma01 = 1/y$gamma01
-  y$SC_to_200_349 = 1/y$SC_to_200_349
+  y$SC_to_death = 1/y$SC_to_death
   y$gamma04 = 1/y$gamma04
 
   # filling in other parameters
@@ -776,8 +776,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     gamma01 = c(0.16, 0.5), # from Mathieu's parameters  IN YEARS
     #     gamma01 = c(2, 6.25), # from Mathieu's parameters
 
-    SC_to_200_349 = c(2.2, 4.6), # seroconversion to CD4 stage 4 IN YEARS
-    #     SC_to_200_349 = c(1/4.6, 1/2.2), # seroconversion to CD4 stage 4
+    SC_to_death = c(2.2, 4.6), # seroconversion to CD4 stage 4 IN YEARS
+    #     SC_to_death = c(1/4.6, 1/2.2), # seroconversion to CD4 stage 4
 
     gamma04 = c(3.9, 5), # from Mathieu's parameters  IN YEARS
     #     gamma04 = c(3.9, 5), # from Mathieu's parameters
@@ -1053,8 +1053,8 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     gamma01 = c(0.16, 0.5), # from Mathieu's parameters  IN YEARS
     #     gamma01 = c(2, 6.25), # from Mathieu's parameters
 
-    SC_to_200_349 = c(2.2, 4.6), # seroconversion to CD4 stage 4 IN YEARS
-    #     SC_to_200_349 = c(1/4.6, 1/2.2), # seroconversion to CD4 stage 4
+    SC_to_death = c(2.2, 4.6), # seroconversion to CD4 stage 4 IN YEARS
+    #     SC_to_death = c(1/4.6, 1/2.2), # seroconversion to CD4 stage 4
 
     gamma04 = c(3.9, 5), # from Mathieu's parameters  IN YEARS
     #     gamma04 = c(3.9, 5), # from Mathieu's parameters
@@ -1449,7 +1449,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
 
                    # have to include the follow in the function for it to work just using generate_parameters(), and not lhs_parameters()
-                   SC_to_200_349 = rep_len(0.3, Ncat),
+                   SC_to_death = rep_len(0.3, Ncat),
                    prev_init_FSW = 0.04,
                    prev_init_rest = 0.0008,
                    rate_leave_pro_FSW = 0.2,
