@@ -1831,7 +1831,7 @@ variable = c("Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
 
 
 
-result <- run_model_with_fit_multiple(batch_size, number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs,
+result <- cotonou::run_model_with_fit_multiple(batch_size, number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs,
                                                          prev_points = prev_points_FSW_only_even_less_2, frac_N_discard_points = frac_N_discard_points,
                                                          Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points_FSW)
 

@@ -698,8 +698,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     prev_HSV2_Client = 1,
     prev_HSV2_GPF = 1,
     prev_HSV2_GPM = 1,
-    RR_beta_HSV2_comm_t = 2,
-    RR_beta_HSV2_noncomm_t = 2,
+    RR_beta_HSV2_comm_t = 1,
+    RR_beta_HSV2_noncomm_t = 1,
     RR_beta_HSV2_comm_a = 2,
     RR_beta_HSV2_noncomm_a = 2,
 
@@ -875,7 +875,7 @@ delete_parameter_sets <- function(x) {
                      ifelse(((x$c_comm_1985[1] * x$N_init[1] + x$c_comm_1985[2] * x$N_init[2])/ (x$c_comm_1985[5])) > (0.4 * sum(c(x$N_init[5], x$N_init[6], x$N_init[8]))) && (x$init_clientN_from_PCR == 1), 1,
 
                             # if believing client partner change rates, we are now also believing pro FSW and altering low FSW. killing runs where frac of low fsw is too low
-                            ifelse(((x$c_comm_1985[5] * x$N_init[5] - x$c_comm_1985[2] * x$N_init[2])/ (x$c_comm_1985[1])) < (0.001237599* sum(x$N_init)) && (x$init_clientN_from_PCR == 0), 1, 0)))
+                            ifelse(((x$c_comm_1985[5] * x$N_init[5] - x$c_comm_1985[2] * x$N_init[2])/ (x$c_comm_1985[1])) < (0* sum(x$N_init)) && (x$init_clientN_from_PCR == 0), 1, 0)))
 
   return(x)
 }
@@ -1509,8 +1509,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    prev_HSV2_Client = 1,
                    prev_HSV2_GPF = 1,
                    prev_HSV2_GPM = 1,
-                   RR_beta_HSV2_comm_t = 2,
-                   RR_beta_HSV2_noncomm_t = 2,
+                   RR_beta_HSV2_comm_t = 1,
+                   RR_beta_HSV2_noncomm_t = 1,
                    RR_beta_HSV2_comm_a = 2,
                    RR_beta_HSV2_noncomm_a = 2,
 
