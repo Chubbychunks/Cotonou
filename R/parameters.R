@@ -286,28 +286,20 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
   # BIOLOGICAL
 
-  #gamma01, gamma04 input as a DURATION
+  #dur_primary_phase, dur_200_349 input as a DURATION
   #SC_to_death input as a duration
 
-  # parameters dependent on others
-  prog_rate = 2/(y$SC_to_death - y$gamma01)
-  y$gamma02 = rep_len(prog_rate, Ncat)
-  y$gamma03 = rep_len(prog_rate, Ncat)
+  y$gamma01 = 1/y$dur_primary_phase
+  y$gamma02 = 2/(y$SC_to_death - y$dur_primary_phase - y$dur_200_349 - y$dur_below_200)
+  y$gamma03 = y$gamma02
+  y$gamma04 = 1/y$dur_200_349
 
-  # converting durations into rates
-  y$gamma01 = 1/y$gamma01
-  y$SC_to_death = 1/y$SC_to_death
-  y$gamma04 = 1/y$gamma04
-
-  # filling in other parameters
   y$gamma01 <- rep_len(y$gamma01, Ncat)
+  y$gamma02 <- rep_len(y$gamma02, Ncat)
+  y$gamma03 <- rep_len(y$gamma03, Ncat)
   y$gamma04 <- rep_len(y$gamma04, Ncat)
 
   y$gamma11 <- y$gamma01 # loss to follow up same as normal movement?
-
-  y$alpha03 <- rep_len(y$alpha03, Ncat)
-  y$alpha04 <- rep_len(y$alpha04, Ncat)
-  y$alpha05 <- rep_len(y$alpha05, Ncat)
 
 
   y$gamma22 <- y$gamma02
@@ -318,6 +310,19 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$gamma43 <- y$gamma03
   y$gamma44 <- y$gamma04
 
+  # progression is slowed by ART_RR
+  y$gamma32 <- (y$gamma02)/y$ART_RR_prog
+  y$gamma33 <- (y$gamma03)/y$ART_RR_prog
+  y$gamma34 <- (y$gamma04)/y$ART_RR_prog
+
+
+  # mortality
+  y$alpha03 <- rep_len(y$alpha03, Ncat)
+  y$alpha04 <- rep_len(y$alpha04, Ncat)
+
+  y$alpha05 <- 1/y$dur_below_200
+  y$alpha05 <- rep_len(y$alpha05, Ncat)
+
   y$alpha23 <- y$alpha03
   y$alpha24 <- y$alpha04
   y$alpha25 <- y$alpha05
@@ -326,23 +331,11 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$alpha44 <- y$alpha04
   y$alpha45 <- y$alpha05
 
-  # progression is slowed by ART_RR
-
-  y$gamma32 <- (y$gamma02)/y$ART_RR_prog
-  y$gamma33 <- (y$gamma03)/y$ART_RR_prog
-  y$gamma34 <- (y$gamma04)/y$ART_RR_prog
-
   y$alpha33 <- (y$alpha03)/y$ART_RR_mort
   y$alpha34 <- (y$alpha04)/y$ART_RR_mort
   y$alpha35 <- (y$alpha05)/y$ART_RR_mort
 
 
-  # print(y$fc_y_comm_1993)
-  #   fc_y_comm = array(c(c(y$fc_y_comm_1985), c(y$fc_y_comm_1993),
-  #                       c(y$fc_y_comm_1995), c(y$fc_y_comm_1998),
-  #                       c(y$fc_y_comm_2002), c(y$fc_y_comm_2005),
-  #                       c(y$fc_y_comm_2008), c(y$fc_y_comm_2012),
-  #                       c(y$fc_y_comm_2015)), c(Ncat, Ncat, 9))
 
   # PCR
 
@@ -616,7 +609,7 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
 
     fraction_FSW_foreign = 0,
     movement = 1,
-    alpha05 = rep_len(0.3,Ncat),
+    dur_below_200 = rep_len(0.3,Ncat),
     fc_y_comm_1985 = matrix(0.2, Ncat, Ncat),
     fc_y_comm_1993 = matrix(0.5, Ncat, Ncat),
     fc_y_comm_1995 = matrix(0.7, Ncat, Ncat),
@@ -772,15 +765,15 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     eff_ART = c(0.96, 1), # infectiousness RR when on ART
     infect_acute = c(4, 18), # RR for acute phase
 
-    # gamma01 = c(1/0.5, 1/0.16), # rate
-    gamma01 = c(0.16, 0.5), # from Mathieu's parameters  IN YEARS
-    #     gamma01 = c(2, 6.25), # from Mathieu's parameters
+    # dur_primary_phase = c(1/0.5, 1/0.16), # rate
+    dur_primary_phase = c(0.16, 0.5), # from Mathieu's parameters  IN YEARS
+    #     dur_primary_phase = c(2, 6.25), # from Mathieu's parameters
 
     SC_to_death = c(2.2, 4.6), # seroconversion to CD4 stage 4 IN YEARS
     #     SC_to_death = c(1/4.6, 1/2.2), # seroconversion to CD4 stage 4
 
-    gamma04 = c(3.9, 5), # from Mathieu's parameters  IN YEARS
-    #     gamma04 = c(3.9, 5), # from Mathieu's parameters
+    dur_200_349 = c(3.9, 5), # from Mathieu's parameters  IN YEARS
+    #     dur_200_349 = c(3.9, 5), # from Mathieu's parameters
 
     ART_RR_prog = c(2, 3), # from Mathieu's parameters  IN YEARS
     ART_RR_mort = c(2, 3), # from Mathieu's parameters  IN YEARS
@@ -900,7 +893,7 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
 
     fraction_FSW_foreign = 0,
     movement = 1,
-    alpha05 = rep_len(0.3,Ncat),
+    dur_below_200 = rep_len(0.3,Ncat),
     fc_y_comm_1985 = matrix(0.2, Ncat, Ncat),
     fc_y_comm_1993 = matrix(0.5, Ncat, Ncat),
     fc_y_comm_1995 = matrix(0.7, Ncat, Ncat),
@@ -1049,15 +1042,15 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     eff_ART = c(0.96, 1), # infectiousness RR when on ART
     infect_acute = c(4, 18), # RR for acute phase
 
-    # gamma01 = c(1/0.5, 1/0.16), # rate
-    gamma01 = c(0.16, 0.5), # from Mathieu's parameters  IN YEARS
-    #     gamma01 = c(2, 6.25), # from Mathieu's parameters
+    # dur_primary_phase = c(1/0.5, 1/0.16), # rate
+    dur_primary_phase = c(0.16, 0.5), # from Mathieu's parameters  IN YEARS
+    #     dur_primary_phase = c(2, 6.25), # from Mathieu's parameters
 
     SC_to_death = c(2.2, 4.6), # seroconversion to CD4 stage 4 IN YEARS
     #     SC_to_death = c(1/4.6, 1/2.2), # seroconversion to CD4 stage 4
 
-    gamma04 = c(3.9, 5), # from Mathieu's parameters  IN YEARS
-    #     gamma04 = c(3.9, 5), # from Mathieu's parameters
+    dur_200_349 = c(3.9, 5), # from Mathieu's parameters  IN YEARS
+    #     dur_200_349 = c(3.9, 5), # from Mathieu's parameters
 
     ART_RR_prog = c(2, 3), # from Mathieu's parameters  IN YEARS
     ART_RR_mort = c(2, 3), # from Mathieu's parameters  IN YEARS
@@ -1197,10 +1190,10 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
 
                    mu = rep_len(0.02, Ncat),
-                   gamma01 = rep_len(0.2, Ncat),
+                   dur_primary_phase = 0.3,
                    gamma02 = rep_len(0.2, Ncat),
                    gamma03 = rep_len(0.2, Ncat),
-                   gamma04 = rep_len(0.2, Ncat),
+                   dur_200_349 = 3,
 
                    gamma11 = rep_len(0.2, Ncat),
 
@@ -1345,9 +1338,9 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
                    alpha01 = rep_len(0.01,Ncat),
                    alpha02 = rep_len(0.01,Ncat),
-                   alpha03 = rep_len(0.01,Ncat),
-                   alpha04 = rep_len(0.01,Ncat),
-                   alpha05 = rep_len(0.3, Ncat),
+                   alpha03 = 0.03,
+                   alpha04 = 0.07,
+                   dur_below_200 = rep_len(0.3, Ncat),
 
                    alpha11 = rep_len(0.01,Ncat),
 
@@ -1449,7 +1442,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
 
                    # have to include the follow in the function for it to work just using generate_parameters(), and not lhs_parameters()
-                   SC_to_death = rep_len(0.3, Ncat),
+                   SC_to_death = 10,
                    prev_init_FSW = 0.04,
                    prev_init_rest = 0.0008,
                    rate_leave_pro_FSW = 0.2,
