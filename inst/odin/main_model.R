@@ -642,6 +642,15 @@ ART_coverage_all = (I32[1] + I33[1] + I34[1] + I35[1] +
      I22[6] + I23[6] + I24[6] + I25[6] + I32[6] + I33[6] + I34[6] + I35[6] +
      I42[6] + I43[6] + I44[6] + I45[6])
 
+Men_on_ART = (I32[5] + I33[5] + I34[5] + I35[5] +
+                I32[6] + I33[6] + I34[6] + I35[6])
+Women_on_ART = (I32[1] + I33[1] + I34[1] + I35[1] +
+                  I32[2] + I33[2] + I34[2] + I35[2] +
+                  I32[3] + I33[3] + I34[3] + I35[3] +
+                  I32[4] + I33[4] + I34[4] + I35[4])
+
+output(Men_on_ART) = Men_on_ART
+output(Women_on_ART) = Women_on_ART
 
 output(ART_coverage_men) = ART_coverage_men
 output(ART_coverage_women) = ART_coverage_women

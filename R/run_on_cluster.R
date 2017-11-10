@@ -129,6 +129,10 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
     }
   }
 
+  ART_ratio = x$Women_on_ART/x$Men_on_ART
+  if(all(ART_ratio[!is.na(ART_ratio)] > 1 & ART_ratio[!is.na(ART_ratio)] < 2))
+    likelihood_count <- likelihood_count + 1
+
   return (list(likelihood_count, prev_fits))
   # return (list(likelihood_count, frac_count))
 
