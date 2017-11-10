@@ -597,7 +597,7 @@ ranges_default = rbind(
   fc_y_noncomm_1998_GPF_GPM = c(0.0326087, 0.05042017),
   fc_y_noncomm_2011_GPF_GPM = c(0.161, 0.255),
 
-  viral_supp_y_2014_ProFSW = c(0.91, 0.92),
+  viral_supp_y_2015_ProFSW = c(0.91, 0.92),
   viral_supp_y_1986_rest = c(0.1, 0.2),
   ART_eff = c(0.96, 1),
 

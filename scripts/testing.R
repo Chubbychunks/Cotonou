@@ -982,7 +982,7 @@ time <- seq(epi_start, epi_end, length.out = epi_end - epi_start + 1)
 
 
 best_set = list(
-  init_clientN_from_PCR=0,
+  init_clientN_from_PCR = 0,
   initial_Ntot = 286114,
 
   frac_women_ProFSW = 0.0024,
@@ -995,12 +995,15 @@ best_set = list(
 
   prev_init_FSW = 0.0326,
   prev_init_rest = 0.0012,
+
+  nu = 0.022,
+
   # N_init = c(672, 757, 130895, 672, 27124, 100305, 14544, 11145, 0),
   # fraction_F = 0.5,
   fraction_F = 0.515666224,
 
-  epsilon_1985 = 0.059346131 * 1.5,
-  epsilon_1992 = 0.053594832 * 1.5,
+  epsilon_1985 = 0.08,
+  epsilon_1992 = 0.08,
   epsilon_2002 = 0.026936907 * 1.5,
   epsilon_2013 = 0.026936907 * 1.5,
   epsilon_2016 = 0.026936907 * 1.5,
@@ -1128,6 +1131,13 @@ best_set = list(
   # phi5 = c(0.105360516, rep_len(0.025,8)),
 
   #CONDOM
+
+  fc_y_comm_1985_ProFSW_Client = 0,
+
+  fc_y_noncomm_1985_ProFSW_Client = 0,
+
+
+  fc_y_noncomm_1985_GPF_GPM = 0,
 
   fc_y_comm_1985 = matrix(
     c(0, 0, 0, 0, 0.145524, 0, 0, 0, 0, # 0.145524 is using John's FSW condom 1989 as prop of 1993, * our measure of 1993
@@ -1462,16 +1472,24 @@ best_set = list(
 ranges = rbind(
 
   # MISC
-  init_clientN_from_PCR = c(0,0),
+  # init_clientN_from_PCR = c(0,0),
   who_believe_comm = c(0, 1),
+
+  # growth rates
+  # epsilon_1985 = c(0.08, 0.08),
+  # epsilon_1992 = c(0.08, 0.08),
+  epsilon_2002 = c(0.06, 0.07),
+  epsilon_2013 = c(0.04, 0.06),
+  epsilon_2016 = c(0.04, 0.06),
+
 
   # DEMOGRAPHIC
 
   fraction_F = c(0.512, 0.52), # fraction of population born female
-  frac_women_ProFSW = c(0.0024, 0.0143), # fraction of women that are professional FSW
-  frac_women_LowFSW = c(2, 5), # relative abundance of low FSW relative to pro FSW
+  frac_women_ProFSW = c(0.0024, 0.00715), # fraction of women that are professional FSW
+  frac_women_LowFSW = c(1, 5), # relative abundance of low FSW relative to pro FSW
 
-  frac_men_client = c(0.151, 0.4), # fraction of men that are clients
+  frac_men_client = c(0.074, 0.3), # fraction of men that are clients
   frac_women_virgin = c(0.079, 0.2), # fraction of women that are virgins
   frac_men_virgin = c(0.070, 0.17), # fraction of men that are virgins
 
@@ -1479,25 +1497,20 @@ ranges = rbind(
   prev_init_rest = c(0.000313, 0.00294), # initial prevalence of the other groups
 
 
-  # growth rates
-  epsilon_1985 = c(0.08, 0.08),
-  epsilon_1992 = c(0.08, 0.08),
-  epsilon_2002 = c(0.06, 0.07),
-  epsilon_2013 = c(0.04, 0.06),
-  epsilon_2016 = c(0.04, 0.06),
 
-  muF = c(0.01851852, 0.025), # female mortality
-  muM = c(0.01851852, 0.025), # male mortality
 
-  rate_leave_pro_FSW = c(0, 1), # rate of exit of professional sex work
-  rate_leave_low_FSW = c(0, 1), # rate of exit of low level sex work
+  muF = c(0.0187, 0.02), # female mortality
+  muM = c(0.0194, 0.022), # male mortality
+
+  rate_leave_pro_FSW = c(0, 0.55), # rate of exit of professional sex work
+  # rate_leave_low_FSW = c(0, 1), # rate of exit of low level sex work
 
   fraction_FSW_foreign = c(0.5, 0.9),
 
-  rate_leave_client = c(0, 0.189), # rate of exit of clients
+  rate_leave_client = c(0, 0.295), # rate of exit of clients
 
-  rate_enter_sexual_pop_F = c(1/(20-15), 1/(17-15)), # rate of entering sexual population women
-  rate_enter_sexual_pop_M = c(1/(20-15), 1/(17-15)), # rate of entering sexual population men
+  rate_enter_sexual_pop_F = c(0.2, 0.5), # rate of entering sexual population women
+  rate_enter_sexual_pop_M = c(0.2, 0.5), # rate of entering sexual population men
 
   fraction_sexually_active_15_F = c(0.119, 0.17), # fraction of 15 year old women sexually active
   fraction_sexually_active_15_M = c(0.18, 0.35), # fraction of 15 year old men sexually active
@@ -1513,7 +1526,7 @@ ranges = rbind(
   c_comm_1993_LowFSW = c(26, 78),
 
 
-  c_comm_1998_Client = c(8.39, 11.9),
+  c_comm_1998_Client = c(8.4, 11.9),
   # c_comm_2012_Client = c(11.8, 15),
   # c_comm_2015_Client = c(14.5, 19.8),
 
@@ -1522,7 +1535,7 @@ ranges = rbind(
   #non commercial partnerships
   c_noncomm_1985_ProFSW = c(0.31, 0.86),
   c_noncomm_1985_LowFSW = c(0.41, 1.04),
-  c_noncomm_1985_Client = c(1.6, 7.9),
+  c_noncomm_1985_Client = c(1.6, 3.3),
 
 
 
@@ -1534,18 +1547,19 @@ ranges = rbind(
 
 
   # sex acts per partnership comm
-  n_y_comm_1985_ProFSW_Client = c(1, 10.23),
-  n_y_comm_1985_Client_ProFSW = c(1.45, 11.45),
+  n_y_comm_1985_ProFSW_Client = c(1, 3.3),
+  # n_y_comm_1985_Client_ProFSW = c(1.45, 11.45),
 
-  n_y_comm_1985_LowFSW_Client = c(1, 1),
-  n_y_comm_1985_Client_LowFSW = c(1, 1),
+  # n_y_comm_1985_LowFSW_Client = c(1, 1),
+  # n_y_comm_1985_Client_LowFSW = c(1, 1),
 
   # sex acts per partnership noncomm
 
   n_y_noncomm_2002_ProFSW_Client = c(13, 20),
-  # n_y_noncomm_2015_ProFSW_Client = c(38.2, 60),
-  n_y_noncomm_1985_GPF_GPM = c(29, 43.7),
-  n_y_noncomm_1985_GPM_GPF = c(19.4, 46.7),
+  n_y_noncomm_2015_ProFSW_Client = c(38.2, 60),
+
+  n_y_noncomm_1985_GPF_GPM = c(39, 78),
+  # n_y_noncomm_1985_GPM_GPF = c(19.4, 46.7),
 
 
   #BETA
@@ -1553,44 +1567,76 @@ ranges = rbind(
   RR_beta_FtM = c(0.53, 2), # RR for transmission female to male
   RR_beta_HSV2_comm = c(1.4, 2.1), # RR for commercial sex acts where the susceptible individual is infected HSV2
   RR_beta_HSV2_noncomm = c(2.2, 3.4), # RR for non commercial sex acts where the susceptible individual is infected HSV2
-  prev_HSV2_FSW = c(0.8687271, 0.9403027), # prevalence HSV2 in FSW
-  prev_HSV2_Client = c(0.14, 0.8687271), # prevalence HSV2 in clients
-  prev_HSV2_GPF = c(0.2666742, 0.3236852), # prevalence of HSV2 in GPF
-  prev_HSV2_GPM = c(0.09843545, 0.14108970), # prevalence of HSV2 in GPM
+  prev_HSV2_FSW = c(0.87, 0.94), # prevalence HSV2 in FSW
+  prev_HSV2_Client = c(0.18, 0.28), # prevalence HSV2 in clients
+  prev_HSV2_GPF = c(0.27, 0.32), # prevalence of HSV2 in GPF
+  prev_HSV2_GPM = c(0.098, 0.14), # prevalence of HSV2 in GPM
   RR_beta_circum = c(0.34, 0.72), # RR for transmission if susceptible individual is circumcised
 
 
   # Progression parameters
 
-  infect_acute = c(4.47, 18.81), # RR for transmission rate if infected is acute stage
-  infect_AIDS = c(4.45, 11.88), # RR for transmission rate if infected is in AIDS stage
+  infect_acute = c(4.5, 18.8), # RR for transmission rate if infected is acute stage
+  infect_AIDS = c(4.5, 11.9), # RR for transmission rate if infected is in AIDS stage
 
-  infect_ART = c(0.26 * 0.523, 0.99 * 0.523), # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
+  ART_eff = c(0.96, 1), # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
+
+  viral_supp_y_1986_rest = c(0.4, 0.85),
+  viral_supp_y_2015_ProFSW = c(0.6, 0.85),
 
   ec = c(0.58, 0.95), # condom efficacy
-  eP1a = c(0.9, 0.9), # prep efficacy perfect adherence
+
+  # eP1a = c(0.9, 0.9), # prep efficacy perfect adherence
   eP1b = c(0, 0.9), # prep efficacy intermediate adherence
-  eP1c = c(0, 0), # prep efficacy poor adherence
+  # eP1c = c(0, 0), # prep efficacy poor adherence
+
+
+  SC_to_death = c(8.7, 12.3),
+  dur_primary_phase = c(0.25, 0.42),
+  dur_200_349 = c(2.3, 4.4),
+  dur_below_200 = c(0.58, 3.17),
 
 
   alpha03 = c(0.01, 0.05),
+  alpha04 = c(0.03, 0.1),
 
-  dropout_rate_not_FSW = c(0.0233, 0.274),
-  dropout_rate_FSW = c(0.0233, 0.274),
+  ART_RR_prog = c(8.8, 12.1),
+
+  RR_test_CD4200 = c(1, 6),
+
+  ART_recruit_rate_FSW = c(0.5, 1.5),
+  ART_recruit_rate_rest = c(0.5, 1.5),
+
+
+
+
+
+
+  dropout_rate_not_FSW = c(0.0233, 0.11),
+  dropout_rate_FSW = c(0.0233, 0.11),
+
+  ART_reinit_rate_FSW = c(0.25, 1.5),
+  ART_reinit_rate_rest = c(0.25, 1.5),
 
 
   # condoms
 
-  fc_y_comm_1985_ProFSW_Client = c(0, 0),
-  fc_y_comm_1993_ProFSW_Client = c(0.535, 0.687),
-  fc_y_comm_2002_ProFSW_Client = c(0.536, 0.992),
+  # fc_y_comm_1985_ProFSW_Client = c(0, 0),
+  fc_y_comm_1985_ProFSW_Client = c(0.54, 0.69),
+  fc_y_comm_1998_ProFSW_Client = c(0.54, 0.99),
 
-  fc_y_noncomm_1985_ProFSW_Client = c(0, 0),
+  fc_y_comm_1985_LowFSW_Client = 0,
+  fc_y_comm_2015_LowFSW_Client = 0.37,
+
+  fc_y_noncomm_1985_ProFSW_Client = 0,
+
   fc_y_noncomm_2002_ProFSW_Client = c(0.19, 0.62),
 
+
+
   fc_y_noncomm_1985_GPF_GPM = 0,
-  fc_y_noncomm_1998_GPF_GPM = c(0.0326087, 0.05042017),
-  fc_y_noncomm_2011_GPF_GPM = c(0.161, 0.255)
+  fc_y_noncomm_1998_GPF_GPM = c(0.033, 0.05),
+  fc_y_noncomm_2011_GPF_GPM = c(0.16, 0.26)
 
 
 

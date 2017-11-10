@@ -31,9 +31,10 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
 
     # getting low fsw condom with client for comm and noncomm partnerships same as pro fsw
-    y$fc_y_comm_1985_LowFSW_Client = y$fc_y_comm_1985_ProFSW_Client
-    y$fc_y_comm_1993_LowFSW_Client = y$fc_y_comm_1993_ProFSW_Client
-    y$fc_y_comm_2002_LowFSW_Client = y$fc_y_comm_2002_ProFSW_Client
+    # y$fc_y_comm_1985_LowFSW_Client = y$fc_y_comm_1985_ProFSW_Client
+    # y$fc_y_comm_1993_LowFSW_Client = y$fc_y_comm_1993_ProFSW_Client
+    # y$fc_y_comm_1998_LowFSW_Client = y$fc_y_comm_1998_ProFSW_Client
+    # y$fc_y_comm_2002_LowFSW_Client = y$fc_y_comm_2002_ProFSW_Client
 
     y$fc_y_noncomm_1985_LowFSW_Client = y$fc_y_noncomm_1985_ProFSW_Client
     y$fc_y_noncomm_2002_LowFSW_Client = y$fc_y_noncomm_2002_ProFSW_Client
@@ -451,6 +452,9 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     # MOVEMENT
     ###############################################
 
+    y$rate_leave_low_FSW =  y$rate_leave_pro_FSW
+
+
     # virgin movement
     y$rate_move_out[7] = - y$rate_enter_sexual_pop_F
     y$rate_move_out[8] = - y$rate_enter_sexual_pop_M
@@ -553,7 +557,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
   # ART and efficacy
   y$viral_supp_y[1,] = y$viral_supp_y_1986_rest
-  y$viral_supp_y[2,] = c(y$viral_supp_y_2014_ProFSW, rep_len(y$viral_supp_y_1986_rest, 8))
+  y$viral_supp_y[2,] = c(y$viral_supp_y_2015_ProFSW, rep_len(y$viral_supp_y_1986_rest, 8))
   y$viral_supp_y[3,] = y$viral_supp_y[2,]
 
   y$infect_ART_y = y$viral_supp_y * y$ART_eff
@@ -593,7 +597,7 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     initial_Ntot = 286114,
 
     frac_women_ProFSW = 0.0024,
-    frac_women_LowFSW = 0.0027,
+    frac_women_LowFSW = 3,
     frac_women_exFSW = 0.0024,
 
     frac_men_client = 0.2,
@@ -704,7 +708,7 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     viral_supp_t = c(1986, 2015, 2016),
     viral_supp_y = matrix(0, nrow = 3, ncol = 9),
     viral_supp_y_1986_rest = 0.6,
-    viral_supp_y_2014_ProFSW = 0.7,
+    viral_supp_y_2015_ProFSW = 0.7,
     ART_eff = 0.98,
     rho = c(0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0, 0, 0),
     ART_recruit_rate = 0.2,
@@ -878,7 +882,7 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     initial_Ntot = 286114,
 
     frac_women_ProFSW = 0.0024,
-    frac_women_LowFSW = 0.0027,
+    frac_women_LowFSW = 3,
     frac_women_exFSW = 0.0024,
 
     frac_men_client = 0.2,
@@ -981,7 +985,7 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     viral_supp_t = c(1986, 2015, 2016),
     viral_supp_y = matrix(0, nrow = 3, ncol = 9),
     viral_supp_y_1986_rest = 0.6,
-    viral_supp_y_2014_ProFSW = 0.7,
+    viral_supp_y_2015_ProFSW = 0.7,
     ART_eff = 0.98,
     rho = c(0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0, 0, 0),
     ART_recruit_rate = 0.2,
@@ -1135,7 +1139,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
                    initial_Ntot = 286114,
                    frac_women_ProFSW = 0.0024,
-                   frac_women_LowFSW = 0.0027,
+                   frac_women_LowFSW = 3,
                    frac_women_exFSW = 0.0024,
 
                    frac_men_client = 0.2,
@@ -1501,7 +1505,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    viral_supp_t = c(1986, 2015, 2016),
                    viral_supp_y = matrix(0, nrow = 3, ncol = 9),
                    viral_supp_y_1986_rest = 0.6,
-                   viral_supp_y_2014_ProFSW = 0.7,
+                   viral_supp_y_2015_ProFSW = 0.7,
                    ART_eff = 0.98,
                    ART_recruit_rate = 0.2,
                    ART_reinit_rate = 0.1
