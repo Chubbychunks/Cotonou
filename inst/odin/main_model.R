@@ -325,12 +325,6 @@ output(testing_prob[]) = testing_prob
 
 # output(ART_prob[]) = ART_prob
 
-zetaa_t[] = user()
-zetab_t[] = user()
-zetac_t[] = user()
-zetaa_y[,] = user()
-zetab_y[,] = user()
-zetac_y[,] = user()
 
 prep_intervention_t[] = user()
 prep_intervention_y[,] = user()
@@ -364,9 +358,6 @@ output(zeta[]) = zeta
 dim(sigma) = Ncat
 sigma[] = user()
 
-zetaa[] = interpolate(zetaa_t, zetaa_y, "constant")
-zetab[] = interpolate(zetab_t, zetab_y, "constant")
-zetac[] = interpolate(zetac_t, zetac_y, "constant")
 
 prep_intervention[] = interpolate(prep_intervention_t, prep_intervention_y, "constant")
 
@@ -463,7 +454,6 @@ output(E1c[]) = E1c
 output(E1d[]) = E1d
 
 deriv(cumuInf[]) = S0[i] * lambda_sum_0[i] + S1a[i] * lambda_sum_1a[i] + S1b[i] * lambda_sum_1b[i] + S1c[i] * lambda_sum_1c[i] + S1d[i] * lambda_sum_1d[i]
-# deriv(OnPrEP[]) = zetaa[i] * S0[i] + zetab[i] * S0[i] + zetac[i] * S0[i]
 deriv(OnPrEP[]) = zeta[i] * S0[i]
 
 deriv(cumuHIVDeaths[]) = alpha01[i] * I01[i] + alpha11[i] * I11[i] + alpha02[i] * I02[i] + alpha03[i] * I03[i] + alpha04[i] * I04[i] +
@@ -703,9 +693,6 @@ output(theta[,]) = theta
 # output(rate_move_in[,]) = rate_move_in
 # output(rate_move_out[]) = rate_move_out
 
-output(zetaa[]) = zetaa
-output(zetab[]) = zetab
-output(zetac[]) = zetac
 
 output(epsilon) = epsilon
 output(M_comm[,]) = M_comm
@@ -991,9 +978,7 @@ dur_FSW = user()
 
 # DIMMING
 
-dim(zetaa) = Ncat
-dim(zetab) = Ncat
-dim(zetac) = Ncat
+
 
 dim(prep_intervention) = Ncat
 
@@ -1029,12 +1014,6 @@ dim(phi5) = Ncat
 dim(psia) = Ncat
 dim(psib) = Ncat
 
-dim(zetaa_t) = user()
-dim(zetab_t) = user()
-dim(zetac_t) = user()
-dim(zetaa_y) = user()
-dim(zetab_y) = user()
-dim(zetac_y) = user()
 
 dim(prep_intervention_t) = user()
 dim(prep_intervention_y) = user()

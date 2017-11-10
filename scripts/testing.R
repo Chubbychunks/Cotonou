@@ -963,7 +963,7 @@ devtools::load_all()
 
 
 
-number_simulations = 10
+number_simulations = 20
 # batch_size = 1000
 epi_start = 1986
 # epi_end = 2030
