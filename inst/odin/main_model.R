@@ -338,8 +338,33 @@ fP_noncomm[] = interpolate(fP_t_noncomm, fP_y_noncomm, "linear")
 n_comm[,] = interpolate(n_t_comm, n_y_comm, "linear")
 n_noncomm[,] = interpolate(n_t_noncomm, n_y_noncomm, "linear")
 
+# prep_intervention is offering rate sigma is acceptance rate
+zeta[] = (tau[i] + tau_intervention[i]) * sigma[i] * prep_intervention[i] * PrEPOnOff
 
-zeta[] = test_rate_prep[i] * sigma[i] * prep_intervention[i] * PrEPOnOff
+tau_intervention_t[] = user()
+tau_intervention_y[,] = user()
+
+tau_intervention[] = interpolate(tau_intervention_t, tau_intervention_y, "constant")
+
+dim(tau_intervention) = Ncat
+
+dim(tau_intervention_t) = user()
+dim(tau_intervention_y) = user()
+
+rho_intervention_t[] = user()
+rho_intervention_y[,] = user()
+
+rho_intervention[] = interpolate(rho_intervention_t, rho_intervention_y, "constant")
+dim(rho_intervention) = Ncat
+
+dim(rho_intervention_t) = user()
+dim(rho_intervention_y) = user()
+
+
+
+output(tau_intervention[]) = tau_intervention
+output(rho_intervention[]) = rho_intervention
+
 
 PrEPOnOff = user()
 output(PrEPOnOff) = PrEPOnOff

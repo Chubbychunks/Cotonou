@@ -570,6 +570,15 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$iota = c(y$ART_reinit_rate_FSW, rep_len(y$ART_reinit_rate_rest, 5), 0, 0, 0)
 
 
+
+
+
+  y$tau_intervention_y = matrix(c(rep(0, 9),  y$intervention_testing_increase, c(rep(0, 8)),  y$intervention_testing_increase, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T)
+  y$rho_intervention_y = matrix(c(rep(0, 9), y$intervention_ART_increase, c(rep(0, 8)), y$intervention_ART_increase, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T)
+
+
+
+
   return(y)
 }
 
@@ -715,7 +724,16 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     rho = c(0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0, 0, 0),
     ART_recruit_rate = 0.2,
     ART_reinit_rate = 0.1,
-    RR_test_CD4200 = 5.4
+    RR_test_CD4200 = 5.4,
+
+    tau_intervention_t = c(1986, 2014, 2016),
+    rho_intervention_t = c(1986, 2014, 2016),
+
+    tau_intervention_y = matrix(c(rep(0, 9), 1.5, c(rep(0, 8)), 1.5, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
+    rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 6, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
+
+    intervention_testing_increase = 1.4,
+    intervention_ART_increase = 6.5
 
 
 
@@ -992,7 +1010,16 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     rho = c(0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0, 0, 0),
     ART_recruit_rate = 0.2,
     ART_reinit_rate = 0.1,
-    RR_test_CD4200 = 5.4
+    RR_test_CD4200 = 5.4,
+
+    tau_intervention_t = c(1986, 2014, 2016),
+    rho_intervention_t = c(1986, 2014, 2016),
+
+    tau_intervention_y = matrix(c(rep(0, 9), 1.5, c(rep(0, 8)), 1.5, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
+    rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 6, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
+
+    intervention_testing_increase = 1.4,
+    intervention_ART_increase = 6.5
 
 
 
@@ -1240,9 +1267,9 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                      rep(c(0, 0.1, 0.2, 0.4, 0.5, 0.7, 0.5, 0.8, 0.7), Ncat), ncol = Ncat),
 
                    test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
-                   sigma = c(1, 0, 0, 0, 0, 0, 0, 0, 0),
-                   prep_intervention_t = c(1985, 2013, 2015, 2016),
-                   prep_intervention_y = matrix(c(rep(0, Ncat), 1, rep(0, Ncat-1), rep(0, Ncat), rep(0, Ncat)), ncol = Ncat, byrow = T),
+                   sigma = c(0.85, 0, 0, 0, 0, 0, 0, 0, 0),
+                   prep_intervention_t = c(1985, 2014, 2015, 2016),
+                   prep_intervention_y = matrix(c(rep(0, Ncat), 1, rep(0, Ncat-1), 1, rep(0, Ncat-1), rep(0, Ncat)), ncol = Ncat, byrow = T), # offering rate
                    PrEPOnOff = 0,
 
 
@@ -1510,7 +1537,18 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    viral_supp_y_2015_ProFSW = 0.7,
                    ART_eff = 0.98,
                    ART_recruit_rate = 0.2,
-                   ART_reinit_rate = 0.1
+                   ART_reinit_rate = 0.1,
+
+                   tau_intervention_t = c(1986, 2014, 2016),
+                   rho_intervention_t = c(1986, 2014, 2016),
+
+                   tau_intervention_y = matrix(c(rep(0, 9), 1.5, c(rep(0, 8)), 1.5, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
+                   rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 6, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
+
+                   intervention_testing_increase = 1.4,
+                   intervention_ART_increase = 6.5
+
+
 
 
 

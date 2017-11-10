@@ -144,7 +144,7 @@ best_set_default = list(
   #TESTING
 
   test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
-  sigma = c(1, 0, 0, 0, 0, 0, 0, 0, 0),
+  sigma = c(0.85, 0, 0, 0, 0, 0, 0, 0, 0),
   prep_intervention_t = c(1985, 2013, 2015, 2016),
   prep_intervention_y = matrix(c(rep(0, 9), 1, rep(0, 9-1), rep(0, 9), rep(0, 9)), ncol = 9, byrow = T),
 
