@@ -963,11 +963,11 @@ devtools::load_all()
 
 
 
-number_simulations = 20
-# batch_size = 1000
+number_simulations = 30
+batch_size = 10
 epi_start = 1986
 # epi_end = 2030
-epi_end = 2025
+epi_end = 2017
 
 # setup -------------------------------------------------------------------
 par_seq = c("c_comm", "c_noncomm")
@@ -1142,12 +1142,9 @@ best_set = list(
 
   #CONDOM
 
-  fc_y_comm_1985_ProFSW_Client = 0,
-
-  fc_y_noncomm_1985_ProFSW_Client = 0,
 
 
-  fc_y_noncomm_1985_GPF_GPM = 0,
+
 
   fc_y_comm_1985 = matrix(
     c(0, 0, 0, 0, 0.145524, 0, 0, 0, 0, # 0.145524 is using John's FSW condom 1989 as prop of 1993, * our measure of 1993
@@ -1612,13 +1609,16 @@ ranges = rbind(
 
   ART_RR_prog = c(8.8, 12.1),
 
+  intervention_testing_increase = c(1, 2),
+
+
   RR_test_CD4200 = c(1, 6),
 
   ART_recruit_rate_FSW = c(0.5, 1.5),
   ART_recruit_rate_rest = c(0.5, 1.5),
 
 
-
+  intervention_ART_increase = c(0, 12),
 
 
 
@@ -1644,7 +1644,7 @@ ranges = rbind(
 
 
 
-  fc_y_noncomm_1985_GPF_GPM = 0,
+  # fc_y_noncomm_1985_GPF_GPM = 0,
   fc_y_noncomm_1998_GPF_GPM = c(0.033, 0.05),
   fc_y_noncomm_2011_GPF_GPM = c(0.16, 0.26)
 
@@ -1781,7 +1781,7 @@ ART_data_points = data.frame(time = c(2010, 2011, 2012, 2013, 2014, 2015, 2016,
                                       2010, 2013, 2014, 2015, 2016, 2017
 ),
 Lower = c(0.33, 0.42, 0.44, 0.39, 0.44, 0.51, 0.57,
-          7,	13,	17,	50,	56, 80
+          0.07,	0.13,	0.17,	0.50,	0.56, 0.80
 
 ),
 Upper = c(0.52, 0.66, 0.69, 0.61, 0.69, 0.8, 0.8,
@@ -1793,7 +1793,7 @@ variable = c("All", "All", "All", "All", "All", "All", "All",
 
 ART_data_points_FSW = data.frame(time = c(2010, 2013, 2014, 2015, 2016, 2017
 ),
-Lower = c(7,	13,	17,	50,	56, 80
+Lower = c(0.07,	0.13,	0.17,	0.50,	0.56, 0.80
 
 ),
 Upper = c(0.10, 0.18, 0.24, 0.7, 0.79, 0.9
@@ -1825,9 +1825,17 @@ variable = c("Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
 
 #####################################################
 
-result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
+# result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
 # result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
+
+
+
+result <- run_model_with_fit_multiple(batch_size, number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs,
+                                                         prev_points = prev_points_FSW_only_even_less_2, frac_N_discard_points = frac_N_discard_points,
+                                                         Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points_FSW)
+
+
 
 result[[3]] <- result[[2]]
 

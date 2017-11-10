@@ -1182,10 +1182,10 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    ART_eligible_CD4_200_349_t = c(1985, 2005, 2012, 2015, 2016),
                    ART_eligible_CD4_below_200_t = c(1985, 2005, 2012, 2015, 2016),
 
-                   ART_eligible_CD4_above_500_y = c(0.1, 0.1, 0.1, 0.1, 0.1),
-                   ART_eligible_CD4_350_500_y = c(0.1, 0.1, 0.1, 0.1, 0.1),
-                   ART_eligible_CD4_200_349_y = c(0.1, 0.1, 0.1, 0.1, 0.1),
-                   ART_eligible_CD4_below_200_y = c(0.7, 0.7, 0.7, 0.7, 0.7),
+                   ART_eligible_CD4_above_500_y = c(0, 0, 0, 0, 1),
+                   ART_eligible_CD4_350_500_y = c(0, 0, 0, 1, 1),
+                   ART_eligible_CD4_200_349_y = c(0.1, 0.1, 1, 1, 1),
+                   ART_eligible_CD4_below_200_y = c(1, 1, 1, 1, 1),
 
 
                    #                    epsilon_t_comm = c(1985, 1991.99, 1992, 2001.99, 2002, 2012.99, 2013, 2016),
