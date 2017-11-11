@@ -668,7 +668,7 @@ test_that("fP eP 2b", {
 # done by setting tau[0-9]1 and gamma[0-9]1 to 0
 
 test_that("acute to CD4>500 zero", {
-  relevant_parameters = parameter_names[c(grep("gamma[0-9]1", parameter_names), grep("testing_prob_y", parameter_names))]
+  relevant_parameters = parameter_names[c(grep("gamma[0-9]1", parameter_names), grep("testing_prob_y", parameter_names), grep("test_rate_prep", parameter_names), grep("tau_intervention_y", parameter_names))]
 
 
   parameters <- lhs_parameters(1, I11_init = rep(100, 9), set_null = relevant_parameters, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)

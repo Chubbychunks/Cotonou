@@ -961,10 +961,11 @@ devtools::load_all()
 
 
 
+tbefore = Sys.time()
 
 
-number_simulations = 30
-batch_size = 10
+number_simulations = 55
+batch_size = 1
 epi_start = 1986
 # epi_end = 2030
 epi_end = 2017
@@ -1482,19 +1483,24 @@ ranges = rbind(
   # init_clientN_from_PCR = c(0,0),
   who_believe_comm = c(0, 1),
 
-  # growth rates
+  # # growth rates
   # epsilon_1985 = c(0.08, 0.08),
   # epsilon_1992 = c(0.08, 0.08),
-  epsilon_2002 = c(0.06, 0.07),
-  epsilon_2013 = c(0.04, 0.06),
-  epsilon_2016 = c(0.04, 0.06),
+  # epsilon_2002 = c(0.06, 0.07),
+  # epsilon_2013 = c(0.04, 0.06),
+  # epsilon_2016 = c(0.04, 0.06),
 
+  epsilon_1985 = c(0.059, 0.059),
+  epsilon_1992 = c(0.048, 0.058),
+  epsilon_2002 = c(0.027, 0.027),
+  epsilon_2013 = c(0.027, 0.027),
+  epsilon_2016 = c(0.027, 0.027),
 
   # DEMOGRAPHIC
 
   fraction_F = c(0.512, 0.52), # fraction of population born female
   frac_women_ProFSW = c(0.0024, 0.00715), # fraction of women that are professional FSW
-  frac_women_LowFSW = c(1, 5), # relative abundance of low FSW relative to pro FSW
+  frac_women_LowFSW = c(1, 2), # relative abundance of low FSW relative to pro FSW
 
   frac_men_client = c(0.074, 0.3), # fraction of men that are clients
   frac_women_virgin = c(0.079, 0.2), # fraction of women that are virgins
@@ -1762,9 +1768,11 @@ frac_N_data_points = data.frame(time = c(1998, 2014,
 #                                    min = c(0.001237599, 0.1509*(1-0.515666224), 0.07896475*0.515666224, 0.07039551*(1-0.515666224), 2*0.001237599),
 #                                    max = c(0.007374027, 0.40 * (1-0.515666224), 0.2*0.515666224, 0.17*(1-0.515666224), 5*0.007374027))
 
+
 frac_N_discard_points = data.frame(variable = c("Pro FSW", "Clients", "Virgin female", "Virgin male", "Active FSW", "Low Pro Ratio"),
                                    min = c(0.001237599, 0.074*(1-0.515666224), 0.07896475*0.515666224, 0.07039551*(1-0.515666224), 0.0048*0.516, 1),
                                    max = c(0.0143*0.515666224/2, 0.3 * (1-0.515666224), 0.2*0.515666224, 0.17*(1-0.515666224),  0.0143*0.516, 5))
+
 
 
 # Ntot data points ------------------------------------------------------
@@ -1826,14 +1834,55 @@ variable = c("Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
 #####################################################
 
 # result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
-# result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
+result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 
+result[[3]] = result[[2]]
 
 
-result <- cotonou::run_model_with_fit_multiple(batch_size, number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs,
-                                                         prev_points = prev_points_FSW_only_even_less_2, frac_N_discard_points = frac_N_discard_points,
-                                                         Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points_FSW)
+# test ranges
+frac_N_discard_points_test = data.frame(variable = c("Pro FSW"),
+                                        min = c(0),
+                                        max = c(1))
+ART_data_points_test = data.frame(time = c(2014),
+                                  Lower = c(0),
+                                  Upper = c(1),
+                                  variable = c("All"))
+
+prev_points_test = data.frame(time = c(2015),
+                         variable = c(rep("Pro FSW", 1)),
+                         value = c(0),
+                         lower = c(0),
+
+                         upper = c(1))
+
+Ntot_data_points_test = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
+                              point = c(10, 10, 10, 10, 10),
+                              lower = c(10, 10, 10, 10, 10),
+                              upper = c(10000000000, 10000000000, 10000000000, 10000000000, 10000000000),
+                              colour = c("data", "data", "data", "predicted", "predicted"))
+
+
+result <- cotonou::run_model_with_fit_multiple_test(batch_size, number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs,
+                                                         prev_points = prev_points_test, frac_N_discard_points = frac_N_discard_points_test,
+                                                         Ntot_data_points = Ntot_data_points_test, ART_data_points = ART_data_points_test)
+
+
+
+
+
+result[[1]]
+
+
+likelihood_list = lapply(res, cotonou::likelihood_rough, time = time, prev_points = prev_points_test, frac_N_discard_points = frac_N_discard_points_test, Ntot_data_points = Ntot_data_points_test, ART_data_points = ART_data_points_test)
+
+likelihood_list
+
+
+
+
+tafter = Sys.time()
+tafter-tbefore
 
 
 
@@ -1867,6 +1916,8 @@ lapply(result[[2]], function(x) x$c_comm_balanced)
 
 # unlist(result[[3]])
 
+
+
 # ignore these ######################################
 frac_ProFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[3]], function(x) x$frac_N*100), function(x) x[,1])), 2, cotonou::quantile_95)))
 frac_LowFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[3]], function(x) x$frac_N*100), function(x) x[,2])), 2, cotonou::quantile_95)))
@@ -1877,10 +1928,14 @@ frac_GPM = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[3]], fu
 frac_Virgin_Female = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[3]], function(x) x$frac_N*100), function(x) x[,7])), 2, cotonou::quantile_95)))
 frac_Virgin_Male = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[3]], function(x) x$frac_N*100), function(x) x[,8])), 2, cotonou::quantile_95)))
 frac_Former_FSW_Outside = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[3]], function(x) x$frac_N*100), function(x) x[,9])), 2, cotonou::quantile_95)))
-frac = rbind(frac_ProFSW, frac_LowFSW, frac_GPF, frac_FormerFSW, frac_Client, frac_GPM, frac_Virgin_Female, frac_Virgin_Male, frac_Former_FSW_Outside)
-frac = data.frame(frac, group = rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"), each = length(time)))
+
+frac_Active_FSW = data.frame(time, t(apply(do.call(rbind, lapply(result[[3]], function(x) {100*(x$frac_N[,1] + x$frac_N[,2])})), 2, cotonou::quantile_95)))
+Ratio_Low_Pro = data.frame(time, t(apply(do.call(rbind, lapply(result[[3]], function(x) {x$frac_N[,2]/ x$frac_N[,1]})), 2, cotonou::quantile_95)))
+
+frac = rbind(frac_ProFSW, frac_LowFSW, frac_GPF, frac_FormerFSW, frac_Client, frac_GPM, frac_Virgin_Female, frac_Virgin_Male, frac_Former_FSW_Outside, frac_Active_FSW, Ratio_Low_Pro)
+frac = data.frame(frac, group = rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "Active FSW", "Low Pro Ratio"), each = length(time)))
 colnames(frac) = c("time", "Lower", "Median", "Upper", "variable")
-frac$variable = factor(frac$variable, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou"))
+frac$variable = factor(frac$variable, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "Active FSW", "Low Pro Ratio"))
 
 prev_FSW = t(apply(do.call(rbind, lapply(result[[3]], function(x) x$prev_FSW)), 2, cotonou::quantile_95))
 prev_LowFSW = t(apply(do.call(rbind, lapply(result[[3]], function(x) x$prev_LowFSW)), 2, cotonou::quantile_95))
@@ -1891,6 +1946,8 @@ prev = rbind(prev_FSW, prev_LowFSW, prev_client, prev_women, prev_men)
 prev = data.frame(time, prev, rep(c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"), each = length(time)))
 colnames(prev) = c("time", "Lower", "Median", "Upper", "variable")
 prev$variable = factor(prev$variable, levels = c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"))
+
+
 
 Ntot = data.frame(time, t(apply(do.call(rbind, lapply(result[[3]], function(x) x$Ntot)), 2, cotonou::quantile_95)))
 colnames(Ntot) = c("time", "Lower", "Median", "Upper")
@@ -1907,13 +1964,16 @@ ART_coverage = ART_coverage[ART_coverage$variable == "All" | ART_coverage$variab
 
 #####################################################
 
+frac_N_discard_points_graph = frac_N_discard_points
+frac_N_discard_points_graph[frac_N_discard_points_graph$variable == "Low Pro Ratio", c(2,3)] = frac_N_discard_points_graph[frac_N_discard_points_graph$variable == "Low Pro Ratio",c(2,3)]/100
+
 require(ggplot2)
 # plot fraction in each group
 ggplot(frac) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) +
   theme_bw() + labs(y = "Percent in each group (%)") +  facet_wrap(~variable, scales = "free") +
   geom_point(data = frac_N_data_points, aes(x = time, y = point), size = I(2), color = "red", shape = 15) +
-  geom_hline(data = frac_N_discard_points, aes(yintercept = 100*min), size = I(0.5), color = "red", linetype = 1, alpha = 0.7) +
-  geom_hline(data = frac_N_discard_points, aes(yintercept = 100*max), size = I(0.5), color = "red", linetype = 1, alpha = 0.7)
+  geom_hline(data = frac_N_discard_points_graph, aes(yintercept = 100*min), size = I(0.5), color = "red", linetype = 1, alpha = 0.7) +
+  geom_hline(data = frac_N_discard_points_graph, aes(yintercept = 100*max), size = I(0.5), color = "red", linetype = 1, alpha = 0.7)
 
 
 
@@ -1936,6 +1996,53 @@ ggplot(ART_coverage) +
   geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() +
   facet_wrap(~variable) + labs(y = "ART coverage ") +
   geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
+
+
+
+# plot fraction in each group
+ggplot(frac) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) +
+  theme_bw() + labs(y = "Percent in each group (%)") +  facet_wrap(~variable, scales = "free") +
+  geom_point(data = frac_N_data_points, aes(x = time, y = point), size = I(2), color = "red", shape = 15) +
+  geom_hline(data = frac_N_discard_points, aes(yintercept = 100*min), size = I(0.5), color = "red", linetype = 1, alpha = 0.7) +
+  geom_hline(data = frac_N_discard_points, aes(yintercept = 100*max), size = I(0.5), color = "red", linetype = 1, alpha = 0.7)
+
+prev_axes = data.frame(variable = c(rep("Pro FSW", 2),
+                                    rep("Clients", 2),
+                                    rep("Women", 2),
+                                    rep("Men", 2),
+                                    rep("Low-level FSW", 2)),
+                       time = c(rep(c(1986, 2025), 5)),
+                       value = c(0, 70, 0, 70, 0, 15, 0, 15, 0, 70)
+)
+
+prev_points_80s = prev_points_all[c(1,2,3),]
+
+# plot prevalence in each group
+ggplot() + geom_line(data = prev, aes(x = time, y = Median))+ geom_ribbon(data = prev, aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
+  geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper)) +
+  geom_point(data = prev_points_80s, aes(x = time, y = value), colour = "red")+
+  geom_blank(data = prev_axes, aes(x = time, y = value))
+
+
+# plot prevalence in each group indiv runs
+ggplot() + geom_line(data = prev_indiv_melted, aes(x = time, y = value, factor = variable, factor = run), alpha = 0.3) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
+  geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
+  geom_point(data = prev_points_80s, aes(x = time, y = value), colour = "red")+
+  geom_blank(data = prev_axes, aes(x = time, y = value))
+
+
+
+# plot total population size
+ggplot(Ntot) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) +
+  theme_bw() + labs(y = "Total population size of Grand Cotonou") +
+  geom_point(data = Ntot_data_points, aes(x = time, y = point, color = colour), size = I(2), shape = 15) + geom_errorbar(data = Ntot_data_points, aes(x = time, ymax = upper, ymin = lower, color = colour), width = 2)
+
+
+ggplot(ART_coverage) +
+  geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() +
+  facet_wrap(~variable) + labs(y = "ART coverage ") +
+  geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
+
 
 
 

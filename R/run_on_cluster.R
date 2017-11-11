@@ -376,7 +376,6 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
 
 
 
-
 #' @export
 #' @useDynLib cotonou
 run_model_with_fit_cluster_pars_done <- function(parameters, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points) {
