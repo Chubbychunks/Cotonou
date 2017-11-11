@@ -94,6 +94,11 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
 
   if("All" %in% levels(ART_data_points$variable))
   {
+
+    ART_ratio = x$Women_on_ART/x$Men_on_ART
+    if(all(ART_ratio[!is.na(ART_ratio)] > 1 & ART_ratio[!is.na(ART_ratio)] < 2))
+      likelihood_count <- likelihood_count + 1
+
     ART_data_points_allgroups = ART_data_points[ART_data_points$variable == "All",]
     # fitting to ART cov
     if(likelihood_count > 0)
@@ -114,9 +119,7 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
   if("Pro FSW" %in% levels(ART_data_points$variable))
   {
 
-    ART_ratio = x$Women_on_ART/x$Men_on_ART
-    if(all(ART_ratio[!is.na(ART_ratio)] > 1 & ART_ratio[!is.na(ART_ratio)] < 2))
-      likelihood_count <- likelihood_count + 1
+
 
     ART_data_points_FSW = ART_data_points[ART_data_points$variable == "Pro FSW",]
     # fitting to ART cov

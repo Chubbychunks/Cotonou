@@ -964,8 +964,10 @@ devtools::load_all()
 tbefore = Sys.time()
 
 
-number_simulations = 1000
-batch_size = 20
+number_simulations = 20
+batch_size = 2
+
+
 epi_start = 1986
 # epi_end = 2030
 epi_end = 2017
@@ -1949,6 +1951,25 @@ prev = data.frame(time, prev, rep(c("Pro FSW", "Low-level FSW", "Clients", "Wome
 colnames(prev) = c("time", "Lower", "Median", "Upper", "variable")
 prev$variable = factor(prev$variable, levels = c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"))
 
+
+
+prev_FSW_indiv = t(do.call(rbind, lapply(result[[3]], function(x) x$prev_FSW)))
+prev_LowFSW_indiv = t(do.call(rbind, lapply(result[[3]], function(x) x$prev_LowFSW)))
+prev_client_indiv = t(do.call(rbind, lapply(result[[3]], function(x) x$prev_client)))
+prev_women_indiv = t(do.call(rbind, lapply(result[[3]], function(x) x$prev_women)))
+prev_men_indiv = t(do.call(rbind, lapply(result[[3]], function(x) x$prev_men)))
+prev_indiv = rbind(prev_FSW_indiv, prev_LowFSW_indiv, prev_client_indiv, prev_women_indiv, prev_men_indiv)
+
+prev_indiv = data.frame(time, rep(c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"), each = length(time)), prev_indiv)
+
+
+colnames(prev_indiv) = c("time", "variable", as.character(seq(1, length(prev_FSW_indiv[1,]))))
+
+prev_indiv_melted = reshape2::melt(prev_indiv, id.vars = c("time", "variable"))
+
+colnames(prev_indiv_melted) = c("time", "variable", "run", "value")
+
+prev_indiv_melted$variable = factor(prev_indiv_melted$variable, levels = c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"))
 
 
 Ntot = data.frame(time, t(apply(do.call(rbind, lapply(result[[3]], function(x) x$Ntot)), 2, cotonou::quantile_95)))
