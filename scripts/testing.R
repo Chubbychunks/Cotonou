@@ -964,8 +964,8 @@ devtools::load_all()
 tbefore = Sys.time()
 
 
-number_simulations = 100
-batch_size = 1
+number_simulations = 1000
+batch_size = 20
 epi_start = 1986
 # epi_end = 2030
 epi_end = 2017
@@ -1834,10 +1834,10 @@ variable = c("Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
 #####################################################
 
 # result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
-result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
+# result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 
-result[[3]] = result[[2]]
+# result[[3]] = result[[2]]
 
 
 # test ranges
@@ -1847,10 +1847,10 @@ frac_N_discard_points_test = data.frame(variable = c("Pro FSW"),
 ART_data_points_test = data.frame(time = c(2014),
                                   Lower = c(0),
                                   Upper = c(1),
-                                  variable = c("All"))
+                                  variable = c("test"))
 
 prev_points_test = data.frame(time = c(2015),
-                         variable = c(rep("Pro FSW", 1)),
+                         variable = c(rep("test", 1)),
                          value = c(0),
                          lower = c(0),
 
@@ -1865,7 +1865,7 @@ Ntot_data_points_test = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
 
 result <- cotonou::run_model_with_fit_multiple(batch_size, number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs,
                                                     prev_points = prev_points_FSW_only_even_less_2, frac_N_discard_points = frac_N_discard_points,
-                                                    Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points_FSW)
+                                                    Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points_test)
 
 
 tafter = Sys.time()
@@ -2002,6 +2002,7 @@ require(ggplot2)
 #   geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
 
 
+require(ggplot2)
 
 # plot fraction in each group
 ggplot(frac) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) +
@@ -2028,11 +2029,11 @@ ggplot() + geom_line(data = prev, aes(x = time, y = Median))+ geom_ribbon(data =
   geom_blank(data = prev_axes, aes(x = time, y = value))
 
 
-# plot prevalence in each group indiv runs
-ggplot() + geom_line(data = prev_indiv_melted, aes(x = time, y = value, factor = variable, factor = run), alpha = 0.3) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
-  geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
-  geom_point(data = prev_points_80s, aes(x = time, y = value), colour = "red")+
-  geom_blank(data = prev_axes, aes(x = time, y = value))
+# # plot prevalence in each group indiv runs
+# ggplot() + geom_line(data = prev_indiv_melted, aes(x = time, y = value, factor = variable, factor = run), alpha = 0.3) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
+#   geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
+#   geom_point(data = prev_points_80s, aes(x = time, y = value), colour = "red")+
+#   geom_blank(data = prev_axes, aes(x = time, y = value))
 
 
 
