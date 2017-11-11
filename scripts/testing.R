@@ -964,7 +964,7 @@ devtools::load_all()
 tbefore = Sys.time()
 
 
-number_simulations = 55
+number_simulations = 100
 batch_size = 1
 epi_start = 1986
 # epi_end = 2030
@@ -1863,12 +1863,13 @@ Ntot_data_points_test = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
                               colour = c("data", "data", "data", "predicted", "predicted"))
 
 
-result <- cotonou::run_model_with_fit_multiple_test(batch_size, number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs,
-                                                         prev_points = prev_points_test, frac_N_discard_points = frac_N_discard_points_test,
-                                                         Ntot_data_points = Ntot_data_points_test, ART_data_points = ART_data_points_test)
+result <- cotonou::run_model_with_fit_multiple(batch_size, number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs,
+                                                    prev_points = prev_points_FSW_only_even_less_2, frac_N_discard_points = frac_N_discard_points,
+                                                    Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points_FSW)
 
 
-
+tafter = Sys.time()
+tafter-tbefore
 
 
 result[[1]]
@@ -1881,8 +1882,7 @@ likelihood_list
 
 
 
-tafter = Sys.time()
-tafter-tbefore
+
 
 
 
@@ -1932,6 +1932,8 @@ frac_Former_FSW_Outside = data.frame(time, t(apply(do.call(rbind, lapply(lapply(
 frac_Active_FSW = data.frame(time, t(apply(do.call(rbind, lapply(result[[3]], function(x) {100*(x$frac_N[,1] + x$frac_N[,2])})), 2, cotonou::quantile_95)))
 Ratio_Low_Pro = data.frame(time, t(apply(do.call(rbind, lapply(result[[3]], function(x) {x$frac_N[,2]/ x$frac_N[,1]})), 2, cotonou::quantile_95)))
 
+
+
 frac = rbind(frac_ProFSW, frac_LowFSW, frac_GPF, frac_FormerFSW, frac_Client, frac_GPM, frac_Virgin_Female, frac_Virgin_Male, frac_Former_FSW_Outside, frac_Active_FSW, Ratio_Low_Pro)
 frac = data.frame(frac, group = rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "Active FSW", "Low Pro Ratio"), each = length(time)))
 colnames(frac) = c("time", "Lower", "Median", "Upper", "variable")
@@ -1962,49 +1964,51 @@ colnames(ART_coverage) = c("time", "Lower", "Median", "Upper", "variable")
 ART_coverage$variable = factor(ART_coverage$variable, levels = c("Pro FSW", "Women", "Men", "All"))
 ART_coverage = ART_coverage[ART_coverage$variable == "All" | ART_coverage$variable == "Pro FSW",]
 
-#####################################################
 
 frac_N_discard_points_graph = frac_N_discard_points
 frac_N_discard_points_graph[frac_N_discard_points_graph$variable == "Low Pro Ratio", c(2,3)] = frac_N_discard_points_graph[frac_N_discard_points_graph$variable == "Low Pro Ratio",c(2,3)]/100
 
+#####################################################
+
+
 require(ggplot2)
+# plot fraction in each group
+# ggplot(frac) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) +
+#   theme_bw() + labs(y = "Percent in each group (%)") +  facet_wrap(~variable, scales = "free") +
+#   geom_point(data = frac_N_data_points, aes(x = time, y = point), size = I(2), color = "red", shape = 15) +
+#   geom_hline(data = frac_N_discard_points_graph, aes(yintercept = 100*min), size = I(0.5), color = "red", linetype = 1, alpha = 0.7) +
+#   geom_hline(data = frac_N_discard_points_graph, aes(yintercept = 100*max), size = I(0.5), color = "red", linetype = 1, alpha = 0.7)
+#
+#
+#
+# # plot prevalence in each group
+# ggplot(prev) + geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
+#   geom_point(data = prev_points_all, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))
+#
+# # plot total population size
+# ggplot(Ntot) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) +
+#   theme_bw() + labs(y = "Total population size of Grand Cotonou") +
+#   geom_point(data = Ntot_data_points, aes(x = time, y = point, color = colour), size = I(2), shape = 15) + geom_errorbar(data = Ntot_data_points, aes(x = time, ymax = upper, ymin = lower, color = colour), width = 2)
+#
+# # # plot ART_coverage in each group
+# # ggplot(ART_coverage) + geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() +
+# #   facet_wrap(~variable) + labs(y = "ART coverage ") +
+# #   geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
+#
+# # # plot ART_coverage in all
+# ggplot(ART_coverage) +
+#   geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() +
+#   facet_wrap(~variable) + labs(y = "ART coverage ") +
+#   geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
+
+
+
 # plot fraction in each group
 ggplot(frac) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) +
   theme_bw() + labs(y = "Percent in each group (%)") +  facet_wrap(~variable, scales = "free") +
   geom_point(data = frac_N_data_points, aes(x = time, y = point), size = I(2), color = "red", shape = 15) +
   geom_hline(data = frac_N_discard_points_graph, aes(yintercept = 100*min), size = I(0.5), color = "red", linetype = 1, alpha = 0.7) +
   geom_hline(data = frac_N_discard_points_graph, aes(yintercept = 100*max), size = I(0.5), color = "red", linetype = 1, alpha = 0.7)
-
-
-
-# plot prevalence in each group
-ggplot(prev) + geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
-  geom_point(data = prev_points_all, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))
-
-# plot total population size
-ggplot(Ntot) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) +
-  theme_bw() + labs(y = "Total population size of Grand Cotonou") +
-  geom_point(data = Ntot_data_points, aes(x = time, y = point, color = colour), size = I(2), shape = 15) + geom_errorbar(data = Ntot_data_points, aes(x = time, ymax = upper, ymin = lower, color = colour), width = 2)
-
-# # plot ART_coverage in each group
-# ggplot(ART_coverage) + geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() +
-#   facet_wrap(~variable) + labs(y = "ART coverage ") +
-#   geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
-
-# # plot ART_coverage in all
-ggplot(ART_coverage) +
-  geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() +
-  facet_wrap(~variable) + labs(y = "ART coverage ") +
-  geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
-
-
-
-# plot fraction in each group
-ggplot(frac) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) +
-  theme_bw() + labs(y = "Percent in each group (%)") +  facet_wrap(~variable, scales = "free") +
-  geom_point(data = frac_N_data_points, aes(x = time, y = point), size = I(2), color = "red", shape = 15) +
-  geom_hline(data = frac_N_discard_points, aes(yintercept = 100*min), size = I(0.5), color = "red", linetype = 1, alpha = 0.7) +
-  geom_hline(data = frac_N_discard_points, aes(yintercept = 100*max), size = I(0.5), color = "red", linetype = 1, alpha = 0.7)
 
 prev_axes = data.frame(variable = c(rep("Pro FSW", 2),
                                     rep("Clients", 2),
