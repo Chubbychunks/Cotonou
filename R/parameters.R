@@ -936,11 +936,24 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     fc_y_noncomm_1993 = matrix(0.2, Ncat, Ncat),
     fc_y_noncomm_1998 = matrix(0.4, Ncat, Ncat),
     fc_y_noncomm_2002 = matrix(0.3, Ncat, Ncat),
-    fc_y_noncomm_2008 = matrix(0.3, Ncat, Ncat),
 
+    fc_y_noncomm_2008 = matrix(0.3, Ncat, Ncat),
     fc_y_noncomm_2011 = matrix(0.3, Ncat, Ncat),
     fc_y_noncomm_2015 = matrix(0.5, Ncat, Ncat),
     fc_y_noncomm_2016 = matrix(0.5, Ncat, Ncat),
+
+    n_y_comm_1985 = matrix(1.02, Ncat, Ncat),
+    n_y_comm_2002 = matrix(1.02, Ncat, Ncat),
+    n_y_comm_2015 = matrix(1.02, Ncat, Ncat),
+
+    n_y_comm_2016 = matrix(1.02, Ncat, Ncat),
+
+    n_y_noncomm_1985 = matrix(1.03, Ncat, Ncat),
+    n_y_noncomm_2002 = matrix(1.03, Ncat, Ncat),
+    n_y_noncomm_2015 = matrix(1.03, Ncat, Ncat),
+
+    n_y_noncomm_2016 = matrix(1.03, Ncat, Ncat),
+
     c_comm_1985 = rep_len(2, Ncat),
     c_comm_1993 = rep_len(2, Ncat),
     c_comm_1995 = rep_len(2, Ncat),
@@ -963,31 +976,26 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     c_noncomm_2015 = rep_len(1, Ncat),
     c_noncomm_2016 = rep_len(1, Ncat),
 
-    n_y_comm_1985 = matrix(1.02, Ncat, Ncat),
-    n_y_comm_2002 = matrix(1.02, Ncat, Ncat),
-    n_y_comm_2015 = matrix(1.02, Ncat, Ncat),
-
-    n_y_comm_2016 = matrix(1.02, Ncat, Ncat),
-
-    n_y_noncomm_1985 = matrix(1.03, Ncat, Ncat),
-    n_y_noncomm_2002 = matrix(1.03, Ncat, Ncat),
-    n_y_noncomm_2015 = matrix(1.03, Ncat, Ncat),
-
-    n_y_noncomm_2016 = matrix(1.03, Ncat, Ncat),
-
     betaMtoF_noncomm = 0.00193,
     betaFtoM_noncomm = 0.00867,
     betaMtoF_comm = 0.00193,
     betaFtoM_comm = 0.00867,
+
     betaMtoF_baseline = 0.00081,
 
     muF = 0.02597403,
     muM = 0.02739726,
     RR_beta_FtM = 1,
-    RR_beta_GUD = 1,
     RR_beta_circum = 0.44,
-    prev_ratio_FSW_GPF = 1,
-    prev_ratio_Client_GPM = 1,
+
+    prev_HSV2_FSW = 1,
+    prev_HSV2_Client = 1,
+    prev_HSV2_GPF = 1,
+    prev_HSV2_GPM = 1,
+    RR_beta_HSV2_comm_t = 1,
+    RR_beta_HSV2_noncomm_t = 1,
+    RR_beta_HSV2_comm_a = 2,
+    RR_beta_HSV2_noncomm_a = 2,
 
     who_believe_comm = 0,
     init_clientN_from_PCR = 0,
@@ -1020,7 +1028,6 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
 
     intervention_testing_increase = 1.4,
     intervention_ART_increase = 6.5
-
 
 
 
@@ -1145,8 +1152,8 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
 
 
 
-
-  samples_list <- samples_list[!unlist(parallel::parLapply(NULL, samples_list, function(x) x$delete))] # removing those runs which do not pass initial criteria
+  if(n > 1)
+    samples_list <- samples_list[!unlist(parallel::parLapply(NULL, samples_list, function(x) x$delete))] # removing those runs which do not pass initial criteria
 
   parallel::parLapply(NULL, samples_list, function(x) generate_parameters(parameters = x, Ncat = Ncat, set_null = set_null))
 }

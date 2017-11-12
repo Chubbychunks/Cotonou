@@ -260,12 +260,7 @@ run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, 
 
     best_runs = which(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
 
-    # if(max(sorted_likelihood_list) > 0)
-    # {
-    #   results_list[[i]] <- list(max = max(sorted_likelihood_list), pars = parameters[best_runs])
-    # } else {
-    #   results_list[[i]] <- list(max = 0, pars = NULL)
-    # }
+
 
     if(max(sorted_likelihood_list) > max_fit)
     {
