@@ -964,8 +964,8 @@ devtools::load_all()
 tbefore = Sys.time()
 
 
-number_simulations = 20
-batch_size = 2
+number_simulations = 1
+batch_size = 1
 
 
 epi_start = 1986
