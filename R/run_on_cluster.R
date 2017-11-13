@@ -293,7 +293,7 @@ run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, 
     gc()
   }
 
-  return(list(max_fit, best_fit_pars, max_fit_minus_1, best_fit_pars_minus_1))
+  return(list(max_fit, best_fit_pars, max_fit_minus_1, best_fit_pars_minus_1, number_simulations))
 
   # return(list(parameters[best_runs], likelihood_list, out, best_runs))
 }
