@@ -467,6 +467,19 @@ output(infect_ART[]) = infect_ART
 # OUTPUTS
 ##############################################################################
 
+
+FSW_out = rate_move_out[1] * N[1]
+
+
+
+output(FSW_out) = FSW_out
+
+
+FSW_in = rate_move_in[1, 3] * N[3]
+
+output(FSW_in) = FSW_in
+
+
 output(rate_move_in[,]) = rate_move_in
 output(rate_move_out[]) = rate_move_out
 

@@ -69,9 +69,11 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
        x$Ntot[which(time == 2002)] < Ntot_data_points[2, "upper"] && x$Ntot[which(time == 2002)] > Ntot_data_points[2, "lower"] &&
        x$Ntot[which(time == 2013)] < Ntot_data_points[3, "upper"] && x$Ntot[which(time == 2013)] > Ntot_data_points[3, "lower"])) {
     frac_count <- 0
+    message = "Ntot"
   }
 
-
+  if(frac_count != length(frac_N_discard_points[,1]))
+    message = "frac count"
 
   prev_fits = c()
 
@@ -139,7 +141,7 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
 
 
 
-  return (list(likelihood_count, prev_fits))
+  return (list(likelihood_count, prev_fits, message))
   # return (list(likelihood_count, frac_count))
 
 }
@@ -192,7 +194,9 @@ run_model_with_fit <- function(number_simulations, par_seq, condom_seq, groups_s
 
   out <- res[best_runs]
 
-  return(list(parameters[best_runs], likelihood_list, out, best_runs))
+  message_list <- unlist(lapply(likelihood_list, function(x) x[[3]]))
+
+  return(list(parameters[best_runs], likelihood_list, out, best_runs, message_list))
 
 
 }

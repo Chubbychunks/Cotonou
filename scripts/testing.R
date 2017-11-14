@@ -964,8 +964,8 @@ devtools::load_all()
 tbefore = Sys.time()
 
 
-number_simulations = 1000
-batch_size = 1
+number_simulations = 20
+batch_size = 10
 
 
 epi_start = 1986
@@ -1483,6 +1483,8 @@ ranges = rbind(
 
   # PrEPOnOff = c(1,1),
 
+  # betaMtoF_baseline = c(0, 1),
+
   prep_dropout = c(2.11, 2.12),
   prep_offering_rate = c(0.09, 0.091),
 
@@ -1490,12 +1492,12 @@ ranges = rbind(
   # init_clientN_from_PCR = c(0,0),
   who_believe_comm = c(0, 1),
 
-  # # growth rates
-  # epsilon_1985 = c(0.08, 0.08),
-  # epsilon_1992 = c(0.08, 0.08),
-  # epsilon_2002 = c(0.06, 0.07),
-  # epsilon_2013 = c(0.04, 0.06),
-  # epsilon_2016 = c(0.04, 0.06),
+  # # # growth rates
+  # epsilon_1985 = c(0, 0),
+  # epsilon_1992 = c(0, 0),
+  # epsilon_2002 = c(0, 0),
+  # epsilon_2013 = c(0, 0),
+  # epsilon_2016 = c(0, 0),
 
   epsilon_1985 = c(0.059, 0.059),
   epsilon_1992 = c(0.048, 0.058),
@@ -1520,6 +1522,8 @@ ranges = rbind(
   prev_init_rest = c(0.000313, 0.00294), # initial prevalence of the other groups
 
 
+  # prev_init_FSW = c(0, 0), # initial prevalence of FSW
+  # prev_init_rest = c(0, 0), # initial prevalence of the other groups
 
 
   muF = c(0.0187, 0.02), # female mortality
@@ -1528,7 +1532,8 @@ ranges = rbind(
   rate_leave_pro_FSW = c(0, 0.55), # rate of exit of professional sex work
   # rate_leave_low_FSW = c(0, 1), # rate of exit of low level sex work
 
-  fraction_FSW_foreign = c(0.5, 0.9),
+  # fraction_FSW_foreign = c(0.5, 0.9),
+  fraction_FSW_foreign = c(0, 0),
 
   rate_leave_client = c(0, 0.295), # rate of exit of clients
 
@@ -1693,7 +1698,7 @@ ranges = rbind(
 
 
 # outputs -----------------------------------------------------------------
-outputs = c("zeta", "tau", "prep_offering_rate", "intervention_testing_increase", "sigma", "PrEPOnOff", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
+outputs = c("rate_move_out", "rate_move_in", "FSW_out", "FSW_in", "zeta", "tau", "prep_offering_rate", "intervention_testing_increase", "sigma", "PrEPOnOff", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
 
 
 # prev_points -------------------------------------------------------------
@@ -1835,6 +1840,26 @@ Upper = c(0.10, 0.18, 0.24, 0.7, 0.79, 0.9
 ),
 variable = c("Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
 
+ART_data_points_FSW_last_3 = data.frame(time = c(2015, 2016, 2017
+),
+Lower = c(0.50,	0.56, 0.80
+
+),
+Upper = c(0.7, 0.79, 0.9
+
+),
+variable = c("Pro FSW", "Pro FSW", "Pro FSW"))
+
+ART_data_points_first_and_last = data.frame(time = c(2010, 2017
+),
+Lower = c(0.07, 0.80
+
+),
+Upper = c(0.10, 0.9
+
+),
+variable = c("Pro FSW", "Pro FSW"))
+
 # ART_data_points_all = data.frame(time = c(2010, 2011, 2012, 2013, 2014, 2015, 2016,
 #                                           2010, 2011, 2012, 2013, 2014, 2015, 2016,
 #                                           2010, 2011, 2012, 2013, 2014, 2015, 2016,
@@ -1860,10 +1885,10 @@ variable = c("Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
 #####################################################
 
 # result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
-# result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
+result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 
-# result[[3]] = result[[2]]
+result[[3]] = result[[2]]
 
 
 
@@ -2075,11 +2100,11 @@ ggplot() + geom_line(data = prev, aes(x = time, y = Median))+ geom_ribbon(data =
   geom_blank(data = prev_axes, aes(x = time, y = value))
 
 
-# # plot prevalence in each group indiv runs
-# ggplot() + geom_line(data = prev_indiv_melted, aes(x = time, y = value, factor = variable, factor = run), alpha = 0.3) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
-#   geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
-#   geom_point(data = prev_points_80s, aes(x = time, y = value), colour = "red")+
-#   geom_blank(data = prev_axes, aes(x = time, y = value))
+# plot prevalence in each group indiv runs
+ggplot() + geom_line(data = prev_indiv_melted, aes(x = time, y = value, factor = variable, factor = run), alpha = 0.3) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
+  geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
+  geom_point(data = prev_points_80s, aes(x = time, y = value), colour = "red")+
+  geom_blank(data = prev_axes, aes(x = time, y = value))
 
 
 
