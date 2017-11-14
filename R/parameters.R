@@ -755,7 +755,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     kappaa = c(0.2, rep_len(0,(9-1))),
     kappab = c(0.2, rep_len(0,(9-1))),
     kappac = c(0.2, rep_len(0,(9-1))),
-    prep_dropout = 2
+    prep_dropout = 2,
+    eP1a = 0.9
 
 
 
@@ -1058,7 +1059,8 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     kappaa = c(0.2, rep_len(0,(9-1))),
     kappab = c(0.2, rep_len(0,(9-1))),
     kappac = c(0.2, rep_len(0,(9-1))),
-    prep_dropout = 2
+    prep_dropout = 2,
+    eP1a = 0.9
 
 
 

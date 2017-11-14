@@ -964,7 +964,7 @@ devtools::load_all()
 tbefore = Sys.time()
 
 
-number_simulations = 1
+number_simulations = 1000
 batch_size = 1
 
 
@@ -1481,7 +1481,7 @@ best_set = list(
 # yup
 ranges = rbind(
 
-  PrEPOnOff = c(1,1),
+  # PrEPOnOff = c(1,1),
 
   prep_dropout = c(2.11, 2.12),
   prep_offering_rate = c(0.09, 0.091),
@@ -1506,7 +1506,10 @@ ranges = rbind(
   # DEMOGRAPHIC
 
   fraction_F = c(0.512, 0.52), # fraction of population born female
-  frac_women_ProFSW = c(0.0024, 0.00715), # fraction of women that are professional FSW
+
+  frac_women_ProFSW = c(0.0024, 0.0036), # fraction of women that are professional FSW
+
+  # frac_women_ProFSW = c(0.0024, 0.00715), # fraction of women that are professional FSW
   frac_women_LowFSW = c(1, 2), # relative abundance of low FSW relative to pro FSW
 
   frac_men_client = c(0.074, 0.3), # fraction of men that are clients
@@ -1567,7 +1570,13 @@ ranges = rbind(
 
 
   # sex acts per partnership comm
-  n_y_comm_1985_ProFSW_Client = c(1, 3.3),
+  # n_y_comm_1985_ProFSW_Client = c(1, 3.3),
+  # n_y_comm_1985_ProFSW_Client = c(3.3, 3.3),
+  n_y_comm_1985_ProFSW_Client = c(1, 5),
+
+
+
+
   # n_y_comm_1985_Client_ProFSW = c(1.45, 11.45),
 
   n_y_comm_1985_LowFSW_Client = c(1, 1),
@@ -1645,8 +1654,18 @@ ranges = rbind(
   # condoms
 
   # fc_y_comm_1985_ProFSW_Client = c(0, 0),
-  fc_y_comm_1985_ProFSW_Client = c(0.54, 0.69),
-  fc_y_comm_1998_ProFSW_Client = c(0.54, 0.99),
+
+  # fc_y_comm_1985_ProFSW_Client = c(0.54, 0.69),
+  #
+  # fc_y_comm_1998_ProFSW_Client = c(0.54, 0.99),
+
+  fc_y_comm_1985_ProFSW_Client = c(0, 0.15),
+
+  fc_y_comm_1993_ProFSW_Client = c(0.18, 0.33),
+
+  fc_y_comm_1998_ProFSW_Client = c(0.4, 0.73),
+
+  fc_y_comm_2002_ProFSW_Client = c(0.61, 0.99),
 
   fc_y_comm_1985_LowFSW_Client = 0,
   fc_y_comm_2015_LowFSW_Client = 0.37,
@@ -2074,6 +2093,135 @@ ggplot(ART_coverage) +
   geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() +
   facet_wrap(~variable) + labs(y = "ART coverage ") +
   geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
+
+
+
+
+
+################################################################################################################################################################
+################################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+
+
+
+frac_N_discard_points_test = data.frame(variable = c("Pro FSW"),
+                                        min = c(0),
+                                        max = c(1))
+ART_data_points_test = data.frame(time = c(2014),
+                                  Lower = c(0),
+                                  Upper = c(1),
+                                  variable = c("test"))
+prev_points_test = data.frame(time = c(2015),
+                              variable = c(rep("test", 1)),
+                              value = c(0),
+                              lower = c(0),
+
+                              upper = c(1))
+
+Ntot_data_points_test = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
+                                   point = c(10, 10, 10, 10, 10),
+                                   lower = c(10, 10, 10, 10, 10),
+                                   upper = c(10000000000, 10000000000, 10000000000, 10000000000, 10000000000),
+                                   colour = c("data", "data", "data", "predicted", "predicted"))
+# # -----------------------------------------------------------------------
+
+
+number_of_prep_samples = 5
+
+new_parameters_ranges <- rbind(
+  eP1a = c(0.47, 0.98),
+  eP1b = c(0.2, 0.4),
+  psia = c(1, 4),
+  psib = c(1, 4),
+  prep_offering_rate = c(1, 10),
+  prep_dropout = c(1, 4),
+  PrEPOnOff = c(1,1)
+
+)
+
+
+
+best_pars_combined = result[[1]]
+lapply(best_pars_combined, function(x) {
+
+
+
+  # x[rownames(ranges)]
+
+  x = lapply(x[rownames(ranges)], function(y) {
+    if(length(y) == 9)
+      y = y[1] else y
+  })
+
+  x = x[-which(names(x) %in% rownames(new_parameters_ranges))]
+
+
+
+  combined_ranges = cbind(unlist(x[rownames(ranges)]), unlist(x[rownames(ranges)]))
+
+  combined_ranges = rbind(combined_ranges, new_parameters_ranges)
+
+
+  # i now have the ranges, have to put them into the function below
+  #test fitting to nothing first to see if works
+  #then add prep fitting
+
+
+  res = run_model_with_fit(number_simulations = number_of_prep_samples, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time,
+                                             ranges = combined_ranges, outputs = outputs,
+                                             prev_points = prev_points, frac_N_discard_points = frac_N_discard_points,
+                                             Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
+
+  # return(combined_ranges)
+
+}
+)
+
+
+
+parameters <- cotonou::lhs_parameters(number_of_prep_samples, set_pars = best_set, Ncat = 9, time = time,
+                                      ranges = combined_ranges, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
+
+res = lapply(parameters, return_outputs, main_model, time = time, outputs = outputs)
+
+likelihood_list = lapply(res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
+sorted_likelihood_list = sort(unlist(lapply(likelihood_list, function(x) x[[1]])))
+
+best_runs = which(unlist(lapply(likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
+
+
+
+################################################################################################################################################################
+################################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
