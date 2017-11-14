@@ -499,9 +499,9 @@ deriv(cumuARTinitiations[]) = (rho_intervention[i] + rho[i]*ART_eligible_CD4_abo
 deriv(cumuARTREinitiations[]) = iota[i] * I42[i] + iota[i] * I43[i] + iota[i] * I44[i] + iota[i] * I45[i]
 
 
-deriv(cumuTesting[]) =
-
-
+deriv(cumuTesting[]) = (tau[i] + tau_intervention[i] * PrEPOnOff) * S0[i] + (tau[i] + tau_intervention[i] * PrEPOnOff) * I01[i] +
+  test_rate_prep[i] * I11[i] + (tau[i] + tau_intervention[i] * PrEPOnOff) * I02[i] + (tau[i] + tau_intervention[i] * PrEPOnOff) * I03[i] +
+  (tau[i] + tau_intervention[i] * PrEPOnOff) * I04[i] + (RR_test_CD4200 * tau[i] + tau_intervention[i] * PrEPOnOff) * I05[i]
 
 
 
@@ -871,6 +871,7 @@ cumuInf_init[] = user()
 
 initial(cumuHIVDeaths[]) = 0
 initial(cumuARTREinitiations[]) = 0
+initial(cumuTesting[]) = 0
 
 initial(cumuARTinitiations[]) = 0
 
@@ -1146,6 +1147,7 @@ dim(n_noncomm) = c(Ncat, Ncat)
 dim(cumuHIVDeaths) = Ncat
 dim(cumuARTinitiations) = Ncat
 dim(cumuARTREinitiations) = Ncat
+dim(cumuTesting) = Ncat
 
 
 dim(cumuAllDeaths) = Ncat
