@@ -581,6 +581,9 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$prep_intervention_y = matrix(c(rep(0, 9), y$prep_offering_rate , rep(0, 9-1), y$prep_offering_rate , rep(0, 9-1), rep(0, 9)), ncol = 9, byrow = T)
 
 
+  y$kappaa = c(y$prep_dropout, rep_len(0,(8)))
+
+
   return(y)
 }
 
@@ -737,7 +740,11 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     intervention_testing_increase = 1.4,
     intervention_ART_increase = 6.5,
 
-    prep_offering_rate = 1
+    prep_offering_rate = 1,
+    kappaa = c(0.2, rep_len(0,(9-1))),
+    kappab = c(0.2, rep_len(0,(9-1))),
+    kappac = c(0.2, rep_len(0,(9-1))),
+    prep_dropout = 2
 
 
 
@@ -1033,7 +1040,11 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     intervention_testing_increase = 1.4,
     intervention_ART_increase = 6.5,
 
-    prep_offering_rate = 1
+    prep_offering_rate = 1,
+    kappaa = c(0.2, rep_len(0,(9-1))),
+    kappab = c(0.2, rep_len(0,(9-1))),
+    kappac = c(0.2, rep_len(0,(9-1))),
+    prep_dropout = 2
 
 
 

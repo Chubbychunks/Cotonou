@@ -1481,6 +1481,7 @@ best_set = list(
 # yup
 ranges = rbind(
 
+  prep_dropout = c(2.11, 2.12),
   prep_offering_rate = c(0.09, 0.091),
 
   # MISC
