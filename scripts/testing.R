@@ -1492,7 +1492,7 @@ ranges = rbind(
   # init_clientN_from_PCR = c(0,0),
   who_believe_comm = c(0, 1),
 
-  # # # growth rates
+  # # growth rates
   # epsilon_1985 = c(0, 0),
   # epsilon_1992 = c(0, 0),
   # epsilon_2002 = c(0, 0),
@@ -1510,6 +1510,7 @@ ranges = rbind(
   fraction_F = c(0.512, 0.52), # fraction of population born female
 
   frac_women_ProFSW = c(0.0024, 0.0036), # fraction of women that are professional FSW
+  # frac_women_ProFSW = c(0.0036, 0.0036), # fraction of women that are professional FSW
 
   # frac_women_ProFSW = c(0.0024, 0.00715), # fraction of women that are professional FSW
   frac_women_LowFSW = c(1, 2), # relative abundance of low FSW relative to pro FSW
@@ -1532,8 +1533,8 @@ ranges = rbind(
   rate_leave_pro_FSW = c(0, 0.55), # rate of exit of professional sex work
   # rate_leave_low_FSW = c(0, 1), # rate of exit of low level sex work
 
-  # fraction_FSW_foreign = c(0.5, 0.9),
-  fraction_FSW_foreign = c(0, 0),
+  fraction_FSW_foreign = c(0.5, 0.9),
+  # fraction_FSW_foreign = c(0, 0),
 
   rate_leave_client = c(0, 0.295), # rate of exit of clients
 
@@ -1698,7 +1699,7 @@ ranges = rbind(
 
 
 # outputs -----------------------------------------------------------------
-outputs = c("rate_move_out", "rate_move_in", "FSW_out", "FSW_in", "zeta", "tau", "prep_offering_rate", "intervention_testing_increase", "sigma", "PrEPOnOff", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
+outputs = c("new_people_in_group_FSW_only", "rate_move_out", "rate_move_in", "FSW_out", "FSW_in", "zeta", "tau", "prep_offering_rate", "intervention_testing_increase", "sigma", "PrEPOnOff", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
 
 
 # prev_points -------------------------------------------------------------

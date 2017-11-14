@@ -49,7 +49,7 @@ config(include) = "FOI.c"
 replaceDeaths = user()
 
 # births and prep movement
-E0[] = if(replaceDeaths == 1) mu[i] * N[i] + nu * N[i] + alphaItot[i] + epsilon * Ntot * omega[i] - S0[i] * zeta[i] else new_people_in_group[i] - S0[i] * zeta[i]
+E0[] = if(replaceDeaths == 1) mu[i] * N[i] + nu * N[i] + alphaItot[i] + epsilon * Ntot * omega[i] - S0[i] * zeta[i] else new_people_in_group[i] - S0[i] * zeta[i] + new_people_in_group_FSW_only[i]
 E1a[] = zeta[i] * fPa * S0[i] - psia[i] * S1a[i] - kappaa[i] * S1a[i]
 E1b[] = zeta[i] * fPb * S0[i] + psia[i] * S1a[i] - psib[i] * S1b[i]  - kappab[i] * S1b[i]
 E1c[] = zeta[i] * fPc * S0[i] + psib[i] * S1b[i] - kappac[i] * S1c[i]
@@ -113,9 +113,18 @@ output(new_people) = new_people
 new_people_in_group[] = (epsilon + mu[i] + nu) * Ntot * omega[i]
 
 
+new_people_in_group_FSW_only[] =  rate_leave_pro_FSW * N[i] * fraction_FSW_foreign * FSW_ONLY[i]
+
+rate_leave_pro_FSW = user()
+fraction_FSW_foreign = user()
+FSW_ONLY[] = user()
+dim(FSW_ONLY) = Ncat
 
 dim(new_people_in_group) = Ncat
 output(new_people_in_group[]) = new_people_in_group
+
+dim(new_people_in_group_FSW_only) = Ncat
+output(new_people_in_group_FSW_only[]) = new_people_in_group_FSW_only
 
 # MOVEMENT
 ##############################################################################

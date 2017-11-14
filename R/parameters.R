@@ -592,6 +592,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$kappac = y$kappaa
 
 
+
   return(y)
 }
 
@@ -1588,7 +1589,9 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    intervention_testing_increase = 1.4,
                    intervention_ART_increase = 6.5,
 
-                   prep_offering_rate = 1
+                   prep_offering_rate = 1,
+
+                   FSW_ONLY = c(1, 1, rep(0, 7))
 
 
 
