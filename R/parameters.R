@@ -403,6 +403,11 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   if(length(y$eP1d) == 1)
     y$eP1d = c(y$eP1d, rep_len(0, 8))
 
+  if(length(y$psia) == 1)
+    y$psia = c(y$psia, rep_len(0, 8))
+  if(length(y$psib) == 1)
+    y$psib = c(y$psib, rep_len(0, 8))
+
 
   y$phi2 = c(y$dropout_rate_FSW, rep(y$dropout_rate_not_FSW, (Ncat-1)))
   y$phi3 = y$phi2
@@ -583,6 +588,9 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
   y$kappaa = c(y$prep_dropout, rep_len(0,(8)))
 
+  y$kappab = y$kappaa
+  y$kappac = y$kappaa
+
 
   return(y)
 }
@@ -739,6 +747,9 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
 
     intervention_testing_increase = 1.4,
     intervention_ART_increase = 6.5,
+
+    psia = rep_len(0.1,9),
+    psib = rep_len(0.1,9),
 
     prep_offering_rate = 1,
     kappaa = c(0.2, rep_len(0,(9-1))),
@@ -1039,6 +1050,9 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
 
     intervention_testing_increase = 1.4,
     intervention_ART_increase = 6.5,
+
+    psia = rep_len(0.1,9),
+    psib = rep_len(0.1,9),
 
     prep_offering_rate = 1,
     kappaa = c(0.2, rep_len(0,(9-1))),

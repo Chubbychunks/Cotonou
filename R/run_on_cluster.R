@@ -226,6 +226,12 @@ run_model_with_fit_cluster <- function(number_simulations, par_seq, condom_seq, 
 
 }
 
+
+
+
+
+
+
 #' @export
 #' @useDynLib cotonou
 run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points) {

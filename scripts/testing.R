@@ -964,7 +964,7 @@ devtools::load_all()
 tbefore = Sys.time()
 
 
-number_simulations = 2
+number_simulations = 1
 batch_size = 1
 
 
@@ -1086,7 +1086,7 @@ best_set = list(
 
 
   test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
-  sigma = c(1, 0, 0, 0, 0, 0, 0, 0, 0),
+  sigma = c(0.86, 0, 0, 0, 0, 0, 0, 0, 0),
   prep_intervention_t = c(1985, 2013, 2015, 2016),
   prep_intervention_y = matrix(c(rep(0, 9), 1, rep(0, 9-1), rep(0, 9), rep(0, 9)), ncol = 9, byrow = T),
   PrEPOnOff = 0,
@@ -1481,6 +1481,8 @@ best_set = list(
 # yup
 ranges = rbind(
 
+  PrEPOnOff = c(1,1),
+
   prep_dropout = c(2.11, 2.12),
   prep_offering_rate = c(0.09, 0.091),
 
@@ -1672,7 +1674,7 @@ ranges = rbind(
 
 
 # outputs -----------------------------------------------------------------
-outputs = c("prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
+outputs = c("zeta", "tau", "prep_offering_rate", "intervention_testing_increase", "sigma", "PrEPOnOff", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
 
 
 # prev_points -------------------------------------------------------------
@@ -1843,6 +1845,7 @@ variable = c("Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 
 # result[[3]] = result[[2]]
+
 
 
 # test ranges
