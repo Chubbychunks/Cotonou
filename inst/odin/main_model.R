@@ -485,6 +485,26 @@ deriv(cumuHIVDeaths[]) = alpha01[i] * I01[i] + alpha11[i] * I11[i] + alpha02[i] 
   alpha32[i] * I32[i] + alpha33[i] * I33[i] + alpha34[i] * I34[i] + alpha35[i] * I35[i] +
   alpha42[i] * I42[i] + alpha43[i] * I43[i] + alpha44[i] * I44[i] + alpha45[i] * I45[i]
 
+deriv(cumuAllDeaths[]) = (alpha01[i] + mu[i]) * I01[i] + (alpha11[i] + mu[i]) * I11[i] + (alpha02[i] + mu[i]) * I02[i] + (alpha03[i] + mu[i]) * I03[i] + (alpha04[i] + mu[i]) * I04[i] +
+  (alpha05[i] + mu[i]) * I05[i] + (alpha22[i] + mu[i]) * I22[i] + (alpha23[i] + mu[i]) * I23[i] + (alpha24[i] + mu[i]) * I24[i] + (alpha25[i] + mu[i]) * I25[i] +
+  (alpha32[i] + mu[i]) * I32[i] + (alpha33[i] + mu[i]) * I33[i] + (alpha34[i] + mu[i]) * I34[i] + (alpha35[i] + mu[i]) * I35[i] +
+  (alpha42[i] + mu[i]) * I42[i] + (alpha43[i] + mu[i]) * I43[i] + (alpha44[i] + mu[i]) * I44[i] + (alpha45[i] + mu[i]) * I45[i] +
+  mu[i] * (S0[i] + S1a[i] + S1b[i] + S1c[i] + S1d[i])
+
+deriv(cumuARTinitiations[]) = (rho_intervention[i] + rho[i]*ART_eligible_CD4_above_500) * I22[i] + (rho[i]*ART_eligible_CD4_350_500 + rho_intervention[i]) * I23[i] +
+  (rho[i]*ART_eligible_CD4_200_349 + rho_intervention[i]) * I24[i] + (rho[i]*ART_eligible_CD4_below_200 + rho_intervention[i]) * I25[i]
+
+
+
+deriv(cumuARTREinitiations[]) = iota[i] * I42[i] + iota[i] * I43[i] + iota[i] * I44[i] + iota[i] * I45[i]
+
+
+deriv(cumuTesting[]) =
+
+
+
+
+
 cumuInftot = sum(cumuInf)
 output(cumuInftot) = cumuInftot
 
@@ -850,7 +870,11 @@ initial(cumuInf[]) = cumuInf_init[i]
 cumuInf_init[] = user()
 
 initial(cumuHIVDeaths[]) = 0
+initial(cumuARTREinitiations[]) = 0
 
+initial(cumuARTinitiations[]) = 0
+
+initial(cumuAllDeaths[]) = 0
 
 initial(OnPrEP[]) = OnPrEP_init[i]
 OnPrEP_init[] = user()
@@ -1120,6 +1144,13 @@ dim(n_noncomm) = c(Ncat, Ncat)
 
 
 dim(cumuHIVDeaths) = Ncat
+dim(cumuARTinitiations) = Ncat
+dim(cumuARTREinitiations) = Ncat
+
+
+dim(cumuAllDeaths) = Ncat
+
+
 dim(cumuInf) = Ncat
 dim(OnPrEP) = Ncat
 
