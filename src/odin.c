@@ -183,8 +183,8 @@ typedef struct main_model_pars {
   int dim_infect_ART;
   double *infect_ART;
   int offset_output_infect_ART;
-  int dim_prep_intervention;
-  double *prep_intervention;
+  int dim_prep_offered;
+  double *prep_offered;
   int dim_omega;
   double *omega;
   int offset_output_omega;
@@ -692,7 +692,7 @@ typedef struct main_model_pars {
   void *interpolate_infect_ART;
   void *interpolate_epsilon;
   double epsilon;
-  void *interpolate_prep_intervention;
+  void *interpolate_prep_offered;
   void *interpolate_fc_comm;
   void *interpolate_fP_comm;
   void *interpolate_fc_noncomm;
@@ -805,7 +805,7 @@ SEXP main_model_create(SEXP user, SEXP odin_use_dde) {
   main_model_p->frac_F = NULL;
   main_model_p->frac_N_sexualpop = NULL;
   main_model_p->infect_ART = NULL;
-  main_model_p->prep_intervention = NULL;
+  main_model_p->prep_offered = NULL;
   main_model_p->omega = NULL;
   main_model_p->frac_N = NULL;
   main_model_p->mu = NULL;
@@ -1390,9 +1390,9 @@ SEXP main_model_set_user(main_model_pars *main_model_p, SEXP user) {
   main_model_p->dim_infect_ART = main_model_p->Ncat;
   main_model_p->infect_ART = (double*) Calloc(main_model_p->dim_infect_ART, double);
   main_model_p->offset_output_infect_ART = main_model_p->offset_output_frac_N_sexualpop + main_model_p->dim_frac_N_sexualpop;
-  Free(main_model_p->prep_intervention);
-  main_model_p->dim_prep_intervention = main_model_p->Ncat;
-  main_model_p->prep_intervention = (double*) Calloc(main_model_p->dim_prep_intervention, double);
+  Free(main_model_p->prep_offered);
+  main_model_p->dim_prep_offered = main_model_p->Ncat;
+  main_model_p->prep_offered = (double*) Calloc(main_model_p->dim_prep_offered, double);
   Free(main_model_p->omega);
   main_model_p->dim_omega = main_model_p->Ncat;
   main_model_p->omega = (double*) Calloc(main_model_p->dim_omega, double);
@@ -2262,10 +2262,10 @@ SEXP main_model_set_user(main_model_pars *main_model_p, SEXP user) {
   odin_interpolate_check(main_model_p->dim_epsilon_t, main_model_p->dim_epsilon_y, 0, "epsilon_y", "epsilon");
   cinterpolate_free(main_model_p->interpolate_epsilon);
   main_model_p->interpolate_epsilon = cinterpolate_alloc("constant", main_model_p->dim_epsilon_t, 1, main_model_p->epsilon_t, main_model_p->epsilon_y);
-  odin_interpolate_check(main_model_p->dim_prep_intervention_t, main_model_p->dim_prep_intervention_y_1, 1, "prep_intervention_y", "prep_intervention");
-  odin_interpolate_check(main_model_p->dim_prep_intervention, main_model_p->dim_prep_intervention_y_2, 2, "prep_intervention_y", "prep_intervention");
-  cinterpolate_free(main_model_p->interpolate_prep_intervention);
-  main_model_p->interpolate_prep_intervention = cinterpolate_alloc("constant", main_model_p->dim_prep_intervention_t, main_model_p->dim_prep_intervention, main_model_p->prep_intervention_t, main_model_p->prep_intervention_y);
+  odin_interpolate_check(main_model_p->dim_prep_intervention_t, main_model_p->dim_prep_intervention_y_1, 1, "prep_intervention_y", "prep_offered");
+  odin_interpolate_check(main_model_p->dim_prep_offered, main_model_p->dim_prep_intervention_y_2, 2, "prep_intervention_y", "prep_offered");
+  cinterpolate_free(main_model_p->interpolate_prep_offered);
+  main_model_p->interpolate_prep_offered = cinterpolate_alloc("constant", main_model_p->dim_prep_intervention_t, main_model_p->dim_prep_offered, main_model_p->prep_intervention_t, main_model_p->prep_intervention_y);
   odin_interpolate_check(main_model_p->dim_fc_t_comm, main_model_p->dim_fc_y_comm_1, 1, "fc_y_comm", "fc_comm");
   odin_interpolate_check(main_model_p->dim_fc_comm_1, main_model_p->dim_fc_y_comm_2, 2, "fc_y_comm", "fc_comm");
   odin_interpolate_check(main_model_p->dim_fc_comm_2, main_model_p->dim_fc_y_comm_3, 3, "fc_y_comm", "fc_comm");
@@ -2365,7 +2365,7 @@ void main_model_finalize(SEXP main_model_ptr) {
     Free(main_model_p->frac_F);
     Free(main_model_p->frac_N_sexualpop);
     Free(main_model_p->infect_ART);
-    Free(main_model_p->prep_intervention);
+    Free(main_model_p->prep_offered);
     Free(main_model_p->omega);
     Free(main_model_p->frac_N);
     Free(main_model_p->mu);
@@ -2543,7 +2543,7 @@ void main_model_finalize(SEXP main_model_ptr) {
     cinterpolate_free(main_model_p->interpolate_rho_intervention);
     cinterpolate_free(main_model_p->interpolate_infect_ART);
     cinterpolate_free(main_model_p->interpolate_epsilon);
-    cinterpolate_free(main_model_p->interpolate_prep_intervention);
+    cinterpolate_free(main_model_p->interpolate_prep_offered);
     cinterpolate_free(main_model_p->interpolate_fc_comm);
     cinterpolate_free(main_model_p->interpolate_fP_comm);
     cinterpolate_free(main_model_p->interpolate_fc_noncomm);
@@ -2666,9 +2666,9 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   }
   cinterpolate_eval(t, main_model_p->interpolate_infect_ART, main_model_p->infect_ART);
   cinterpolate_eval(t, main_model_p->interpolate_epsilon, &(main_model_p->epsilon));
-  cinterpolate_eval(t, main_model_p->interpolate_prep_intervention, main_model_p->prep_intervention);
+  cinterpolate_eval(t, main_model_p->interpolate_prep_offered, main_model_p->prep_offered);
   for (int i = 0; i < main_model_p->dim_zeta; ++i) {
-    main_model_p->zeta[i] = (main_model_p->tau[i] + main_model_p->tau_intervention[i]) * main_model_p->sigma[i] * main_model_p->prep_intervention[i] * main_model_p->PrEPOnOff;
+    main_model_p->zeta[i] = (main_model_p->tau[i] + main_model_p->tau_intervention[i]) * main_model_p->sigma[i] * main_model_p->prep_offered[i] * main_model_p->PrEPOnOff;
   }
   cinterpolate_eval(t, main_model_p->interpolate_fc_comm, main_model_p->fc_comm);
   cinterpolate_eval(t, main_model_p->interpolate_fP_comm, main_model_p->fP_comm);
@@ -3324,9 +3324,9 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   memcpy(output_infect_ART, main_model_p->infect_ART, main_model_p->dim_infect_ART * sizeof(double));
   cinterpolate_eval(t, main_model_p->interpolate_epsilon, &(main_model_p->epsilon));
   output[16] = main_model_p->epsilon;
-  cinterpolate_eval(t, main_model_p->interpolate_prep_intervention, main_model_p->prep_intervention);
+  cinterpolate_eval(t, main_model_p->interpolate_prep_offered, main_model_p->prep_offered);
   for (int i = 0; i < main_model_p->dim_zeta; ++i) {
-    main_model_p->zeta[i] = (main_model_p->tau[i] + main_model_p->tau_intervention[i]) * main_model_p->sigma[i] * main_model_p->prep_intervention[i] * main_model_p->PrEPOnOff;
+    main_model_p->zeta[i] = (main_model_p->tau[i] + main_model_p->tau_intervention[i]) * main_model_p->sigma[i] * main_model_p->prep_offered[i] * main_model_p->PrEPOnOff;
   }
   memcpy(output_zeta, main_model_p->zeta, main_model_p->dim_zeta * sizeof(double));
   memcpy(output_omega, main_model_p->omega, main_model_p->dim_omega * sizeof(double));
@@ -3819,9 +3819,9 @@ SEXP main_model_contents(SEXP main_model_ptr) {
   SET_VECTOR_ELT(state, 172, allocVector(REALSXP, main_model_p->dim_infect_ART));
   memcpy(REAL(VECTOR_ELT(state, 172)), main_model_p->infect_ART, main_model_p->dim_infect_ART * sizeof(double));
   SET_VECTOR_ELT(state, 173, ScalarInteger(main_model_p->offset_output_infect_ART));
-  SET_VECTOR_ELT(state, 174, ScalarInteger(main_model_p->dim_prep_intervention));
-  SET_VECTOR_ELT(state, 175, allocVector(REALSXP, main_model_p->dim_prep_intervention));
-  memcpy(REAL(VECTOR_ELT(state, 175)), main_model_p->prep_intervention, main_model_p->dim_prep_intervention * sizeof(double));
+  SET_VECTOR_ELT(state, 174, ScalarInteger(main_model_p->dim_prep_offered));
+  SET_VECTOR_ELT(state, 175, allocVector(REALSXP, main_model_p->dim_prep_offered));
+  memcpy(REAL(VECTOR_ELT(state, 175)), main_model_p->prep_offered, main_model_p->dim_prep_offered * sizeof(double));
   SET_VECTOR_ELT(state, 176, ScalarInteger(main_model_p->dim_omega));
   SET_VECTOR_ELT(state, 177, allocVector(REALSXP, main_model_p->dim_omega));
   memcpy(REAL(VECTOR_ELT(state, 177)), main_model_p->omega, main_model_p->dim_omega * sizeof(double));
@@ -4700,8 +4700,8 @@ SEXP main_model_contents(SEXP main_model_ptr) {
   SET_STRING_ELT(state_names, 171, mkChar("dim_infect_ART"));
   SET_STRING_ELT(state_names, 172, mkChar("infect_ART"));
   SET_STRING_ELT(state_names, 173, mkChar("offset_output_infect_ART"));
-  SET_STRING_ELT(state_names, 174, mkChar("dim_prep_intervention"));
-  SET_STRING_ELT(state_names, 175, mkChar("prep_intervention"));
+  SET_STRING_ELT(state_names, 174, mkChar("dim_prep_offered"));
+  SET_STRING_ELT(state_names, 175, mkChar("prep_offered"));
   SET_STRING_ELT(state_names, 176, mkChar("dim_omega"));
   SET_STRING_ELT(state_names, 177, mkChar("omega"));
   SET_STRING_ELT(state_names, 178, mkChar("offset_output_omega"));
@@ -5209,7 +5209,7 @@ SEXP main_model_contents(SEXP main_model_ptr) {
   SET_STRING_ELT(state_names, 680, mkChar("interpolate_infect_ART"));
   SET_STRING_ELT(state_names, 681, mkChar("interpolate_epsilon"));
   SET_STRING_ELT(state_names, 682, mkChar("epsilon"));
-  SET_STRING_ELT(state_names, 683, mkChar("interpolate_prep_intervention"));
+  SET_STRING_ELT(state_names, 683, mkChar("interpolate_prep_offered"));
   SET_STRING_ELT(state_names, 684, mkChar("interpolate_fc_comm"));
   SET_STRING_ELT(state_names, 685, mkChar("interpolate_fP_comm"));
   SET_STRING_ELT(state_names, 686, mkChar("interpolate_fc_noncomm"));

@@ -964,7 +964,7 @@ devtools::load_all()
 tbefore = Sys.time()
 
 
-number_simulations = 1
+number_simulations = 2
 batch_size = 1
 
 
@@ -1480,6 +1480,8 @@ best_set = list(
 
 # yup
 ranges = rbind(
+
+  prep_offering_rate = c(0.09, 0.091),
 
   # MISC
   # init_clientN_from_PCR = c(0,0),

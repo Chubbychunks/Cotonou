@@ -578,6 +578,8 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
 
 
+  y$prep_intervention_y = matrix(c(rep(0, 9), y$prep_offering_rate , rep(0, 9-1), y$prep_offering_rate , rep(0, 9-1), rep(0, 9)), ncol = 9, byrow = T)
+
 
   return(y)
 }
@@ -733,7 +735,9 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 6, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
 
     intervention_testing_increase = 1.4,
-    intervention_ART_increase = 6.5
+    intervention_ART_increase = 6.5,
+
+    prep_offering_rate = 1
 
 
 
@@ -1027,7 +1031,9 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 6, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
 
     intervention_testing_increase = 1.4,
-    intervention_ART_increase = 6.5
+    intervention_ART_increase = 6.5,
+
+    prep_offering_rate = 1
 
 
 
@@ -1553,7 +1559,9 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 6, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
 
                    intervention_testing_increase = 1.4,
-                   intervention_ART_increase = 6.5
+                   intervention_ART_increase = 6.5,
+
+                   prep_offering_rate = 1
 
 
 

@@ -339,7 +339,7 @@ n_comm[,] = interpolate(n_t_comm, n_y_comm, "linear")
 n_noncomm[,] = interpolate(n_t_noncomm, n_y_noncomm, "linear")
 
 # prep_intervention is offering rate sigma is acceptance rate
-zeta[] = (tau[i] + tau_intervention[i]) * sigma[i] * prep_intervention[i] * PrEPOnOff
+zeta[] = (tau[i] + tau_intervention[i]) * sigma[i] * prep_offered[i] * PrEPOnOff
 
 tau_intervention_t[] = user()
 tau_intervention_y[,] = user()
@@ -384,7 +384,7 @@ dim(sigma) = Ncat
 sigma[] = user()
 
 
-prep_intervention[] = interpolate(prep_intervention_t, prep_intervention_y, "constant")
+prep_offered[] = interpolate(prep_intervention_t, prep_intervention_y, "constant")
 
 #FOI of j on i
 lambda[,] = if (i == j) 0 else compute_lambda(c_comm_balanced[i], p_comm[i,j], S0[j], S1a[j], S1b[j], S1c[j], I01[j], I11[j], I02[j], I03[j], I04[j], I05[j],
@@ -1054,7 +1054,7 @@ dur_FSW = user()
 
 
 
-dim(prep_intervention) = Ncat
+dim(prep_offered) = Ncat
 
 #parameters
 
