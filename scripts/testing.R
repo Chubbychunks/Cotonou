@@ -964,13 +964,13 @@ devtools::load_all()
 tbefore = Sys.time()
 
 
-number_simulations = 50
+number_simulations = 1
 batch_size = 10
 
 
 epi_start = 1986
 # epi_end = 2030
-epi_end = 2017
+epi_end = 2020
 
 # setup -------------------------------------------------------------------
 par_seq = c("c_comm", "c_noncomm")
@@ -1481,7 +1481,7 @@ best_set = list(
 # yup
 ranges = rbind(
 
-  # PrEPOnOff = c(1,1),
+  PrEPOnOff = c(1,1),
 
   # betaMtoF_baseline = c(0, 1),
 
@@ -1707,7 +1707,11 @@ ranges = rbind(
 
 
 # outputs -----------------------------------------------------------------
-outputs = c("intervention_ART_increase", "testing_prob", "rho_intervention", "ART_eligible_CD4_above_500", "ART_eligible_CD4_350_500", "ART_eligible_CD4_200_349", "ART_eligible_CD4_below_200", "new_people_in_group_FSW_only", "rate_move_out", "rate_move_in", "FSW_out", "FSW_in", "zeta", "tau", "prep_offering_rate", "intervention_testing_increase", "sigma", "PrEPOnOff", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
+outputs = c("OnPrEP1a", "OnPrEP1b", "OnPrEP1c", "ART_eligible_CD4_above_500", "ART_eligible_CD4_350_500","ART_eligible_CD4_200_349","ART_eligible_CD4_below_200",
+            "cumuAllDeaths", "cumuHIVDeaths", "cumuARTinitiations", "cumuARTREinitiations",
+            "OnPrEP", "ART_sex_ratio", "pc_S1b", "pc_S1a", "pc_S1c", "cumuInf",
+            "intervention_ART_increase", "testing_prob", "rho_intervention", "ART_eligible_CD4_above_500", "ART_eligible_CD4_350_500", "ART_eligible_CD4_200_349", "ART_eligible_CD4_below_200", "new_people_in_group_FSW_only", "rate_move_out", "rate_move_in", "FSW_out", "FSW_in", "zeta", "tau", "prep_offering_rate", "intervention_testing_increase", "sigma", "PrEPOnOff", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
+
 
 
 # prev_points -------------------------------------------------------------
@@ -1902,6 +1906,24 @@ result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq =
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 
 result[[3]] = result[[2]]
+
+
+
+
+
+data.frame(time, result[[2]][[1]]$OnPrEP1c)
+
+
+data.frame(time, result[[2]][[1]]$ART_eligible_CD4_below_200)
+
+
+result[[2]][[1]]$cumuHIVDeaths
+
+
+
+
+
+
 
 
 
@@ -2246,13 +2268,23 @@ lapply(best_pars_combined, function(x) {
 
   res = run_model_with_fit(number_simulations = number_of_prep_samples, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time,
                                              ranges = combined_ranges, outputs = outputs,
-                                             prev_points = prev_points, frac_N_discard_points = frac_N_discard_points,
+                                             prev_points = prev_points_test, frac_N_discard_points = frac_N_discard_points,
                                              Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
 
   # return(combined_ranges)
 
 }
 )
+
+
+
+
+
+
+
+
+
+
 
 
 

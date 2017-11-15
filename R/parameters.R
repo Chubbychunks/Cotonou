@@ -578,8 +578,8 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
 
 
-  y$tau_intervention_y = matrix(c(rep(0, 9),  y$intervention_testing_increase, c(rep(0, 8)),  y$intervention_testing_increase, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T)
-  y$rho_intervention_y = matrix(c(rep(0, 9), y$intervention_ART_increase, c(rep(0, 8)), y$intervention_ART_increase, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T)
+  y$tau_intervention_y = matrix(c(rep(0, 9),  y$intervention_testing_increase, c(rep(0, 8)),  y$intervention_testing_increase, c(rep(0, 8)), rep(0, 9)), ncol = 9, nrow = 4, byrow = T)
+  y$rho_intervention_y = matrix(c(rep(0, 9), y$intervention_ART_increase, c(rep(0, 8)), y$intervention_ART_increase, c(rep(0, 8)), rep(0, 9)), ncol = 9, nrow = 4, byrow = T)
 
 
 
@@ -740,11 +740,11 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     ART_reinit_rate = 0.1,
     RR_test_CD4200 = 5.4,
 
-    tau_intervention_t = c(1986, 2015, 2017),
-    rho_intervention_t = c(1986, 2015, 2017),
+    tau_intervention_t = c(1986, 2015, 2016, 2017),
+    rho_intervention_t = c(1986, 2015, 2016, 2017),
 
-    tau_intervention_y = matrix(c(rep(0, 9), 1.5, c(rep(0, 8)), 1.5, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
-    rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 6, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
+    tau_intervention_y = matrix(c(rep(0, 9), 1.5, c(rep(0, 8)), 1.5, c(rep(0, 8)), rep(0, 9)), ncol = 9, nrow = 4, byrow = T),
+    rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 6, c(rep(0, 8)), rep(0, 9)), ncol = 9, nrow = 4, byrow = T),
 
     intervention_testing_increase = 1.4,
     intervention_ART_increase = 6.5,
@@ -1045,11 +1045,11 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     ART_reinit_rate = 0.1,
     RR_test_CD4200 = 5.4,
 
-    tau_intervention_t = c(1986, 2015, 2017),
-    rho_intervention_t = c(1986, 2015, 2017),
+    tau_intervention_t = c(1986, 2015, 2016, 2017),
+    rho_intervention_t = c(1986, 2015, 2016, 2017),
 
-    tau_intervention_y = matrix(c(rep(0, 9), 1.5, c(rep(0, 8)), 1.5, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
-    rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 6, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
+    tau_intervention_y = matrix(c(rep(0, 9), 1.5, c(rep(0, 8)), 1.5, c(rep(0, 8)), rep(0, 9)), ncol = 9, nrow = 4, byrow = T),
+    rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 6, c(rep(0, 8)), rep(0, 9)), ncol = 9, nrow = 4, byrow = T),
 
     intervention_testing_increase = 1.4,
     intervention_ART_increase = 6.5,
@@ -1227,8 +1227,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
                    ART_eligible_CD4_above_500_y = c(0, 0, 0, 0, 1),
                    ART_eligible_CD4_350_500_y = c(0, 0, 0, 1, 1),
-                   ART_eligible_CD4_200_349_y = c(0.1, 0.1, 1, 1, 1),
-                   ART_eligible_CD4_below_200_y = c(1, 1, 1, 1, 1),
+                   ART_eligible_CD4_200_349_y = c(0, 0.1, 1, 1, 1),
+                   ART_eligible_CD4_below_200_y = c(0, 1, 1, 1, 1),
 
 
                    #                    epsilon_t_comm = c(1985, 1991.99, 1992, 2001.99, 2002, 2012.99, 2013, 2016),
@@ -1582,11 +1582,11 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    ART_recruit_rate = 0.2,
                    ART_reinit_rate = 0.1,
 
-                   tau_intervention_t = c(1986, 2015, 2017),
-                   rho_intervention_t = c(1986, 2015, 2017),
+                   tau_intervention_t = c(1986, 2015, 2016, 2017),
+                   rho_intervention_t = c(1986, 2015, 2016, 2017),
 
-                   tau_intervention_y = matrix(c(rep(0, 9), 1.5, c(rep(0, 8)), 0, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
-                   rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 0, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
+                   tau_intervention_y = matrix(c(rep(0, 9), 1.5, c(rep(0, 8)), 1.5, c(rep(0, 8)), rep(0, 9)), ncol = 9, nrow = 4, byrow = T),
+                   rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 6, c(rep(0, 8)), rep(0, 9)), ncol = 9, nrow = 4, byrow = T),
 
                    intervention_testing_increase = 1.4,
                    intervention_ART_increase = 6.5,

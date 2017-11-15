@@ -286,6 +286,13 @@ ART_eligible_CD4_350_500 = interpolate(ART_eligible_CD4_350_500_t, ART_eligible_
 ART_eligible_CD4_200_349 = interpolate(ART_eligible_CD4_200_349_t, ART_eligible_CD4_200_349_y, "constant")
 ART_eligible_CD4_below_200 = interpolate(ART_eligible_CD4_below_200_t, ART_eligible_CD4_below_200_y, "constant")
 
+
+output(ART_eligible_CD4_above_500) = ART_eligible_CD4_above_500
+output(ART_eligible_CD4_350_500) = ART_eligible_CD4_350_500
+output(ART_eligible_CD4_200_349) = ART_eligible_CD4_200_349
+output(ART_eligible_CD4_below_200) = ART_eligible_CD4_below_200
+
+
 ART_eligible_CD4_above_500_t[] = user()
 ART_eligible_CD4_350_500_t[] = user()
 ART_eligible_CD4_200_349_t[] = user()
@@ -503,6 +510,11 @@ output(E1d[]) = E1d
 deriv(cumuInf[]) = S0[i] * lambda_sum_0[i] + S1a[i] * lambda_sum_1a[i] + S1b[i] * lambda_sum_1b[i] + S1c[i] * lambda_sum_1c[i] + S1d[i] * lambda_sum_1d[i]
 deriv(OnPrEP[]) = zeta[i] * S0[i]
 
+deriv(OnPrEP1a[])  = zeta[i] * fPa * S0[i]
+deriv(OnPrEP1b[])  = zeta[i] * fPb * S0[i]
+deriv(OnPrEP1c[])  = zeta[i] * fPc * S0[i]
+
+
 deriv(cumuHIVDeaths[]) = alpha01[i] * I01[i] + alpha11[i] * I11[i] + alpha02[i] * I02[i] + alpha03[i] * I03[i] + alpha04[i] * I04[i] +
   alpha05[i] * I05[i] + alpha22[i] * I22[i] + alpha23[i] * I23[i] + alpha24[i] * I24[i] + alpha25[i] * I25[i] +
   alpha32[i] * I32[i] + alpha33[i] * I33[i] + alpha34[i] * I34[i] + alpha35[i] * I35[i] +
@@ -522,9 +534,29 @@ deriv(cumuARTinitiations[]) = (rho_intervention[i] + rho[i]*ART_eligible_CD4_abo
 deriv(cumuARTREinitiations[]) = iota[i] * I42[i] + iota[i] * I43[i] + iota[i] * I44[i] + iota[i] * I45[i]
 
 
-deriv(cumuTesting[]) = (tau[i] + tau_intervention[i] * PrEPOnOff) * S0[i] + (tau[i] + tau_intervention[i] * PrEPOnOff) * I01[i] +
-  test_rate_prep[i] * I11[i] + (tau[i] + tau_intervention[i] * PrEPOnOff) * I02[i] + (tau[i] + tau_intervention[i] * PrEPOnOff) * I03[i] +
-  (tau[i] + tau_intervention[i] * PrEPOnOff) * I04[i] + (RR_test_CD4200 * tau[i] + tau_intervention[i] * PrEPOnOff) * I05[i]
+
+
+deriv(S0_infections[]) = S0[i] * lambda_sum_0[i]
+deriv(S1a_infections[]) = S1a[i] * lambda_sum_1a[i]
+deriv(S1b_infections[]) = S1b[i] * lambda_sum_1b[i]
+deriv(S1c_infections[]) = S1c[i] * lambda_sum_1c[i]
+deriv(S1d_infections[]) = S1d[i] * lambda_sum_1d[i]
+
+initial(S0_infections[]) = 0
+initial(S1a_infections[]) = 0
+initial(S1b_infections[]) = 0
+initial(S1c_infections[]) = 0
+initial(S1d_infections[]) = 0
+
+dim(S0_infections) = Ncat
+dim(S1a_infections) = Ncat
+dim(S1b_infections) = Ncat
+dim(S1c_infections) = Ncat
+dim(S1d_infections) = Ncat
+
+# deriv(cumuTesting[]) = (tau[i] + tau_intervention[i] * PrEPOnOff) * S0[i] + (tau[i] + tau_intervention[i] * PrEPOnOff) * I01[i] +
+#   test_rate_prep[i] * I11[i] + (tau[i] + tau_intervention[i] * PrEPOnOff) * I02[i] + (tau[i] + tau_intervention[i] * PrEPOnOff) * I03[i] +
+#   (tau[i] + tau_intervention[i] * PrEPOnOff) * I04[i] + (RR_test_CD4200 * tau[i] + tau_intervention[i] * PrEPOnOff) * I05[i]
 
 
 
@@ -723,12 +755,34 @@ ART_coverage_all = (I32[1] + I33[1] + I34[1] + I35[1] +
      I22[6] + I23[6] + I24[6] + I25[6] + I32[6] + I33[6] + I34[6] + I35[6] +
      I42[6] + I43[6] + I44[6] + I45[6])
 
+
+ART_coverage[] = (I32[i] + I33[i] + I34[i] + I35[i]) /
+  (I01[i] + I11[i] + I02[i] + I03[i] + I04[i] + I05[i] +
+     I22[i] + I23[i] + I24[i] + I25[i] + I32[i] + I33[i] + I34[i] + I35[i] +
+     I42[i] + I43[i] + I44[i] + I45[i])
+
+output(ART_coverage[]) = ART_coverage
+
+dim(ART_coverage) = Ncat
+
 Men_on_ART = (I32[5] + I33[5] + I34[5] + I35[5] +
                 I32[6] + I33[6] + I34[6] + I35[6])
 Women_on_ART = (I32[1] + I33[1] + I34[1] + I35[1] +
                   I32[2] + I33[2] + I34[2] + I35[2] +
                   I32[3] + I33[3] + I34[3] + I35[3] +
                   I32[4] + I33[4] + I34[4] + I35[4])
+
+ART_sex_ratio = Women_on_ART/Men_on_ART
+output(ART_sex_ratio) = ART_sex_ratio
+
+pc_S1a = (S1a[1]) * 100 / (S1a[1] + S1b[1] + S1c[1])
+pc_S1b = (S1b[1]) * 100 / (S1a[1] + S1b[1] + S1c[1])
+pc_S1c = (S1c[1]) * 100 / (S1a[1] + S1b[1] + S1c[1])
+
+output(pc_S1a) = pc_S1a
+output(pc_S1b) = pc_S1b
+output(pc_S1c) = pc_S1c
+
 
 output(Men_on_ART) = Men_on_ART
 output(Women_on_ART) = Women_on_ART
@@ -894,7 +948,7 @@ cumuInf_init[] = user()
 
 initial(cumuHIVDeaths[]) = 0
 initial(cumuARTREinitiations[]) = 0
-initial(cumuTesting[]) = 0
+# initial(cumuTesting[]) = 0
 
 initial(cumuARTinitiations[]) = 0
 
@@ -902,6 +956,13 @@ initial(cumuAllDeaths[]) = 0
 
 initial(OnPrEP[]) = OnPrEP_init[i]
 OnPrEP_init[] = user()
+
+initial(OnPrEP1a[]) = 0
+initial(OnPrEP1b[]) = 0
+initial(OnPrEP1c[]) = 0
+
+
+
 
 # initial(S0) = user()
 # initial(S1a) = user()
@@ -1170,7 +1231,7 @@ dim(n_noncomm) = c(Ncat, Ncat)
 dim(cumuHIVDeaths) = Ncat
 dim(cumuARTinitiations) = Ncat
 dim(cumuARTREinitiations) = Ncat
-dim(cumuTesting) = Ncat
+# dim(cumuTesting) = Ncat
 
 
 dim(cumuAllDeaths) = Ncat
@@ -1178,6 +1239,11 @@ dim(cumuAllDeaths) = Ncat
 
 dim(cumuInf) = Ncat
 dim(OnPrEP) = Ncat
+
+dim(OnPrEP1a) = Ncat
+dim(OnPrEP1b) = Ncat
+dim(OnPrEP1c) = Ncat
+
 
 # states and initial conditions
 dim(S0) = Ncat

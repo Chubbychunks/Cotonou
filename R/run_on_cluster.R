@@ -49,6 +49,8 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
   names(the_frac_N) = c("time", "Pro FSW", "Clients", "Virgin female", "Virgin male", "Active FSW", "Low Pro Ratio")
 
 
+  message = "nothing"
+
   likelihood_count <- 0
   ##
   frac_count <- 0
@@ -138,6 +140,17 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
       }
     }
   }
+
+#
+#   if("PrEP" %in% levels(ART_data_points$variable))
+#   {
+#
+#
+#
+#
+#
+#   }
+
 
 
 
