@@ -740,8 +740,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     ART_reinit_rate = 0.1,
     RR_test_CD4200 = 5.4,
 
-    tau_intervention_t = c(1986, 2014, 2016),
-    rho_intervention_t = c(1986, 2014, 2016),
+    tau_intervention_t = c(1986, 2015, 2017),
+    rho_intervention_t = c(1986, 2015, 2017),
 
     tau_intervention_y = matrix(c(rep(0, 9), 1.5, c(rep(0, 8)), 1.5, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
     rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 6, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
@@ -757,7 +757,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     kappab = c(0.2, rep_len(0,(9-1))),
     kappac = c(0.2, rep_len(0,(9-1))),
     prep_dropout = 2,
-    eP1a = 0.9
+    eP1a = 0.9,
+    dur_FSW = 30
 
 
 
@@ -1044,8 +1045,8 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     ART_reinit_rate = 0.1,
     RR_test_CD4200 = 5.4,
 
-    tau_intervention_t = c(1986, 2014, 2016),
-    rho_intervention_t = c(1986, 2014, 2016),
+    tau_intervention_t = c(1986, 2015, 2017),
+    rho_intervention_t = c(1986, 2015, 2017),
 
     tau_intervention_y = matrix(c(rep(0, 9), 1.5, c(rep(0, 8)), 1.5, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
     rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 6, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
@@ -1061,7 +1062,8 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     kappab = c(0.2, rep_len(0,(9-1))),
     kappac = c(0.2, rep_len(0,(9-1))),
     prep_dropout = 2,
-    eP1a = 0.9
+    eP1a = 0.9,
+    dur_FSW = 30
 
 
 
@@ -1218,10 +1220,10 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
 
 
-                   ART_eligible_CD4_above_500_t = c(1985, 2005, 2012, 2015, 2016),
-                   ART_eligible_CD4_350_500_t = c(1985, 2005, 2012, 2015, 2016),
-                   ART_eligible_CD4_200_349_t = c(1985, 2005, 2012, 2015, 2016),
-                   ART_eligible_CD4_below_200_t = c(1985, 2005, 2012, 2015, 2016),
+                   ART_eligible_CD4_above_500_t = c(1985, 2002, 2012, 2015, 2016),
+                   ART_eligible_CD4_350_500_t = c(1985, 2002, 2012, 2015, 2016),
+                   ART_eligible_CD4_200_349_t = c(1985, 2002, 2012, 2015, 2016),
+                   ART_eligible_CD4_below_200_t = c(1985, 2002, 2012, 2015, 2016),
 
                    ART_eligible_CD4_above_500_y = c(0, 0, 0, 0, 1),
                    ART_eligible_CD4_350_500_y = c(0, 0, 0, 1, 1),
@@ -1309,7 +1311,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
                    test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
                    sigma = c(0.85, 0, 0, 0, 0, 0, 0, 0, 0),
-                   prep_intervention_t = c(1985, 2014, 2015, 2016),
+                   prep_intervention_t = c(1985, 2015, 2016, 2017),
                    prep_intervention_y = matrix(c(rep(0, Ncat), 1, rep(0, Ncat-1), 1, rep(0, Ncat-1), rep(0, Ncat)), ncol = Ncat, byrow = T), # offering rate
                    PrEPOnOff = 0,
 
@@ -1580,11 +1582,11 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    ART_recruit_rate = 0.2,
                    ART_reinit_rate = 0.1,
 
-                   tau_intervention_t = c(1986, 2014, 2016),
-                   rho_intervention_t = c(1986, 2014, 2016),
+                   tau_intervention_t = c(1986, 2015, 2017),
+                   rho_intervention_t = c(1986, 2015, 2017),
 
-                   tau_intervention_y = matrix(c(rep(0, 9), 1.5, c(rep(0, 8)), 1.5, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
-                   rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 6, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
+                   tau_intervention_y = matrix(c(rep(0, 9), 1.5, c(rep(0, 8)), 0, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
+                   rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 0, c(rep(0, 8))), ncol = 9, nrow = 3, byrow = T),
 
                    intervention_testing_increase = 1.4,
                    intervention_ART_increase = 6.5,

@@ -37,7 +37,7 @@ devtools::test()
 
 
 
-number_simulations = 1
+number_simulations = 100
 batch_size = 1
 epi_start = 1986
 # epi_end = 2030
@@ -964,7 +964,7 @@ devtools::load_all()
 tbefore = Sys.time()
 
 
-number_simulations = 20
+number_simulations = 50
 batch_size = 10
 
 
@@ -1087,8 +1087,8 @@ best_set = list(
 
   test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
   sigma = c(0.86, 0, 0, 0, 0, 0, 0, 0, 0),
-  prep_intervention_t = c(1985, 2013, 2015, 2016),
-  prep_intervention_y = matrix(c(rep(0, 9), 1, rep(0, 9-1), rep(0, 9), rep(0, 9)), ncol = 9, byrow = T),
+  prep_intervention_t = c(1985, 2015, 2016, 2017),
+  prep_intervention_y = matrix(c(rep(0, 9), 1, rep(0, 9-1), 1, rep(0, 9-1), rep(0, 9)), ncol = 9, byrow = T),
   PrEPOnOff = 0,
 
   #PREP
@@ -1117,7 +1117,7 @@ best_set = list(
   # nrow = 9, ncol = 9, byrow = T),
   testing_prob_y = matrix(c(0, 0, 0, 0, 0, 0, 0, 0, 0, # 1985 columns are the risk groups
                             0, 0, 0, 0, 0, 0, 0, 0, 0, # 2001
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, # 2005
+                            0, 0.118, 0.118, 0.118, 0.08125, 0.08125, 0, 0, 0, # 2005 0.142*5/6 0.0975*5/6
                             0.081625, 0.142, 0.142, 0.142, 0.0975, 0.0975, 0, 0, 0, # 2006 0.653/8 slope
                             0.244875, 0.21, 0.21, 0.21, 0.1, 0.1, 0, 0, 0, # 2008 3*0.653/8
                             0.571375, 0.331, 0.331, 0.331, 0.0582, 0.0582, 0, 0, 0, # 2012 7*0.653/8
@@ -1637,16 +1637,24 @@ ranges = rbind(
 
   ART_RR_prog = c(8.8, 12.1),
 
-  intervention_testing_increase = c(1, 2),
+  # intervention_testing_increase = c(1, 2),
+  intervention_testing_increase = c(0.5, 2), # keep
+  # intervention_testing_increase = c(0, 0),
 
 
   RR_test_CD4200 = c(1, 6),
 
-  ART_recruit_rate_FSW = c(0.5, 1.5),
-  ART_recruit_rate_rest = c(0.5, 1.5),
+  # ART_recruit_rate_FSW = c(0.5, 1.5),
+  # ART_recruit_rate_FSW = c(0.5, 6),
+  ART_recruit_rate_FSW = c(0.5, 3),
+
+  # ART_recruit_rate_rest = c(0.5, 1.5),
+  # ART_recruit_rate_rest = c(0.5, 6),
+  ART_recruit_rate_rest = c(6, 12),
 
 
-  intervention_ART_increase = c(0, 12),
+  intervention_ART_increase = c(0.5, 5), # keep
+  # intervention_ART_increase = c(0, 0),
 
 
 
@@ -1699,7 +1707,7 @@ ranges = rbind(
 
 
 # outputs -----------------------------------------------------------------
-outputs = c("new_people_in_group_FSW_only", "rate_move_out", "rate_move_in", "FSW_out", "FSW_in", "zeta", "tau", "prep_offering_rate", "intervention_testing_increase", "sigma", "PrEPOnOff", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
+outputs = c("intervention_ART_increase", "testing_prob", "rho_intervention", "ART_eligible_CD4_above_500", "ART_eligible_CD4_350_500", "ART_eligible_CD4_200_349", "ART_eligible_CD4_below_200", "new_people_in_group_FSW_only", "rate_move_out", "rate_move_in", "FSW_out", "FSW_in", "zeta", "tau", "prep_offering_rate", "intervention_testing_increase", "sigma", "PrEPOnOff", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
 
 
 # prev_points -------------------------------------------------------------
@@ -1806,6 +1814,9 @@ frac_N_discard_points = data.frame(variable = c("Pro FSW", "Clients", "Virgin fe
                                    max = c(0.0143*0.515666224/2, 0.3 * (1-0.515666224), 0.2*0.515666224, 0.17*(1-0.515666224),  0.0143*0.516, 5))
 
 
+frac_N_discard_points_no_FSW_LB = data.frame(variable = c("Pro FSW", "Clients", "Virgin female", "Virgin male", "Active FSW", "Low Pro Ratio"),
+                                             min = c(0, 0.074*(1-0.515666224), 0.07896475*0.515666224, 0.07039551*(1-0.515666224), 0.0048*0.516, 1),
+                                             max = c(0.0143*0.515666224/2, 0.3 * (1-0.515666224), 0.2*0.515666224, 0.17*(1-0.515666224),  0.0143*0.516, 5))
 
 # Ntot data points ------------------------------------------------------
 
@@ -1885,7 +1896,8 @@ variable = c("Pro FSW", "Pro FSW"))
 
 #####################################################
 
-# result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
+# result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points,
+  # frac_N_discard_points = frac_N_discard_points_no_FSW_LB, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
 result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 
@@ -1917,8 +1929,8 @@ Ntot_data_points_test = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
 
 
 result <- cotonou::run_model_with_fit_multiple(batch_size, number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs,
-                                                    prev_points = prev_points_FSW_only_even_less_2, frac_N_discard_points = frac_N_discard_points,
-                                                    Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points_test)
+                                                    prev_points = prev_points_FSW_only_even_less_2, frac_N_discard_points = frac_N_discard_points_no_FSW_LB,
+                                                    Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points_FSW_last_3)
 
 
 tafter = Sys.time()
@@ -1934,7 +1946,7 @@ likelihood_list
 
 
 
-
+result = run_model_for_tests(parameters = result[[2]], number_simulations = 1, time = time)
 
 
 
@@ -2036,6 +2048,26 @@ colnames(ART_coverage) = c("time", "Lower", "Median", "Upper", "variable")
 ART_coverage$variable = factor(ART_coverage$variable, levels = c("Pro FSW", "Women", "Men", "All"))
 ART_coverage = ART_coverage[ART_coverage$variable == "All" | ART_coverage$variable == "Pro FSW",]
 
+ART_FSW_indiv = t(do.call(rbind, lapply(result[[3]], function(x) x$ART_coverage_FSW)))
+ART_women_indiv = t(do.call(rbind, lapply(result[[3]], function(x) x$ART_coverage_women)))
+ART_men_indiv = t(do.call(rbind, lapply(result[[3]], function(x) x$ART_coverage_men)))
+
+ART_all_indiv = t(do.call(rbind, lapply(result[[3]], function(x) x$ART_coverage_all)))
+
+
+ART_indiv = rbind(ART_FSW_indiv, ART_all_indiv)
+
+ART_indiv = data.frame(time, rep(c("Pro FSW", "All"), each = length(time)), ART_indiv)
+
+
+colnames(ART_indiv) = c("time", "variable", as.character(seq(1, length(ART_FSW_indiv[1,]))))
+
+ART_indiv_melted = reshape2::melt(ART_indiv, id.vars = c("time", "variable"))
+
+colnames(ART_indiv_melted) = c("time", "variable", "run", "value")
+
+ART_indiv_melted$variable = factor(ART_indiv_melted$variable, levels = c("Pro FSW", "All"))
+
 
 frac_N_discard_points_graph = frac_N_discard_points
 frac_N_discard_points_graph[frac_N_discard_points_graph$variable == "Low Pro Ratio", c(2,3)] = frac_N_discard_points_graph[frac_N_discard_points_graph$variable == "Low Pro Ratio",c(2,3)]/100
@@ -2121,7 +2153,18 @@ ggplot(ART_coverage) +
   geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
 
 
+ggplot() + geom_line(data = ART_indiv_melted, aes(x = time, y = value, factor = variable, factor = run), alpha = 0.3) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "ART coverage") +
+  geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper))
 
+
+
+
+# median_CF = ART_coverage[ART_coverage$variable == "Pro FSW", "Median"]
+
+
+median_intervention =ART_coverage[ART_coverage$variable == "Pro FSW", "Median"]
+
+median_CF * 100 / median_intervention
 
 
 ################################################################################################################################################################

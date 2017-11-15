@@ -91,6 +91,7 @@ deriv(I43[]) = gamma42[i] * I42[i] + phi3[i] * I33[i] - I43[i] * (gamma43[i] + i
 deriv(I44[]) = gamma43[i] * I43[i] + phi4[i] * I34[i] - I44[i] * (gamma44[i] + iota[i] + alpha44[i] + mu[i] + nu) + rate_move_out[i] * I44[i] + sum(in_I44[i, ])
 deriv(I45[]) = gamma44[i] * I44[i] + phi5[i] * I35[i] - I45[i] * (iota[i] + alpha45[i] + mu[i] + nu) + rate_move_out[i] * I45[i] + sum(in_I45[i, ])
 
+# output(ART_eligible_CD4_below_200) = ART_eligible_CD4_below_200
 
 # sum of all compartments
 N[] = S0[i] + S1a[i] + S1b[i] + S1c[i] + S1d[i] + I01[i] + I11[i] + I02[i] + I03[i] + I04[i] + I05[i] +
