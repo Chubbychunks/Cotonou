@@ -143,18 +143,20 @@ cost_DALY_ranges <- rbind(
   # cost_1_year_PrEP_non = c(40, 50),
 
 
-  DALY_Healthy = c(1, 1),
-  DALY_On_ART_OR_CD4_above_350 = c(1 - 0.111, 1 - 0.052),
-  DALY_Off_ART_CD4_200_350 = c(1 - 0.377, 1 - 0.184),
-  DALY_Off_ART_CD4_below_200 = c(1 - 0.743, 1 - 0.406)
+  W0 = c(1, 1),
+  W1 = c(1 - 0.111, 1 - 0.052),
+  W3 = c(1 - 0.377, 1 - 0.184),
+  W2 = c(1 - 0.743, 1 - 0.406)
 
 
 
 )
 
 
-
-CEA_outputs = unique(c("ec", "cumuARTinitiations","cumuARTREinitiations", "rate_leave_pro_FSW","tau_intervention",
+CEA_outputs = unique(c("W0", "W1", "W2", "W3", "Number_DALY_W1","Number_DALY_W2", "Number_DALY_W3", "FSW_On_PrEP_all_cats", "PrEPinitiations", "PrEPinitiations1a",
+                       "PrEPinitiations1b", "PrEPinitiations1c", "pc_susceptible_FSW_On_PrEP", "pc_all_FSW_On_PrEP", "Number_Susceptibles",
+                       "HIV_positive_On_ART", "HIV_positive_Diagnosed_Off_ART", "Primary_Off_ART",
+                       "CD4_above_500_Off_ART", "CD4_350_500_Off_ART", "CD4_200_350_Off_ART", "CD4_below_200_Off_ART", "cumuDeaths_On_ART", "HIV_positive", "ec", "cumuARTinitiations","cumuARTREinitiations", "rate_leave_pro_FSW","tau_intervention",
                 "testing_prob", "tau", "N", "S0", "S1a", "S1b", "S1c", "S1d", "I01", "I11", "I02", "I03", "I04",
                 "I05", "I22", "I23", "I24", "I25", "I32", "I33", "I34", "I35",  "I42", "I43", "I44", "I45", "prev",
                 "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client",
@@ -174,6 +176,22 @@ CEA_outputs = unique(c("ec", "cumuARTinitiations","cumuARTREinitiations", "rate_
                 "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all",
                 "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a",
                 "lambda_1b", "lambda_1c", "lambda_1d"))
+#
+#
+# CEA_outputs = c("prev", "HIV_positive", "lambda_0", "lambda_1a",
+#                 "lambda_1b", "lambda_1c", "lambda_1d",
+#                 )
+
+epi_start = 1986
+# epi_end = 2030
+epi_end = 2017
+
+time <- seq(epi_start, epi_end, length.out = (epi_end - epi_start + 0.5)*2)
+
+mid_years_vec = time %% 1 != 0
+
+
+
 
 
 res_best_runs_after_prep_fit_sampling_costs_n_DALYs = lapply(best_pars_after_prep, function(x) {
@@ -188,20 +206,41 @@ res_best_runs_after_prep_fit_sampling_costs_n_DALYs = lapply(best_pars_after_pre
   })
 
   combined_ranges = cbind(unlist(x[unique_pars]), unlist(x[unique_pars]))
-  # combined_ranges = rbind(combined_ranges, cost_DALY_ranges)
+  combined_ranges = rbind(combined_ranges, cost_DALY_ranges)
 
 
   result <- cotonou::run_model(number_simulations = number_of_cost_DALY_samples, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq,
-                               years_seq = years_seq, best_set = best_set, time = time, ranges = combined_ranges, outputs = outputs)
+                               years_seq = years_seq, best_set = best_set, time = time, ranges = combined_ranges, outputs = CEA_outputs)
 
-  # return(list(res_after_prep[[1]], res_after_prep[[3]], res_after_prep[[6]]))
-  # return(list(res_after_prep[[1]], res_after_prep[[2]], res_after_prep[[5]]))
 
-  # return(combined_ranges)
+  return(result[[2]]) # returning outcomes
 
 }
 )
 
+
+
+total_DALYs = lapply(res_best_runs_after_prep_fit_sampling_costs_n_DALYs, function(x) {
+  lapply(x, function(y) {
+
+    # ____  _____ __  __  _____     _______   _____ ______        __   ___  _   _ _____ ____ ___ ____  _____
+    # |  _ \| ____|  \/  |/ _ \ \   / / ____| |  ___/ ___\ \      / /  / _ \| | | |_   _/ ___|_ _|  _ \| ____|
+    # | |_) |  _| | |\/| | | | \ \ / /|  _|   | |_  \___ \\ \ /\ / /  | | | | | | | | | \___ \| || | | |  _|
+    # |  _ <| |___| |  | | |_| |\ V / | |___  |  _|  ___) |\ V  V /   | |_| | |_| | | |  ___) | || |_| | |___
+    # |_| \_\_____|_|  |_|\___/  \_/  |_____| |_|   |____/  \_/\_/     \___/ \___/  |_| |____/___|____/|_____|
+    #
+
+
+    # y$W2[1]
+
+    y$Number_Susceptibles[mid_years_vec,-9] * y$W0[1] +
+      y$Number_DALY_W1[mid_years_vec,-9] * y$W1[1] +
+      y$Number_DALY_W2[mid_years_vec,-9] * y$W2[1] +
+      y$Number_DALY_W3[mid_years_vec,-9] * y$W3[1]
+
+  })
+})
+total_DALYs
 ## should check results here
 
 
@@ -220,49 +259,49 @@ res_best_runs_after_prep_fit_sampling_costs_n_DALYs = lapply(best_pars_after_pre
 
 # checking
 
-
-which_original_fit = 1
-res_test = lapply(res_best_runs_after_prep_fit[[which_original_fit]][[2]], cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
-
-
-
-S0_indiv = data.frame(time, t(do.call(rbind, lapply(res_test, function(x) x$S0[,1]))))
-S1a_indiv = data.frame(time, t(do.call(rbind, lapply(res_test, function(x) x$S1a[,1]))))
-S1b_indiv = data.frame(time, t(do.call(rbind, lapply(res_test, function(x) x$S1b[,1]))))
-S1c_indiv = data.frame(time, t(do.call(rbind, lapply(res_test, function(x) x$S1c[,1]))))
-S1d_indiv = data.frame(time, t(do.call(rbind, lapply(res_test, function(x) x$S1d[,1]))))
-
-all_prep_cats = rbind(S1a_indiv, S1b_indiv, S1c_indiv)
-
-all_prep_cats$group = rep(c("S1a", "S1b", "S1c"), each = length(time))
-
-all_prep_cats_melted = reshape2::melt(all_prep_cats, id.vars = c("time", "group"))
-
-colnames(all_prep_cats_melted) = c("time", "group", "variable", "point")
-
-
-ggplot() + geom_line(data = all_prep_cats_melted, aes(x = time, y = point, factor = variable, colour = group)) +
-  theme_bw()+ geom_point(data = PrEP_fitting, aes(x = time, y = point, colour = group)) + facet_wrap(~variable)+
-  geom_blank(data = prep_axes, aes( y = value))
-
-
-
-
-
-
-# for each original fit, taking the pars which best fit to prep
-unlist(lapply(lapply(res_best_runs_after_prep_fit, function(x) x[[3]]), function(x) {
-  # return(x[which(x == min(x))])
-  return(which(x == min(x)))
-}))
+#
+# which_original_fit = 1
+# res_test = lapply(res_best_runs_after_prep_fit[[which_original_fit]][[2]], cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
+#
+#
+#
+# S0_indiv = data.frame(time, t(do.call(rbind, lapply(res_test, function(x) x$S0[,1]))))
+# S1a_indiv = data.frame(time, t(do.call(rbind, lapply(res_test, function(x) x$S1a[,1]))))
+# S1b_indiv = data.frame(time, t(do.call(rbind, lapply(res_test, function(x) x$S1b[,1]))))
+# S1c_indiv = data.frame(time, t(do.call(rbind, lapply(res_test, function(x) x$S1c[,1]))))
+# S1d_indiv = data.frame(time, t(do.call(rbind, lapply(res_test, function(x) x$S1d[,1]))))
+#
+# all_prep_cats = rbind(S1a_indiv, S1b_indiv, S1c_indiv)
+#
+# all_prep_cats$group = rep(c("S1a", "S1b", "S1c"), each = length(time))
+#
+# all_prep_cats_melted = reshape2::melt(all_prep_cats, id.vars = c("time", "group"))
+#
+# colnames(all_prep_cats_melted) = c("time", "group", "variable", "point")
+#
+#
+# ggplot() + geom_line(data = all_prep_cats_melted, aes(x = time, y = point, factor = variable, colour = group)) +
+#   theme_bw()+ geom_point(data = PrEP_fitting, aes(x = time, y = point, colour = group)) + facet_wrap(~variable)+
+#   geom_blank(data = prep_axes, aes( y = value))
 #
 #
 #
 #
 #
-# lapply(res_best_runs_after_prep_fit, function(x) x[[2]])[[2]][[4]][rownames(prep_ranges)]
 #
-
+# # for each original fit, taking the pars which best fit to prep
+# unlist(lapply(lapply(res_best_runs_after_prep_fit, function(x) x[[3]]), function(x) {
+#   # return(x[which(x == min(x))])
+#   return(which(x == min(x)))
+# }))
+# #
+# #
+# #
+# #
+# #
+# # lapply(res_best_runs_after_prep_fit, function(x) x[[2]])[[2]][[4]][rownames(prep_ranges)]
+# #
+#
 
 
 

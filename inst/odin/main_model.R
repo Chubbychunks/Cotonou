@@ -485,6 +485,79 @@ output(infect_ART[]) = infect_ART
 ##############################################################################
 
 
+HIV_positive[] = I01[i] + I11[i] + I02[i] + I03[i] + I04[i] + I05[i] +
+                    I22[i] + I23[i] + I24[i] + I25[i] + I32[i] + I33[i] + I34[i] + I35[i] +
+                    I42[i] + I43[i] + I44[i] + I45[i]
+
+dim(HIV_positive) = Ncat
+output(HIV_positive[]) = HIV_positive
+
+Number_Susceptibles[] = S0[i] + S1a[i] + S1b[i] + S1c[i] + S1d[i]
+
+dim(Number_Susceptibles) = Ncat
+output(Number_Susceptibles[]) = Number_Susceptibles
+
+HIV_positive_Diagnosed_Off_ART[] = I22[i] + I23[i] + I24[i] + I25[i]
+
+dim(HIV_positive_Diagnosed_Off_ART) = Ncat
+output(HIV_positive_Diagnosed_Off_ART[]) = HIV_positive_Diagnosed_Off_ART
+
+Primary_Off_ART[] = I01[i] + I11[i]
+CD4_above_500_Off_ART[] = I02[i] + I22[i] + I42[i]
+CD4_350_500_Off_ART[] = I03[i] + I23[i] + I43[i]
+CD4_200_350_Off_ART[] =  I04[i] + I24[i] + I44[i]
+CD4_below_200_Off_ART[] = I05[i] + I25[i] + I45[i]
+
+dim(Primary_Off_ART) = Ncat
+dim(CD4_above_500_Off_ART) = Ncat
+dim(CD4_350_500_Off_ART) = Ncat
+dim(CD4_200_350_Off_ART) = Ncat
+dim(CD4_below_200_Off_ART) = Ncat
+
+output(Primary_Off_ART[]) = Primary_Off_ART
+output(CD4_above_500_Off_ART[]) = CD4_above_500_Off_ART
+output(CD4_350_500_Off_ART[]) = CD4_350_500_Off_ART
+output(CD4_200_350_Off_ART[]) = CD4_200_350_Off_ART
+output(CD4_below_200_Off_ART[]) = CD4_below_200_Off_ART
+
+
+
+HIV_positive_On_ART[] = I32[i] + I33[i] + I34[i] + I35[i]
+
+dim(HIV_positive_On_ART) = Ncat
+output(HIV_positive_On_ART[]) = HIV_positive_On_ART
+
+# for DALY weights
+
+# everyone on ART, CD4 > 350
+Number_DALY_W1[] = I01[i] + I11[i] + I02[i] + I22[i] + I32[i] + I42[i] + I03[i] + I23[i] + I33[i] + I43[i] + I34[i]+ I35[i]
+# < 200
+Number_DALY_W2[] = I05[i] + I25[i] + I45[i]
+# 200 - 350
+Number_DALY_W3[] = I04[i] + I24[i] + I44[i]
+
+output(Number_DALY_W1[]) = Number_DALY_W1
+output(Number_DALY_W2[]) = Number_DALY_W2
+output(Number_DALY_W3[]) = Number_DALY_W3
+
+dim(Number_DALY_W1) = Ncat
+dim(Number_DALY_W2) = Ncat
+dim(Number_DALY_W3) = Ncat
+
+
+
+W0 = user()
+W1 = user()
+W2 = user()
+W3 = user()
+
+output(W0) = W0
+output(W1) = W1
+output(W2) = W2
+output(W3) = W3
+
+
+
 FSW_out = rate_move_out[1] * N[1]
 
 
@@ -508,12 +581,15 @@ output(E1c[]) = E1c
 output(E1d[]) = E1d
 
 deriv(cumuInf[]) = S0[i] * lambda_sum_0[i] + S1a[i] * lambda_sum_1a[i] + S1b[i] * lambda_sum_1b[i] + S1c[i] * lambda_sum_1c[i] + S1d[i] * lambda_sum_1d[i]
-deriv(OnPrEP[]) = zeta[i] * S0[i]
+deriv(PrEPinitiations[]) = zeta[i] * S0[i]
 
-deriv(OnPrEP1a[])  = zeta[i] * fPa * S0[i]
-deriv(OnPrEP1b[])  = zeta[i] * fPb * S0[i]
-deriv(OnPrEP1c[])  = zeta[i] * fPc * S0[i]
+deriv(PrEPinitiations1a[])  = zeta[i] * fPa * S0[i]
+deriv(PrEPinitiations1b[])  = zeta[i] * fPb * S0[i]
+deriv(PrEPinitiations1c[])  = zeta[i] * fPc * S0[i]
 
+deriv(cumuDeaths_On_ART[]) = (alpha32[i] + mu[i]) * I32[i] + (alpha33[i] + mu[i]) * I33[i] + (alpha34[i] + mu[i]) * I34[i] + (alpha35[i] + mu[i]) * I35[i]
+initial(cumuDeaths_On_ART[]) = 0
+dim(cumuDeaths_On_ART) = Ncat
 
 deriv(cumuHIVDeaths[]) = alpha01[i] * I01[i] + alpha11[i] * I11[i] + alpha02[i] * I02[i] + alpha03[i] * I03[i] + alpha04[i] * I04[i] +
   alpha05[i] * I05[i] + alpha22[i] * I22[i] + alpha23[i] * I23[i] + alpha24[i] * I24[i] + alpha25[i] * I25[i] +
@@ -784,6 +860,15 @@ output(pc_S1a) = pc_S1a
 output(pc_S1b) = pc_S1b
 output(pc_S1c) = pc_S1c
 
+pc_susceptible_FSW_On_PrEP = (S1a[1] + S1b[1] + S1c[1]) * 100 / (S0[1] + S1a[1] + S1b[1] + S1c[1] + S1d[1])
+pc_all_FSW_On_PrEP = (S1a[1] + S1b[1] + S1c[1]) * 100 / (S0[1] + S1a[1] + S1b[1] + S1c[1] + S1d[1] + I01[1] + I11[1] + I02[1] + I03[1] + I04[1] + I05[1] +
+                                                           I22[1] + I23[1] + I24[1] + I25[1] + I32[1] + I33[1] + I34[1] + I35[1] +
+                                                           I42[1] + I43[1] + I44[1] + I45[1])
+output(pc_susceptible_FSW_On_PrEP) = pc_susceptible_FSW_On_PrEP
+output(pc_all_FSW_On_PrEP) = pc_all_FSW_On_PrEP
+
+FSW_On_PrEP_all_cats = S1a[1] + S1b[1] + S1c[1]
+output(FSW_On_PrEP_all_cats) = FSW_On_PrEP_all_cats
 
 output(Men_on_ART) = Men_on_ART
 output(Women_on_ART) = Women_on_ART
@@ -956,12 +1041,12 @@ initial(dropouts[]) = 0
 
 initial(cumuAllDeaths[]) = 0
 
-initial(OnPrEP[]) = OnPrEP_init[i]
-OnPrEP_init[] = user()
+initial(PrEPinitiations[]) = PrEPinitiations_init[i]
+PrEPinitiations_init[] = 0
 
-initial(OnPrEP1a[]) = 0
-initial(OnPrEP1b[]) = 0
-initial(OnPrEP1c[]) = 0
+initial(PrEPinitiations1a[]) = 0
+initial(PrEPinitiations1b[]) = 0
+initial(PrEPinitiations1c[]) = 0
 
 
 
@@ -1241,11 +1326,11 @@ dim(cumuAllDeaths) = Ncat
 
 
 dim(cumuInf) = Ncat
-dim(OnPrEP) = Ncat
+dim(PrEPinitiations) = Ncat
 
-dim(OnPrEP1a) = Ncat
-dim(OnPrEP1b) = Ncat
-dim(OnPrEP1c) = Ncat
+dim(PrEPinitiations1a) = Ncat
+dim(PrEPinitiations1b) = Ncat
+dim(PrEPinitiations1c) = Ncat
 
 
 # states and initial conditions
@@ -1342,7 +1427,7 @@ dim(lambda_sum_1d) = Ncat
 dim(c_comm_balanced) <- Ncat
 dim(c_noncomm_balanced) <- Ncat
 dim(theta) <- c(Ncat, Ncat)
-dim(OnPrEP_init) = Ncat
+dim(PrEPinitiations_init) = Ncat
 
 dim(M_comm) = c(Ncat, Ncat)
 dim(M_noncomm) = c(Ncat, Ncat)

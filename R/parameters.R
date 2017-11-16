@@ -591,6 +591,11 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$kappab = y$kappaa
   y$kappac = y$kappaa
 
+  # y$W1 = y$W1
+  # y$W2 = y$W2
+  # y$W3 = y$W3
+  # y$W4 = y$W4
+
 
 
   return(y)
@@ -764,10 +769,10 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     cost_ART_initiation_study_FSW = 1,
     cost_1_year_ART_study_FSW = 1,
     cost_1_year_ART_rest = 1,
-    DALY_Healthy = 1,
-    DALY_On_ART_OR_CD4_above_350 = 1,
-    DALY_Off_ART_CD4_200_350 = 1,
-    DALY_Off_ART_CD4_below_200 = 1
+    W0 = 1,
+    W1 = 1,
+    W2 = 1,
+    W3 = 1
 
 
 
@@ -1078,10 +1083,10 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     cost_ART_initiation_study_FSW = 1,
     cost_1_year_ART_study_FSW = 1,
     cost_1_year_ART_rest = 1,
-    DALY_Healthy = 1,
-    DALY_On_ART_OR_CD4_above_350 = 1,
-    DALY_Off_ART_CD4_200_350 = 1,
-    DALY_Off_ART_CD4_below_200 = 1
+    W0 = 1,
+    W1 = 1,
+    W2 = 1,
+    W3 = 1
 
 
 
@@ -1617,10 +1622,10 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    cost_ART_initiation_study_FSW = 1,
                    cost_1_year_ART_study_FSW = 1,
                    cost_1_year_ART_rest = 1,
-                   DALY_Healthy = 1,
-                   DALY_On_ART_OR_CD4_above_350 = 1,
-                   DALY_Off_ART_CD4_200_350 = 1,
-                   DALY_Off_ART_CD4_below_200 = 1
+                   W0 = 1,
+                   W1 = 1,
+                   W2 = 1,
+                   W3 = 1
 
 
 
