@@ -758,7 +758,16 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     kappac = c(0.2, rep_len(0,(9-1))),
     prep_dropout = 2,
     eP1a = 0.9,
-    dur_FSW = 30
+    dur_FSW = 30,
+
+
+    cost_ART_initiation_study_FSW = 1,
+    cost_1_year_ART_study_FSW = 1,
+    cost_1_year_ART_rest = 1,
+    DALY_Healthy = 1,
+    DALY_On_ART_OR_CD4_above_350 = 1,
+    DALY_Off_ART_CD4_200_350 = 1,
+    DALY_Off_ART_CD4_below_200 = 1
 
 
 
@@ -1063,7 +1072,16 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     kappac = c(0.2, rep_len(0,(9-1))),
     prep_dropout = 2,
     eP1a = 0.9,
-    dur_FSW = 30
+    dur_FSW = 30,
+
+
+    cost_ART_initiation_study_FSW = 1,
+    cost_1_year_ART_study_FSW = 1,
+    cost_1_year_ART_rest = 1,
+    DALY_Healthy = 1,
+    DALY_On_ART_OR_CD4_above_350 = 1,
+    DALY_Off_ART_CD4_200_350 = 1,
+    DALY_Off_ART_CD4_below_200 = 1
 
 
 
@@ -1593,7 +1611,17 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
                    prep_offering_rate = 1,
 
-                   FSW_ONLY = c(1, 1, rep(0, 7))
+                   FSW_ONLY = c(1, 1, rep(0, 7)),
+
+
+                   cost_ART_initiation_study_FSW = 1,
+                   cost_1_year_ART_study_FSW = 1,
+                   cost_1_year_ART_rest = 1,
+                   DALY_Healthy = 1,
+                   DALY_On_ART_OR_CD4_above_350 = 1,
+                   DALY_Off_ART_CD4_200_350 = 1,
+                   DALY_Off_ART_CD4_below_200 = 1
+
 
 
 

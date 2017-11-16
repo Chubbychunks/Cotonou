@@ -39,7 +39,7 @@ Ntot_data_points_test = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
 
 number_of_prep_samples = 5
 
-new_parameters_ranges <- rbind(
+prep_ranges <- rbind(
   eP1a = c(0.47, 0.98),
   eP1b = c(0.2, 0.4),
   psia = c(1, 4),
@@ -67,13 +67,13 @@ res_best_runs_after_prep_fit = lapply(best_pars_combined, function(x) {
       y = y[1] else y
   })
 
-  x = x[-which(names(x) %in% rownames(new_parameters_ranges))]
+  x = x[-which(names(x) %in% rownames(prep_ranges))]
 
 
 
   combined_ranges = cbind(unlist(x[rownames(ranges)]), unlist(x[rownames(ranges)]))
 
-  combined_ranges = rbind(combined_ranges, new_parameters_ranges)
+  combined_ranges = rbind(combined_ranges, prep_ranges)
 
 
   # i now have the ranges, have to put them into the function below
@@ -112,7 +112,7 @@ best_pars_after_prep = lapply(res_best_runs_after_prep_fit, function(x) {
 )
 
 # 2. just to show best prep parameters
-best_pars_after_prep_just_rep = lapply(best_pars_after_prep, function(x) x[[1]][rownames(new_parameters_ranges)])
+best_pars_after_prep_just_rep = lapply(best_pars_after_prep, function(x) x[[1]][rownames(prep_ranges)])
 
 # 3. check that it fits to all the data
 
@@ -120,29 +120,97 @@ best_pars_after_prep_just_rep = lapply(best_pars_after_prep, function(x) x[[1]][
 
 # 4. sample DALY weights and costs
 
-best_pars_after_prep
+
+best_pars_after_prep = lapply(best_pars_after_prep, function(x) x = x[[1]])
 
 
-number_of_cost_DALY_samples = 5
+number_of_cost_DALY_samples = length(best_pars_after_prep)
 
 cost_DALY_ranges <- rbind(
-  cost_ART_initiation = c(40, 50),
-  cost_1_year_ART = c(100, 110),
-  cost_PrEP_initiation = c(25, 29),
-  cost_1_year_PrEP_perfect = c(60, 70),
-  cost_1_year_PrEP_intermediate = c(50, 60),
-  cost_1_year_PrEP_non = c(40, 50),
+  cost_ART_initiation_study_FSW = c(173, 303),
+  # cost_ART_initiation_gov_FSW = c(40, 50),
 
-  DALY_Uninfected_Off_PrEP = c(40, 50),
-  DALY_Uninfected_On_PrEP_perfect = c(40, 50),
-  DALY_Uninfected_On_PrEP_intermediate = c(40, 50),
-  DALY_Uninfected_On_PrEP_non = c(40, 50),
-  DALY_Acute_On_PrEP_non = c(40, 50),
-  DALY_Infected_Off_PrEP_Off_ART_Healthy = c(40, 50),
-  DALY_CD4_200_350_Off_ART = c(40, 50),
-  DALY_CD4_below_200_Off_ART = c(40, 50),
-  DALY_On_ART =c(40, 50)
+  cost_1_year_ART_study_FSW = c(100, 110),
+  # cost_1_year_ART_gov_FSW = c(100, 110),
+
+
+  cost_1_year_ART_rest = c(0.00, 66.38),
+
+
+  # cost_PrEP_initiation = c(25, 29),
+  # cost_1_year_PrEP_perfect = c(60, 70),
+  # cost_1_year_PrEP_intermediate = c(50, 60),
+  # cost_1_year_PrEP_non = c(40, 50),
+
+
+  DALY_Healthy = c(1, 1),
+  DALY_On_ART_OR_CD4_above_350 = c(1 - 0.111, 1 - 0.052),
+  DALY_Off_ART_CD4_200_350 = c(1 - 0.377, 1 - 0.184),
+  DALY_Off_ART_CD4_below_200 = c(1 - 0.743, 1 - 0.406)
+
+
+
 )
+
+
+
+CEA_outputs = unique(c("ec", "cumuARTinitiations","cumuARTREinitiations", "rate_leave_pro_FSW","tau_intervention",
+                "testing_prob", "tau", "N", "S0", "S1a", "S1b", "S1c", "S1d", "I01", "I11", "I02", "I03", "I04",
+                "I05", "I22", "I23", "I24", "I25", "I32", "I33", "I34", "I35",  "I42", "I43", "I44", "I45", "prev",
+                "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client",
+                "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW",
+                "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm",
+                "fc_noncomm", "N", "cumuHIVDeaths", "lambda_sum_0", "lambda_sum_1a", "lambda_sum_1b", "lambda_sum_1c",
+                "lambda_sum_1d", "S0", "S1a", "S1b", "S1c", "S1d", "OnPrEP1a", "OnPrEP1b",
+                "OnPrEP1c", "ART_eligible_CD4_above_500", "ART_eligible_CD4_350_500","ART_eligible_CD4_200_349","ART_eligible_CD4_below_200",
+                "cumuAllDeaths", "cumuHIVDeaths", "cumuARTinitiations", "cumuARTREinitiations",
+                "OnPrEP", "ART_sex_ratio", "pc_S1b", "pc_S1a", "pc_S1c", "cumuInf",
+                "intervention_ART_increase", "testing_prob", "rho_intervention",
+                "ART_eligible_CD4_above_500", "ART_eligible_CD4_350_500", "ART_eligible_CD4_200_349",
+                "ART_eligible_CD4_below_200", "new_people_in_group_FSW_only", "rate_move_out", "rate_move_in",
+                "FSW_out", "FSW_in", "zeta", "tau", "prep_offering_rate", "intervention_testing_increase", "sigma",
+                "PrEPOnOff", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW",
+                "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced",
+                "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all",
+                "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a",
+                "lambda_1b", "lambda_1c", "lambda_1d"))
+
+
+res_best_runs_after_prep_fit_sampling_costs_n_DALYs = lapply(best_pars_after_prep, function(x) {
+
+  unique_pars = unique(c(rownames(ranges), rownames(prep_ranges)))
+
+  # # x[rownames(ranges)]
+  #
+  x = lapply(x[unique_pars], function(y) {
+    if(length(y) == 9)
+      y = y[1] else y
+  })
+
+  combined_ranges = cbind(unlist(x[unique_pars]), unlist(x[unique_pars]))
+  # combined_ranges = rbind(combined_ranges, cost_DALY_ranges)
+
+
+  result <- cotonou::run_model(number_simulations = number_of_cost_DALY_samples, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq,
+                               years_seq = years_seq, best_set = best_set, time = time, ranges = combined_ranges, outputs = outputs)
+
+  # return(list(res_after_prep[[1]], res_after_prep[[3]], res_after_prep[[6]]))
+  # return(list(res_after_prep[[1]], res_after_prep[[2]], res_after_prep[[5]]))
+
+  # return(combined_ranges)
+
+}
+)
+
+## should check results here
+
+
+
+
+
+
+
+
 
 
 
@@ -192,51 +260,9 @@ unlist(lapply(lapply(res_best_runs_after_prep_fit, function(x) x[[3]]), function
 #
 #
 #
-# lapply(res_best_runs_after_prep_fit, function(x) x[[2]])[[2]][[4]][rownames(new_parameters_ranges)]
+# lapply(res_best_runs_after_prep_fit, function(x) x[[2]])[[2]][[4]][rownames(prep_ranges)]
 #
 
 
 
 
-
-res_best_runs_after_prep_fit = lapply(best_pars_combined, function(x) {
-
-
-
-  # x[rownames(ranges)]
-
-  x = lapply(x[rownames(ranges)], function(y) {
-    if(length(y) == 9)
-      y = y[1] else y
-  })
-
-  x = x[-which(names(x) %in% rownames(new_parameters_ranges))]
-
-
-
-  combined_ranges = cbind(unlist(x[rownames(ranges)]), unlist(x[rownames(ranges)]))
-
-  combined_ranges = rbind(combined_ranges, new_parameters_ranges)
-
-
-  # i now have the ranges, have to put them into the function below
-  #test fitting to nothing first to see if works
-  #then add prep fitting
-
-
-  # res_after_prep = run_model_with_fit(number_simulations = number_of_prep_samples, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time,
-  #                                            ranges = combined_ranges, outputs = outputs,
-  #                                            prev_points = prev_points_test, frac_N_discard_points = frac_N_discard_points_test,
-  #                                            Ntot_data_points = Ntot_data_points_test, ART_data_points = ART_data_points_test, PrEP_fitting = PrEP_fitting)
-  res_after_prep = run_model_with_fit_multiple(batch_size = number_of_prep_samples, number_simulations = number_of_prep_samples, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time,
-                                               ranges = combined_ranges, outputs = outputs,
-                                               prev_points = prev_points_test, frac_N_discard_points = frac_N_discard_points_test,
-                                               Ntot_data_points = Ntot_data_points_test, ART_data_points = ART_data_points_test, PrEP_fitting = PrEP_fitting)
-
-  # return(list(res_after_prep[[1]], res_after_prep[[3]], res_after_prep[[6]]))
-  return(list(res_after_prep[[1]], res_after_prep[[2]], res_after_prep[[5]]))
-
-  # return(combined_ranges)
-
-}
-)
