@@ -964,8 +964,8 @@ devtools::load_all()
 tbefore = Sys.time()
 
 
-number_simulations = 1
-batch_size = 10
+number_simulations = 5
+batch_size = 3
 
 
 epi_start = 1986
@@ -1707,7 +1707,7 @@ ranges = rbind(
 
 
 # outputs -----------------------------------------------------------------
-outputs = c("OnPrEP1a", "OnPrEP1b", "OnPrEP1c", "ART_eligible_CD4_above_500", "ART_eligible_CD4_350_500","ART_eligible_CD4_200_349","ART_eligible_CD4_below_200",
+outputs = c("S0", "S1a", "S1b", "S1c", "S1d", "OnPrEP1a", "OnPrEP1b", "OnPrEP1c", "ART_eligible_CD4_above_500", "ART_eligible_CD4_350_500","ART_eligible_CD4_200_349","ART_eligible_CD4_below_200",
             "cumuAllDeaths", "cumuHIVDeaths", "cumuARTinitiations", "cumuARTREinitiations",
             "OnPrEP", "ART_sex_ratio", "pc_S1b", "pc_S1a", "pc_S1c", "cumuInf",
             "intervention_ART_increase", "testing_prob", "rho_intervention", "ART_eligible_CD4_above_500", "ART_eligible_CD4_350_500", "ART_eligible_CD4_200_349", "ART_eligible_CD4_below_200", "new_people_in_group_FSW_only", "rate_move_out", "rate_move_in", "FSW_out", "FSW_in", "zeta", "tau", "prep_offering_rate", "intervention_testing_increase", "sigma", "PrEPOnOff", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
@@ -1897,15 +1897,60 @@ variable = c("Pro FSW", "Pro FSW"))
 #              "Men", "Men", "Men", "Men", "Men", "Men", "Men",
 #              "All", "All", "All", "All", "All", "All", "All",
 #              "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
+# PrEP_fitting ------------------------------------------------
+
+PrEP_fitting = data.frame(time = c(2016, 2017, 2016, 2017, 2016, 2017),
+                          group = c("S1a", "S1a", "S1b", "S1b", "S1c", "S1c"),
+                          lower = c(50, 40, 50, 40, 50, 40),
+                          point = c(55, 45, 50, 40, 50, 40),
+                          upper = c(61, 66, 61, 66, 61, 66)
+
+
+                          )
+
+PrEP_fitting = data.frame(time = c(2016, 2017),
+                          group = c("S1a", "S1a"),
+                          lower = c(50, 40),
+                          point = c(55, 45),
+                          upper = c(61, 66)
+
+
+)
+
+# PrEP_fitting = NULL
 
 #####################################################
 
 # result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points,
-  # frac_N_discard_points = frac_N_discard_points_no_FSW_LB, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
-result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
+#   frac_N_discard_points = frac_N_discard_points_no_FSW_LB, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points, PrEP_fitting = PrEP_fitting)
+# result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
+#
+# result
+#
+# result[[3]][[1]]$S1a[32,]
+#
+# 22.6518633 - 55
+# 22.6622749 - 45
 
-result[[3]] = result[[2]]
+
+# result[[3]] = result[[2]]
+
+
+result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs,
+                                      prev_points = prev_points_test,
+                                      frac_N_discard_points = frac_N_discard_points_test, Ntot_data_points = Ntot_data_points_test, ART_data_points = ART_data_points_test, PrEP_fitting = PrEP_fitting)
+
+result[[5]]
+
+length(result[[3]])
+
+result[[2]]
+
+result[[6]]
+
+result[[3]][[1]]
+
 
 
 
@@ -1934,25 +1979,24 @@ frac_N_discard_points_test = data.frame(variable = c("Pro FSW"),
 ART_data_points_test = data.frame(time = c(2014),
                                   Lower = c(0),
                                   Upper = c(1),
-                                  variable = c("test"))
-
+                                  variable = c("Pro FSW"))
 prev_points_test = data.frame(time = c(2015),
-                         variable = c(rep("test", 1)),
-                         value = c(0),
-                         lower = c(0),
+                              variable = c(rep("Pro FSW", 1)),
+                              value = c(0),
+                              lower = c(0),
 
-                         upper = c(1))
+                              upper = c(1))
 
 Ntot_data_points_test = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
-                              point = c(10, 10, 10, 10, 10),
-                              lower = c(10, 10, 10, 10, 10),
-                              upper = c(10000000000, 10000000000, 10000000000, 10000000000, 10000000000),
-                              colour = c("data", "data", "data", "predicted", "predicted"))
+                                   point = c(10, 10, 10, 10, 10),
+                                   lower = c(10, 10, 10, 10, 10),
+                                   upper = c(10000000000, 10000000000, 10000000000, 10000000000, 10000000000),
+                                   colour = c("data", "data", "data", "predicted", "predicted"))
 
 
 result <- cotonou::run_model_with_fit_multiple(batch_size, number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs,
                                                     prev_points = prev_points_FSW_only_even_less_2, frac_N_discard_points = frac_N_discard_points_no_FSW_LB,
-                                                    Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points_FSW_last_3)
+                                                    Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points_FSW_last_3, PrEP_fitting = PrEP_fitting)
 
 
 tafter = Sys.time()
@@ -2006,6 +2050,30 @@ lapply(result[[2]], function(x) x$c_comm_balanced)
 
 
 # ignore these ######################################
+
+
+
+
+S0_indiv = data.frame(time, t(do.call(rbind, lapply(result[[3]], function(x) x$S0[,1]))))
+S1a_indiv = data.frame(time, t(do.call(rbind, lapply(result[[3]], function(x) x$S1a[,1]))))
+S1b_indiv = data.frame(time, t(do.call(rbind, lapply(result[[3]], function(x) x$S1b[,1]))))
+S1c_indiv = data.frame(time, t(do.call(rbind, lapply(result[[3]], function(x) x$S1c[,1]))))
+S1d_indiv = data.frame(time, t(do.call(rbind, lapply(result[[3]], function(x) x$S1d[,1]))))
+
+all_prep_cats = rbind(S1a_indiv, S1b_indiv, S1c_indiv, S1d_indiv)
+
+all_prep_cats$group = rep(c("S1a", "S1b", "S1c", "S1d"), each = length(time))
+
+all_prep_cats_melted = reshape2::melt(all_prep_cats, id.vars = c("time", "group"))
+
+colnames(all_prep_cats_melted) = c("time", "group", "variable", "point")
+
+ggplot() + geom_line(data = all_prep_cats_melted, aes(x = time, y = point, factor = variable, colour = group)) +
+  theme_bw()+ geom_point(data = PrEP_fitting, aes(x = time, y = point, colour = group)) + facet_wrap()
+
+
+
+
 frac_ProFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[3]], function(x) x$frac_N*100), function(x) x[,1])), 2, cotonou::quantile_95)))
 frac_LowFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[3]], function(x) x$frac_N*100), function(x) x[,2])), 2, cotonou::quantile_95)))
 frac_GPF = data.frame(time, t(apply(do.call(rbind, lapply(lapply(result[[3]], function(x) x$frac_N*100), function(x) x[,3])), 2, cotonou::quantile_95)))
@@ -2209,9 +2277,9 @@ frac_N_discard_points_test = data.frame(variable = c("Pro FSW"),
 ART_data_points_test = data.frame(time = c(2014),
                                   Lower = c(0),
                                   Upper = c(1),
-                                  variable = c("test"))
+                                  variable = c("Pro FSW"))
 prev_points_test = data.frame(time = c(2015),
-                              variable = c(rep("test", 1)),
+                              variable = c(rep("Pro FSW", 1)),
                               value = c(0),
                               lower = c(0),
 
@@ -2268,8 +2336,8 @@ lapply(best_pars_combined, function(x) {
 
   res = run_model_with_fit(number_simulations = number_of_prep_samples, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time,
                                              ranges = combined_ranges, outputs = outputs,
-                                             prev_points = prev_points_test, frac_N_discard_points = frac_N_discard_points,
-                                             Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points)
+                                             prev_points = prev_points_test, frac_N_discard_points = frac_N_discard_points_test,
+                                             Ntot_data_points = Ntot_data_points_test, ART_data_points = ART_data_points_test, PrEP_fitting = PrEP_fitting)
 
   # return(combined_ranges)
 
