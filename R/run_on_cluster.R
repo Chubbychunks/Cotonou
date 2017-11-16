@@ -160,11 +160,11 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
     {
       time = PrEP_fitting[i, "time"]
       if(PrEP_fitting[i, "group"] == "S1a")
-        prep_fit = prep_fit + abs(S1a[S1a$time == time, 1] - PrEP_fitting[i, "point"])
+        prep_fit = prep_fit + (S1a[S1a$time == time, 1] - PrEP_fitting[i, "point"])^2
       if(PrEP_fitting[i, "group"] == "S1b")
-        prep_fit = prep_fit + abs(S1b[S1b$time == time, 1] - PrEP_fitting[i, "point"])
+        prep_fit = prep_fit + (S1b[S1b$time == time, 1] - PrEP_fitting[i, "point"])^2
       if(PrEP_fitting[i, "group"] == "S1c")
-        prep_fit = prep_fit + abs(S1c[S1c$time == time, 1] - PrEP_fitting[i, "point"])
+        prep_fit = prep_fit + (S1c[S1c$time == time, 1] - PrEP_fitting[i, "point"])^2
 
 
 
@@ -411,6 +411,7 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
 
     }
 
+    prep_fit <- unlist(lapply(likelihood_list, function(x) x[[4]]))
 
     print(max_fit)
     print(c(100*i/(number_simulations/batch_size), "%"))
@@ -421,7 +422,7 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
     gc()
   }
 
-  return(list(max_fit, best_fit_pars, max_fit_minus_1, best_fit_pars_minus_1))
+  return(list(max_fit, best_fit_pars, max_fit_minus_1, best_fit_pars_minus_1, prep_fit))
 
   # return(list(parameters[best_runs], likelihood_list, out, best_runs))
 }

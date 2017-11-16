@@ -1,122 +1,242 @@
 
-res = lapply(result[[2]], cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
+odin::odin_package(".") # looks for any models inside inst/odin
+devtools::load_all()
+
+PrEP_fitting = data.frame(time = c(2016, 2017),
+                          group = c("S1a", "S1c"),
+                          lower = c(50, 40),
+                          point = c(55, 400),
+                          upper = c(61, 66)
 
 
-# ignore these ######################################
-frac_ProFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res, function(x) x$frac_N*100), function(x) x[,1])), 2, cotonou::quantile_95)))
-frac_LowFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res, function(x) x$frac_N*100), function(x) x[,2])), 2, cotonou::quantile_95)))
-frac_GPF = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res, function(x) x$frac_N*100), function(x) x[,3])), 2, cotonou::quantile_95)))
-frac_FormerFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res, function(x) x$frac_N*100), function(x) x[,4])), 2, cotonou::quantile_95)))
-frac_Client = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res, function(x) x$frac_N*100), function(x) x[,5])), 2, cotonou::quantile_95)))
-frac_GPM = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res, function(x) x$frac_N*100), function(x) x[,6])), 2, cotonou::quantile_95)))
-frac_Virgin_Female = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res, function(x) x$frac_N*100), function(x) x[,7])), 2, cotonou::quantile_95)))
-frac_Virgin_Male = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res, function(x) x$frac_N*100), function(x) x[,8])), 2, cotonou::quantile_95)))
-frac_Former_FSW_Outside = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res, function(x) x$frac_N*100), function(x) x[,9])), 2, cotonou::quantile_95)))
-
-frac_Active_FSW = data.frame(time, t(apply(do.call(rbind, lapply(res, function(x) {100*(x$frac_N[,1] + x$frac_N[,2])})), 2, cotonou::quantile_95)))
-Ratio_Low_Pro = data.frame(time, t(apply(do.call(rbind, lapply(res, function(x) {x$frac_N[,2]/ x$frac_N[,1]})), 2, cotonou::quantile_95)))
-
-
-
-frac = rbind(frac_ProFSW, frac_LowFSW, frac_GPF, frac_FormerFSW, frac_Client, frac_GPM, frac_Virgin_Female, frac_Virgin_Male, frac_Former_FSW_Outside, frac_Active_FSW, Ratio_Low_Pro)
-frac = data.frame(frac, group = rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "Active FSW", "Low Pro Ratio"), each = length(time)))
-colnames(frac) = c("time", "Lower", "Median", "Upper", "variable")
-frac$variable = factor(frac$variable, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "Active FSW", "Low Pro Ratio"))
-
-prev_FSW = t(apply(do.call(rbind, lapply(res, function(x) x$prev_FSW)), 2, cotonou::quantile_95))
-prev_LowFSW = t(apply(do.call(rbind, lapply(res, function(x) x$prev_LowFSW)), 2, cotonou::quantile_95))
-prev_client = t(apply(do.call(rbind, lapply(res, function(x) x$prev_client)), 2, cotonou::quantile_95))
-prev_women = t(apply(do.call(rbind, lapply(res, function(x) x$prev_women)), 2, cotonou::quantile_95))
-prev_men = t(apply(do.call(rbind, lapply(res, function(x) x$prev_men)), 2, cotonou::quantile_95))
-prev = rbind(prev_FSW, prev_LowFSW, prev_client, prev_women, prev_men)
-prev = data.frame(time, prev, rep(c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"), each = length(time)))
-colnames(prev) = c("time", "Lower", "Median", "Upper", "variable")
-prev$variable = factor(prev$variable, levels = c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"))
-
-
-prev_FSW_indiv = t(do.call(rbind, lapply(res, function(x) x$prev_FSW)))
-prev_LowFSW_indiv = t(do.call(rbind, lapply(res, function(x) x$prev_LowFSW)))
-prev_client_indiv = t(do.call(rbind, lapply(res, function(x) x$prev_client)))
-prev_women_indiv = t(do.call(rbind, lapply(res, function(x) x$prev_women)))
-prev_men_indiv = t(do.call(rbind, lapply(res, function(x) x$prev_men)))
-prev_indiv = rbind(prev_FSW_indiv, prev_LowFSW_indiv, prev_client_indiv, prev_women_indiv, prev_men_indiv)
-
-prev_indiv = data.frame(time, rep(c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"), each = length(time)), prev_indiv)
-
-
-colnames(prev_indiv) = c("time", "variable", as.character(seq(1, length(prev_FSW_indiv[1,]))))
-
-prev_indiv_melted = reshape2::melt(prev_indiv, id.vars = c("time", "variable"))
-
-colnames(prev_indiv_melted) = c("time", "variable", "run", "value")
-
-prev_indiv_melted$variable = factor(prev_indiv_melted$variable, levels = c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"))
-
-
-
-
-
-Ntot = data.frame(time, t(apply(do.call(rbind, lapply(res, function(x) x$Ntot)), 2, cotonou::quantile_95)))
-colnames(Ntot) = c("time", "Lower", "Median", "Upper")
-
-ART_coverage_women = t(apply(do.call(rbind, lapply(res, function(x) x$ART_coverage_women)), 2, cotonou::quantile_95))
-ART_coverage_men = t(apply(do.call(rbind, lapply(res, function(x) x$ART_coverage_men)), 2, cotonou::quantile_95))
-ART_coverage_FSW = t(apply(do.call(rbind, lapply(res, function(x) x$ART_coverage_FSW)), 2, cotonou::quantile_95))
-ART_coverage_all = t(apply(do.call(rbind, lapply(res, function(x) x$ART_coverage_all)), 2, cotonou::quantile_95))
-ART_coverage = rbind(ART_coverage_women, ART_coverage_men, ART_coverage_FSW, ART_coverage_all)
-ART_coverage = data.frame(time, ART_coverage, rep(c("Women", "Men", "Pro FSW", "All"), each = length(time)))
-colnames(ART_coverage) = c("time", "Lower", "Median", "Upper", "variable")
-ART_coverage$variable = factor(ART_coverage$variable, levels = c("Pro FSW", "Women", "Men", "All"))
-ART_coverage = ART_coverage[ART_coverage$variable == "All" | ART_coverage$variable == "Pro FSW",]
-
-
-frac_N_discard_points_graph = frac_N_discard_points
-frac_N_discard_points_graph[frac_N_discard_points_graph$variable == "Low Pro Ratio", c(2,3)] = frac_N_discard_points_graph[frac_N_discard_points_graph$variable == "Low Pro Ratio",c(2,3)]/100
-
-#####################################################
-
-require(ggplot2)
-
-# plot fraction in each group
-ggplot(frac) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) +
-  theme_bw() + labs(y = "Percent in each group (%)") +  facet_wrap(~variable, scales = "free") +
-  geom_point(data = frac_N_data_points, aes(x = time, y = point), size = I(2), color = "red", shape = 15) +
-  geom_hline(data = frac_N_discard_points_graph, aes(yintercept = 100*min), size = I(0.5), color = "red", linetype = 1, alpha = 0.7) +
-  geom_hline(data = frac_N_discard_points_graph, aes(yintercept = 100*max), size = I(0.5), color = "red", linetype = 1, alpha = 0.7)
-
-prev_axes = data.frame(variable = c(rep("Pro FSW", 2),
-                                    rep("Clients", 2),
-                                    rep("Women", 2),
-                                    rep("Men", 2),
-                                    rep("Low-level FSW", 2)),
-                       time = c(rep(c(1986, 2025), 5)),
-                       value = c(0, 70, 0, 70, 0, 15, 0, 15, 0, 70)
 )
 
-prev_points_80s = prev_points_all[c(1,2,3),]
 
-# plot prevalence in each group
-ggplot() + geom_line(data = prev, aes(x = time, y = Median))+ geom_ribbon(data = prev, aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
-  geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper)) +
-  geom_point(data = prev_points_80s, aes(x = time, y = value), colour = "red")+
-  geom_blank(data = prev_axes, aes(x = time, y = value))
+# test fits ---------------------------------------------------------------
 
 
-# # plot prevalence in each group indiv runs
-# ggplot() + geom_line(data = prev_indiv_melted, aes(x = time, y = value, factor = variable, factor = run), alpha = 0.3) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
-#   geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
-#   geom_point(data = prev_points_80s, aes(x = time, y = value), colour = "red")+
-#   geom_blank(data = prev_axes, aes(x = time, y = value))
+frac_N_discard_points_test = data.frame(variable = c("Pro FSW"),
+                                        min = c(0),
+                                        max = c(1))
+ART_data_points_test = data.frame(time = c(2014),
+                                  Lower = c(0),
+                                  Upper = c(1),
+                                  variable = c("Pro FSW"))
+prev_points_test = data.frame(time = c(2015),
+                              variable = c(rep("Pro FSW", 1)),
+                              value = c(0),
+                              lower = c(0),
+
+                              upper = c(1))
+
+Ntot_data_points_test = data.frame(time = c(1992, 2002, 2013, 2020, 2030),
+                                   point = c(10, 10, 10, 10, 10),
+                                   lower = c(10, 10, 10, 10, 10),
+                                   upper = c(10000000000, 10000000000, 10000000000, 10000000000, 10000000000),
+                                   colour = c("data", "data", "data", "predicted", "predicted"))
+# # -----------------------------------------------------------------------
+
+
+number_of_prep_samples = 5
+
+new_parameters_ranges <- rbind(
+  eP1a = c(0.47, 0.98),
+  eP1b = c(0.2, 0.4),
+  psia = c(1, 4),
+  psib = c(1, 4),
+  prep_offering_rate = c(1, 10),
+  prep_dropout = c(1, 4),
+  PrEPOnOff = c(1,1)
+
+)
 
 
 
-# plot total population size
-ggplot(Ntot) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) +
-  theme_bw() + labs(y = "Total population size of Grand Cotonou") +
-  geom_point(data = Ntot_data_points, aes(x = time, y = point, color = colour), size = I(2), shape = 15) + geom_errorbar(data = Ntot_data_points, aes(x = time, ymax = upper, ymin = lower, color = colour), width = 2)
+best_pars_combined = result[[1]]
 
 
-ggplot(ART_coverage) +
-  geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() +
-  facet_wrap(~variable) + labs(y = "ART coverage ") +
-  geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
+
+res_best_runs_after_prep_fit = lapply(best_pars_combined, function(x) {
+
+
+
+  # x[rownames(ranges)]
+
+  x = lapply(x[rownames(ranges)], function(y) {
+    if(length(y) == 9)
+      y = y[1] else y
+  })
+
+  x = x[-which(names(x) %in% rownames(new_parameters_ranges))]
+
+
+
+  combined_ranges = cbind(unlist(x[rownames(ranges)]), unlist(x[rownames(ranges)]))
+
+  combined_ranges = rbind(combined_ranges, new_parameters_ranges)
+
+
+  # i now have the ranges, have to put them into the function below
+  #test fitting to nothing first to see if works
+  #then add prep fitting
+
+
+  # res_after_prep = run_model_with_fit(number_simulations = number_of_prep_samples, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time,
+  #                                            ranges = combined_ranges, outputs = outputs,
+  #                                            prev_points = prev_points_test, frac_N_discard_points = frac_N_discard_points_test,
+  #                                            Ntot_data_points = Ntot_data_points_test, ART_data_points = ART_data_points_test, PrEP_fitting = PrEP_fitting)
+  res_after_prep = run_model_with_fit_multiple(batch_size = number_of_prep_samples, number_simulations = number_of_prep_samples, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time,
+                                               ranges = combined_ranges, outputs = outputs,
+                                               prev_points = prev_points_test, frac_N_discard_points = frac_N_discard_points_test,
+                                               Ntot_data_points = Ntot_data_points_test, ART_data_points = ART_data_points_test, PrEP_fitting = PrEP_fitting)
+
+  # return(list(res_after_prep[[1]], res_after_prep[[3]], res_after_prep[[6]]))
+  return(list(res_after_prep[[1]], res_after_prep[[2]], res_after_prep[[5]]))
+
+  # return(combined_ranges)
+
+}
+)
+
+# 1. best fit to all data
+lapply(res_best_runs_after_prep_fit, function(x) x[[1]])
+
+best_pars_after_prep = lapply(res_best_runs_after_prep_fit, function(x) {
+  prepfitsout = x[[3]]
+
+  bla = which(prepfitsout == min(prepfitsout))
+
+  return(x[[2]][bla])
+
+}
+)
+
+# 2. just to show best prep parameters
+best_pars_after_prep_just_rep = lapply(best_pars_after_prep, function(x) x[[1]][rownames(new_parameters_ranges)])
+
+# 3. check that it fits to all the data
+
+
+
+# 4. sample DALY weights and costs
+
+best_pars_after_prep
+
+
+number_of_cost_DALY_samples = 5
+
+cost_DALY_ranges <- rbind(
+  cost_ART_initiation = c(40, 50),
+  cost_1_year_ART = c(100, 110),
+  cost_PrEP_initiation = c(25, 29),
+  cost_1_year_PrEP_perfect = c(60, 70),
+  cost_1_year_PrEP_intermediate = c(50, 60),
+  cost_1_year_PrEP_non = c(40, 50),
+
+  DALY_Uninfected_Off_PrEP = c(40, 50),
+  DALY_Uninfected_On_PrEP_perfect = c(40, 50),
+  DALY_Uninfected_On_PrEP_intermediate = c(40, 50),
+  DALY_Uninfected_On_PrEP_non = c(40, 50),
+  DALY_Acute_On_PrEP_non = c(40, 50),
+  DALY_Infected_Off_PrEP_Off_ART_Healthy = c(40, 50),
+  DALY_CD4_200_350_Off_ART = c(40, 50),
+  DALY_CD4_below_200_Off_ART = c(40, 50),
+  DALY_On_ART =c(40, 50)
+)
+
+
+
+
+
+
+
+# checking
+
+
+which_original_fit = 1
+res_test = lapply(res_best_runs_after_prep_fit[[which_original_fit]][[2]], cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
+
+
+
+S0_indiv = data.frame(time, t(do.call(rbind, lapply(res_test, function(x) x$S0[,1]))))
+S1a_indiv = data.frame(time, t(do.call(rbind, lapply(res_test, function(x) x$S1a[,1]))))
+S1b_indiv = data.frame(time, t(do.call(rbind, lapply(res_test, function(x) x$S1b[,1]))))
+S1c_indiv = data.frame(time, t(do.call(rbind, lapply(res_test, function(x) x$S1c[,1]))))
+S1d_indiv = data.frame(time, t(do.call(rbind, lapply(res_test, function(x) x$S1d[,1]))))
+
+all_prep_cats = rbind(S1a_indiv, S1b_indiv, S1c_indiv)
+
+all_prep_cats$group = rep(c("S1a", "S1b", "S1c"), each = length(time))
+
+all_prep_cats_melted = reshape2::melt(all_prep_cats, id.vars = c("time", "group"))
+
+colnames(all_prep_cats_melted) = c("time", "group", "variable", "point")
+
+
+ggplot() + geom_line(data = all_prep_cats_melted, aes(x = time, y = point, factor = variable, colour = group)) +
+  theme_bw()+ geom_point(data = PrEP_fitting, aes(x = time, y = point, colour = group)) + facet_wrap(~variable)+
+  geom_blank(data = prep_axes, aes( y = value))
+
+
+
+
+
+
+# for each original fit, taking the pars which best fit to prep
+unlist(lapply(lapply(res_best_runs_after_prep_fit, function(x) x[[3]]), function(x) {
+  # return(x[which(x == min(x))])
+  return(which(x == min(x)))
+}))
+#
+#
+#
+#
+#
+# lapply(res_best_runs_after_prep_fit, function(x) x[[2]])[[2]][[4]][rownames(new_parameters_ranges)]
+#
+
+
+
+
+
+res_best_runs_after_prep_fit = lapply(best_pars_combined, function(x) {
+
+
+
+  # x[rownames(ranges)]
+
+  x = lapply(x[rownames(ranges)], function(y) {
+    if(length(y) == 9)
+      y = y[1] else y
+  })
+
+  x = x[-which(names(x) %in% rownames(new_parameters_ranges))]
+
+
+
+  combined_ranges = cbind(unlist(x[rownames(ranges)]), unlist(x[rownames(ranges)]))
+
+  combined_ranges = rbind(combined_ranges, new_parameters_ranges)
+
+
+  # i now have the ranges, have to put them into the function below
+  #test fitting to nothing first to see if works
+  #then add prep fitting
+
+
+  # res_after_prep = run_model_with_fit(number_simulations = number_of_prep_samples, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time,
+  #                                            ranges = combined_ranges, outputs = outputs,
+  #                                            prev_points = prev_points_test, frac_N_discard_points = frac_N_discard_points_test,
+  #                                            Ntot_data_points = Ntot_data_points_test, ART_data_points = ART_data_points_test, PrEP_fitting = PrEP_fitting)
+  res_after_prep = run_model_with_fit_multiple(batch_size = number_of_prep_samples, number_simulations = number_of_prep_samples, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time,
+                                               ranges = combined_ranges, outputs = outputs,
+                                               prev_points = prev_points_test, frac_N_discard_points = frac_N_discard_points_test,
+                                               Ntot_data_points = Ntot_data_points_test, ART_data_points = ART_data_points_test, PrEP_fitting = PrEP_fitting)
+
+  # return(list(res_after_prep[[1]], res_after_prep[[3]], res_after_prep[[6]]))
+  return(list(res_after_prep[[1]], res_after_prep[[2]], res_after_prep[[5]]))
+
+  # return(combined_ranges)
+
+}
+)

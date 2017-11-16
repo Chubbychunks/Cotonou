@@ -529,6 +529,7 @@ deriv(cumuAllDeaths[]) = (alpha01[i] + mu[i]) * I01[i] + (alpha11[i] + mu[i]) * 
 deriv(cumuARTinitiations[]) = (rho_intervention[i] + rho[i]*ART_eligible_CD4_above_500) * I22[i] + (rho[i]*ART_eligible_CD4_350_500 + rho_intervention[i]) * I23[i] +
   (rho[i]*ART_eligible_CD4_200_349 + rho_intervention[i]) * I24[i] + (rho[i]*ART_eligible_CD4_below_200 + rho_intervention[i]) * I25[i]
 
+deriv(dropouts[]) = phi2[i] * I32[i] + phi3[i] * I33[i] + phi4[i] * I34[i] + phi5[i] * I35[i]
 
 
 deriv(cumuARTREinitiations[]) = iota[i] * I42[i] + iota[i] * I43[i] + iota[i] * I44[i] + iota[i] * I45[i]
@@ -951,6 +952,7 @@ initial(cumuARTREinitiations[]) = 0
 # initial(cumuTesting[]) = 0
 
 initial(cumuARTinitiations[]) = 0
+initial(dropouts[]) = 0
 
 initial(cumuAllDeaths[]) = 0
 
@@ -1231,6 +1233,7 @@ dim(n_noncomm) = c(Ncat, Ncat)
 dim(cumuHIVDeaths) = Ncat
 dim(cumuARTinitiations) = Ncat
 dim(cumuARTREinitiations) = Ncat
+dim(dropouts) = Ncat
 # dim(cumuTesting) = Ncat
 
 
