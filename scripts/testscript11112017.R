@@ -103,7 +103,7 @@ lapply(res_best_runs_after_prep_fit, function(x) x[[1]])
 
 best_pars_after_prep = lapply(res_best_runs_after_prep_fit, function(x) {
   prepfitsout = x[[3]]
-
+  print(x[[3]])
   bla = which(prepfitsout == min(prepfitsout))
 
   return(x[[2]][bla])

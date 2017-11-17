@@ -361,6 +361,7 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
   max_fit = 1
 
 
+  prep_out = c()
 
   ### minus 1
   best_fit_pars_minus_1 = list()
@@ -389,6 +390,10 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
     best_runs = which(unlist(lapply(likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
 
 
+    prep_fit <- unlist(lapply(likelihood_list, function(x) x[[4]]))
+
+
+
     if(max(sorted_likelihood_list) > max_fit)
     {
       ### minus 1
@@ -399,9 +404,13 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
       max_fit = max(sorted_likelihood_list)
       best_fit_pars = parameters[best_runs]
 
+      prep_out = prep_fit[best_runs]
+
     } else if(max(sorted_likelihood_list) == max_fit)
     {
       best_fit_pars[(length(best_fit_pars) + 1 ):(length(best_fit_pars) + length(best_runs))] <- parameters[best_runs]
+      prep_out[(length(prep_out) + 1 ):(length(prep_out) + length(best_runs))] <- prep_fit[best_runs]
+
     }
 
     ### minus 1
@@ -411,7 +420,6 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
 
     }
 
-    prep_fit <- unlist(lapply(likelihood_list, function(x) x[[4]]))
 
     print(max_fit)
     print(c(100*i/(number_simulations/batch_size), "%"))
@@ -422,7 +430,7 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
     gc()
   }
 
-  return(list(max_fit, best_fit_pars, max_fit_minus_1, best_fit_pars_minus_1, prep_fit))
+  return(list(max_fit, best_fit_pars, max_fit_minus_1, best_fit_pars_minus_1, prep_out))
 
   # return(list(parameters[best_runs], likelihood_list, out, best_runs))
 }
