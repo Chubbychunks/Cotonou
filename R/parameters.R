@@ -772,7 +772,27 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     W0 = 1,
     W1 = 1,
     W2 = 1,
-    W3 = 1
+    W3 = 1,
+
+    cost_Initiation_of_ART_study_FSW = 1,
+    cost_Initiation_of_ART_government_FSW = 1,
+    cost_1_year_of_ART_study_FSW = 1,
+    cost_1_year_of_ART_government_FSW = 1,
+    cost_Initiation_ART_rest_of_population = 1,
+    cost_1_year_of_ART_rest_of_population = 1,
+    cost_FSW_initiation_ART_Patient_costs = 1,
+    cost_FSW_1_year_ART_Patient_costs = 1,
+
+    cost_Initiation_of_PrEP_study = 1,
+    cost_1_year_PrEP_perfect_adherence_study = 1,
+    cost_1_year_PrEP_intermediate_adherence_study = 1,
+    cost_1_year_PrEP_non_adherence_study = 1,
+    cost_Initiation_of_PrEP_government = 1,
+    cost_1_year_PrEP_perfect_adherence_government =1,
+    cost_1_year_PrEP_intermediate_adherence_government = 1,
+    cost_1_year_PrEP_non_adherence_government = 1,
+    cost_PREP_initiation_Patient_costs = 1,
+    cost_PREP_1_year_ART_Patient_costs = 1
 
 
 
@@ -1086,7 +1106,26 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     W0 = 1,
     W1 = 1,
     W2 = 1,
-    W3 = 1
+    W3 = 1,
+    cost_Initiation_of_ART_study_FSW = 1,
+    cost_Initiation_of_ART_government_FSW = 1,
+    cost_1_year_of_ART_study_FSW = 1,
+    cost_1_year_of_ART_government_FSW = 1,
+    cost_Initiation_ART_rest_of_population = 1,
+    cost_1_year_of_ART_rest_of_population = 1,
+    cost_FSW_initiation_ART_Patient_costs = 1,
+    cost_FSW_1_year_ART_Patient_costs = 1,
+
+    cost_Initiation_of_PrEP_study = 1,
+    cost_1_year_PrEP_perfect_adherence_study = 1,
+    cost_1_year_PrEP_intermediate_adherence_study = 1,
+    cost_1_year_PrEP_non_adherence_study = 1,
+    cost_Initiation_of_PrEP_government = 1,
+    cost_1_year_PrEP_perfect_adherence_government =1,
+    cost_1_year_PrEP_intermediate_adherence_government = 1,
+    cost_1_year_PrEP_non_adherence_government = 1,
+    cost_PREP_initiation_Patient_costs = 1,
+    cost_PREP_1_year_ART_Patient_costs = 1
 
 
 
@@ -1625,7 +1664,26 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    W0 = 1,
                    W1 = 1,
                    W2 = 1,
-                   W3 = 1
+                   W3 = 1,
+                   cost_Initiation_of_ART_study_FSW = 1,
+                   cost_Initiation_of_ART_government_FSW = 1,
+                   cost_1_year_of_ART_study_FSW = 1,
+                   cost_1_year_of_ART_government_FSW = 1,
+                   cost_Initiation_ART_rest_of_population = 1,
+                   cost_1_year_of_ART_rest_of_population = 1,
+                   cost_FSW_initiation_ART_Patient_costs = 1,
+                   cost_FSW_1_year_ART_Patient_costs = 1,
+
+                   cost_Initiation_of_PrEP_study = 1,
+                   cost_1_year_PrEP_perfect_adherence_study = 1,
+                   cost_1_year_PrEP_intermediate_adherence_study = 1,
+                   cost_1_year_PrEP_non_adherence_study = 1,
+                   cost_Initiation_of_PrEP_government = 1,
+                   cost_1_year_PrEP_perfect_adherence_government =1,
+                   cost_1_year_PrEP_intermediate_adherence_government = 1,
+                   cost_1_year_PrEP_non_adherence_government = 1,
+                   cost_PREP_initiation_Patient_costs = 1,
+                   cost_PREP_1_year_ART_Patient_costs = 1
 
 
 

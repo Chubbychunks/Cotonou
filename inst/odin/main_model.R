@@ -564,6 +564,48 @@ output(W3) = W3
 
 
 
+cost_Initiation_of_ART_study_FSW = user()
+cost_Initiation_of_ART_government_FSW = user()
+cost_1_year_of_ART_study_FSW = user()
+cost_1_year_of_ART_government_FSW = user()
+cost_Initiation_ART_rest_of_population = user()
+cost_1_year_of_ART_rest_of_population = user()
+cost_FSW_initiation_ART_Patient_costs = user()
+cost_FSW_1_year_ART_Patient_costs = user()
+
+cost_Initiation_of_PrEP_study = user()
+cost_1_year_PrEP_perfect_adherence_study = user()
+cost_1_year_PrEP_intermediate_adherence_study = user()
+cost_1_year_PrEP_non_adherence_study = user()
+cost_Initiation_of_PrEP_government = user()
+cost_1_year_PrEP_perfect_adherence_government = user()
+cost_1_year_PrEP_intermediate_adherence_government = user()
+cost_1_year_PrEP_non_adherence_government = user()
+cost_PREP_initiation_Patient_costs = user()
+cost_PREP_1_year_ART_Patient_costs = user()
+
+output(cost_Initiation_of_ART_study_FSW) = cost_Initiation_of_ART_study_FSW
+output(cost_Initiation_of_ART_government_FSW) = cost_Initiation_of_ART_government_FSW
+output(cost_1_year_of_ART_study_FSW) = cost_1_year_of_ART_study_FSW
+output(cost_1_year_of_ART_government_FSW) = cost_1_year_of_ART_government_FSW
+output(cost_Initiation_ART_rest_of_population) = cost_Initiation_ART_rest_of_population
+output(cost_1_year_of_ART_rest_of_population) = cost_1_year_of_ART_rest_of_population
+output(cost_FSW_initiation_ART_Patient_costs) = cost_FSW_initiation_ART_Patient_costs
+output(cost_FSW_1_year_ART_Patient_costs) = cost_FSW_1_year_ART_Patient_costs
+
+output(cost_Initiation_of_PrEP_study) = cost_Initiation_of_PrEP_study
+output(cost_1_year_PrEP_perfect_adherence_study) = cost_1_year_PrEP_perfect_adherence_study
+output(cost_1_year_PrEP_intermediate_adherence_study) = cost_1_year_PrEP_intermediate_adherence_study
+output(cost_1_year_PrEP_non_adherence_study) = cost_1_year_PrEP_non_adherence_study
+output(cost_Initiation_of_PrEP_government) = cost_Initiation_of_PrEP_government
+output(cost_1_year_PrEP_perfect_adherence_government) = cost_1_year_PrEP_perfect_adherence_government
+output(cost_1_year_PrEP_intermediate_adherence_government) = cost_1_year_PrEP_intermediate_adherence_government
+output(cost_1_year_PrEP_non_adherence_government) = cost_1_year_PrEP_non_adherence_government
+output(cost_PREP_initiation_Patient_costs) = cost_PREP_initiation_Patient_costs
+output(cost_PREP_1_year_ART_Patient_costs) = cost_PREP_1_year_ART_Patient_costs
+
+
+
 FSW_out = rate_move_out[1] * N[1]
 
 
