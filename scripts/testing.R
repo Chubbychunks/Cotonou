@@ -1483,6 +1483,8 @@ best_set = list(
 # yup
 ranges = rbind(
 
+  long_intervention = c(1,1),
+
   PrEPOnOff = c(1,1),
 
   # betaMtoF_baseline = c(0, 1),
@@ -1721,7 +1723,7 @@ outputs = c("fP_comm", "fP_noncomm", "iota", "S0", "S1a", "S1b", "S1c", "S1d", "
             "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW",
             "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm",
             "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
-outputs = unique(c("eP0", "eP1a", "eP1b", "eP1c", "eP1d", "fP_comm", "fP_noncomm", "iota", "W0", "W1", "W2", "W3",
+outputs = unique(c("prep_offered", "Tasp_testing", "eP0", "eP1a", "eP1b", "eP1c", "eP1d", "fP_comm", "fP_noncomm", "iota", "W0", "W1", "W2", "W3",
                    "Number_DALY_W1","Number_DALY_W2", "Number_DALY_W3", "FSW_On_PrEP_all_cats", "PrEPinitiations",
                    "PrEPinitiations1a",
                        "PrEPinitiations1b", "PrEPinitiations1c", "pc_susceptible_FSW_On_PrEP", "pc_all_FSW_On_PrEP",

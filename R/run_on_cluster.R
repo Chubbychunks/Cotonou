@@ -153,7 +153,7 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
     # S1c = data.frame(x["S1c"], time)
     # S1d = data.frame(x["S1d"], time)
 
-        total_on_prep = data.frame(time, x["FSW_On_PrEP_all_cats"])
+    total_on_prep = data.frame(time, x["FSW_On_PrEP_all_cats"])
 
     PY_PrEP = total_on_prep[which(time == 2015.5),2] +
       total_on_prep[which(time == 2016.5),2]

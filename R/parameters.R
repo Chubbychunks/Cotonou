@@ -577,14 +577,17 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
 
 
+  if(y$long_intervention == 0)
+  {
+    y$tau_intervention_y = matrix(c(rep(0, 9),  y$intervention_testing_increase, c(rep(0, 8)),  y$intervention_testing_increase, c(rep(0, 8)), rep(0, 9)), ncol = 9, nrow = 4, byrow = T)
+    y$rho_intervention_y = matrix(c(rep(0, 9), y$intervention_ART_increase, c(rep(0, 8)), y$intervention_ART_increase, c(rep(0, 8)), rep(0, 9)), ncol = 9, nrow = 4, byrow = T)
+    y$prep_intervention_y = matrix(c(rep(0, 9), y$prep_offering_rate , rep(0, 9-1), y$prep_offering_rate , rep(0, 9-1), rep(0, 9)), ncol = 9, byrow = T)
+  } else {
+    y$tau_intervention_y = matrix(c(rep(0, 9),  y$intervention_testing_increase, c(rep(0, 8)),  y$intervention_testing_increase, c(rep(0, 8)), y$intervention_testing_increase, c(rep(0, 8))), ncol = 9, nrow = 4, byrow = T)
+    y$rho_intervention_y = matrix(c(rep(0, 9), y$intervention_ART_increase, c(rep(0, 8)), y$intervention_ART_increase, c(rep(0, 8)), y$intervention_ART_increase, c(rep(0, 8))), ncol = 9, nrow = 4, byrow = T)
+    y$prep_intervention_y = matrix(c(rep(0, 9), y$prep_offering_rate , rep(0, 9-1), y$prep_offering_rate , rep(0, 9-1), y$prep_offering_rate , rep(0, 9-1)), ncol = 9, byrow = T)
 
-  y$tau_intervention_y = matrix(c(rep(0, 9),  y$intervention_testing_increase, c(rep(0, 8)),  y$intervention_testing_increase, c(rep(0, 8)), rep(0, 9)), ncol = 9, nrow = 4, byrow = T)
-  y$rho_intervention_y = matrix(c(rep(0, 9), y$intervention_ART_increase, c(rep(0, 8)), y$intervention_ART_increase, c(rep(0, 8)), rep(0, 9)), ncol = 9, nrow = 4, byrow = T)
-
-
-
-  y$prep_intervention_y = matrix(c(rep(0, 9), y$prep_offering_rate , rep(0, 9-1), y$prep_offering_rate , rep(0, 9-1), rep(0, 9)), ncol = 9, byrow = T)
-
+  }
 
   y$kappaa = c(y$prep_dropout, rep_len(0,(8)))
 
@@ -793,7 +796,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     cost_1_year_PrEP_non_adherence_government = 1,
     cost_PREP_initiation_Patient_costs = 1,
     cost_PREP_1_year_ART_Patient_costs = 1,
-    TasP_testing = 1
+    TasP_testing = 1,
+    long_intervention = 0
 
 
 
@@ -1127,7 +1131,8 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     cost_1_year_PrEP_non_adherence_government = 1,
     cost_PREP_initiation_Patient_costs = 1,
     cost_PREP_1_year_ART_Patient_costs = 1,
-    TasP_testing = 1
+    TasP_testing = 1,
+    long_intervention = 0
 
 
 
@@ -1686,7 +1691,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    cost_1_year_PrEP_non_adherence_government = 1,
                    cost_PREP_initiation_Patient_costs = 1,
                    cost_PREP_1_year_ART_Patient_costs = 1,
-                   TasP_testing = 1
+                   TasP_testing = 1,
+                   long_intervention = 0
 
 
 

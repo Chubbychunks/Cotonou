@@ -407,6 +407,8 @@ sigma[] = user()
 
 prep_offered[] = interpolate(prep_intervention_t, prep_intervention_y, "constant")
 
+output(prep_offered[]) = prep_offered
+
 #FOI of j on i
 lambda[,] = if (i == j) 0 else compute_lambda(c_comm_balanced[i], p_comm[i,j], S0[j], S1a[j], S1b[j], S1c[j], I01[j], I11[j], I02[j], I03[j], I04[j], I05[j],
                                               I22[j], I23[j], I24[j], I25[j], I32[j], I33[j], I34[j], I35[j],
