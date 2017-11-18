@@ -661,6 +661,9 @@ deriv(cumuARTinitiations[]) = (rho_intervention[i] + rho[i]*ART_eligible_CD4_abo
 
 deriv(dropouts[]) = phi2[i] * I32[i] + phi3[i] * I33[i] + phi4[i] * I34[i] + phi5[i] * I35[i]
 
+deriv(cumu_PrEP_dropouts[]) = kappaa[i] * S1a[i] + kappab[i] * S1b[i] + kappac[i] * S1c[i]
+dim(cumu_PrEP_dropouts) = Ncat
+initial(cumu_PrEP_dropouts[]) = 0
 
 deriv(cumuARTREinitiations[]) = iota[i] * I42[i] + iota[i] * I43[i] + iota[i] * I44[i] + iota[i] * I45[i]
 
