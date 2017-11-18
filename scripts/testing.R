@@ -978,6 +978,8 @@ condom_seq = c("fc_y_comm", "fc_y_noncomm", "n_y_comm", "n_y_noncomm")
 groups_seq = c("ProFSW", "LowFSW", "GPF", "FormerFSW", "Client", "GPM", "VirginF", "VirginM", "FormerFSWoutside")
 years_seq = seq(1985, 2016)
 time <- seq(epi_start, epi_end, length.out = epi_end - epi_start + 1)
+time <- seq(epi_start, epi_end, length.out = (epi_end - epi_start + 0.5)*2)
+
 #####################################################
 
 # this is the best set of parameters (the fixed ones)
@@ -2004,6 +2006,9 @@ length(result[[3]])
 result[[2]]
 
 result[[6]]
+
+(250-(6.628875e+01 + 8.712746e+01))^2
+
 
 result[[3]][[1]]
 

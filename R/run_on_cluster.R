@@ -143,37 +143,37 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
 
 
   prep_fit = Inf
-  if(!is.null(PrEP_fitting))
+  if(!is.null(PrEP_fitting) && sum(time %% 1 != 0) > 1)
   {
 
 
-    S0 = data.frame(x["S0"], time)
-    S1a = data.frame(x["S1a"], time)
-    S1b = data.frame(x["S1b"], time)
-    S1c = data.frame(x["S1c"], time)
-    S1d = data.frame(x["S1d"], time)
+    # S0 = data.frame(x["S0"], time)
+    # S1a = data.frame(x["S1a"], time)
+    # S1b = data.frame(x["S1b"], time)
+    # S1c = data.frame(x["S1c"], time)
+    # S1d = data.frame(x["S1d"], time)
+
+        total_on_prep = data.frame(time, x["FSW_On_PrEP_all_cats"])
+
+    PY_PrEP = total_on_prep[which(time == 2015.5),2] +
+      total_on_prep[which(time == 2016.5),2]
+
+    prep_fit = (PY_PrEP-250)^2
 
 
-    prep_fit = 0;
-
-    for(i in 1:length(PrEP_fitting[,1]))
-    {
-      time = PrEP_fitting[i, "time"]
-      if(PrEP_fitting[i, "group"] == "S1a")
-        prep_fit = prep_fit + (S1a[S1a$time == time, 1] - PrEP_fitting[i, "point"])^2
-      if(PrEP_fitting[i, "group"] == "S1b")
-        prep_fit = prep_fit + (S1b[S1b$time == time, 1] - PrEP_fitting[i, "point"])^2
-      if(PrEP_fitting[i, "group"] == "S1c")
-        prep_fit = prep_fit + (S1c[S1c$time == time, 1] - PrEP_fitting[i, "point"])^2
-
-
-
-
-
-
-
-
-    }
+#
+#     prep_fit = 0;
+#
+#     for(i in 1:length(PrEP_fitting[,1]))
+#     {
+#       time = PrEP_fitting[i, "time"]
+#       if(PrEP_fitting[i, "group"] == "S1a")
+#         prep_fit = prep_fit + (S1a[S1a$time == time, 1] - PrEP_fitting[i, "point"])^2
+#       if(PrEP_fitting[i, "group"] == "S1b")
+#         prep_fit = prep_fit + (S1b[S1b$time == time, 1] - PrEP_fitting[i, "point"])^2
+#       if(PrEP_fitting[i, "group"] == "S1c")
+#         prep_fit = prep_fit + (S1c[S1c$time == time, 1] - PrEP_fitting[i, "point"])^2
+    # }
 
 
   }

@@ -1374,7 +1374,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                      rep(c(0, 0.1, 0.2, 0.4, 0.5, 0.7, 0.5, 0.8, 0.7), Ncat), ncol = Ncat),
 
                    test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
-                   sigma = c(0.85, 0, 0, 0, 0, 0, 0, 0, 0),
+                   sigma = c(0.82, 0, 0, 0, 0, 0, 0, 0, 0),
                    prep_intervention_t = c(1985, 2015, 2016, 2017),
                    prep_intervention_y = matrix(c(rep(0, Ncat), 1, rep(0, Ncat-1), 1, rep(0, Ncat-1), rep(0, Ncat)), ncol = Ncat, byrow = T), # offering rate
                    PrEPOnOff = 0,
