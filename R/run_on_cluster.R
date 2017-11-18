@@ -153,12 +153,51 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
     # S1c = data.frame(x["S1c"], time)
     # S1d = data.frame(x["S1d"], time)
 
-    total_on_prep = data.frame(time, x["FSW_On_PrEP_all_cats"])
 
-    PY_PrEP = total_on_prep[which(time == 2015.5),2] +
-      total_on_prep[which(time == 2016.5),2]
+    if(length(time == 589)) {
+      total_on_prep = data.frame(time, x["FSW_On_PrEP_all_cats"])
 
-    prep_fit = (PY_PrEP-250)^2
+      PY_PrEP =
+      total_on_prep[which(time == 2015 + 1/2),2]/12 +
+      total_on_prep[which(time == 2015 + 2/2),2]/12 +
+      total_on_prep[which(time == 2015 + 3/2),2]/12 +
+      total_on_prep[which(time == 2015 + 4/2),2]/12 +
+      total_on_prep[which(time == 2015 + 5/2),2]/12 +
+      total_on_prep[which(time == 2015 + 6/2),2]/12 +
+      total_on_prep[which(time == 2015 + 7/2),2]/12 +
+      total_on_prep[which(time == 2015 + 8/2),2]/12 +
+      total_on_prep[which(time == 2015 + 9/2),2]/12 +
+      total_on_prep[which(time == 2015 + 10/2),2]/12 +
+      total_on_prep[which(time == 2015 + 11/2),2]/12 +
+      total_on_prep[which(time == 2016),2]/12 +
+
+      total_on_prep[which(time == 2016 + 1/2),2]/12 +
+      total_on_prep[which(time == 2016 + 2/2),2]/12 +
+      total_on_prep[which(time == 2016 + 3/2),2]/12 +
+      total_on_prep[which(time == 2016 + 4/2),2]/12 +
+      total_on_prep[which(time == 2016 + 5/2),2]/12 +
+      total_on_prep[which(time == 2016 + 6/2),2]/12 +
+      total_on_prep[which(time == 2016 + 7/2),2]/12 +
+      total_on_prep[which(time == 2016 + 8/2),2]/12 +
+      total_on_prep[which(time == 2016 + 9/2),2]/12 +
+      total_on_prep[which(time == 2016 + 10/2),2]/12 +
+      total_on_prep[which(time == 2016 + 11/2),2]/12 +
+        total_on_prep[which(time == 2017),2]/12
+
+
+      prep_fit = (PY_PrEP-250)^2
+    }
+
+
+
+
+
+
+
+    # PY_PrEP = total_on_prep[which(time == 2015.5),2] +
+    #   total_on_prep[which(time == 2016.5),2]
+    #
+    # prep_fit = (PY_PrEP-250)^2
 
 
 #

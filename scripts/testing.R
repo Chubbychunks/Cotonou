@@ -979,6 +979,7 @@ groups_seq = c("ProFSW", "LowFSW", "GPF", "FormerFSW", "Client", "GPM", "VirginF
 years_seq = seq(1985, 2016)
 time <- seq(epi_start, epi_end, length.out = epi_end - epi_start + 1)
 time <- seq(epi_start, epi_end, length.out = (epi_end - epi_start + 0.5)*2)
+time <- seq(epi_start, epi_end, length.out = (epi_end - epi_start + 1/12)*12)
 
 #####################################################
 
@@ -2000,6 +2001,12 @@ PrEP_fitting = data.frame(time = c(2016, 2017),
 result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs,
                                       prev_points = prev_points_test,
                                       frac_N_discard_points = frac_N_discard_points_test, Ntot_data_points = Ntot_data_points_test, ART_data_points = ART_data_points_test, PrEP_fitting = PrEP_fitting)
+
+
+
+
+
+
 
 result[[5]]
 
