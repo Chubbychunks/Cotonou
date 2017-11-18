@@ -792,7 +792,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     cost_1_year_PrEP_intermediate_adherence_government = 1,
     cost_1_year_PrEP_non_adherence_government = 1,
     cost_PREP_initiation_Patient_costs = 1,
-    cost_PREP_1_year_ART_Patient_costs = 1
+    cost_PREP_1_year_ART_Patient_costs = 1,
+    TasP_testing = 1
 
 
 
@@ -1125,7 +1126,8 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     cost_1_year_PrEP_intermediate_adherence_government = 1,
     cost_1_year_PrEP_non_adherence_government = 1,
     cost_PREP_initiation_Patient_costs = 1,
-    cost_PREP_1_year_ART_Patient_costs = 1
+    cost_PREP_1_year_ART_Patient_costs = 1,
+    TasP_testing = 1
 
 
 
@@ -1683,7 +1685,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    cost_1_year_PrEP_intermediate_adherence_government = 1,
                    cost_1_year_PrEP_non_adherence_government = 1,
                    cost_PREP_initiation_Patient_costs = 1,
-                   cost_PREP_1_year_ART_Patient_costs = 1
+                   cost_PREP_1_year_ART_Patient_costs = 1,
+                   TasP_testing = 1
 
 
 
