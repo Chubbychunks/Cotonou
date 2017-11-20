@@ -158,31 +158,31 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
       total_on_prep = data.frame(time, x["FSW_On_PrEP_all_cats"])
 
       PY_PrEP =
-        total_on_prep[which(time == 2015 + 1/12)]/12 +
-        total_on_prep[which(time == 2015 + 2/12)]/12 +
-        total_on_prep[which(time == 2015 + 3/12)]/12 +
-        total_on_prep[which(time == 2015 + 4/12)]/12 +
-        total_on_prep[which(time == 2015 + 5/12)]/12 +
-        total_on_prep[which(time == 2015 + 6/12)]/12 +
-        total_on_prep[which(time == 2015 + 7/12)]/12 +
-        total_on_prep[which(time == 2015 + 8/12)]/12 +
-        total_on_prep[which(time == 2015 + 9/12)]/12 +
-        total_on_prep[which(time == 2015 + 10/12)]/12 +
-        total_on_prep[which(time == 2015 + 11/12)]/12 +
-        total_on_prep[which(time == 2016)]/12 +
+        total_on_prep[which(time == 2015 + 1/12),2]/12 +
+        total_on_prep[which(time == 2015 + 2/12),2]/12 +
+        total_on_prep[which(time == 2015 + 3/12),2]/12 +
+        total_on_prep[which(time == 2015 + 4/12),2]/12 +
+        total_on_prep[which(time == 2015 + 5/12),2]/12 +
+        total_on_prep[which(time == 2015 + 6/12),2]/12 +
+        total_on_prep[which(time == 2015 + 7/12),2]/12 +
+        total_on_prep[which(time == 2015 + 8/12),2]/12 +
+        total_on_prep[which(time == 2015 + 9/12),2]/12 +
+        total_on_prep[which(time == 2015 + 10/12),2]/12 +
+        total_on_prep[which(time == 2015 + 11/12),2]/12 +
+        total_on_prep[which(time == 2016),2]/12 +
 
-        total_on_prep[which(time == 2016 + 1/12)]/12 +
-        total_on_prep[which(time == 2016 + 2/12)]/12 +
-        total_on_prep[which(time == 2016 + 3/12)]/12 +
-        total_on_prep[which(time == 2016 + 4/12)]/12 +
-        total_on_prep[which(time == 2016 + 5/12)]/12 +
-        total_on_prep[which(time == 2016 + 6/12)]/12 +
-        total_on_prep[which(time == 2016 + 7/12)]/12 +
-        total_on_prep[which(time == 2016 + 8/12)]/12 +
-        total_on_prep[which(time == 2016 + 9/12)]/12 +
-        total_on_prep[which(time == 2016 + 10/12)]/12 +
-        total_on_prep[which(time == 2016 + 11/12)]/12 +
-        total_on_prep[which(time == 2017)]/12
+        total_on_prep[which(time == 2016 + 1/12),2]/12 +
+        total_on_prep[which(time == 2016 + 2/12),2]/12 +
+        total_on_prep[which(time == 2016 + 3/12),2]/12 +
+        total_on_prep[which(time == 2016 + 4/12),2]/12 +
+        total_on_prep[which(time == 2016 + 5/12),2]/12 +
+        total_on_prep[which(time == 2016 + 6/12),2]/12 +
+        total_on_prep[which(time == 2016 + 7/12),2]/12 +
+        total_on_prep[which(time == 2016 + 8/12),2]/12 +
+        total_on_prep[which(time == 2016 + 9/12),2]/12 +
+        total_on_prep[which(time == 2016 + 10/12),2]/12 +
+        total_on_prep[which(time == 2016 + 11/12),2]/12 +
+        total_on_prep[which(time == 2017),2]/12
 
 
       prep_fit = (PY_PrEP-250)^2
