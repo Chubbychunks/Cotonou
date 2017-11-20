@@ -185,7 +185,26 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
         total_on_prep[which(time == 2017),2]/12
 
 
-      prep_fit = (PY_PrEP-250)^2
+
+
+
+
+
+      PrEPinitiations = x["PrEPinitiations"][[1]][,1]
+
+      # data.frame(time, PrEPinitiations)
+
+      Total_PrEPinitiations = PrEPinitiations[which(time == 2017)] -
+        PrEPinitiations[which(time == 2015)]
+
+
+      number_on_prep_end_of_study = total_on_prep[which(time == 2017),2]
+
+
+
+      prep_fit = (PY_PrEP-250)^2 + (Total_PrEPinitiations - 250)^2 + (number_on_prep_end_of_study - 121)^2
+
+
     }
 
 
