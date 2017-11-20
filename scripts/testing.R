@@ -2870,7 +2870,23 @@ ART_data_points_first_and_last_FSW = ART_data_points[c(8, 12),]
 
 # first and last GP, first FSW and 2016, 2017 FSW
 ART_data_points_1611 = ART_data_points[c(1, 7, 8, 11, 12),]
+# NUMBERS OF FSW ON ART
 
+ART_data_points_with_numbers = data.frame(time = c(2011, 2017,
+
+                                                   2012, 2014, 2015, 2016, 2017
+),
+Lower = c(0.33, 0.57,
+
+          27,	34,	42,	45,	62
+
+),
+Upper = c(0.52, 0.8,
+          37, 46, 56, 83, 107
+
+),
+variable = c("All", "All",
+             "Numbers FSW", "Numbers FSW", "Numbers FSW", "Numbers FSW", "Numbers FSW"))
 # PrEP_fitting ------------------------------------------------
 
 # PrEP_fitting = data.frame(time = c(2016, 2017, 2016, 2017, 2016, 2017),

@@ -142,6 +142,41 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
   }
 
 
+
+  if("Numbers FSW" %in% levels(ART_data_points$variable))
+  {
+
+    ART_data_points_FSW = ART_data_points[ART_data_points$variable == "Numbers FSW",]
+    # fitting to ART cov
+    if(likelihood_count > 0)
+    {
+      if(all(!is.na(x$ART_coverage_FSW))){
+        for(i in 1:length(ART_data_points_FSW[,1]))
+        {
+          the_time = ART_data_points_FSW[i, "time"]
+
+
+          if(x$HIV_positive_On_ART[which(time == the_time),1]  > ART_data_points_FSW[i, "Lower"] && x$HIV_positive_On_ART[which(time == the_time),1] < ART_data_points_FSW[i, "Upper"]) {
+
+            likelihood_count <- likelihood_count + 1
+
+
+            }
+        }
+      }
+    }
+
+
+
+
+
+  }
+
+
+
+
+
+
   prep_fit = Inf
   if(!is.null(PrEP_fitting) && sum(time %% 1 != 0) > 1)
   {
@@ -187,9 +222,6 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
 
 
 
-
-
-
       PrEPinitiations = x["PrEPinitiations"][[1]][,1]
 
       # data.frame(time, PrEPinitiations)
@@ -202,7 +234,7 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
 
 
 
-      prep_fit = (PY_PrEP-250)^2 + (Total_PrEPinitiations - 250)^2 + (number_on_prep_end_of_study - 121)^2
+      prep_fit = (PY_PrEP-250)^2 + (Total_PrEPinitiations - 256)^2 + (number_on_prep_end_of_study - 121)^2
 
 
     }
