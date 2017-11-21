@@ -38,8 +38,8 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     # y$fc_y_comm_1998_LowFSW_Client = y$fc_y_comm_1998_ProFSW_Client
     # y$fc_y_comm_2002_LowFSW_Client = y$fc_y_comm_2002_ProFSW_Client
 
-    y$fc_y_noncomm_1985_LowFSW_Client = y$fc_y_noncomm_1985_ProFSW_Client
-    y$fc_y_noncomm_2002_LowFSW_Client = y$fc_y_noncomm_2002_ProFSW_Client
+    # y$fc_y_noncomm_1985_LowFSW_Client = y$fc_y_noncomm_1985_ProFSW_Client
+    # y$fc_y_noncomm_2002_LowFSW_Client = y$fc_y_noncomm_2002_ProFSW_Client
 
 
     # getting client condom with GPF same as GPF-GPM

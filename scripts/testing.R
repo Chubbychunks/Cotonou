@@ -2481,9 +2481,6 @@ best_set = list(
 
 
 #
-# ranges ------------------------------------------------------------------
-
-# yup
 ranges = rbind(
 
   # MISC
@@ -2573,8 +2570,8 @@ ranges = rbind(
   # sex acts per partnership comm
   # n_y_comm_1985_ProFSW_Client = c(1, 3.3),
   # n_y_comm_1985_Client_ProFSW = c(1.45, 11.45),
-  n_y_comm_1985_ProFSW_Client = c(1, 5),
-  n_y_comm_2002_ProFSW_Client = c(1, 3),
+  n_y_comm_1985_ProFSW_Client = c(1, 4),
+  # n_y_comm_2002_ProFSW_Client = c(1, 3),
 
   n_y_comm_1985_LowFSW_Client = c(1, 1),
   n_y_comm_1985_Client_LowFSW = c(1, 1),
@@ -2629,8 +2626,8 @@ ranges = rbind(
   ART_RR_prog = c(8.8, 12.1),
 
   # intervention_testing_increase = c(1, 2),
-  intervention_testing_increase = c(0.5, 2), # keep
-  # intervention_testing_increase = c(0, 0),
+  # intervention_testing_increase = c(0.5, 2), # keep
+  intervention_testing_increase = c(0, 0),
 
   RR_test_CD4200 = c(1, 6),
 
@@ -2645,8 +2642,8 @@ ranges = rbind(
 
   # intervention_ART_increase = c(0, 12),
   # intervention_ART_increase = c(0, 24),
-  intervention_ART_increase = c(0.5, 5), # keep
-  # intervention_ART_increase = c(0, 0),
+  # intervention_ART_increase = c(0.5, 5), # keep
+  intervention_ART_increase = c(0, 0),
 
 
   dropout_rate_not_FSW = c(0.0233, 0.11),
@@ -2665,31 +2662,41 @@ ranges = rbind(
 
   fc_y_comm_1985_ProFSW_Client = c(0, 0.15),
 
-  fc_y_comm_1993_ProFSW_Client = c(0.18, 0.33),
+  fc_y_comm_1993_ProFSW_Client = c(0.30, 0.65),
 
-  fc_y_comm_1998_ProFSW_Client = c(0.4, 0.73),
+  fc_y_comm_1998_ProFSW_Client = c(0.4, 0.81),
 
-  fc_y_comm_2002_ProFSW_Client = c(0.61, 0.99),
+  fc_y_comm_2002_ProFSW_Client = c(0.55, 0.90),
+
+  fc_y_comm_2005_ProFSW_Client = c(0.80, 0.99),
+
 
 
   fc_y_comm_1985_LowFSW_Client = 0,
-  fc_y_comm_2015_LowFSW_Client = 0.37,
+
+  fc_y_comm_1993_LowFSW_Client = c(0.05, 0.13),
+
+  fc_y_comm_2012_LowFSW_Client = c(0.31, 0.43),
+
+
+
+
 
   fc_y_noncomm_1985_ProFSW_Client = 0,
+
+  fc_y_noncomm_1993_ProFSW_Client = c(0.04, 0.13),
 
   fc_y_noncomm_2002_ProFSW_Client = c(0.19, 0.62),
 
 
 
+  fc_y_noncomm_1998_LowFSW_Client = c(0.05, 0.15),
+  fc_y_noncomm_2008_LowFSW_Client = c(0.15, 0.35),
+
+
   # fc_y_noncomm_1985_GPF_GPM = 0,
-  fc_y_noncomm_1998_GPF_GPM = c(0.033, 0.05),
-  fc_y_noncomm_2011_GPF_GPM = c(0.16, 0.26)
-
-
-
-
-
-)
+  fc_y_noncomm_1998_GPF_GPM = c(0.033, 0.10),
+  fc_y_noncomm_2011_GPF_GPM = c(0.16, 0.35)
 
 
 
@@ -2697,7 +2704,230 @@ ranges = rbind(
 
 
 
-# outputs -----------------------------------------------------------------
+  ranges = rbind(
+
+    # MISC
+    # init_clientN_from_PCR = c(0,0),
+    who_believe_comm = c(0, 1),
+
+    # # growth rates
+    # epsilon_1985 = c(0.08, 0.08),
+    # epsilon_1992 = c(0.08, 0.08),
+    # epsilon_2002 = c(0.06, 0.07),
+    # epsilon_2013 = c(0.04, 0.06),
+    # epsilon_2016 = c(0.04, 0.06),
+
+    epsilon_1985 = c(0.059, 0.059),
+    epsilon_1992 = c(0.048, 0.058),
+    epsilon_2002 = c(0.027, 0.027),
+    epsilon_2013 = c(0.027, 0.027),
+    epsilon_2016 = c(0.027, 0.027),
+
+    # DEMOGRAPHIC
+
+    fraction_F = c(0.512, 0.52), # fraction of population born female
+    frac_women_ProFSW = c(0.0024, 0.0036), # fraction of women that are professional FSW
+    # frac_women_ProFSW = c(0.0024, 0.00715), # fraction of women that are professional FSW
+    frac_women_LowFSW = c(1, 2), # relative abundance of low FSW relative to pro FSW
+
+    frac_men_client = c(0.074, 0.3), # fraction of men that are clients
+    frac_women_virgin = c(0.079, 0.2), # fraction of women that are virgins
+    frac_men_virgin = c(0.070, 0.17), # fraction of men that are virgins
+
+    prev_init_FSW = c(0.0132, 0.0659), # initial prevalence of FSW
+    prev_init_rest = c(0.000313, 0.00294), # initial prevalence of the other groups
+
+
+
+
+    muF = c(0.0187, 0.02), # female mortality
+    muM = c(0.0194, 0.022), # male mortality
+
+
+    rate_leave_pro_FSW = c(0, 0.336),
+    # rate_leave_pro_FSW = c(0, 0.55), # rate of exit of professional sex work
+    # rate_leave_low_FSW = c(0, 1), # rate of exit of low level sex work
+
+    fraction_FSW_foreign = c(0.5, 0.6),
+
+    rate_leave_client = c(0, 0.295), # rate of exit of clients
+
+    rate_enter_sexual_pop_F = c(0.2, 0.5), # rate of entering sexual population women
+    rate_enter_sexual_pop_M = c(0.2, 0.5), # rate of entering sexual population men
+
+    fraction_sexually_active_15_F = c(0.119, 0.17), # fraction of 15 year old women sexually active
+    fraction_sexually_active_15_M = c(0.18, 0.35), # fraction of 15 year old men sexually active
+
+
+    # BEHAVIOURAL
+
+    # commercial partnerships
+    c_comm_1993_ProFSW = c(192, 1277),
+    c_comm_2005_ProFSW = c(81, 562),
+    # c_comm_2015_ProFSW = c(71, 501),
+
+    c_comm_1993_LowFSW = c(26, 78),
+
+    c_comm_1998_Client = c(8, 32),
+
+    c_comm_2002_Client = c(8.4, 11.9),
+    # c_comm_2012_Client = c(11.8, 15),
+    # c_comm_2015_Client = c(14.5, 19.8),
+
+
+
+    #non commercial partnerships
+    c_noncomm_1985_ProFSW = c(0.31, 0.86),
+    c_noncomm_1985_LowFSW = c(0.41, 1.04),
+    c_noncomm_1985_Client = c(1.6, 3.3),
+
+
+
+    c_noncomm_1998_GPF = c(0.93, 0.99),
+    c_noncomm_2008_GPF = c(0.77, 0.82),
+
+    c_noncomm_1998_GPM = c(1.24, 1.43),
+    c_noncomm_2008_GPM = c(0.73, 0.84),
+
+
+    # sex acts per partnership comm
+    # n_y_comm_1985_ProFSW_Client = c(1, 3.3),
+    # n_y_comm_1985_Client_ProFSW = c(1.45, 11.45),
+    n_y_comm_1985_ProFSW_Client = c(1, 4),
+    # n_y_comm_2002_ProFSW_Client = c(1, 3),
+
+    n_y_comm_1985_LowFSW_Client = c(1, 1),
+    n_y_comm_1985_Client_LowFSW = c(1, 1),
+
+    # sex acts per partnership noncomm
+
+    n_y_noncomm_2002_ProFSW_Client = c(13, 20),
+    n_y_noncomm_2015_ProFSW_Client = c(38.2, 60),
+
+    n_y_noncomm_1985_GPF_GPM = c(39, 78),
+    # n_y_noncomm_1985_GPM_GPF = c(19.4, 46.7),
+
+
+    #BETA
+    betaMtoF_baseline = c(0.0006, 0.00109), # baseline male to female transmission rate
+    RR_beta_FtM = c(0.53, 2), # RR for transmission female to male
+    RR_beta_HSV2_comm_a = c(1.4, 2.1), # RR for commercial sex acts where the susceptible individual is infected HSV2
+    RR_beta_HSV2_noncomm_a = c(2.2, 3.4), # RR for non commercial sex acts where the susceptible individual is infected HSV2
+    prev_HSV2_FSW = c(0.87, 0.94), # prevalence HSV2 in FSW
+    prev_HSV2_Client = c(0.18, 0.28), # prevalence HSV2 in clients
+    prev_HSV2_GPF = c(0.27, 0.32), # prevalence of HSV2 in GPF
+    prev_HSV2_GPM = c(0.098, 0.14), # prevalence of HSV2 in GPM
+    RR_beta_circum = c(0.34, 0.72), # RR for transmission if susceptible individual is circumcised
+
+
+    # Progression parameters
+
+    infect_acute = c(4.5, 18.8), # RR for transmission rate if infected is acute stage
+    infect_AIDS = c(4.5, 11.9), # RR for transmission rate if infected is in AIDS stage
+
+    ART_eff = c(0.96, 1), # infectiousness RR when on ART (efficacy ART assuimed 90% * % undetectable which is 52.3%)
+
+    viral_supp_y_1986_rest = c(0.4, 0.85),
+    viral_supp_y_2015_ProFSW = c(0.6, 0.85),
+
+    ec = c(0.58, 0.95), # condom efficacy
+
+    # eP1a = c(0.9, 0.9), # prep efficacy perfect adherence
+    eP1b = c(0, 0.9), # prep efficacy intermediate adherence
+    # eP1c = c(0, 0), # prep efficacy poor adherence
+
+
+    SC_to_death = c(8.7, 12.3),
+    dur_primary_phase = c(0.25, 0.42),
+    dur_200_349 = c(2.3, 4.4),
+    dur_below_200 = c(0.58, 3.17),
+
+
+    alpha03 = c(0.01, 0.05),
+    alpha04 = c(0.03, 0.1),
+
+    ART_RR_prog = c(8.8, 12.1),
+
+    # intervention_testing_increase = c(1, 2),
+    # intervention_testing_increase = c(0.5, 2), # keep
+    intervention_testing_increase = c(0, 0),
+
+    RR_test_CD4200 = c(1, 6),
+
+    # ART_recruit_rate_FSW = c(0.5, 6),
+    # ART_recruit_rate_FSW = c(0.5, 1.5),
+    ART_recruit_rate_FSW = c(0.5, 3),
+
+    # ART_recruit_rate_rest = c(0.5, 1.5),
+    # ART_recruit_rate_rest = c(0.5, 6),
+
+    ART_recruit_rate_rest = c(6, 12),
+
+    # intervention_ART_increase = c(0, 12),
+    # intervention_ART_increase = c(0, 24),
+    # intervention_ART_increase = c(0.5, 5), # keep
+    intervention_ART_increase = c(0, 0),
+
+
+    dropout_rate_not_FSW = c(0.0233, 0.11),
+    dropout_rate_FSW = c(0.0233, 0.11),
+
+    ART_reinit_rate_FSW = c(0.25, 1.5),
+    ART_reinit_rate_rest = c(0.25, 1.5),
+
+
+    # condoms
+
+    # fc_y_comm_1985_ProFSW_Client = c(0, 0),
+    # fc_y_comm_1985_ProFSW_Client = c(0.54, 0.69),
+    # fc_y_comm_1998_ProFSW_Client = c(0.54, 0.99),
+
+
+    fc_y_comm_1985_ProFSW_Client = c(0, 0.15),
+
+    fc_y_comm_1993_ProFSW_Client = c(0.30, 0.65),
+
+    fc_y_comm_1998_ProFSW_Client = c(0.4, 0.81),
+
+    fc_y_comm_2002_ProFSW_Client = c(0.55, 0.90),
+
+    fc_y_comm_2005_ProFSW_Client = c(0.80, 0.99),
+
+
+
+    fc_y_comm_1985_LowFSW_Client = 0,
+
+    fc_y_comm_1993_LowFSW_Client = c(0.05, 0.13),
+
+    fc_y_comm_2012_LowFSW_Client = c(0.31, 0.43),
+
+
+
+
+
+    fc_y_noncomm_1985_ProFSW_Client = 0,
+
+    fc_y_noncomm_1993_ProFSW_Client = c(0.04, 0.13),
+
+    fc_y_noncomm_2002_ProFSW_Client = c(0.19, 0.62),
+
+
+    fc_y_noncomm_1985_LowFSW_Client = c(0.033, 0.08),
+    fc_y_noncomm_1998_LowFSW_Client = c(0.05, 0.15),
+    fc_y_noncomm_2008_LowFSW_Client = c(0.15, 0.35),
+
+
+    # fc_y_noncomm_1985_GPF_GPM = 0,
+    fc_y_noncomm_1998_GPF_GPM = c(0.033, 0.08),
+    fc_y_noncomm_2011_GPF_GPM = c(0.16, 0.35)
+
+
+
+
+
+  )
+
+)# outputs -----------------------------------------------------------------
 outputs = c("S0", "S1a", "S1b", "S1c", "S1d", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
 
 
@@ -2986,6 +3216,49 @@ PrEP_fitting = NULL
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 #
 # result
+
+
+
+
+condom_Pro_FSW_comm = t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_comm[,1,][,5]}))))
+condom_Pro_FSW_noncomm = t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_noncomm[,1,][,5]}))))
+
+condom_Pro_FSW = data.frame(time, rbind(condom_Pro_FSW_comm, condom_Pro_FSW_noncomm), rep(c("Commercial", "Non commercial"), each = length(time)))
+colnames(condom_Pro_FSW) = c("time", as.character(seq(1, (length(condom_Pro_FSW[1,])-2))), "variable")
+
+condom_Pro_FSW_melted = reshape2::melt(condom_Pro_FSW, id.vars = c("time", "variable"))
+colnames(condom_Pro_FSW_melted) = c("time", "variable", "run", "value")
+
+
+condom_Low_FSW_comm = t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_comm[,2,][,5]}))))
+condom_Low_FSW_noncomm = t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_noncomm[,2,][,5]}))))
+
+condom_Low_FSW = data.frame(time, rbind(condom_Low_FSW_comm, condom_Low_FSW_noncomm), rep(c("Commercial", "Non commercial"), each = length(time)))
+colnames(condom_Low_FSW) = c("time", as.character(seq(1, (length(condom_Low_FSW[1,])-2))), "variable")
+
+condom_Low_FSW_melted = reshape2::melt(condom_Low_FSW, id.vars = c("time", "variable"))
+colnames(condom_Low_FSW_melted) = c("time", "variable", "run", "value")
+
+condom_GPF_noncomm = data.frame(time, t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_noncomm[,3,][,6]})))))
+colnames(condom_GPF_noncomm) = c("time", as.character(seq(1, (length(condom_GPF_noncomm[1,])-1))))
+condom_GPF_noncomm_melted = reshape2::melt(condom_GPF_noncomm, id.vars = c("time"))
+
+condom_GPM_noncomm = data.frame(time, t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_noncomm[,6,][,3]})))))
+colnames(condom_GPM_noncomm) = c("time", as.character(seq(1, (length(condom_GPM_noncomm[1,])-1))))
+condom_GPM_noncomm_melted = reshape2::melt(condom_GPM_noncomm, id.vars = c("time"))
+
+
+ggplot() + geom_line(data = condom_Pro_FSW_melted, aes(x = time, y = value, colour = variable, factor = run), alpha = 1) +
+  theme_bw() + labs(y = "Condom use of Pro FSW")
+
+ggplot() + geom_line(data = condom_Low_FSW_melted, aes(x = time, y = value, colour = variable, factor = run), alpha = 1) +
+  theme_bw() + labs(y = "Condom use of Low level FSW")
+
+ggplot() + geom_line(data = condom_GPF_noncomm_melted, aes(x = time, y = value, factor = variable), alpha = 1) +
+  theme_bw() + labs(y = "Condom use of GPF")
+
+# ggplot() + geom_line(data = condom_GPM_noncomm_melted, aes(x = time, y = value, factor = variable), alpha = 1) +
+#   theme_bw() + labs(y = "Condom use of GPM")
 
 
 # lapply(result[[2]], function(x) x$HIV_positive_On_ART[which(time == 2014),1])
