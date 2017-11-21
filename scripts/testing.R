@@ -2524,7 +2524,7 @@ ranges = rbind(
   muM = c(0.0194, 0.022), # male mortality
 
 
-  rate_leave_pro_FSW = c(0, 0.28),
+  rate_leave_pro_FSW = c(0, 0.336),
   # rate_leave_pro_FSW = c(0, 0.55), # rate of exit of professional sex work
   # rate_leave_low_FSW = c(0, 1), # rate of exit of low level sex work
 
@@ -2548,8 +2548,9 @@ ranges = rbind(
 
   c_comm_1993_LowFSW = c(26, 78),
 
-  c_comm_1995_Client = c(8, 32),
-  c_comm_1998_Client = c(8.4, 20),
+  c_comm_1998_Client = c(8, 32),
+
+  c_comm_2002_Client = c(8.4, 11.9),
   # c_comm_2012_Client = c(11.8, 15),
   # c_comm_2015_Client = c(14.5, 19.8),
 
@@ -2573,7 +2574,7 @@ ranges = rbind(
   # n_y_comm_1985_ProFSW_Client = c(1, 3.3),
   # n_y_comm_1985_Client_ProFSW = c(1.45, 11.45),
   n_y_comm_1985_ProFSW_Client = c(1, 5),
-  n_y_comm_2002_ProFSW_Client = c(1, 2.5),
+  n_y_comm_2002_ProFSW_Client = c(1, 3),
 
   n_y_comm_1985_LowFSW_Client = c(1, 1),
   n_y_comm_1985_Client_LowFSW = c(1, 1),
@@ -2590,8 +2591,8 @@ ranges = rbind(
   #BETA
   betaMtoF_baseline = c(0.0006, 0.00109), # baseline male to female transmission rate
   RR_beta_FtM = c(0.53, 2), # RR for transmission female to male
-  RR_beta_HSV2_comm = c(1.4, 2.1), # RR for commercial sex acts where the susceptible individual is infected HSV2
-  RR_beta_HSV2_noncomm = c(2.2, 3.4), # RR for non commercial sex acts where the susceptible individual is infected HSV2
+  RR_beta_HSV2_comm_a = c(1.4, 2.1), # RR for commercial sex acts where the susceptible individual is infected HSV2
+  RR_beta_HSV2_noncomm_a = c(2.2, 3.4), # RR for non commercial sex acts where the susceptible individual is infected HSV2
   prev_HSV2_FSW = c(0.87, 0.94), # prevalence HSV2 in FSW
   prev_HSV2_Client = c(0.18, 0.28), # prevalence HSV2 in clients
   prev_HSV2_GPF = c(0.27, 0.32), # prevalence of HSV2 in GPF
@@ -2628,8 +2629,8 @@ ranges = rbind(
   ART_RR_prog = c(8.8, 12.1),
 
   # intervention_testing_increase = c(1, 2),
-  intervention_testing_increase = c(0.5, 2), # keep
-
+  # intervention_testing_increase = c(0.5, 2), # keep
+  intervention_testing_increase = c(0, 0),
 
   RR_test_CD4200 = c(1, 6),
 
@@ -2644,8 +2645,8 @@ ranges = rbind(
 
   # intervention_ART_increase = c(0, 12),
   # intervention_ART_increase = c(0, 24),
-  intervention_ART_increase = c(0.5, 5), # keep
-
+  # intervention_ART_increase = c(0.5, 5), # keep
+  intervention_ART_increase = c(0, 0),
 
 
   dropout_rate_not_FSW = c(0.0233, 0.11),
@@ -2870,6 +2871,10 @@ ART_data_points_first_and_last_FSW = ART_data_points[c(8, 12),]
 
 # first and last GP, first FSW and 2016, 2017 FSW
 ART_data_points_1611 = ART_data_points[c(1, 7, 8, 11, 12),]
+
+# first and last GP, all fsw before intervention
+ART_data_points_1911 = ART_data_points[c(1, 7, 8, 9, 10),]
+
 # NUMBERS OF FSW ON ART
 
 ART_data_points_with_numbers = data.frame(time = c(2011, 2017,
@@ -2887,6 +2892,7 @@ Upper = c(0.52, 0.8,
 ),
 variable = c("All", "All",
              "Numbers FSW", "Numbers FSW", "Numbers FSW", "Numbers FSW", "Numbers FSW"))
+
 # PrEP_fitting ------------------------------------------------
 
 # PrEP_fitting = data.frame(time = c(2016, 2017, 2016, 2017, 2016, 2017),
@@ -2976,10 +2982,15 @@ PrEP_fitting = NULL
 
 # result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points,
 #   frac_N_discard_points = frac_N_discard_points_no_FSW_LB, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points, PrEP_fitting = PrEP_fitting)
-# result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
+# result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = CEA_outputs)
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 #
 # result
+
+
+# lapply(result[[2]], function(x) x$HIV_positive_On_ART[which(time == 2014),1])
+
+
 #
 # result[[3]][[1]]$S1a[32,]
 #
@@ -2990,9 +3001,9 @@ PrEP_fitting = NULL
 # result[[3]] = result[[2]]
 
 
-result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs,
-                                      prev_points = prev_points_test,
-                                      frac_N_discard_points = frac_N_discard_points_test, Ntot_data_points = Ntot_data_points_test, ART_data_points = ART_data_points_test, PrEP_fitting = PrEP_fitting)
+result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = CEA_outputs,
+                                      prev_points = prev_points_FSW_only_even_less_2,
+                                      frac_N_discard_points = frac_N_discard_points_no_FSW_LB, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points_with_numbers, PrEP_fitting = PrEP_fitting)
 
 
 

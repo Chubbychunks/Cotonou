@@ -99,9 +99,9 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
   if("All" %in% levels(ART_data_points$variable))
   {
 
-    ART_ratio = x$Women_on_ART/x$Men_on_ART
-    if(all(ART_ratio[!is.na(ART_ratio)] > 1 & ART_ratio[!is.na(ART_ratio)] < 2))
-      likelihood_count <- likelihood_count + 1
+    # ART_ratio = x$Women_on_ART/x$Men_on_ART
+    # if(all(ART_ratio[!is.na(ART_ratio)] > 1 & ART_ratio[!is.na(ART_ratio)] < 2))
+    #   likelihood_count <- likelihood_count + 1
 
     ART_data_points_allgroups = ART_data_points[ART_data_points$variable == "All",]
     # fitting to ART cov
@@ -177,17 +177,15 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
 
 
 
-  prep_fit = Inf
+  prep_tasp_fit = Inf
   if(!is.null(PrEP_fitting) && sum(time %% 1 != 0) > 1)
   {
 
 
-    # S0 = data.frame(x["S0"], time)
-    # S1a = data.frame(x["S1a"], time)
-    # S1b = data.frame(x["S1b"], time)
-    # S1c = data.frame(x["S1c"], time)
-    # S1d = data.frame(x["S1d"], time)
 
+
+
+    # PrEP
 
     if(length(time == 589)) {
       total_on_prep = data.frame(time, x["FSW_On_PrEP_all_cats"])
@@ -233,8 +231,15 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
       number_on_prep_end_of_study = total_on_prep[which(time == 2017),2]
 
 
+      # TasP
+      TasP_initiations
 
-      prep_fit = (PY_PrEP-250)^2 + (Total_PrEPinitiations - 256)^2 + (number_on_prep_end_of_study - 121)^2
+      Number_on_ART_end_of_study = x["HIV_positive_On_ART"][[1]][,1][which(time == 2017)]
+
+
+
+
+      prep_tasp_fit = (PY_PrEP-250)^2 + (Total_PrEPinitiations - 256)^2 + (number_on_prep_end_of_study - 121)^2
 
 
     }
@@ -271,7 +276,7 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
 
 
 
-  return (list(likelihood_count, prev_fits, message, prep_fit))
+  return (list(likelihood_count, prev_fits, message, prep_tasp_fit))
   # return (list(likelihood_count, frac_count))
 
 }
