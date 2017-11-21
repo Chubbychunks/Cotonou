@@ -2629,8 +2629,8 @@ ranges = rbind(
   ART_RR_prog = c(8.8, 12.1),
 
   # intervention_testing_increase = c(1, 2),
-  # intervention_testing_increase = c(0.5, 2), # keep
-  intervention_testing_increase = c(0, 0),
+  intervention_testing_increase = c(0.5, 2), # keep
+  # intervention_testing_increase = c(0, 0),
 
   RR_test_CD4200 = c(1, 6),
 
@@ -2645,8 +2645,8 @@ ranges = rbind(
 
   # intervention_ART_increase = c(0, 12),
   # intervention_ART_increase = c(0, 24),
-  # intervention_ART_increase = c(0.5, 5), # keep
-  intervention_ART_increase = c(0, 0),
+  intervention_ART_increase = c(0.5, 5), # keep
+  # intervention_ART_increase = c(0, 0),
 
 
   dropout_rate_not_FSW = c(0.0233, 0.11),

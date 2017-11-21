@@ -232,14 +232,16 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
 
 
       # TasP
-      TasP_initiations
+
+      TasP_initiations = x["TasPinitiations"][[1]][,1][which(time == 2017)] - x["TasPinitiations"][[1]][,1][which(time == 2015)]
 
       Number_on_ART_end_of_study = x["HIV_positive_On_ART"][[1]][,1][which(time == 2017)]
 
 
 
 
-      prep_tasp_fit = (PY_PrEP-250)^2 + (Total_PrEPinitiations - 256)^2 + (number_on_prep_end_of_study - 121)^2
+      prep_tasp_fit = (PY_PrEP-250)^2 + (Total_PrEPinitiations - 256)^2 + (number_on_prep_end_of_study - 121)^2 +
+        (TasP_initiations - 107)^2 + (Number_on_ART_end_of_study - 137)^2
 
 
     }
