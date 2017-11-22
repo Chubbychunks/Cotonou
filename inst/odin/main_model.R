@@ -660,6 +660,12 @@ deriv(cumuARTinitiations[]) = (rho_intervention[i] + rho[i]*ART_eligible_CD4_abo
   (rho[i]*ART_eligible_CD4_200_349 + rho_intervention[i]) * I24[i] + (rho[i]*ART_eligible_CD4_below_200 + rho_intervention[i]) * I25[i]
 
 
+deriv(cumuARTinitiations_not_TasP[]) = (rho[i]*ART_eligible_CD4_above_500) * I22[i] + (rho[i]*ART_eligible_CD4_350_500) * I23[i] +
+  (rho[i]*ART_eligible_CD4_200_349) * I24[i] + (rho[i]*ART_eligible_CD4_below_200) * I25[i]
+
+initial(cumuARTinitiations_not_TasP[]) = 0
+dim(cumuARTinitiations_not_TasP) = Ncat
+
 deriv(TasPinitiations[]) = (rho_intervention[i]) * I22[i] + (rho_intervention[i]) * I23[i] +
   (rho_intervention[i]) * I24[i] + (rho_intervention[i]) * I25[i]
 
