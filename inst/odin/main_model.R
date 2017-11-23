@@ -409,6 +409,19 @@ prep_offered[] = interpolate(prep_intervention_t, prep_intervention_y, "constant
 
 output(prep_offered[]) = prep_offered
 
+
+eP1a_effective[] = eP1a[i]*prep_offered[i]
+dim(eP1a_effective) = Ncat
+output(eP1a_effective[]) = eP1a_effective
+
+eP1b_effective[] = eP1b[i]*prep_offered[i]
+dim(eP1b_effective) = Ncat
+output(eP1b_effective[]) = eP1b_effective
+
+eP1c_effective[] = eP1c[i]*prep_offered[i]
+dim(eP1c_effective) = Ncat
+output(eP1c_effective[]) = eP1c_effective
+
 #FOI of j on i
 lambda[,] = if (i == j) 0 else compute_lambda(c_comm_balanced[i], p_comm[i,j], S0[j], S1a[j], S1b[j], S1c[j], I01[j], I11[j], I02[j], I03[j], I04[j], I05[j],
                                               I22[j], I23[j], I24[j], I25[j], I32[j], I33[j], I34[j], I35[j],
@@ -426,19 +439,19 @@ lambda_0[,] = if (i == j) 0 else compute_lambda(c_comm_balanced[i], p_comm[i,j],
 lambda_1a[,] = if (i == j) 0 else compute_lambda(c_comm_balanced[i], p_comm[i,j], S0[j], S1a[j], S1b[j], S1c[j], I01[j], I11[j], I02[j], I03[j], I04[j], I05[j],
                                                  I22[j], I23[j], I24[j], I25[j], I32[j], I33[j], I34[j], I35[j],
                                                  I42[j], I43[j], I44[j], I45[j],
-                                                 N[j], beta_comm[i], R, fc_comm[i,j], fP_comm[i], n_comm[i,j], eP1a[i], ec[i],
+                                                 N[j], beta_comm[i], R, fc_comm[i,j], fP_comm[i], n_comm[i,j], eP1a_effective[i], ec[i],
                                                  fc_noncomm[i,j], fP_noncomm[i], n_noncomm[i,j], c_noncomm_balanced[i], p_noncomm[i,j], infect_ART[j], infect_acute, infect_AIDS, beta_noncomm[i])
 #FOI of j on i. PrEP adherence category 1b (intermittent adherence)
 lambda_1b[,] = if (i == j) 0 else compute_lambda(c_comm_balanced[i], p_comm[i,j], S0[j], S1a[j], S1b[j], S1c[j], I01[j], I11[j], I02[j], I03[j], I04[j], I05[j],
                                                  I22[j], I23[j], I24[j], I25[j], I32[j], I33[j], I34[j], I35[j],
                                                  I42[j], I43[j], I44[j], I45[j],
-                                                 N[j], beta_comm[i], R, fc_comm[i,j], fP_comm[i], n_comm[i,j], eP1b[i], ec[i],
+                                                 N[j], beta_comm[i], R, fc_comm[i,j], fP_comm[i], n_comm[i,j], eP1b_effective[i], ec[i],
                                                  fc_noncomm[i,j], fP_noncomm[i], n_noncomm[i,j], c_noncomm_balanced[i], p_noncomm[i,j], infect_ART[j], infect_acute, infect_AIDS, beta_noncomm[i])
 #FOI of j on i. PrEP adherence category 1c (no adherence)
 lambda_1c[,] = if (i == j) 0 else compute_lambda(c_comm_balanced[i], p_comm[i,j], S0[j], S1a[j], S1b[j], S1c[j], I01[j], I11[j], I02[j], I03[j], I04[j], I05[j],
                                                  I22[j], I23[j], I24[j], I25[j], I32[j], I33[j], I34[j], I35[j],
                                                  I42[j], I43[j], I44[j], I45[j],
-                                                 N[j], beta_comm[i], R, fc_comm[i,j], fP_comm[i], n_comm[i,j], eP1c[i], ec[i],
+                                                 N[j], beta_comm[i], R, fc_comm[i,j], fP_comm[i], n_comm[i,j], eP1c_effective[i], ec[i],
                                                  fc_noncomm[i,j], fP_noncomm[i], n_noncomm[i,j], c_noncomm_balanced[i], p_noncomm[i,j], infect_ART[j], infect_acute, infect_AIDS, beta_noncomm[i])
 #FOI of j on i. PrEP adherence category 1d (dropout)
 lambda_1d[,] = if (i == j) 0 else compute_lambda(c_comm_balanced[i], p_comm[i,j], S0[j], S1a[j], S1b[j], S1c[j], I01[j], I11[j], I02[j], I03[j], I04[j], I05[j],

@@ -964,7 +964,7 @@ devtools::load_all()
 tbefore = Sys.time()
 
 
-number_simulations = 200
+number_simulations = 800
 batch_size = 1
 
 
@@ -2793,6 +2793,9 @@ upper = c(58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01))
 
 prev_points_FSW_only_even_less_2 = prev_points_FSW_only[c(1, 4, 6, 8),]
 
+prev_points_FSW_Cotonou_centrale_lower_bound = prev_points_FSW_only_even_less_2
+prev_points_FSW_Cotonou_centrale_lower_bound[prev_points_FSW_Cotonou_centrale_lower_bound$time == 2015,"lower"] = 13.79
+
 # frac N data points ------------------------------------------------------
 frac_N_data_points = data.frame(time = c(1998, 2014,
                                          1998, 1998,
@@ -3005,7 +3008,10 @@ them <-unlist( lapply(result[[3]], function(x)
   {
   if(x$prev[which(time == 1993),1] < 59 && x$prev[which(time == 1993),1] > 48 &&
      x$prev[which(time == 2008),1] < 34 && x$prev[which(time == 2015),1] > 15.7100000 &&
-     x$prev[which(time == 2015),1] < 22.010000)
+     x$prev[which(time == 2015),1] < 22.010000 &&
+
+    x$prev[which(time == 2002),1] < 50 &&
+    x$prev[which(time == 1998),3] < 4.772625)
     x = 1 else x = 0
 }))
 result[[3]] <- result[[3]][them == 1]
