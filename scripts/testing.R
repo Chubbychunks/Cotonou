@@ -964,7 +964,7 @@ devtools::load_all()
 tbefore = Sys.time()
 
 
-number_simulations = 800
+number_simulations = 1
 batch_size = 1
 
 
@@ -2713,6 +2713,51 @@ ranges = rbind(
 outputs = c("S0", "S1a", "S1b", "S1c", "S1d", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
 
 
+CEA_outputs = unique(c("eP1a_effective", "eP1b_effective", "eP1c_effective","mu","sigma", "prep_offered","TasPinitiations",
+                       "prep_offered", "TasP_testing","cumu_PrEP_dropouts",
+                       "cost_Initiation_of_ART_study_FSW",
+                       "cost_Initiation_of_ART_government_FSW",
+                       "cost_1_year_of_ART_study_FSW",
+                       "cost_1_year_of_ART_government_FSW",
+                       "cost_Initiation_ART_rest_of_population",
+                       "cost_1_year_of_ART_rest_of_population",
+                       "cost_FSW_initiation_ART_Patient_costs",
+                       "cost_FSW_1_year_ART_Patient_costs",
+
+                       "cost_Initiation_of_PrEP_study",
+                       "cost_1_year_PrEP_perfect_adherence_study",
+                       "cost_1_year_PrEP_intermediate_adherence_study",
+                       "cost_1_year_PrEP_non_adherence_study",
+                       "cost_Initiation_of_PrEP_government",
+                       "cost_1_year_PrEP_perfect_adherence_government",
+                       "cost_1_year_PrEP_intermediate_adherence_government",
+                       "cost_1_year_PrEP_non_adherence_government",
+                       "cost_PREP_initiation_Patient_costs",
+                       "cost_PREP_1_year_ART_Patient_costs",
+
+                       "W0", "W1", "W2", "W3", "Number_DALY_W1","Number_DALY_W2", "Number_DALY_W3", "FSW_On_PrEP_all_cats", "PrEPinitiations", "PrEPinitiations1a",
+                       "PrEPinitiations1b", "PrEPinitiations1c", "pc_susceptible_FSW_On_PrEP", "pc_all_FSW_On_PrEP", "Number_Susceptibles",
+                       "HIV_positive_On_ART", "HIV_positive_Diagnosed_Off_ART", "Primary_Off_ART",
+                       "CD4_above_500_Off_ART", "CD4_350_500_Off_ART", "CD4_200_350_Off_ART", "CD4_below_200_Off_ART", "cumuDeaths_On_ART", "HIV_positive", "ec", "cumuARTinitiations","cumuARTREinitiations", "rate_leave_pro_FSW","tau_intervention",
+                       "testing_prob", "tau", "N", "S0", "S1a", "S1b", "S1c", "S1d", "I01", "I11", "I02", "I03", "I04",
+                       "I05", "I22", "I23", "I24", "I25", "I32", "I33", "I34", "I35",  "I42", "I43", "I44", "I45", "prev",
+                       "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client",
+                       "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW",
+                       "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm",
+                       "fc_noncomm", "N", "cumuHIVDeaths", "lambda_sum_0", "lambda_sum_1a", "lambda_sum_1b", "lambda_sum_1c",
+                       "lambda_sum_1d", "S0", "S1a", "S1b", "S1c", "S1d", "OnPrEP1a", "OnPrEP1b",
+                       "OnPrEP1c", "ART_eligible_CD4_above_500", "ART_eligible_CD4_350_500","ART_eligible_CD4_200_349","ART_eligible_CD4_below_200",
+                       "cumuAllDeaths", "cumuHIVDeaths", "cumuARTinitiations", "cumuARTREinitiations",
+                       "OnPrEP", "ART_sex_ratio", "pc_S1b", "pc_S1a", "pc_S1c", "cumuInf",
+                       "intervention_ART_increase", "testing_prob", "rho_intervention",
+                       "ART_eligible_CD4_above_500", "ART_eligible_CD4_350_500", "ART_eligible_CD4_200_349",
+                       "ART_eligible_CD4_below_200", "new_people_in_group_FSW_only", "rate_move_out", "rate_move_in",
+                       "FSW_out", "FSW_in", "zeta", "tau", "prep_offering_rate", "intervention_testing_increase", "sigma",
+                       "PrEPOnOff", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW",
+                       "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced",
+                       "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all",
+                       "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a",
+                       "lambda_1b", "lambda_1c", "lambda_1d"))
 # prev_points -------------------------------------------------------------
 prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,
                                   1998, 2002, 2005, 2008, 2012, 2015,

@@ -409,16 +409,18 @@ prep_offered[] = interpolate(prep_intervention_t, prep_intervention_y, "constant
 
 output(prep_offered[]) = prep_offered
 
+prep_efficacy_on_off = if(prep_offered[1] > 0) 1 else 0
 
-eP1a_effective[] = eP1a[i]*prep_offered[i]
+
+eP1a_effective[] = eP1a[i]*prep_efficacy_on_off
 dim(eP1a_effective) = Ncat
 output(eP1a_effective[]) = eP1a_effective
 
-eP1b_effective[] = eP1b[i]*prep_offered[i]
+eP1b_effective[] = eP1b[i]*prep_efficacy_on_off
 dim(eP1b_effective) = Ncat
 output(eP1b_effective[]) = eP1b_effective
 
-eP1c_effective[] = eP1c[i]*prep_offered[i]
+eP1c_effective[] = eP1c[i]*prep_efficacy_on_off
 dim(eP1c_effective) = Ncat
 output(eP1c_effective[]) = eP1c_effective
 

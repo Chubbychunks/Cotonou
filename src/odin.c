@@ -3091,6 +3091,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   for (int i = 0; i < main_model_p->dim_zeta; ++i) {
     main_model_p->zeta[i] = (main_model_p->tau[i] + main_model_p->tau_intervention[i]) * main_model_p->sigma[i] * main_model_p->prep_offered[i] * main_model_p->PrEPOnOff;
   }
+  double prep_efficacy_on_off = (main_model_p->prep_offered[0] > 0 ? 1 : 0);
   for (int i = 0; i < main_model_p->dim_cumu_PrEP_dropouts; ++i) {
     deriv_cumu_PrEP_dropouts[i] = main_model_p->kappaa[i] * S1a[i] + main_model_p->kappab[i] * S1b[i] + main_model_p->kappac[i] * S1c[i];
   }
@@ -3098,13 +3099,13 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     deriv_cumuDeaths_On_ART[i] = (main_model_p->alpha32[i] + main_model_p->mu[i]) * I32[i] + (main_model_p->alpha33[i] + main_model_p->mu[i]) * I33[i] + (main_model_p->alpha34[i] + main_model_p->mu[i]) * I34[i] + (main_model_p->alpha35[i] + main_model_p->mu[i]) * I35[i];
   }
   for (int i = 0; i < main_model_p->dim_eP1a_effective; ++i) {
-    main_model_p->eP1a_effective[i] = main_model_p->eP1a[i] * main_model_p->prep_offered[i];
+    main_model_p->eP1a_effective[i] = main_model_p->eP1a[i] * prep_efficacy_on_off;
   }
   for (int i = 0; i < main_model_p->dim_eP1b_effective; ++i) {
-    main_model_p->eP1b_effective[i] = main_model_p->eP1b[i] * main_model_p->prep_offered[i];
+    main_model_p->eP1b_effective[i] = main_model_p->eP1b[i] * prep_efficacy_on_off;
   }
   for (int i = 0; i < main_model_p->dim_eP1c_effective; ++i) {
-    main_model_p->eP1c_effective[i] = main_model_p->eP1c[i] * main_model_p->prep_offered[i];
+    main_model_p->eP1c_effective[i] = main_model_p->eP1c[i] * prep_efficacy_on_off;
   }
   cinterpolate_eval(t, main_model_p->interpolate_fc_comm, main_model_p->fc_comm);
   cinterpolate_eval(t, main_model_p->interpolate_fP_comm, main_model_p->fP_comm);
@@ -4046,6 +4047,7 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   }
   memcpy(output_zeta, main_model_p->zeta, main_model_p->dim_zeta * sizeof(double));
   memcpy(output_prep_offered, main_model_p->prep_offered, main_model_p->dim_prep_offered * sizeof(double));
+  double prep_efficacy_on_off = (main_model_p->prep_offered[0] > 0 ? 1 : 0);
   memcpy(output_omega, main_model_p->omega, main_model_p->dim_omega * sizeof(double));
   memcpy(output_mu, main_model_p->mu, main_model_p->dim_mu * sizeof(double));
   memcpy(output_gamma01, main_model_p->gamma01, main_model_p->dim_gamma01 * sizeof(double));
@@ -4064,17 +4066,17 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   memcpy(output_beta_noncomm, main_model_p->beta_noncomm, main_model_p->dim_beta_noncomm * sizeof(double));
   memcpy(output_eP0, main_model_p->eP0, main_model_p->dim_eP0 * sizeof(double));
   for (int i = 0; i < main_model_p->dim_eP1a_effective; ++i) {
-    main_model_p->eP1a_effective[i] = main_model_p->eP1a[i] * main_model_p->prep_offered[i];
+    main_model_p->eP1a_effective[i] = main_model_p->eP1a[i] * prep_efficacy_on_off;
   }
   memcpy(output_eP1a_effective, main_model_p->eP1a_effective, main_model_p->dim_eP1a_effective * sizeof(double));
   memcpy(output_eP1a, main_model_p->eP1a, main_model_p->dim_eP1a * sizeof(double));
   for (int i = 0; i < main_model_p->dim_eP1b_effective; ++i) {
-    main_model_p->eP1b_effective[i] = main_model_p->eP1b[i] * main_model_p->prep_offered[i];
+    main_model_p->eP1b_effective[i] = main_model_p->eP1b[i] * prep_efficacy_on_off;
   }
   memcpy(output_eP1b_effective, main_model_p->eP1b_effective, main_model_p->dim_eP1b_effective * sizeof(double));
   memcpy(output_eP1b, main_model_p->eP1b, main_model_p->dim_eP1b * sizeof(double));
   for (int i = 0; i < main_model_p->dim_eP1c_effective; ++i) {
-    main_model_p->eP1c_effective[i] = main_model_p->eP1c[i] * main_model_p->prep_offered[i];
+    main_model_p->eP1c_effective[i] = main_model_p->eP1c[i] * prep_efficacy_on_off;
   }
   memcpy(output_eP1c_effective, main_model_p->eP1c_effective, main_model_p->dim_eP1c_effective * sizeof(double));
   memcpy(output_eP1c, main_model_p->eP1c, main_model_p->dim_eP1c * sizeof(double));
