@@ -409,7 +409,7 @@ prep_offered[] = interpolate(prep_intervention_t, prep_intervention_y, "constant
 
 output(prep_offered[]) = prep_offered
 
-prep_efficacy_on_off = if(prep_offered[1] > 0) 1 else 0
+prep_efficacy_on_off = if(prep_offered[1] > 0.01) 1 else 0
 
 
 eP1a_effective[] = eP1a[i]*prep_efficacy_on_off

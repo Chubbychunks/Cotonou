@@ -3091,7 +3091,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   for (int i = 0; i < main_model_p->dim_zeta; ++i) {
     main_model_p->zeta[i] = (main_model_p->tau[i] + main_model_p->tau_intervention[i]) * main_model_p->sigma[i] * main_model_p->prep_offered[i] * main_model_p->PrEPOnOff;
   }
-  double prep_efficacy_on_off = (main_model_p->prep_offered[0] > 0 ? 1 : 0);
+  double prep_efficacy_on_off = (main_model_p->prep_offered[0] > 0.01 ? 1 : 0);
   for (int i = 0; i < main_model_p->dim_cumu_PrEP_dropouts; ++i) {
     deriv_cumu_PrEP_dropouts[i] = main_model_p->kappaa[i] * S1a[i] + main_model_p->kappab[i] * S1b[i] + main_model_p->kappac[i] * S1c[i];
   }
@@ -4047,7 +4047,7 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   }
   memcpy(output_zeta, main_model_p->zeta, main_model_p->dim_zeta * sizeof(double));
   memcpy(output_prep_offered, main_model_p->prep_offered, main_model_p->dim_prep_offered * sizeof(double));
-  double prep_efficacy_on_off = (main_model_p->prep_offered[0] > 0 ? 1 : 0);
+  double prep_efficacy_on_off = (main_model_p->prep_offered[0] > 0.01 ? 1 : 0);
   memcpy(output_omega, main_model_p->omega, main_model_p->dim_omega * sizeof(double));
   memcpy(output_mu, main_model_p->mu, main_model_p->dim_mu * sizeof(double));
   memcpy(output_gamma01, main_model_p->gamma01, main_model_p->dim_gamma01 * sizeof(double));
