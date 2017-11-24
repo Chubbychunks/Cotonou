@@ -594,6 +594,10 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$kappab = y$kappaa
   y$kappac = y$kappaa
 
+  y$above_500_by_group = c(y$FSW_eligible, y$GP_eligible, y$GP_eligible,
+                           y$GP_eligible, y$GP_eligible, y$GP_eligible,
+                           y$GP_eligible, y$GP_eligible, y$GP_eligible)
+
   # y$W1 = y$W1
   # y$W2 = y$W2
   # y$W3 = y$W3
@@ -797,7 +801,11 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     cost_PREP_initiation_Patient_costs = 1,
     cost_PREP_1_year_ART_Patient_costs = 1,
     TasP_testing = 1,
-    long_intervention = 0
+    long_intervention = 0,
+    above_500_by_group = c(1, 1, 1, 1, 1, 1, 1, 1, 1),
+    FSW_eligible = 1,
+    GP_eligible = 1
+
 
 
 
@@ -1132,7 +1140,11 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     cost_PREP_initiation_Patient_costs = 1,
     cost_PREP_1_year_ART_Patient_costs = 1,
     TasP_testing = 1,
-    long_intervention = 0
+    long_intervention = 0,
+    above_500_by_group = c(1, 1, 1, 1, 1, 1, 1, 1, 1),
+    FSW_eligible = 1,
+    GP_eligible = 1
+
 
 
 
@@ -1288,7 +1300,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    frac_men_virgin = 0.1,
 
 
-
+                   above_500_by_group = c(1, 1, 1, 1, 1, 1, 1, 1, 1),
                    ART_eligible_CD4_above_500_t = c(1985, 2002, 2012, 2015, 2016),
                    ART_eligible_CD4_350_500_t = c(1985, 2002, 2012, 2015, 2016),
                    ART_eligible_CD4_200_349_t = c(1985, 2002, 2012, 2015, 2016),
@@ -1692,7 +1704,9 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    cost_PREP_initiation_Patient_costs = 1,
                    cost_PREP_1_year_ART_Patient_costs = 1,
                    TasP_testing = 1,
-                   long_intervention = 0
+                   long_intervention = 0,
+                   FSW_eligible = 1,
+                   GP_eligible = 1
 
 
 

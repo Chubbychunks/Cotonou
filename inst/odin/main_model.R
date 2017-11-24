@@ -76,12 +76,13 @@ deriv(I03[]) = gamma02[i] * I02[i] - I03[i] * (gamma03[i] + tau[i] + tau_interve
 deriv(I04[]) = gamma03[i] * I03[i] - I04[i] * (gamma04[i] + tau[i] + tau_intervention[i] * TasP_testing + alpha04[i] + mu[i] + nu) + rate_move_out[i] * I04[i] + sum(in_I04[i, ])
 deriv(I05[]) = gamma04[i] * I04[i] - I05[i] * (RR_test_CD4200*tau[i] + tau_intervention[i] * TasP_testing + alpha05[i] + mu[i] + nu) + rate_move_out[i] * I05[i] + sum(in_I05[i, ])
 
-deriv(I22[]) = (tau[i] + tau_intervention[i] * TasP_testing) * I01[i] + test_rate_prep[i] * I11[i] + (tau[i] + tau_intervention[i] * TasP_testing) * I02[i] - I22[i] * (gamma22[i] + rho_intervention[i] + rho[i]*ART_eligible_CD4_above_500 + alpha22[i] + mu[i] + nu) + rate_move_out[i] * I22[i] + sum(in_I22[i, ])
+deriv(I22[]) = (tau[i] + tau_intervention[i] * TasP_testing) * I01[i] + test_rate_prep[i] * I11[i] + (tau[i] + tau_intervention[i] * TasP_testing) * I02[i] -
+  I22[i] * (gamma22[i] + rho_intervention[i] + rho[i]*ART_eligible_CD4_above_500*above_500_by_group[i] + alpha22[i] + mu[i] + nu) + rate_move_out[i] * I22[i] + sum(in_I22[i, ])
 deriv(I23[]) = gamma22[i] * I22[i] + (tau[i] + tau_intervention[i] * TasP_testing) * I03[i] - I23[i] * (gamma23[i] + rho[i]*ART_eligible_CD4_350_500 + rho_intervention[i] + alpha23[i] + mu[i] + nu) + rate_move_out[i] * I23[i] + sum(in_I23[i, ])
 deriv(I24[]) = gamma23[i] * I23[i] + (tau[i] + tau_intervention[i] * TasP_testing) * I04[i] - I24[i] * (gamma24[i] + rho[i]*ART_eligible_CD4_200_349 + rho_intervention[i] + alpha24[i] + mu[i] + nu) + rate_move_out[i] * I24[i] + sum(in_I24[i, ])
 deriv(I25[]) = gamma24[i] * I24[i] + (RR_test_CD4200*tau[i] + tau_intervention[i] * TasP_testing) * I05[i] - I25[i] * (rho[i]*ART_eligible_CD4_below_200 + rho_intervention[i] + alpha25[i] + mu[i] + nu) + rate_move_out[i] * I25[i] + sum(in_I25[i, ])
 
-deriv(I32[]) = (rho[i]*ART_eligible_CD4_above_500 + rho_intervention[i]) * I22[i] + iota[i] * I42[i] - I32[i] * (gamma32[i] + phi2[i] + alpha32[i] + mu[i] + nu) + rate_move_out[i] * I32[i] + sum(in_I32[i, ])
+deriv(I32[]) = (rho[i]*ART_eligible_CD4_above_500*above_500_by_group[i] + rho_intervention[i]) * I22[i] + iota[i] * I42[i] - I32[i] * (gamma32[i] + phi2[i] + alpha32[i] + mu[i] + nu) + rate_move_out[i] * I32[i] + sum(in_I32[i, ])
 deriv(I33[]) = gamma32[i] * I32[i] + (rho[i]*ART_eligible_CD4_350_500 + rho_intervention[i]) * I23[i] + iota[i] * I43[i] - I33[i] * (gamma33[i] + phi3[i] + alpha33[i] + mu[i] + nu) + rate_move_out[i] * I33[i] + sum(in_I33[i, ])
 deriv(I34[]) = gamma33[i] * I33[i] + (rho[i]*ART_eligible_CD4_200_349 + rho_intervention[i]) * I24[i] + iota[i] * I44[i] - I34[i] * (gamma34[i] + phi4[i] + alpha34[i] + mu[i] + nu) + rate_move_out[i] * I34[i] + sum(in_I34[i, ])
 deriv(I35[]) = gamma34[i] * I34[i] + (rho[i]*ART_eligible_CD4_below_200 + rho_intervention[i]) * I25[i] + iota[i] * I45[i] - I35[i] * (phi5[i] + alpha35[i] + mu[i] + nu) + rate_move_out[i] * I35[i] + sum(in_I35[i, ])
@@ -286,6 +287,9 @@ ART_eligible_CD4_350_500 = interpolate(ART_eligible_CD4_350_500_t, ART_eligible_
 ART_eligible_CD4_200_349 = interpolate(ART_eligible_CD4_200_349_t, ART_eligible_CD4_200_349_y, "constant")
 ART_eligible_CD4_below_200 = interpolate(ART_eligible_CD4_below_200_t, ART_eligible_CD4_below_200_y, "constant")
 
+above_500_by_group[] = user()
+dim(above_500_by_group) = Ncat
+output(above_500_by_group[]) = above_500_by_group
 
 output(ART_eligible_CD4_above_500) = ART_eligible_CD4_above_500
 output(ART_eligible_CD4_350_500) = ART_eligible_CD4_350_500
@@ -677,11 +681,11 @@ deriv(cumuAllDeaths[]) = (alpha01[i] + mu[i]) * I01[i] + (alpha11[i] + mu[i]) * 
   (alpha42[i] + mu[i]) * I42[i] + (alpha43[i] + mu[i]) * I43[i] + (alpha44[i] + mu[i]) * I44[i] + (alpha45[i] + mu[i]) * I45[i] +
   mu[i] * (S0[i] + S1a[i] + S1b[i] + S1c[i] + S1d[i])
 
-deriv(cumuARTinitiations[]) = (rho_intervention[i] + rho[i]*ART_eligible_CD4_above_500) * I22[i] + (rho[i]*ART_eligible_CD4_350_500 + rho_intervention[i]) * I23[i] +
+deriv(cumuARTinitiations[]) = (rho_intervention[i] + rho[i]*ART_eligible_CD4_above_500*above_500_by_group[i]) * I22[i] + (rho[i]*ART_eligible_CD4_350_500 + rho_intervention[i]) * I23[i] +
   (rho[i]*ART_eligible_CD4_200_349 + rho_intervention[i]) * I24[i] + (rho[i]*ART_eligible_CD4_below_200 + rho_intervention[i]) * I25[i]
 
 
-deriv(cumuARTinitiations_not_TasP[]) = (rho[i]*ART_eligible_CD4_above_500) * I22[i] + (rho[i]*ART_eligible_CD4_350_500) * I23[i] +
+deriv(cumuARTinitiations_not_TasP[]) = (rho[i]*ART_eligible_CD4_above_500*above_500_by_group[i]) * I22[i] + (rho[i]*ART_eligible_CD4_350_500) * I23[i] +
   (rho[i]*ART_eligible_CD4_200_349) * I24[i] + (rho[i]*ART_eligible_CD4_below_200) * I25[i]
 
 initial(cumuARTinitiations_not_TasP[]) = 0

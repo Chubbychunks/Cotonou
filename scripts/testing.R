@@ -2488,7 +2488,7 @@ ranges = rbind(
   # MISC
   # init_clientN_from_PCR = c(0,0),
   who_believe_comm = c(0, 1),
-
+  FSW_eligible = c(0,0),
   # # growth rates
   # epsilon_1985 = c(0.08, 0.08),
   # epsilon_1992 = c(0.08, 0.08),
@@ -2713,7 +2713,7 @@ ranges = rbind(
 outputs = c("S0", "S1a", "S1b", "S1c", "S1d", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
 
 
-CEA_outputs = unique(c("eP1a_effective", "eP1b_effective", "eP1c_effective","mu","sigma", "prep_offered","TasPinitiations",
+CEA_outputs = unique(c("above_500_by_group","eP1a_effective", "eP1b_effective", "eP1c_effective","mu","sigma", "prep_offered","TasPinitiations",
                        "prep_offered", "TasP_testing","cumu_PrEP_dropouts",
                        "cost_Initiation_of_ART_study_FSW",
                        "cost_Initiation_of_ART_government_FSW",
