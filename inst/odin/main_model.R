@@ -468,6 +468,12 @@ lambda_sum_1b[] = sum(lambda_1b[i,])
 lambda_sum_1c[] = sum(lambda_1c[i,])
 lambda_sum_1d[] = sum(lambda_1d[i,])
 
+
+pc_of_FOI_on_clients_from_pro_FSW = lambda_0[5,1]/
+  lambda_sum_0[5]
+
+output(pc_of_FOI_on_clients_from_pro_FSW) = pc_of_FOI_on_clients_from_pro_FSW
+
 # TESTING
 ##############################################################################
 dim(tau) = Ncat
