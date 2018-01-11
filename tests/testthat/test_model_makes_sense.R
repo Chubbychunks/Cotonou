@@ -41,6 +41,11 @@ test_that("all compartments positive", {
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
   xx <- result[c(grep("S[0-9]|I[0-9]", names(result)))]
+
+
+  xx = xx[!names(xx) %in% c("pc_S1a", "pc_S1b", "pc_S1c")]
+
+
   expect_true(all(unlist(xx) > -10^-3))
 })
 
@@ -133,6 +138,9 @@ test_that("growth rate zero if replacing deaths and if no zeta - otherwise it sl
 
 
   xx <- result[grep("^[SI]", names(result))] # grepping all the Ss and Is
+
+  xx = xx[!names(xx) %in% c("S0_infections",  "S1a_infections", "S1b_infections", "S1c_infections", "S1d_infections")]
+
   N <- rowSums(do.call(cbind, xx))
 
   # are all increments in N equal to 0?
@@ -742,9 +750,12 @@ test_that("prep", {
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
-  xx <- result[c(grep("I11", names(result)), grep("S1", names(result)))]
+  # xx <- result[c(grep("I11", names(result)), grep("S1", names(result)))]
+
+  xx <- result[c("I11", "S1a"   , "S1b" , "S1c"  , "S1d")]
+
   N <- rowSums(do.call(cbind, xx))
-  expect_true(all(diff(N) != 0))
+  expect_true(sum(N) != 0)
 })
 
 
@@ -765,7 +776,9 @@ test_that("no prep", {
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
-  xx <- result[c(grep("I11", names(result)), grep("S1", names(result)))]
+  # xx <- result[c(grep("I11", names(result)), grep("S1", names(result)))]
+  xx <- result[c("I11", "S1a"   , "S1b" , "S1c"  , "S1d")]
+
   N <- rowSums(do.call(cbind, xx))
   expect_true(all(diff(N) == 0))
 })
@@ -784,7 +797,9 @@ test_that("prep increases", {
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
-  xx <- result[c(grep("I11", names(result)), grep("S1", names(result)))]
+  # xx <- result[c(grep("I11", names(result)), grep("S1", names(result)))]
+  xx <- result[c("I11", "S1a"   , "S1b" , "S1c"  , "S1d")]
+
   N <- rowSums(do.call(cbind, xx))
   expect_true(!all(diff(N) == 0))
 })
@@ -795,6 +810,12 @@ test_that("no testing", {
   relevant_parameters = parameter_names[c(grep("testing_prob_y", parameter_names))]
 
   parameters <- lhs_parameters(1, set_null = relevant_parameters, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
+
+  parameters <- lapply(parameters, function(x) {
+    x$tau_intervention_y = x$tau_intervention_y*0
+    return(x)
+  })
+
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
   xx <- result[c(grep("I2[0-9]|I3[0-9]|I4[0-9]", names(result)))]
@@ -873,6 +894,9 @@ test_that("prevalence", {
 
   all_infected = result[c(grep("I[0-9]", names(result)))]
   all = result[c(grep("I[0-9]", names(result)), grep("^S[0-9]", names(result)))]
+
+  all<-all[!names(all) %in% c("S0_infections",  "S1a_infections", "S1b_infections", "S1c_infections" ,"S1d_infections")]
+
   for(i in 1:9)
     expect_equal(result$prev[,i], 100 * rowSums(do.call(cbind, lapply(all_infected, function(x) x <- x[,i]))) / rowSums(do.call(cbind, lapply(all, function(x) x <- x[,i]))), tolerance = 1e-6)
 
@@ -1822,8 +1846,10 @@ test_that("if rate_leave_pro_FSW is 0, then FSW out should equal zero", {
 
 test_that("if rate_leave_low_FSW is 0, then FSW low out should equal zero", {
   parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default,
-                               ranges = ranges_default[which(rownames(ranges_default) != "rate_leave_low_FSW"),],
-                               forced_pars = list(time = time_default, rate_leave_low_FSW = 0))
+                               ranges = ranges_default[which(rownames(ranges_default) != "rate_leave_pro_FSW"),],
+                               forced_pars = list(time = time_default, rate_leave_low_FSW = 0, rate_leave_pro_FSW = 0))
+  # lapply(parameters, function(x) x$rate_leave_pro_FSW)
+
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
