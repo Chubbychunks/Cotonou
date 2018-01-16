@@ -69,7 +69,7 @@ test_that("cumulative infections", {
 # no infected, no incidence?
 test_that("no incidence, no cumulative infections", {
 
-  pars = list(prev_init_FSW = 0, prev_init_rest = 0)
+  pars = list(prev_init_FSW = 0, prev_init_rest = 0, infected_FSW_incoming = 0)
 
   parameters <- lhs_parameters(1, forced_pars = modifyList(pars, list(time = time_default)), S1a_init = rep(100,9), S1b_init = rep(100,9), S1c_init = rep(100,9), S1b_init = rep_len(101, 9), S1c_init = rep_len(100, 9), par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default,
                                ranges = ranges_default[-which(rownames(ranges_default) %in% names(pars)),])
@@ -256,7 +256,7 @@ test_that("beta 3", {
   parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default,
                                ranges = ranges_default[which(rownames(ranges_default) != "betaMtoF_baseline"),],
                                forced_pars = list(betaMtoF_comm = 0, betaMtoF_noncomm = 0, betaMtoF_baseline = 0, movement = 0,
-                                                  time = time_default, I11_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0), I01_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0)))
+                                                  time = time_default, I11_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0), I01_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0), infected_FSW_incoming = 0))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
   xx <- result[c(grep("I01", names(result)), grep("I11", names(result)))]
@@ -317,7 +317,7 @@ test_that("n 3", {
                                                   # n_y_comm_2002 = matrix(c(0), nrow = 9, ncol = 9), n_y_noncomm_2002 = matrix(c(0), nrow = 9, ncol = 9),
                                                   n_y_noncomm_1985 = matrix(0, ncol=9, nrow=9), n_y_noncomm_2002 = matrix(0, ncol=9, nrow=9), n_y_noncomm_2015 = matrix(0, ncol=9, nrow=9), n_y_noncomm_2016 = matrix(0, ncol=9, nrow=9),
                                                   n_y_comm_1985 = matrix(0, ncol=9, nrow=9), n_y_comm_2002 = matrix(0, ncol=9, nrow=9), n_y_comm_2015 = matrix(0, ncol=9, nrow=9), n_y_comm_2016 = matrix(0, ncol=9, nrow=9),
-
+                                                  infected_FSW_incoming = 0,
                                                   time = time_default, I11_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0), I01_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0)))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 

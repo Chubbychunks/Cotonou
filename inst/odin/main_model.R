@@ -48,6 +48,19 @@ config(include) = "FOI.c"
 
 replaceDeaths = user()
 
+dim(pfFSW) = Ncat
+pfFSW[] = interpolate(pfFSW_t, pfFSW_y, "constant")
+output(pfFSW[]) = pfFSW
+dim(pfFSW_t) = user()
+dim(pfFSW_y) = user()
+pfFSW_t[] = user()
+pfFSW_y[,] = user()
+infected_FSW_incoming = user()
+
+new_acute_infected[] = infected_FSW_incoming * 0.2 * E0[i] * pfFSW[i]
+output(new_acute_infected[]) = new_acute_infected
+dim(new_acute_infected) = Ncat
+
 # births and prep movement
 E0[] = if(replaceDeaths == 1) mu[i] * N[i] + nu * N[i] + alphaItot[i] + epsilon * Ntot * omega[i] - S0[i] * zeta[i] else new_people_in_group[i] - S0[i] * zeta[i] + new_people_in_group_FSW_only[i]
 E1a[] = zeta[i] * fPa * S0[i] - psia[i] * S1a[i] - kappaa[i] * S1a[i]
@@ -56,14 +69,14 @@ E1c[] = zeta[i] * fPc * S0[i] + psib[i] * S1b[i] - kappac[i] * S1c[i]
 E1d[] = kappaa[i] * S1a[i] + kappab[i] * S1b[i] + kappac[i] * S1c[i]
 
 
-deriv(S0[]) = E0[i] - S0[i] * lambda_sum_0[i] - S0[i] * mu[i] - S0[i] * nu + rate_move_out[i] * S0[i] + sum(in_S0[i, ])
+deriv(S0[]) = E0[i] * (1 - infected_FSW_incoming * pfFSW[i]) - S0[i] * lambda_sum_0[i] - S0[i] * mu[i] - S0[i] * nu + rate_move_out[i] * S0[i] + sum(in_S0[i, ])
 deriv(S1a[]) = E1a[i] - S1a[i] * lambda_sum_1a[i] - S1a[i] * mu[i] - S1a[i] * nu + rate_move_out[i] * S1a[i] + sum(in_S1a[i, ])
 deriv(S1b[]) = E1b[i] - S1b[i] * lambda_sum_1b[i] - S1b[i] * mu[i] - S1b[i] * nu + rate_move_out[i] * S1b[i] + sum(in_S1b[i, ])
 deriv(S1c[]) = E1c[i] - S1c[i] * lambda_sum_1c[i] - S1c[i] * mu[i] - S1c[i] * nu + rate_move_out[i] * S1c[i] + sum(in_S1c[i, ])
 deriv(S1d[]) = E1d[i] - S1d[i] * lambda_sum_1d[i] - S1d[i] * mu[i] - S1d[i] * nu + rate_move_out[i] * S1d[i] + sum(in_S1d[i, ])
 
 #primary infection
-deriv(I01[]) = S0[i] * lambda_sum_0[i] + S1d[i] * lambda_sum_1d[i] - I01[i] * (gamma01[i] + tau[i] + tau_intervention[i] * TasP_testing + alpha01[i] + mu[i] + nu) + rate_move_out[i] * I01[i] + sum(in_I01[i, ]) +
+deriv(I01[]) = infected_FSW_incoming * 0.2 * E0[i] * pfFSW[i] + S0[i] * lambda_sum_0[i] + S1d[i] * lambda_sum_1d[i] - I01[i] * (gamma01[i] + tau[i] + tau_intervention[i] * TasP_testing + alpha01[i] + mu[i] + nu) + rate_move_out[i] * I01[i] + sum(in_I01[i, ]) +
   kappa1[i] * I11[i]
 
 deriv(I11[]) = S1a[i] * lambda_sum_1a[i] + S1b[i] * lambda_sum_1b[i] + S1c[i] * lambda_sum_1c[i] -
@@ -71,10 +84,10 @@ deriv(I11[]) = S1a[i] * lambda_sum_1a[i] + S1b[i] * lambda_sum_1b[i] + S1c[i] * 
 
 
 #chronic
-deriv(I02[]) = gamma01[i] * I01[i] + gamma11[i] * I11[i] - I02[i] * (gamma02[i] + tau[i] + tau_intervention[i] * TasP_testing + alpha02[i] + mu[i] + nu) + rate_move_out[i] * I02[i] + sum(in_I02[i, ])
-deriv(I03[]) = gamma02[i] * I02[i] - I03[i] * (gamma03[i] + tau[i] + tau_intervention[i] * TasP_testing + alpha03[i] + mu[i] + nu) + rate_move_out[i] * I03[i] + sum(in_I03[i, ])
-deriv(I04[]) = gamma03[i] * I03[i] - I04[i] * (gamma04[i] + tau[i] + tau_intervention[i] * TasP_testing + alpha04[i] + mu[i] + nu) + rate_move_out[i] * I04[i] + sum(in_I04[i, ])
-deriv(I05[]) = gamma04[i] * I04[i] - I05[i] * (RR_test_CD4200*tau[i] + tau_intervention[i] * TasP_testing + alpha05[i] + mu[i] + nu) + rate_move_out[i] * I05[i] + sum(in_I05[i, ])
+deriv(I02[]) = infected_FSW_incoming * 0.2 * E0[i] * pfFSW[i] + gamma01[i] * I01[i] + gamma11[i] * I11[i] - I02[i] * (gamma02[i] + tau[i] + tau_intervention[i] * TasP_testing + alpha02[i] + mu[i] + nu) + rate_move_out[i] * I02[i] + sum(in_I02[i, ])
+deriv(I03[]) = infected_FSW_incoming * 0.2 * E0[i] * pfFSW[i] + gamma02[i] * I02[i] - I03[i] * (gamma03[i] + tau[i] + tau_intervention[i] * TasP_testing + alpha03[i] + mu[i] + nu) + rate_move_out[i] * I03[i] + sum(in_I03[i, ])
+deriv(I04[]) = infected_FSW_incoming * 0.2 * E0[i] * pfFSW[i] + gamma03[i] * I03[i] - I04[i] * (gamma04[i] + tau[i] + tau_intervention[i] * TasP_testing + alpha04[i] + mu[i] + nu) + rate_move_out[i] * I04[i] + sum(in_I04[i, ])
+deriv(I05[]) = infected_FSW_incoming * 0.2 * E0[i] * pfFSW[i] + gamma04[i] * I04[i] - I05[i] * (RR_test_CD4200*tau[i] + tau_intervention[i] * TasP_testing + alpha05[i] + mu[i] + nu) + rate_move_out[i] * I05[i] + sum(in_I05[i, ])
 
 deriv(I22[]) = (tau[i] + tau_intervention[i] * TasP_testing) * I01[i] + test_rate_prep[i] * I11[i] + (tau[i] + tau_intervention[i] * TasP_testing) * I02[i] -
   I22[i] * (gamma22[i] + rho_intervention[i] + rho[i]*ART_eligible_CD4_above_500*above_500_by_group[i] + alpha22[i] + mu[i] + nu) + rate_move_out[i] * I22[i] + sum(in_I22[i, ])
