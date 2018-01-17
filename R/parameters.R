@@ -603,6 +603,9 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   # y$W3 = y$W3
   # y$W4 = y$W4
 
+  y$pfFSW_y = matrix(c(rep(0, 9), y$prev_non_ben_fsw_1993, c(rep(0, 8)), y$prev_non_ben_fsw_2015, c(rep(0, 8)), y$prev_non_ben_fsw_2015, c(rep(0, 8))), ncol = 9, nrow = 4, byrow = T)
+
+
 
 
   return(y)
@@ -804,7 +807,9 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     long_intervention = 0,
     above_500_by_group = c(1, 1, 1, 1, 1, 1, 1, 1, 1),
     FSW_eligible = 1,
-    GP_eligible = 1
+    GP_eligible = 1,
+    prev_non_ben_fsw_1993 = 0.55,
+    prev_non_ben_fsw_2015 = 0.2
 
 
 
@@ -1143,9 +1148,10 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     long_intervention = 0,
     above_500_by_group = c(1, 1, 1, 1, 1, 1, 1, 1, 1),
     FSW_eligible = 1,
-    GP_eligible = 1
+    GP_eligible = 1,
 
-
+    prev_non_ben_fsw_1993 = 0.55,
+    prev_non_ben_fsw_2015 = 0.2
 
 
   )
@@ -1709,7 +1715,12 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    GP_eligible = 1,
                    pfFSW_t = c(1985, 1998, 2015, 2016),
 
-                   pfFSW_y = matrix(c(rep(0, 9), 0.15, c(rep(0, 8)), 0.30, c(rep(0, 8)), 0.12, c(rep(0, 8))), ncol = 9, nrow = 4, byrow = T),
+                   pfFSW_y = matrix(c(rep(0, 9), 0.55, c(rep(0, 8)), 0.2, c(rep(0, 8)), 0.2, c(rep(0, 8))), ncol = 9, nrow = 4, byrow = T),
+
+                   prev_non_ben_fsw_1993 = 0.55,
+                   prev_non_ben_fsw_2015 = 0.2,
+
+
                    infected_FSW_incoming = 1
 
 

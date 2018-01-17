@@ -209,7 +209,9 @@ test_that("useless prep", {
 test_that("useful prep", {
 
   parameters <- lhs_parameters(1, PrEPOnOff = 1, I11_init = rep(1000, 9), I01_init = rep(1000, 9), zetaa_y = matrix(rep(0.1, 45), ncol = 9), zetab_y = matrix(rep(0.1, 45), ncol = 9), zetac_y = matrix(rep(0.1, 45), ncol = 9),
-                               zetaa_t = c(1985, 2013, 2015, 2016, 2020), zetab_t = c(1985, 2013, 2015, 2016, 2020), zetac_t = c(1985, 2013, 2015, 2016, 2020),
+                               zetaa_t = c(1985, 2013, 2015, 2016, 2020), zetab_t = c(1985, 2013, 2015, 2016, 2020),
+                               infected_FSW_incoming = 0,
+                               zetac_t = c(1985, 2013, 2015, 2016, 2020),
                                eP0 = rep(0, 9), eP1a = rep(0.1, 9), eP1b = rep(0.1, 9), eP1c = rep(0.1, 9), eP1d = rep(0, 9), par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
   result1 = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -427,6 +429,7 @@ test_that("fc ec 2", {
                                  fc_y_noncomm_2002 = matrix(1, ncol=9,nrow=9), fc_y_noncomm_2008 = matrix(1, ncol=9,nrow=9), fc_y_noncomm_2011 = matrix(1, ncol=9,nrow=9), fc_y_noncomm_2015 = matrix(1, ncol=9,nrow=9),
                                  fc_y_noncomm_2016 = matrix(1, ncol=9,nrow=9), fc_t_noncomm = c(1985, 1993, 1998, 2002, 2008, 2011, 2015, 2016, 2020),
                                  ec = rep(1, 9), ignore_ranges_fc_c = 1,
+                                 infected_FSW_incoming = 0,
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),
 
@@ -475,6 +478,7 @@ test_that("fP eP 1b", {
                                  fP_t_comm = c(1985, 2014, 2015, 2016, 2030),  fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
                                  n_y_noncomm = array(data = c(1), dim=c(5, 9, 9)),
                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1,
+                                 infected_FSW_incoming = 0,
 
                                  time = time_default, I11_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0), I01_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0)))
 
@@ -493,6 +497,7 @@ test_that("fP eP 1b", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 infected_FSW_incoming = 0,
 
                                  time = time_default, I11_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0), I01_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0)))
 
@@ -511,6 +516,7 @@ test_that("fP eP 1b", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 infected_FSW_incoming = 0,
 
                                  time = time_default, I11_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0), I01_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0)))
 
@@ -529,6 +535,7 @@ test_that("fP eP 1b", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 infected_FSW_incoming = 0,
 
                                  time = time_default, I11_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0), I01_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0)))
 
@@ -553,6 +560,7 @@ test_that("fP eP 1c", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 infected_FSW_incoming = 0,
 
                                  time = time_default, I11_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0), I01_init = c(1000, 0, 0, 0, 0, 0, 0, 0, 0)))
 
@@ -575,6 +583,7 @@ test_that("fP eP 2", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 infected_FSW_incoming = 0,
 
                                  time = time_default, I11_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0), I01_init = c(0, 0, 0, 0, 1000, 0, 0, 0, 0)))
 
@@ -676,7 +685,8 @@ test_that("fP eP 2b", {
 # done by setting tau[0-9]1 and gamma[0-9]1 to 0
 
 test_that("acute to CD4>500 zero", {
-  relevant_parameters = parameter_names[c(grep("gamma[0-9]1", parameter_names), grep("testing_prob_y", parameter_names), grep("test_rate_prep", parameter_names), grep("tau_intervention_y", parameter_names))]
+  relevant_parameters = parameter_names[c(grep("gamma[0-9]1", parameter_names), grep("testing_prob_y", parameter_names),
+                                          grep("infected_FSW_incoming", parameter_names), grep("test_rate_prep", parameter_names), grep("tau_intervention_y", parameter_names))]
 
 
   parameters <- lhs_parameters(1, I11_init = rep(100, 9), set_null = relevant_parameters, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
@@ -691,7 +701,7 @@ test_that("acute to CD4>500 zero", {
 # done by setting gamma[0-9]2 to 0
 
 test_that("CD4>500 to CD4 350-500 zero", {
-  relevant_parameters = parameter_names[c(grep("gamma[0-9]2", parameter_names))]
+  relevant_parameters = parameter_names[c(grep("gamma[0-9]2", parameter_names),grep("infected_FSW_incoming", parameter_names))]
 
 
   parameters <- lhs_parameters(1, I11_init = rep(100, 9), set_null = relevant_parameters, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
@@ -705,7 +715,7 @@ test_that("CD4>500 to CD4 350-500 zero", {
 # done by setting gamma[0-9]3 to 0
 
 test_that("CD4 350-500 to CD4 200-349 zero", {
-  relevant_parameters = parameter_names[c(grep("gamma[0-9]3", parameter_names))]
+  relevant_parameters = parameter_names[c(grep("gamma[0-9]3", parameter_names),grep("infected_FSW_incoming", parameter_names))]
   parameters <- lhs_parameters(1, I11_init = rep(100, 9), set_null = relevant_parameters, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -718,7 +728,7 @@ test_that("CD4 350-500 to CD4 200-349 zero", {
 # done by setting gamma[0-9]4 to 0
 
 test_that("CD4 200-349 to CD4 <200 to zero", {
-  relevant_parameters = parameter_names[c(grep("gamma[0-9]4", parameter_names))]
+  relevant_parameters = parameter_names[c(grep("gamma[0-9]4", parameter_names),grep("infected_FSW_incoming", parameter_names))]
   parameters <- lhs_parameters(1, I11_init = rep(100, 9), set_null = relevant_parameters, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1257,7 +1267,8 @@ test_that("eP vs prevalence", {
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
                                  PrEPOnOff = 1,
-                                 betaMtF_noncomm = 0.001, eP0 = rep(0.9, 9)
+                                 betaMtF_noncomm = 0.001, eP0 = rep(0.9, 9),
+                                 infected_FSW_incoming = 0
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1282,7 +1293,8 @@ test_that("eP vs prevalence", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
-                                 PrEPOnOff = 1
+                                 PrEPOnOff = 1,
+                                 infected_FSW_incoming = 0
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1307,7 +1319,8 @@ test_that("eP vs prevalence", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
-                                 PrEPOnOff = 1
+                                 PrEPOnOff = 1,
+                                 infected_FSW_incoming = 0
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1331,7 +1344,8 @@ test_that("eP vs prevalence", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
-                                 PrEPOnOff = 1
+                                 PrEPOnOff = 1,
+                                 infected_FSW_incoming = 0
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1355,7 +1369,8 @@ test_that("eP vs prevalence", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
-                                 PrEPOnOff = 1
+                                 PrEPOnOff = 1,
+                                 infected_FSW_incoming = 0
                                ))
   p1 <- parameters
 
@@ -1400,7 +1415,8 @@ test_that("zeta vs prevalence", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
-                                 PrEPOnOff = 1
+                                 PrEPOnOff = 1,
+                                 infected_FSW_incoming = 0
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1432,7 +1448,8 @@ test_that("zeta vs prevalence", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
-                                 PrEPOnOff = 1
+                                 PrEPOnOff = 1,
+                                 infected_FSW_incoming = 0
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1463,7 +1480,8 @@ test_that("zeta vs prevalence", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
-                                 PrEPOnOff = 1
+                                 PrEPOnOff = 1,
+                                 infected_FSW_incoming = 0
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1492,7 +1510,8 @@ test_that("zeta vs prevalence", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
-                                 PrEPOnOff = 1
+                                 PrEPOnOff = 1,
+                                 infected_FSW_incoming = 0
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1538,6 +1557,7 @@ test_that("ART vs prevalence", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 infected_FSW_incoming = 0,
                                  PrEPOnOff = 1
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
@@ -1571,6 +1591,7 @@ test_that("testing vs prevalence", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
+                                 infected_FSW_incoming = 0,
                                  PrEPOnOff = 1
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
@@ -1609,7 +1630,8 @@ test_that("adherence movements vs infections", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
-                                 PrEPOnOff = 1
+                                 PrEPOnOff = 1,
+                                 infected_FSW_incoming = 0
                                ))
 
 
@@ -1639,7 +1661,8 @@ test_that("adherence movements vs infections", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
-                                 PrEPOnOff = 1
+                                 PrEPOnOff = 1,
+                                 infected_FSW_incoming = 0
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
@@ -1672,7 +1695,8 @@ test_that("prep dropout vs infections", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
-                                 PrEPOnOff = 1
+                                 PrEPOnOff = 1,
+                                 infected_FSW_incoming = 0
                                ))
 
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
@@ -1702,7 +1726,8 @@ test_that("prep dropout vs infections", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
-                                 PrEPOnOff = 1
+                                 PrEPOnOff = 1,
+                                 infected_FSW_incoming = 0
                                ))
 
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
@@ -1730,7 +1755,8 @@ test_that("prep dropout vs infections", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
-                                 PrEPOnOff = 1
+                                 PrEPOnOff = 1,
+                                 infected_FSW_incoming = 0
                                ))
 
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
@@ -1759,7 +1785,8 @@ test_that("prep dropout vs infections", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
-                                 PrEPOnOff = 1
+                                 PrEPOnOff = 1,
+                                 infected_FSW_incoming = 0
                                ))
 
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
@@ -1795,7 +1822,8 @@ test_that("ART dropout vs prevalence", {
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
-                                 PrEPOnOff = 1
+                                 PrEPOnOff = 1,
+                                 infected_FSW_incoming = 0
                                ))
 
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]

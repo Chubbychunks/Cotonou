@@ -2486,6 +2486,12 @@ best_set = list(
 # ranges ------------------------------------------------------------------
 ranges = rbind(
 
+
+
+  prev_non_ben_fsw_1993 = c(0.4, 0.6),
+  prev_non_ben_fsw_2015 = c(0.1, 0.3),
+
+
   # MISC
   # init_clientN_from_PCR = c(0,0),
   who_believe_comm = c(0, 1),
