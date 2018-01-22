@@ -965,7 +965,7 @@ devtools::load_all()
 tbefore = Sys.time()
 
 
-number_simulations = 100
+number_simulations = 10
 batch_size = 1
 
 
@@ -2848,6 +2848,12 @@ prev_points_FSW_only_even_less_2 = prev_points_FSW_only[c(1, 4, 6, 8),]
 prev_points_FSW_Cotonou_centrale_lower_bound = prev_points_FSW_only_even_less_2
 prev_points_FSW_Cotonou_centrale_lower_bound[prev_points_FSW_Cotonou_centrale_lower_bound$time == 2015,"lower"] = 13.79
 
+
+
+
+prev_points_FSW_Cotonou_centrale_lower_bound_mid_year = prev_points_FSW_Cotonou_centrale_lower_bound
+prev_points_FSW_Cotonou_centrale_lower_bound_mid_year$time = prev_points_FSW_Cotonou_centrale_lower_bound_mid_year$time + 0.5
+
 # frac N data points ------------------------------------------------------
 frac_N_data_points = data.frame(time = c(1998, 2014,
                                          1998, 1998,
@@ -3044,12 +3050,14 @@ PrEP_fitting = NULL
 
 
 
+time_with_mid <- seq(epi_start, epi_end, length.out = (epi_end - epi_start + 0.5)*2)
 
 
 
 # result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points,
 #   frac_N_discard_points = frac_N_discard_points_no_FSW_LB, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points, PrEP_fitting = PrEP_fitting)
-result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = CEA_outputs)
+result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq,
+                             years_seq = years_seq, best_set = best_set, time = time_with_mid, ranges = ranges, outputs = CEA_outputs)
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 #
 # result
