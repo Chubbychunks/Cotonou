@@ -116,12 +116,12 @@ gamma32_without_supp[] = user()
 gamma33_without_supp[] = user()
 gamma34_without_supp[] = user()
 
-# gamma32[] = gamma32_without_supp[i] / viral_supp[i]
-# gamma33[] = gamma33_without_supp[i] / viral_supp[i]
-# gamma34[] = gamma34_without_supp[i] / viral_supp[i]
-gamma32[] = user()
-gamma33[] = user()
-gamma34[] = user()
+gamma32[] = gamma32_without_supp[i] / viral_supp[i]
+gamma33[] = gamma33_without_supp[i] / viral_supp[i]
+gamma34[] = gamma34_without_supp[i] / viral_supp[i]
+# gamma32[] = user()
+# gamma33[] = user()
+# gamma34[] = user()
 
 testpar = 1
 output(testpar) = testpar
