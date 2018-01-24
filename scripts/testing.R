@@ -2720,7 +2720,7 @@ ranges = rbind(
 outputs = c("S0", "S1a", "S1b", "S1c", "S1d", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
 
 
-CEA_outputs = unique(c("gamma32_without_supp",
+CEA_outputs = unique(c("testpar","gamma32_without_supp",
                        "gamma33_without_supp",
                        "gamma34_without_supp",
                        "alpha33_without_supp",
@@ -3061,7 +3061,7 @@ time_with_mid <- seq(epi_start, epi_end, length.out = (epi_end - epi_start + 0.5
 
 # result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points,
 #   frac_N_discard_points = frac_N_discard_points_no_FSW_LB, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points, PrEP_fitting = PrEP_fitting)
-result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq,
+result <- run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq,
                              years_seq = years_seq, best_set = best_set, time = time_with_mid, ranges = ranges, outputs = CEA_outputs)
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 #

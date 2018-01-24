@@ -48,33 +48,6 @@ config(include) = "FOI.c"
 
 
 
-gamma32_without_supp[] = user()
-gamma33_without_supp[] = user()
-gamma34_without_supp[] = user()
-
-gamma32[] = gamma32_without_supp[i] / viral_supp[i]
-gamma33[] = gamma33_without_supp[i] / viral_supp[i]
-gamma34[] = gamma34_without_supp[i] / viral_supp[i]
-
-
-
-alpha33_without_supp[] = user()
-alpha34_without_supp[] = user()
-alpha35_without_supp[] = user()
-
-alpha33[] = alpha33_without_supp[i] / viral_supp[i]
-alpha34[] = alpha34_without_supp[i] / viral_supp[i]
-alpha35[] = alpha35_without_supp[i] / viral_supp[i]
-
-output(alpha33[]) = alpha33
-output(alpha34[]) = alpha34
-
-output(gamma32_without_supp[]) = gamma32_without_supp
-output(gamma33_without_supp[]) = gamma33_without_supp
-output(gamma34_without_supp[]) = gamma34_without_supp
-output(alpha33_without_supp[]) = alpha33_without_supp
-output(alpha34_without_supp[]) = alpha34_without_supp
-output(alpha35_without_supp[]) = alpha35_without_supp
 
 replaceDeaths = user()
 
@@ -136,6 +109,45 @@ deriv(I44[]) = gamma43[i] * I43[i] + phi4[i] * I34[i] - I44[i] * (gamma44[i] + i
 deriv(I45[]) = gamma44[i] * I44[i] + phi5[i] * I35[i] - I45[i] * (iota[i] + alpha45[i] + mu[i] + nu) + rate_move_out[i] * I45[i] + sum(in_I45[i, ])
 
 # output(ART_eligible_CD4_below_200) = ART_eligible_CD4_below_200
+
+
+
+gamma32_without_supp[] = user()
+gamma33_without_supp[] = user()
+gamma34_without_supp[] = user()
+
+# gamma32[] = gamma32_without_supp[i] / viral_supp[i]
+# gamma33[] = gamma33_without_supp[i] / viral_supp[i]
+# gamma34[] = gamma34_without_supp[i] / viral_supp[i]
+gamma32[] = user()
+gamma33[] = user()
+gamma34[] = user()
+
+testpar = 1
+output(testpar) = testpar
+
+
+alpha33_without_supp[] = user()
+alpha34_without_supp[] = user()
+alpha35_without_supp[] = user()
+
+alpha33[] = alpha33_without_supp[i] / viral_supp[i]
+alpha34[] = alpha34_without_supp[i] / viral_supp[i]
+alpha35[] = alpha35_without_supp[i] / viral_supp[i]
+
+output(alpha33[]) = alpha33
+output(alpha34[]) = alpha34
+
+output(gamma32_without_supp[]) = gamma32_without_supp
+output(gamma33_without_supp[]) = gamma33_without_supp
+output(gamma34_without_supp[]) = gamma34_without_supp
+output(alpha33_without_supp[]) = alpha33_without_supp
+output(alpha34_without_supp[]) = alpha34_without_supp
+output(alpha35_without_supp[]) = alpha35_without_supp
+
+
+
+
 
 # sum of all compartments
 N[] = S0[i] + S1a[i] + S1b[i] + S1c[i] + S1d[i] + I01[i] + I11[i] + I02[i] + I03[i] + I04[i] + I05[i] +
