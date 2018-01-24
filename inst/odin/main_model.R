@@ -46,6 +46,36 @@ config(include) = "FOI.c"
 # ORDINARY DIFFERENTIAL EQUATIONS
 ##############################################################################
 
+
+
+gamma32_without_supp[] = user()
+gamma33_without_supp[] = user()
+gamma34_without_supp[] = user()
+
+gamma32[] = gamma32_without_supp[i] / viral_supp[i]
+gamma33[] = gamma33_without_supp[i] / viral_supp[i]
+gamma34[] = gamma34_without_supp[i] / viral_supp[i]
+
+
+
+alpha33_without_supp[] = user()
+alpha34_without_supp[] = user()
+alpha35_without_supp[] = user()
+
+alpha33[] = alpha33_without_supp[i] / viral_supp[i]
+alpha34[] = alpha34_without_supp[i] / viral_supp[i]
+alpha35[] = alpha35_without_supp[i] / viral_supp[i]
+
+output(alpha33[]) = alpha33
+output(alpha34[]) = alpha34
+
+output(gamma32_without_supp[]) = gamma32_without_supp
+output(gamma33_without_supp[]) = gamma33_without_supp
+output(gamma34_without_supp[]) = gamma34_without_supp
+output(alpha33_without_supp[]) = alpha33_without_supp
+output(alpha34_without_supp[]) = alpha34_without_supp
+output(alpha35_without_supp[]) = alpha35_without_supp
+
 replaceDeaths = user()
 
 dim(pfFSW) = Ncat
@@ -522,6 +552,18 @@ rho[] = user()
 
 output(infect_ART[]) = infect_ART
 
+
+viral_supp_y[,] = user()
+viral_supp_t[] = user()
+
+output(viral_supp_y[,]) = viral_supp_y
+output(viral_supp_t[]) = viral_supp_t
+dim(viral_supp_y) = user()
+dim(viral_supp_t) = user()
+
+viral_supp[] = interpolate(viral_supp_t, viral_supp_y, "constant")
+dim(viral_supp) = Ncat
+output(viral_supp[])= viral_supp
 
 
 
@@ -1206,9 +1248,11 @@ gamma22[] = user()
 gamma23[] = user()
 gamma24[] = user()
 
-gamma32[] = user()
-gamma33[] = user()
-gamma34[] = user()
+output(gamma32[]) = gamma32
+output(gamma33[]) = gamma33
+output(gamma34[]) = gamma34
+
+
 
 gamma42[] = user()
 gamma43[] = user()
@@ -1246,9 +1290,9 @@ alpha24[] = user()
 alpha25[] = user()
 
 alpha32[] = user()
-alpha33[] = user()
-alpha34[] = user()
-alpha35[] = user()
+# alpha33[] = user()
+# alpha34[] = user()
+# alpha35[] = user()
 
 alpha42[] = user()
 alpha43[] = user()
@@ -1395,6 +1439,14 @@ dim(alpha42) = Ncat
 dim(alpha43) = Ncat
 dim(alpha44) = Ncat
 dim(alpha45) = Ncat
+
+dim(gamma32_without_supp) = user()
+dim(gamma33_without_supp) = user()
+dim(gamma34_without_supp) = user()
+dim(alpha33_without_supp) = user()
+dim(alpha34_without_supp) = user()
+dim(alpha35_without_supp) = user()
+
 
 # FOI parameters
 # dim(beta) = Ncat

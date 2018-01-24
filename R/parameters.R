@@ -316,9 +316,9 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$gamma44 <- y$gamma04
 
   # progression is slowed by ART_RR
-  y$gamma32 <- (y$gamma02)/y$ART_RR_prog
-  y$gamma33 <- (y$gamma03)/y$ART_RR_prog
-  y$gamma34 <- (y$gamma04)/y$ART_RR_prog
+  y$gamma32_without_supp <- (y$gamma02)/y$ART_RR_prog
+  y$gamma33_without_supp <- (y$gamma03)/y$ART_RR_prog
+  y$gamma34_without_supp <- (y$gamma04)/y$ART_RR_prog
 
 
   # mortality
@@ -336,9 +336,9 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$alpha44 <- y$alpha04
   y$alpha45 <- y$alpha05
 
-  y$alpha33 <- (y$alpha03)/y$ART_RR_mort
-  y$alpha34 <- (y$alpha04)/y$ART_RR_mort
-  y$alpha35 <- (y$alpha05)/y$ART_RR_mort
+  y$alpha33_without_supp <- (y$alpha03)/y$ART_RR_mort
+  y$alpha34_without_supp <- (y$alpha04)/y$ART_RR_mort
+  y$alpha35_without_supp <- (y$alpha05)/y$ART_RR_mort
 
 
 
@@ -1661,7 +1661,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    fPa = 0.5,
                    fPc = 0.4,
                    iota  = c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0, 0, 0),
-                   viral_supp_t = c(1986, 2015, 2016),
+                   viral_supp_t = c(1985, 2015, 2016),
                    viral_supp_y = matrix(0, nrow = 3, ncol = 9),
                    viral_supp_y_1986_rest = 0.6,
                    viral_supp_y_2015_ProFSW = 0.7,
