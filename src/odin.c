@@ -2067,14 +2067,17 @@ SEXP main_model_set_user(main_model_pars *main_model_p, SEXP user) {
   main_model_p->dim_alpha33 = main_model_p->Ncat;
   main_model_p->alpha33 = (double*) Calloc(main_model_p->dim_alpha33, double);
   main_model_p->offset_output_alpha33 = main_model_p->offset_output_alpha22 + main_model_p->dim_alpha22;
+  get_user_array(user, "alpha33", true, main_model_p->alpha33, 1, main_model_p->dim_alpha33);
   Free(main_model_p->alpha34);
   main_model_p->dim_alpha34 = main_model_p->Ncat;
   main_model_p->alpha34 = (double*) Calloc(main_model_p->dim_alpha34, double);
   main_model_p->offset_output_alpha34 = main_model_p->offset_output_alpha33 + main_model_p->dim_alpha33;
+  get_user_array(user, "alpha34", true, main_model_p->alpha34, 1, main_model_p->dim_alpha34);
   Free(main_model_p->alpha35);
   main_model_p->dim_alpha35 = main_model_p->Ncat;
   main_model_p->alpha35 = (double*) Calloc(main_model_p->dim_alpha35, double);
   main_model_p->offset_output_alpha35 = main_model_p->offset_output_alpha34 + main_model_p->dim_alpha34;
+  get_user_array(user, "alpha35", true, main_model_p->alpha35, 1, main_model_p->dim_alpha35);
   Free(main_model_p->alpha42);
   main_model_p->dim_alpha42 = main_model_p->Ncat;
   main_model_p->alpha42 = (double*) Calloc(main_model_p->dim_alpha42, double);
@@ -3282,7 +3285,6 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   for (int i = 0; i < main_model_p->dim_tau; ++i) {
     main_model_p->tau[i] = -log(1 - main_model_p->testing_prob[i]);
   }
-  cinterpolate_eval(t, main_model_p->interpolate_viral_supp, main_model_p->viral_supp);
   for (int i = 0; i < main_model_p->dim_cumuARTinitiations_not_TasP; ++i) {
     deriv_cumuARTinitiations_not_TasP[i] = (main_model_p->rho[i] * main_model_p->ART_eligible_CD4_above_500 * main_model_p->above_500_by_group[i]) * I22[i] + (main_model_p->rho[i] * main_model_p->ART_eligible_CD4_350_500) * I23[i] + (main_model_p->rho[i] * main_model_p->ART_eligible_CD4_200_349) * I24[i] + (main_model_p->rho[i] * main_model_p->ART_eligible_CD4_below_200) * I25[i];
   }
@@ -3295,15 +3297,6 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   double prep_efficacy_on_off = (main_model_p->prep_offered[0] > 0.01 ? 1 : 0);
   for (int i = 0; i < main_model_p->dim_cumu_PrEP_dropouts; ++i) {
     deriv_cumu_PrEP_dropouts[i] = main_model_p->kappaa[i] * S1a[i] + main_model_p->kappab[i] * S1b[i] + main_model_p->kappac[i] * S1c[i];
-  }
-  for (int i = 0; i < main_model_p->dim_alpha33; ++i) {
-    main_model_p->alpha33[i] = main_model_p->alpha33_without_supp[i] / main_model_p->viral_supp[i];
-  }
-  for (int i = 0; i < main_model_p->dim_alpha34; ++i) {
-    main_model_p->alpha34[i] = main_model_p->alpha34_without_supp[i] / main_model_p->viral_supp[i];
-  }
-  for (int i = 0; i < main_model_p->dim_alpha35; ++i) {
-    main_model_p->alpha35[i] = main_model_p->alpha35_without_supp[i] / main_model_p->viral_supp[i];
   }
   for (int i = 0; i < main_model_p->dim_cumuDeaths_On_ART; ++i) {
     deriv_cumuDeaths_On_ART[i] = (main_model_p->alpha32[i] + main_model_p->mu[i]) * I32[i] + (main_model_p->alpha33[i] + main_model_p->mu[i]) * I33[i] + (main_model_p->alpha34[i] + main_model_p->mu[i]) * I34[i] + (main_model_p->alpha35[i] + main_model_p->mu[i]) * I35[i];
@@ -3801,6 +3794,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     memcpy(output_rho, main_model_p->rho, main_model_p->dim_rho * sizeof(double));
     memcpy(output_viral_supp_y, main_model_p->viral_supp_y, main_model_p->dim_viral_supp_y * sizeof(double));
     memcpy(output_viral_supp_t, main_model_p->viral_supp_t, main_model_p->dim_viral_supp_t * sizeof(double));
+    cinterpolate_eval(t, main_model_p->interpolate_viral_supp, main_model_p->viral_supp);
     memcpy(output_viral_supp, main_model_p->viral_supp, main_model_p->dim_viral_supp * sizeof(double));
     for (int i = 0; i < main_model_p->dim_HIV_positive; ++i) {
       main_model_p->HIV_positive[i] = I01[i] + I11[i] + I02[i] + I03[i] + I04[i] + I05[i] + I22[i] + I23[i] + I24[i] + I25[i] + I32[i] + I33[i] + I34[i] + I35[i] + I42[i] + I43[i] + I44[i] + I45[i];
@@ -4345,17 +4339,8 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   memcpy(output_alpha05, main_model_p->alpha05, main_model_p->dim_alpha05 * sizeof(double));
   memcpy(output_alpha11, main_model_p->alpha11, main_model_p->dim_alpha11 * sizeof(double));
   memcpy(output_alpha22, main_model_p->alpha22, main_model_p->dim_alpha22 * sizeof(double));
-  for (int i = 0; i < main_model_p->dim_alpha33; ++i) {
-    main_model_p->alpha33[i] = main_model_p->alpha33_without_supp[i] / main_model_p->viral_supp[i];
-  }
   memcpy(output_alpha33, main_model_p->alpha33, main_model_p->dim_alpha33 * sizeof(double));
-  for (int i = 0; i < main_model_p->dim_alpha34; ++i) {
-    main_model_p->alpha34[i] = main_model_p->alpha34_without_supp[i] / main_model_p->viral_supp[i];
-  }
   memcpy(output_alpha34, main_model_p->alpha34, main_model_p->dim_alpha34 * sizeof(double));
-  for (int i = 0; i < main_model_p->dim_alpha35; ++i) {
-    main_model_p->alpha35[i] = main_model_p->alpha35_without_supp[i] / main_model_p->viral_supp[i];
-  }
   memcpy(output_alpha35, main_model_p->alpha35, main_model_p->dim_alpha35 * sizeof(double));
   memcpy(output_beta_comm, main_model_p->beta_comm, main_model_p->dim_beta_comm * sizeof(double));
   memcpy(output_beta_noncomm, main_model_p->beta_noncomm, main_model_p->dim_beta_noncomm * sizeof(double));
