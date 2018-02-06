@@ -4004,7 +4004,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     memcpy(output_E1c, main_model_p->E1c, main_model_p->dim_E1c * sizeof(double));
     memcpy(output_E1d, main_model_p->E1d, main_model_p->dim_E1d * sizeof(double));
     for (int i = 0; i < main_model_p->dim_new_acute_infected; ++i) {
-      main_model_p->new_acute_infected[i] = main_model_p->infected_FSW_incoming * 0.20000000000000001 * main_model_p->E0[i] * main_model_p->pfFSW[i];
+      main_model_p->new_acute_infected[i] = main_model_p->infected_FSW_incoming * prop_FSW_I0_1 * main_model_p->E0[i] * main_model_p->pfFSW[i];
     }
     memcpy(output_new_acute_infected, main_model_p->new_acute_infected, main_model_p->dim_new_acute_infected * sizeof(double));
     memcpy(output_E0, main_model_p->E0, main_model_p->dim_E0 * sizeof(double));
@@ -4490,7 +4490,7 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
     main_model_p->E0[i] = (main_model_p->replaceDeaths == 1 ? main_model_p->mu[i] * main_model_p->N[i] + main_model_p->nu * main_model_p->N[i] + main_model_p->alphaItot[i] + main_model_p->epsilon * Ntot * main_model_p->omega[i] - S0[i] * main_model_p->zeta[i] : main_model_p->new_people_in_group[i] - S0[i] * main_model_p->zeta[i] + main_model_p->new_people_in_group_FSW_only[i]);
   }
   for (int i = 0; i < main_model_p->dim_new_acute_infected; ++i) {
-    main_model_p->new_acute_infected[i] = main_model_p->infected_FSW_incoming * 0.20000000000000001 * main_model_p->E0[i] * main_model_p->pfFSW[i];
+    main_model_p->new_acute_infected[i] = main_model_p->infected_FSW_incoming * prop_FSW_I0_1 * main_model_p->E0[i] * main_model_p->pfFSW[i];
   }
   memcpy(output_new_acute_infected, main_model_p->new_acute_infected, main_model_p->dim_new_acute_infected * sizeof(double));
   memcpy(output_E0, main_model_p->E0, main_model_p->dim_E0 * sizeof(double));

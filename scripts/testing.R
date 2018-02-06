@@ -828,7 +828,8 @@ ranges = rbind(
 outputs = c("S0", "S1a", "S1b", "S1c", "S1d", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
 
 
-CEA_outputs = unique(c("testpar","pfFSW", "prop_FSW_I0_1", "prop_FSW_I0_2", "prop_FSW_I0_3", "prop_FSW_I0_4", "prop_FSW_I0_5",
+CEA_outputs = unique(c("testpar","pfFSW", "prop_FSW_I0_1", "prop_FSW_I0_2", "prop_FSW_I0_3", "prop_FSW_I0_4", "prop_FSW_I0_5","prev_non_ben_fsw_1993",
+                       pars$"prev_non_ben_fsw_2015",
                        "gamma32_without_supp",
                        "gamma33_without_supp",
                        "gamma34_without_supp",
@@ -1183,6 +1184,1021 @@ result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq =
 #
 # result
 result[[3]] = result[[2]]
+
+
+# test to explore the effect of incoming FSW prevalence into the model,
+# and its interaction with the duration of sex work on the HIV incidence and prevalence of FSWs.
+load("best_pars_combined.RData")
+
+
+pars = result[[1]][[1]]
+
+pars =  modifyList(pars, best_pars_combined)
+
+res_best_runs = cotonou::return_outputs(pars, cotonou::main_model, time = time, outputs = CEA_outputs)
+
+res_best_runs = list(res_best_runs)
+
+
+res_best_runs[[1]]$pfFSW
+
+
+
+# ignore these ######################################
+# frac_ProFSW_F = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N), function(x) (x[,1]/(x[,1] + x[,2] + x[,3] + x[,4] + x[,7])))), 2, cotonou::quantile_95)))
+# frac_ProFSW_F = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N/x$frac_F), function(x) x[,1])), 2, cotonou::quantile_95)))
+
+
+
+annual_client_volume_pro_FSW = data.frame(time, t(do.call(rbind, lapply(res_best_runs, function(x)  {x$c_comm[,1]}))))
+colnames(annual_client_volume_pro_FSW) = c("time", as.character(seq(1, (length(annual_client_volume_pro_FSW[1,])-1))))
+annual_client_volume_pro_FSW_melted = reshape2::melt(annual_client_volume_pro_FSW, id.vars = c("time"))
+
+
+
+N_Pro_FSW = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(1)])}))))
+colnames(N_Pro_FSW) = c("time", as.character(seq(1, (length(N_Pro_FSW[1,])-1))))
+N_Pro_FSW_melted = reshape2::melt(N_Pro_FSW, id.vars = c("time"))
+colnames(N_Pro_FSW_melted) = c("time", "run", "value")
+N_Low_FSW = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(2)])}))))
+colnames(N_Low_FSW) = c("time", as.character(seq(1, (length(N_Low_FSW[1,])-1))))
+N_Low_FSW_melted = reshape2::melt(N_Low_FSW, id.vars = c("time"))
+colnames(N_Low_FSW_melted) = c("time", "run", "value")
+N_Client = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(5)])}))))
+colnames(N_Client) = c("time", as.character(seq(1, (length(N_Client[1,])-1))))
+N_Client_melted = reshape2::melt(N_Client, id.vars = c("time"))
+colnames(N_Client_melted) = c("time", "run", "value")
+
+
+
+Fraction_F =   do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(1, 2, 3, 4, 7)])}), rowSums)) /
+  (do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(5, 6)])}), rowSums)) + do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(1, 2, 3, 4, 7)])}), rowSums)))
+
+
+lambda_sum_0_ProFSW = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,1]))))
+lambda_sum_0_LowFSW = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,2]))))
+lambda_sum_0_GPF = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,3]))))
+lambda_sum_0_FormerFSW = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,4]))))
+lambda_sum_0_Client = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,5]))))
+lambda_sum_0_GPM = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,6]))))
+lambda_sum_0_Virgin_Female = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,7]))))
+lambda_sum_0_Virgin_Male = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,8]))))
+lambda_sum_0_Former_FSW_Outside = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,9]))))
+
+
+
+
+lambda_sum_0_indiv = rbind(lambda_sum_0_ProFSW, lambda_sum_0_LowFSW, lambda_sum_0_GPF,
+                           lambda_sum_0_FormerFSW, lambda_sum_0_Client, lambda_sum_0_GPM)
+
+
+lambda_sum_0_indiv = data.frame(time, rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM"), each = length(time)), lambda_sum_0_indiv)
+
+
+colnames(lambda_sum_0_indiv) = c("time", "variable", as.character(seq(1, length(lambda_sum_0_ProFSW[1,]))))
+lambda_sum_0_indiv_melted = reshape2::melt(lambda_sum_0_indiv, id.vars = c("time", "variable"))
+colnames(lambda_sum_0_indiv_melted) = c("time", "variable", "run", "value")
+lambda_sum_0_indiv_melted$variable = factor(lambda_sum_0_indiv_melted$variable, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM"))
+
+
+
+
+
+
+frac_ProFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,1])), 2, cotonou::quantile_95)))
+frac_LowFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,2])), 2, cotonou::quantile_95)))
+frac_GPF = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,3])), 2, cotonou::quantile_95)))
+frac_FormerFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,4])), 2, cotonou::quantile_95)))
+frac_Client = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,5])), 2, cotonou::quantile_95)))
+frac_GPM = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,6])), 2, cotonou::quantile_95)))
+frac_Virgin_Female = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,7])), 2, cotonou::quantile_95)))
+frac_Virgin_Male = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,8])), 2, cotonou::quantile_95)))
+frac_Former_FSW_Outside = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,9])), 2, cotonou::quantile_95)))
+frac_Active_FSW = data.frame(time, t(apply(do.call(rbind, lapply(res_best_runs, function(x) {100*(x$frac_N[,1] + x$frac_N[,2])})), 2, cotonou::quantile_95)))
+Ratio_Low_Pro = data.frame(time, t(apply(do.call(rbind, lapply(res_best_runs, function(x) {x$frac_N[,2]/ x$frac_N[,1]})), 2, cotonou::quantile_95)))
+
+frac = rbind(frac_ProFSW, frac_LowFSW, frac_GPF, frac_FormerFSW, frac_Client, frac_GPM, frac_Virgin_Female, frac_Virgin_Male, frac_Former_FSW_Outside, frac_Active_FSW, Ratio_Low_Pro)
+frac = data.frame(frac, group = rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "Active FSW", "Low Pro Ratio"), each = length(time)))
+colnames(frac) = c("time", "Lower", "Median", "Upper", "variable")
+frac$variable = factor(frac$variable, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "Active FSW", "Low Pro Ratio"))
+
+prev_FSW = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$prev_FSW)), 2, cotonou::quantile_95))
+prev_LowFSW = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$prev_LowFSW)), 2, cotonou::quantile_95))
+prev_client = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$prev_client)), 2, cotonou::quantile_95))
+prev_women = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$prev_women)), 2, cotonou::quantile_95))
+prev_men = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$prev_men)), 2, cotonou::quantile_95))
+prev = rbind(prev_FSW, prev_LowFSW, prev_client, prev_women, prev_men)
+prev = data.frame(time, prev, rep(c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"), each = length(time)))
+colnames(prev) = c("time", "Lower", "Median", "Upper", "variable")
+prev$variable = factor(prev$variable, levels = c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"))
+
+
+prev_FSW_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$prev_FSW)))
+prev_LowFSW_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$prev_LowFSW)))
+prev_client_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$prev_client)))
+prev_women_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$prev_women)))
+prev_men_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$prev_men)))
+prev_indiv = rbind(prev_FSW_indiv, prev_LowFSW_indiv, prev_client_indiv, prev_women_indiv, prev_men_indiv)
+
+prev_indiv = data.frame(time, rep(c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"), each = length(time)), prev_indiv)
+
+
+colnames(prev_indiv) = c("time", "variable", as.character(seq(1, length(prev_FSW_indiv[1,]))))
+
+prev_indiv_melted = reshape2::melt(prev_indiv, id.vars = c("time", "variable"))
+
+colnames(prev_indiv_melted) = c("time", "variable", "run", "value")
+
+prev_indiv_melted$variable = factor(prev_indiv_melted$variable, levels = c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"))
+
+
+
+
+Ntot = data.frame(time, t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$Ntot)), 2, cotonou::quantile_95)))
+colnames(Ntot) = c("time", "Lower", "Median", "Upper")
+
+
+ART_coverage_women = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_women)), 2, cotonou::quantile_95))
+ART_coverage_men = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_men)), 2, cotonou::quantile_95))
+ART_coverage_FSW = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_FSW)), 2, cotonou::quantile_95))
+ART_coverage_all = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_all)), 2, cotonou::quantile_95))
+ART_coverage = rbind(ART_coverage_women, ART_coverage_men, ART_coverage_FSW, ART_coverage_all)
+ART_coverage = data.frame(time, ART_coverage, rep(c("Women", "Men", "Pro FSW", "All"), each = length(time)))
+colnames(ART_coverage) = c("time", "Lower", "Median", "Upper", "variable")
+ART_coverage$variable = factor(ART_coverage$variable, levels = c("Pro FSW", "Women", "Men", "All"))
+ART_coverage = ART_coverage[ART_coverage$variable == "All" | ART_coverage$variable == "Pro FSW",]
+
+
+
+ART_FSW_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_FSW)))
+ART_women_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_women)))
+ART_men_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_men)))
+
+ART_all_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_all)))
+
+
+ART_indiv = rbind(ART_FSW_indiv, ART_all_indiv)
+
+ART_indiv = data.frame(time, rep(c("Pro FSW", "All"), each = length(time)), ART_indiv)
+
+
+colnames(ART_indiv) = c("time", "variable", as.character(seq(1, length(ART_FSW_indiv[1,]))))
+
+ART_indiv_melted = reshape2::melt(ART_indiv, id.vars = c("time", "variable"))
+
+colnames(ART_indiv_melted) = c("time", "variable", "run", "value")
+
+ART_indiv_melted$variable = factor(ART_indiv_melted$variable, levels = c("Pro FSW", "All"))
+
+
+# N of FSW on ART
+
+
+N_ART_FSW_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$HIV_positive_On_ART[,1])))
+
+
+N_ART_FSW_indiv = data.frame(time, rep(c("Pro FSW"), each = length(time)), N_ART_FSW_indiv)
+
+
+colnames(N_ART_FSW_indiv) = c("time", "variable", as.character(seq(1, length(N_ART_FSW_indiv[1,])-2)))
+
+N_ART_FSW_indiv_melted = reshape2::melt(N_ART_FSW_indiv, id.vars = c("time", "variable"))
+
+colnames(N_ART_FSW_indiv_melted) = c("time", "variable", "run", "value")
+
+
+
+# N on ART and N off ART diagnosed
+Diagnosed_Off_ART_FSW = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x) {x$I22 + x$I23 + x$I24 + x$I25}), function(x) x[,1]))))
+Diagnosed_On_ART_FSW = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x) {x$I32 + x$I33 + x$I34 + x$I35}), function(x) x[,1]))))
+Diagnosed_Dropout_ART_FSW = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x) {x$I42 + x$I43 + x$I44 + x$I45}), function(x) x[,1]))))
+
+Diagnosed_FSW = data.frame(rbind(Diagnosed_Off_ART_FSW, Diagnosed_On_ART_FSW, Diagnosed_Dropout_ART_FSW),
+                           rep(c("Diagnosed Off ART", "Diagnosed On ART", "Dropout"), each = length(time)))
+colnames(Diagnosed_FSW) = c("time", as.character(seq(1, (length(Diagnosed_Off_ART_FSW[1,])-1))), "variable")
+
+Diagnosed_FSW_melted = reshape2::melt(Diagnosed_FSW, id.vars = c("time", "variable"))
+
+Diagnosed_FSW_melted$group = "FSW"
+
+colnames(Diagnosed_FSW_melted) = c("time", "variable", "run", "value", "group")
+
+
+Diagnosed_Off_ART_All = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I22 + x$I23 + x$I24 + x$I25}), function(x) {return(x[,c(1, 2, 3, 4, 5, 6, 7, 8)])}), rowSums))))
+Diagnosed_On_ART_All = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I32 + x$I33 + x$I34 + x$I35}), function(x) {return(x[,c(1, 2, 3, 4, 5, 6, 7, 8)])}), rowSums))))
+Diagnosed_Dropout_ART_All = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I42 + x$I43 + x$I44 + x$I45}), function(x) {return(x[,c(1, 2, 3, 4, 5, 6, 7, 8)])}), rowSums))))
+
+Diagnosed_All = data.frame(rbind(Diagnosed_Off_ART_All, Diagnosed_On_ART_All, Diagnosed_Dropout_ART_All),
+                           rep(c("Diagnosed Off ART", "Diagnosed On ART", "Dropout"), each = length(time)))
+colnames(Diagnosed_All) = c("time", as.character(seq(1, (length(Diagnosed_Off_ART_All[1,])-1))), "variable")
+
+Diagnosed_All_melted = reshape2::melt(Diagnosed_All, id.vars = c("time", "variable"))
+
+Diagnosed_All_melted$group = "All"
+
+
+colnames(Diagnosed_All_melted) = c("time", "variable", "run", "value", "group")
+
+
+Diagnosed = rbind(Diagnosed_FSW_melted, Diagnosed_All_melted)
+
+
+
+Diagnosed_Off_ART_Men = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I22 + x$I23 + x$I24 + x$I25}), function(x) {return(x[,c(5, 6)])}), rowSums))))
+Diagnosed_On_ART_Men = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I32 + x$I33 + x$I34 + x$I35}), function(x) {return(x[,c(5, 6)])}), rowSums))))
+Diagnosed_Dropout_ART_Men = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I42 + x$I43 + x$I44 + x$I45}), function(x) {return(x[,c(5, 6)])}), rowSums))))
+
+Diagnosed_Men = data.frame(rbind(Diagnosed_Off_ART_Men, Diagnosed_On_ART_Men, Diagnosed_Dropout_ART_Men),
+                           rep(c("Diagnosed Off ART", "Diagnosed On ART", "Dropout"), each = length(time)))
+colnames(Diagnosed_Men) = c("time", as.character(seq(1, (length(Diagnosed_Off_ART_Men[1,])-1))), "variable")
+
+Diagnosed_Men_melted = reshape2::melt(Diagnosed_Men, id.vars = c("time", "variable"))
+
+Diagnosed_Men_melted$group = "Men"
+
+
+colnames(Diagnosed_Men_melted) = c("time", "variable", "run", "value", "group")
+
+
+
+Diagnosed_Off_ART_Women = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I22 + x$I23 + x$I24 + x$I25}), function(x) {return(x[,c(1, 2, 3, 4)])}), rowSums))))
+Diagnosed_On_ART_Women = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I32 + x$I33 + x$I34 + x$I35}), function(x) {return(x[,c(1, 2, 3, 4)])}), rowSums))))
+Diagnosed_Dropout_ART_Women = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I42 + x$I43 + x$I44 + x$I45}), function(x) {return(x[,c(1, 2, 3, 4)])}), rowSums))))
+
+Diagnosed_Women = data.frame(rbind(Diagnosed_Off_ART_Women, Diagnosed_On_ART_Women, Diagnosed_Dropout_ART_Women),
+                             rep(c("Diagnosed Off ART", "Diagnosed On ART", "Dropout"), each = length(time)))
+colnames(Diagnosed_Women) = c("time", as.character(seq(1, (length(Diagnosed_Off_ART_Women[1,])-1))), "variable")
+
+Diagnosed_Women_melted = reshape2::melt(Diagnosed_Women, id.vars = c("time", "variable"))
+
+Diagnosed_Women_melted$group = "Women"
+
+
+colnames(Diagnosed_Women_melted) = c("time", "variable", "run", "value", "group")
+
+Diagnosed_Women_Men = rbind(Diagnosed_Women_melted, Diagnosed_Men_melted)
+
+Diagnosed_Women_Men_ratio = data.frame(Diagnosed_Women_melted[,c("time", "variable", "run")],
+                                       value = Diagnosed_Women_melted$value/Diagnosed_Men_melted$value)
+
+
+HIV_deaths = data.frame(time[-1], t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x) x$cumuHIVDeaths), rowSums), diff) )))
+
+colnames(HIV_deaths) = c("time", as.character(seq(1, (length(HIV_deaths[1,])-1))))
+
+HIV_deaths_melted = reshape2::melt(HIV_deaths, id.vars = c("time"))
+
+
+
+# fraction of groups in their genders -------------------------------------
+
+
+
+
+pc_OfWomen_ProFSW = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1]))/
+                                         (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7]))
+
+
+                                         )))
+
+pc_OfWomen_LowFSW = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2]))/
+                                         (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7])))))
+
+
+
+pc_OfWomen_Active_FSW = data.frame(time, t(100*(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) + do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])))/
+                                             (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                                do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                                do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                                do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                                do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7])))))
+
+
+pc_OfWomen_GPF = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3]))/
+                                      (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                         do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                         do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                         do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                         do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7])))))
+
+pc_OfWomen_FormerFSW = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))/
+                                            (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                               do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                               do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                               do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                               do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7])))))
+
+
+
+pc_OfMen_Client = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,5]))/
+                                       (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,5])) +
+                                          do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,6]))+
+                                          do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,8])))))
+
+
+pc_OfMen_GPM = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,6]))/
+                                    (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,5])) +
+                                       do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,6]))+
+                                       do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,8])))))
+
+
+pc_OfWomen_VF = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7]))/
+                                     (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                        do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                        do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                        do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                        do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7])))))
+
+
+pc_OfMen_VM = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,8]))/
+                                   (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,5])) +
+                                      do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,6]))+
+                                      do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,8])))))
+
+Ratio_Low_Pro = data.frame(time, t(do.call(rbind, lapply(res_best_runs, function(x) {x$frac_N[,2]/ x$frac_N[,1]}))))
+
+
+frac_by_gender = rbind(pc_OfWomen_ProFSW,
+                       pc_OfWomen_LowFSW,
+                       pc_OfWomen_GPF,
+                       pc_OfWomen_FormerFSW,
+                       pc_OfMen_Client,
+                       pc_OfMen_GPM,
+                       pc_OfWomen_VF,
+                       pc_OfMen_VM,
+                       pc_OfWomen_Active_FSW,
+                       Ratio_Low_Pro
+)
+frac_by_gender = data.frame(frac_by_gender, group = rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Active FSW", "Low Pro Ratio"), each = length(time)))
+colnames(frac_by_gender) = c("time",as.character(seq(1, (length(pc_OfWomen_ProFSW[1,])-1))),  "variable")
+frac_by_gender$variable = factor(frac_by_gender$variable, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Active FSW", "Low Pro Ratio"))
+
+
+frac_by_gender_melted = reshape2::melt(frac_by_gender, id.vars = c("time", "variable"))
+
+colnames(frac_by_gender_melted) = c("time", "variable", "run", "value")
+
+colnames(pc_OfWomen_ProFSW) = c("time", as.character(seq(1, (length(pc_OfWomen_ProFSW[1,])-1))))
+colnames(pc_OfWomen_LowFSW) = c("time", as.character(seq(1, (length(pc_OfWomen_LowFSW[1,])-1))))
+colnames(pc_OfWomen_Active_FSW) = c("time", as.character(seq(1, (length(pc_OfWomen_Active_FSW[1,])-1))))
+colnames(pc_OfMen_Client) = c("time", as.character(seq(1, (length(pc_OfMen_Client[1,])-1))))
+
+pc_OfWomen_ProFSW_melted = reshape2::melt(pc_OfWomen_ProFSW, id.vars = c("time"))
+pc_OfWomen_LowFSW_melted = reshape2::melt(pc_OfWomen_LowFSW, id.vars = c("time"))
+pc_OfWomen_Active_FSW_melted = reshape2::melt(pc_OfWomen_Active_FSW, id.vars = c("time"))
+pc_OfMen_Client_melted = reshape2::melt(pc_OfMen_Client, id.vars = c("time"))
+
+
+
+
+
+
+# condoms -----------------------------------------------------------------
+
+
+
+
+condom_Pro_FSW_comm = t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_comm[,1,][,5]}))))
+condom_Pro_FSW_noncomm = t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_noncomm[,1,][,5]}))))
+
+condom_Pro_FSW = data.frame(time, rbind(condom_Pro_FSW_comm, condom_Pro_FSW_noncomm), rep(c("Commercial", "Non commercial"), each = length(time)))
+colnames(condom_Pro_FSW) = c("time", as.character(seq(1, (length(condom_Pro_FSW[1,])-2))), "variable")
+
+condom_Pro_FSW_melted = reshape2::melt(condom_Pro_FSW, id.vars = c("time", "variable"))
+colnames(condom_Pro_FSW_melted) = c("time", "variable", "run", "value")
+
+
+condom_Low_FSW_comm = t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_comm[,2,][,5]}))))
+condom_Low_FSW_noncomm = t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_noncomm[,2,][,5]}))))
+
+condom_Low_FSW = data.frame(time, rbind(condom_Low_FSW_comm, condom_Low_FSW_noncomm), rep(c("Commercial", "Non commercial"), each = length(time)))
+colnames(condom_Low_FSW) = c("time", as.character(seq(1, (length(condom_Low_FSW[1,])-2))), "variable")
+
+condom_Low_FSW_melted = reshape2::melt(condom_Low_FSW, id.vars = c("time", "variable"))
+colnames(condom_Low_FSW_melted) = c("time", "variable", "run", "value")
+
+condom_GPF_noncomm = data.frame(time, t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_noncomm[,3,][,6]})))))
+colnames(condom_GPF_noncomm) = c("time", as.character(seq(1, (length(condom_GPF_noncomm[1,])-1))))
+condom_GPF_noncomm_melted = reshape2::melt(condom_GPF_noncomm, id.vars = c("time"))
+
+condom_GPM_noncomm = data.frame(time, t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_noncomm[,6,][,3]})))))
+colnames(condom_GPM_noncomm) = c("time", as.character(seq(1, (length(condom_GPM_noncomm[1,])-1))))
+condom_GPM_noncomm_melted = reshape2::melt(condom_GPM_noncomm, id.vars = c("time"))
+
+
+
+# testing -----------------------------------------------------------------
+
+
+
+testing_rate_ratio_F_M = data.frame(time, t((do.call(rbind, lapply(lapply(res_best_runs, function(x)  {x$testing_prob}), function(x) {return(x[,c(3)])}))/do.call(rbind, lapply(lapply(res_best_runs, function(x)  {x$testing_prob}), function(x) {return(x[,c(6)])})))))
+
+colnames(testing_rate_ratio_F_M) = c("time", as.character(seq(1, (length(testing_rate_ratio_F_M[1,])-1))))
+
+testing_rate_ratio_F_M_melted = reshape2::melt(testing_rate_ratio_F_M, id.vars = c("time"))
+
+colnames(testing_rate_ratio_F_M_melted) = c("time", "run", "value")
+
+Diagnosed_Women_Men_ratio_On_ART = Diagnosed_Women_Men_ratio[Diagnosed_Women_Men_ratio$variable == "Diagnosed On ART",]
+
+
+testing_rate_ratio_F_M_Women_Men_ratio_On_ART = data.frame(x=testing_rate_ratio_F_M_melted$value, y=Diagnosed_Women_Men_ratio_On_ART$value)
+
+ggplot() + geom_point(data = testing_rate_ratio_F_M_Women_Men_ratio_On_ART,
+                      aes(x = x, y= y)) + theme_bw() + labs(x = "Probability of being tested in last year and knows the result ratio F:M",
+                                                            y = "Ratio of F:M on ART")
+
+
+
+# OUTCOMES ----------------------------------------------------------------
+
+# next script
+
+
+
+###
+# res_best_runs
+
+
+
+frac_N_discard_points_graph = frac_N_discard_points
+frac_N_discard_points_graph[frac_N_discard_points_graph$variable == "Low Pro Ratio", c(2,3)] = frac_N_discard_points_graph[frac_N_discard_points_graph$variable == "Low Pro Ratio",c(2,3)]/100
+
+#####################################################
+
+prev_axes = data.frame(variable = c(rep("Pro FSW", 2),
+                                    rep("Clients", 2),
+                                    rep("Women", 2),
+                                    rep("Men", 2),
+                                    rep("Low-level FSW", 2)),
+                       time = c(rep(c(1986, 2025), 5)),
+                       value = c(0, 70, 0, 70, 0, 15, 0, 15, 0, 70)
+)
+prev_points_80s = prev_points_all[c(1,2,3),]
+
+
+prev_points[prev_points$time == "2015", "lower"][1] = 13.79
+
+# plot prevalence in each group indiv runs
+g1=ggplot() + geom_line(data = prev_indiv_melted, aes(x = time, y = value, factor = variable, factor = run), alpha = 0.3) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
+  geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
+  geom_point(data = prev_points_80s, aes(x = time, y = value), colour = "red")+
+  geom_blank(data = prev_axes, aes(x = time, y = value))+
+  theme(text = element_text(size=20))
+
+g1
+
+require(ggplot2)
+
+prop_each_inf = lapply(res_best_runs, function(x) {
+  list(x$I01[,1]/(x$I01[,1] + x$I02[,1] + x$I03[,1] + x$I04[,1] + x$I05[,1]),
+       x$I02[,1]/(x$I01[,1] + x$I02[,1] + x$I03[,1] + x$I04[,1] + x$I05[,1]),
+       x$I03[,1]/(x$I01[,1] + x$I02[,1] + x$I03[,1] + x$I04[,1] + x$I05[,1]),
+       x$I04[,1]/(x$I01[,1] + x$I02[,1] + x$I03[,1] + x$I04[,1] + x$I05[,1]),
+       x$I05[,1]/(x$I01[,1] + x$I02[,1] + x$I03[,1] + x$I04[,1] + x$I05[,1]))
+
+}
+)
+prop_each_inf = data.frame(time, do.call(rbind, lapply(prop_each_inf, function(x) {
+  t(do.call(rbind, x))
+})), rep(1:length(res_best_runs), each = length(res_best_runs[[1]]$S0[,1])))
+
+
+colnames(prop_each_inf) = c("time", c("Primary", "CD4 > 500", "CD4 350 - 500", "CD4 200 - 349", "CD4 < 200"),  "run")
+
+prop_each_inf_melted = reshape2::melt(prop_each_inf, id.vars = c("time", "run"))
+
+
+ggplot(prop_each_inf_melted) + geom_line(aes(x = time, y = value, colour = variable, factor = as.character(run)), size = I(01.5)) + theme_bw() +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  geom_hline(yintercept = 0.031904762, col = "#e41a1c")+
+  geom_hline(yintercept = 0.235238095, col = "#377eb8")+
+  geom_hline(yintercept = 0.235238095, col = "#4daf4a")+
+  geom_hline(yintercept = 0.319047619, col = "#984ea3")+
+  geom_hline(yintercept = 0.178571429, col = "#ff7f00") + labs(y = "proportion in each stage of infection")
+
+
+
+
+
+
+# varying!
+
+# pars$pfFSW_y[2,1] <- 0.027
+
+
+# pars$rate_leave_pro_FSW
+# # pars$prev_non_ben_fsw_1993
+# # pars$prev_non_ben_fsw_2015
+#
+# res_best_runs = cotonou::return_outputs(pars, cotonou::main_model, time = time, outputs = CEA_outputs)
+#
+# res_best_runs = list(res_best_runs)
+
+
+
+
+pars = pars_keep
+
+new_values = rbind(
+  rate_leave_pro_FSW = c(0.33, 0.33),
+
+  prev_non_ben_fsw_1993 = c(0.163, 0.163),
+  prev_non_ben_fsw_2015= c(0.034, 0.034)
+
+)
+
+
+
+x = pars
+
+x = lapply(x[rownames(ranges)], function(y) {
+  if(length(y) == 9)
+    y = y[1] else y
+})
+
+x = x[-which(names(x) %in% rownames(new_values))]
+
+
+
+combined_ranges = cbind(unlist(x[rownames(ranges)]), unlist(x[rownames(ranges)]))
+
+combined_ranges = rbind(combined_ranges, new_values)
+
+
+res_after_prep = cotonou::run_model(number_simulations = 1, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set,
+                                    time = time,
+                                    ranges = combined_ranges, outputs = CEA_outputs)[[2]]
+
+
+median(unlist(lapply(res_after_prep, function(x) x$prev[which(time == 1993),1])))
+median(unlist(lapply(res_after_prep, function(x) x$prev[which(time == 2015),1])))
+
+
+median(unlist(lapply(res_after_prep, function(x) x$lambda_sum_0[which(time == 1993),1])))*100
+median(unlist(lapply(res_after_prep, function(x) x$lambda_sum_0[which(time == 2015),1])))*100
+
+
+res_after_prep[[1]]$pfFSW[which(time == 1993),1]
+#
+
+
+
+
+# ignore these ######################################
+# frac_ProFSW_F = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N), function(x) (x[,1]/(x[,1] + x[,2] + x[,3] + x[,4] + x[,7])))), 2, cotonou::quantile_95)))
+# frac_ProFSW_F = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N/x$frac_F), function(x) x[,1])), 2, cotonou::quantile_95)))
+
+
+
+annual_client_volume_pro_FSW = data.frame(time, t(do.call(rbind, lapply(res_best_runs, function(x)  {x$c_comm[,1]}))))
+colnames(annual_client_volume_pro_FSW) = c("time", as.character(seq(1, (length(annual_client_volume_pro_FSW[1,])-1))))
+annual_client_volume_pro_FSW_melted = reshape2::melt(annual_client_volume_pro_FSW, id.vars = c("time"))
+
+
+
+N_Pro_FSW = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(1)])}))))
+colnames(N_Pro_FSW) = c("time", as.character(seq(1, (length(N_Pro_FSW[1,])-1))))
+N_Pro_FSW_melted = reshape2::melt(N_Pro_FSW, id.vars = c("time"))
+colnames(N_Pro_FSW_melted) = c("time", "run", "value")
+N_Low_FSW = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(2)])}))))
+colnames(N_Low_FSW) = c("time", as.character(seq(1, (length(N_Low_FSW[1,])-1))))
+N_Low_FSW_melted = reshape2::melt(N_Low_FSW, id.vars = c("time"))
+colnames(N_Low_FSW_melted) = c("time", "run", "value")
+N_Client = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(5)])}))))
+colnames(N_Client) = c("time", as.character(seq(1, (length(N_Client[1,])-1))))
+N_Client_melted = reshape2::melt(N_Client, id.vars = c("time"))
+colnames(N_Client_melted) = c("time", "run", "value")
+
+
+
+Fraction_F =   do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(1, 2, 3, 4, 7)])}), rowSums)) /
+  (do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(5, 6)])}), rowSums)) + do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(1, 2, 3, 4, 7)])}), rowSums)))
+
+
+lambda_sum_0_ProFSW = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,1]))))
+lambda_sum_0_LowFSW = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,2]))))
+lambda_sum_0_GPF = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,3]))))
+lambda_sum_0_FormerFSW = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,4]))))
+lambda_sum_0_Client = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,5]))))
+lambda_sum_0_GPM = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,6]))))
+lambda_sum_0_Virgin_Female = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,7]))))
+lambda_sum_0_Virgin_Male = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,8]))))
+lambda_sum_0_Former_FSW_Outside = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,9]))))
+
+
+
+
+lambda_sum_0_indiv = rbind(lambda_sum_0_ProFSW, lambda_sum_0_LowFSW, lambda_sum_0_GPF,
+                           lambda_sum_0_FormerFSW, lambda_sum_0_Client, lambda_sum_0_GPM)
+
+
+lambda_sum_0_indiv = data.frame(time, rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM"), each = length(time)), lambda_sum_0_indiv)
+
+
+colnames(lambda_sum_0_indiv) = c("time", "variable", as.character(seq(1, length(lambda_sum_0_ProFSW[1,]))))
+lambda_sum_0_indiv_melted = reshape2::melt(lambda_sum_0_indiv, id.vars = c("time", "variable"))
+colnames(lambda_sum_0_indiv_melted) = c("time", "variable", "run", "value")
+lambda_sum_0_indiv_melted$variable = factor(lambda_sum_0_indiv_melted$variable, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM"))
+
+
+
+
+
+
+frac_ProFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,1])), 2, cotonou::quantile_95)))
+frac_LowFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,2])), 2, cotonou::quantile_95)))
+frac_GPF = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,3])), 2, cotonou::quantile_95)))
+frac_FormerFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,4])), 2, cotonou::quantile_95)))
+frac_Client = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,5])), 2, cotonou::quantile_95)))
+frac_GPM = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,6])), 2, cotonou::quantile_95)))
+frac_Virgin_Female = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,7])), 2, cotonou::quantile_95)))
+frac_Virgin_Male = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,8])), 2, cotonou::quantile_95)))
+frac_Former_FSW_Outside = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,9])), 2, cotonou::quantile_95)))
+frac_Active_FSW = data.frame(time, t(apply(do.call(rbind, lapply(res_best_runs, function(x) {100*(x$frac_N[,1] + x$frac_N[,2])})), 2, cotonou::quantile_95)))
+Ratio_Low_Pro = data.frame(time, t(apply(do.call(rbind, lapply(res_best_runs, function(x) {x$frac_N[,2]/ x$frac_N[,1]})), 2, cotonou::quantile_95)))
+
+frac = rbind(frac_ProFSW, frac_LowFSW, frac_GPF, frac_FormerFSW, frac_Client, frac_GPM, frac_Virgin_Female, frac_Virgin_Male, frac_Former_FSW_Outside, frac_Active_FSW, Ratio_Low_Pro)
+frac = data.frame(frac, group = rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "Active FSW", "Low Pro Ratio"), each = length(time)))
+colnames(frac) = c("time", "Lower", "Median", "Upper", "variable")
+frac$variable = factor(frac$variable, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "Active FSW", "Low Pro Ratio"))
+
+prev_FSW = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$prev_FSW)), 2, cotonou::quantile_95))
+prev_LowFSW = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$prev_LowFSW)), 2, cotonou::quantile_95))
+prev_client = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$prev_client)), 2, cotonou::quantile_95))
+prev_women = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$prev_women)), 2, cotonou::quantile_95))
+prev_men = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$prev_men)), 2, cotonou::quantile_95))
+prev = rbind(prev_FSW, prev_LowFSW, prev_client, prev_women, prev_men)
+prev = data.frame(time, prev, rep(c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"), each = length(time)))
+colnames(prev) = c("time", "Lower", "Median", "Upper", "variable")
+prev$variable = factor(prev$variable, levels = c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"))
+
+
+prev_FSW_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$prev_FSW)))
+prev_LowFSW_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$prev_LowFSW)))
+prev_client_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$prev_client)))
+prev_women_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$prev_women)))
+prev_men_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$prev_men)))
+prev_indiv = rbind(prev_FSW_indiv, prev_LowFSW_indiv, prev_client_indiv, prev_women_indiv, prev_men_indiv)
+
+prev_indiv = data.frame(time, rep(c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"), each = length(time)), prev_indiv)
+
+
+colnames(prev_indiv) = c("time", "variable", as.character(seq(1, length(prev_FSW_indiv[1,]))))
+
+prev_indiv_melted = reshape2::melt(prev_indiv, id.vars = c("time", "variable"))
+
+colnames(prev_indiv_melted) = c("time", "variable", "run", "value")
+
+prev_indiv_melted$variable = factor(prev_indiv_melted$variable, levels = c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"))
+
+
+
+
+Ntot = data.frame(time, t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$Ntot)), 2, cotonou::quantile_95)))
+colnames(Ntot) = c("time", "Lower", "Median", "Upper")
+
+
+ART_coverage_women = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_women)), 2, cotonou::quantile_95))
+ART_coverage_men = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_men)), 2, cotonou::quantile_95))
+ART_coverage_FSW = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_FSW)), 2, cotonou::quantile_95))
+ART_coverage_all = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_all)), 2, cotonou::quantile_95))
+ART_coverage = rbind(ART_coverage_women, ART_coverage_men, ART_coverage_FSW, ART_coverage_all)
+ART_coverage = data.frame(time, ART_coverage, rep(c("Women", "Men", "Pro FSW", "All"), each = length(time)))
+colnames(ART_coverage) = c("time", "Lower", "Median", "Upper", "variable")
+ART_coverage$variable = factor(ART_coverage$variable, levels = c("Pro FSW", "Women", "Men", "All"))
+ART_coverage = ART_coverage[ART_coverage$variable == "All" | ART_coverage$variable == "Pro FSW",]
+
+
+
+ART_FSW_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_FSW)))
+ART_women_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_women)))
+ART_men_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_men)))
+
+ART_all_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_all)))
+
+
+ART_indiv = rbind(ART_FSW_indiv, ART_all_indiv)
+
+ART_indiv = data.frame(time, rep(c("Pro FSW", "All"), each = length(time)), ART_indiv)
+
+
+colnames(ART_indiv) = c("time", "variable", as.character(seq(1, length(ART_FSW_indiv[1,]))))
+
+ART_indiv_melted = reshape2::melt(ART_indiv, id.vars = c("time", "variable"))
+
+colnames(ART_indiv_melted) = c("time", "variable", "run", "value")
+
+ART_indiv_melted$variable = factor(ART_indiv_melted$variable, levels = c("Pro FSW", "All"))
+
+
+# N of FSW on ART
+
+
+N_ART_FSW_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$HIV_positive_On_ART[,1])))
+
+
+N_ART_FSW_indiv = data.frame(time, rep(c("Pro FSW"), each = length(time)), N_ART_FSW_indiv)
+
+
+colnames(N_ART_FSW_indiv) = c("time", "variable", as.character(seq(1, length(N_ART_FSW_indiv[1,])-2)))
+
+N_ART_FSW_indiv_melted = reshape2::melt(N_ART_FSW_indiv, id.vars = c("time", "variable"))
+
+colnames(N_ART_FSW_indiv_melted) = c("time", "variable", "run", "value")
+
+
+
+# N on ART and N off ART diagnosed
+Diagnosed_Off_ART_FSW = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x) {x$I22 + x$I23 + x$I24 + x$I25}), function(x) x[,1]))))
+Diagnosed_On_ART_FSW = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x) {x$I32 + x$I33 + x$I34 + x$I35}), function(x) x[,1]))))
+Diagnosed_Dropout_ART_FSW = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x) {x$I42 + x$I43 + x$I44 + x$I45}), function(x) x[,1]))))
+
+Diagnosed_FSW = data.frame(rbind(Diagnosed_Off_ART_FSW, Diagnosed_On_ART_FSW, Diagnosed_Dropout_ART_FSW),
+                           rep(c("Diagnosed Off ART", "Diagnosed On ART", "Dropout"), each = length(time)))
+colnames(Diagnosed_FSW) = c("time", as.character(seq(1, (length(Diagnosed_Off_ART_FSW[1,])-1))), "variable")
+
+Diagnosed_FSW_melted = reshape2::melt(Diagnosed_FSW, id.vars = c("time", "variable"))
+
+Diagnosed_FSW_melted$group = "FSW"
+
+colnames(Diagnosed_FSW_melted) = c("time", "variable", "run", "value", "group")
+
+
+Diagnosed_Off_ART_All = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I22 + x$I23 + x$I24 + x$I25}), function(x) {return(x[,c(1, 2, 3, 4, 5, 6, 7, 8)])}), rowSums))))
+Diagnosed_On_ART_All = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I32 + x$I33 + x$I34 + x$I35}), function(x) {return(x[,c(1, 2, 3, 4, 5, 6, 7, 8)])}), rowSums))))
+Diagnosed_Dropout_ART_All = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I42 + x$I43 + x$I44 + x$I45}), function(x) {return(x[,c(1, 2, 3, 4, 5, 6, 7, 8)])}), rowSums))))
+
+Diagnosed_All = data.frame(rbind(Diagnosed_Off_ART_All, Diagnosed_On_ART_All, Diagnosed_Dropout_ART_All),
+                           rep(c("Diagnosed Off ART", "Diagnosed On ART", "Dropout"), each = length(time)))
+colnames(Diagnosed_All) = c("time", as.character(seq(1, (length(Diagnosed_Off_ART_All[1,])-1))), "variable")
+
+Diagnosed_All_melted = reshape2::melt(Diagnosed_All, id.vars = c("time", "variable"))
+
+Diagnosed_All_melted$group = "All"
+
+
+colnames(Diagnosed_All_melted) = c("time", "variable", "run", "value", "group")
+
+
+Diagnosed = rbind(Diagnosed_FSW_melted, Diagnosed_All_melted)
+
+
+
+Diagnosed_Off_ART_Men = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I22 + x$I23 + x$I24 + x$I25}), function(x) {return(x[,c(5, 6)])}), rowSums))))
+Diagnosed_On_ART_Men = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I32 + x$I33 + x$I34 + x$I35}), function(x) {return(x[,c(5, 6)])}), rowSums))))
+Diagnosed_Dropout_ART_Men = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I42 + x$I43 + x$I44 + x$I45}), function(x) {return(x[,c(5, 6)])}), rowSums))))
+
+Diagnosed_Men = data.frame(rbind(Diagnosed_Off_ART_Men, Diagnosed_On_ART_Men, Diagnosed_Dropout_ART_Men),
+                           rep(c("Diagnosed Off ART", "Diagnosed On ART", "Dropout"), each = length(time)))
+colnames(Diagnosed_Men) = c("time", as.character(seq(1, (length(Diagnosed_Off_ART_Men[1,])-1))), "variable")
+
+Diagnosed_Men_melted = reshape2::melt(Diagnosed_Men, id.vars = c("time", "variable"))
+
+Diagnosed_Men_melted$group = "Men"
+
+
+colnames(Diagnosed_Men_melted) = c("time", "variable", "run", "value", "group")
+
+
+
+Diagnosed_Off_ART_Women = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I22 + x$I23 + x$I24 + x$I25}), function(x) {return(x[,c(1, 2, 3, 4)])}), rowSums))))
+Diagnosed_On_ART_Women = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I32 + x$I33 + x$I34 + x$I35}), function(x) {return(x[,c(1, 2, 3, 4)])}), rowSums))))
+Diagnosed_Dropout_ART_Women = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I42 + x$I43 + x$I44 + x$I45}), function(x) {return(x[,c(1, 2, 3, 4)])}), rowSums))))
+
+Diagnosed_Women = data.frame(rbind(Diagnosed_Off_ART_Women, Diagnosed_On_ART_Women, Diagnosed_Dropout_ART_Women),
+                             rep(c("Diagnosed Off ART", "Diagnosed On ART", "Dropout"), each = length(time)))
+colnames(Diagnosed_Women) = c("time", as.character(seq(1, (length(Diagnosed_Off_ART_Women[1,])-1))), "variable")
+
+Diagnosed_Women_melted = reshape2::melt(Diagnosed_Women, id.vars = c("time", "variable"))
+
+Diagnosed_Women_melted$group = "Women"
+
+
+colnames(Diagnosed_Women_melted) = c("time", "variable", "run", "value", "group")
+
+Diagnosed_Women_Men = rbind(Diagnosed_Women_melted, Diagnosed_Men_melted)
+
+Diagnosed_Women_Men_ratio = data.frame(Diagnosed_Women_melted[,c("time", "variable", "run")],
+                                       value = Diagnosed_Women_melted$value/Diagnosed_Men_melted$value)
+
+
+HIV_deaths = data.frame(time[-1], t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x) x$cumuHIVDeaths), rowSums), diff) )))
+
+colnames(HIV_deaths) = c("time", as.character(seq(1, (length(HIV_deaths[1,])-1))))
+
+HIV_deaths_melted = reshape2::melt(HIV_deaths, id.vars = c("time"))
+
+
+
+# fraction of groups in their genders -------------------------------------
+
+
+
+
+pc_OfWomen_ProFSW = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1]))/
+                                         (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7]))
+
+
+                                         )))
+
+pc_OfWomen_LowFSW = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2]))/
+                                         (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7])))))
+
+
+
+pc_OfWomen_Active_FSW = data.frame(time, t(100*(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) + do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])))/
+                                             (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                                do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                                do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                                do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                                do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7])))))
+
+
+pc_OfWomen_GPF = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3]))/
+                                      (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                         do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                         do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                         do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                         do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7])))))
+
+pc_OfWomen_FormerFSW = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))/
+                                            (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                               do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                               do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                               do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                               do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7])))))
+
+
+
+pc_OfMen_Client = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,5]))/
+                                       (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,5])) +
+                                          do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,6]))+
+                                          do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,8])))))
+
+
+pc_OfMen_GPM = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,6]))/
+                                    (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,5])) +
+                                       do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,6]))+
+                                       do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,8])))))
+
+
+pc_OfWomen_VF = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7]))/
+                                     (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                        do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                        do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                        do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                        do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7])))))
+
+
+pc_OfMen_VM = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,8]))/
+                                   (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,5])) +
+                                      do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,6]))+
+                                      do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,8])))))
+
+Ratio_Low_Pro = data.frame(time, t(do.call(rbind, lapply(res_best_runs, function(x) {x$frac_N[,2]/ x$frac_N[,1]}))))
+
+
+frac_by_gender = rbind(pc_OfWomen_ProFSW,
+                       pc_OfWomen_LowFSW,
+                       pc_OfWomen_GPF,
+                       pc_OfWomen_FormerFSW,
+                       pc_OfMen_Client,
+                       pc_OfMen_GPM,
+                       pc_OfWomen_VF,
+                       pc_OfMen_VM,
+                       pc_OfWomen_Active_FSW,
+                       Ratio_Low_Pro
+)
+frac_by_gender = data.frame(frac_by_gender, group = rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Active FSW", "Low Pro Ratio"), each = length(time)))
+colnames(frac_by_gender) = c("time",as.character(seq(1, (length(pc_OfWomen_ProFSW[1,])-1))),  "variable")
+frac_by_gender$variable = factor(frac_by_gender$variable, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Active FSW", "Low Pro Ratio"))
+
+
+frac_by_gender_melted = reshape2::melt(frac_by_gender, id.vars = c("time", "variable"))
+
+colnames(frac_by_gender_melted) = c("time", "variable", "run", "value")
+
+colnames(pc_OfWomen_ProFSW) = c("time", as.character(seq(1, (length(pc_OfWomen_ProFSW[1,])-1))))
+colnames(pc_OfWomen_LowFSW) = c("time", as.character(seq(1, (length(pc_OfWomen_LowFSW[1,])-1))))
+colnames(pc_OfWomen_Active_FSW) = c("time", as.character(seq(1, (length(pc_OfWomen_Active_FSW[1,])-1))))
+colnames(pc_OfMen_Client) = c("time", as.character(seq(1, (length(pc_OfMen_Client[1,])-1))))
+
+pc_OfWomen_ProFSW_melted = reshape2::melt(pc_OfWomen_ProFSW, id.vars = c("time"))
+pc_OfWomen_LowFSW_melted = reshape2::melt(pc_OfWomen_LowFSW, id.vars = c("time"))
+pc_OfWomen_Active_FSW_melted = reshape2::melt(pc_OfWomen_Active_FSW, id.vars = c("time"))
+pc_OfMen_Client_melted = reshape2::melt(pc_OfMen_Client, id.vars = c("time"))
+
+
+
+
+
+
+# condoms -----------------------------------------------------------------
+
+
+
+
+condom_Pro_FSW_comm = t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_comm[,1,][,5]}))))
+condom_Pro_FSW_noncomm = t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_noncomm[,1,][,5]}))))
+
+condom_Pro_FSW = data.frame(time, rbind(condom_Pro_FSW_comm, condom_Pro_FSW_noncomm), rep(c("Commercial", "Non commercial"), each = length(time)))
+colnames(condom_Pro_FSW) = c("time", as.character(seq(1, (length(condom_Pro_FSW[1,])-2))), "variable")
+
+condom_Pro_FSW_melted = reshape2::melt(condom_Pro_FSW, id.vars = c("time", "variable"))
+colnames(condom_Pro_FSW_melted) = c("time", "variable", "run", "value")
+
+
+condom_Low_FSW_comm = t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_comm[,2,][,5]}))))
+condom_Low_FSW_noncomm = t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_noncomm[,2,][,5]}))))
+
+condom_Low_FSW = data.frame(time, rbind(condom_Low_FSW_comm, condom_Low_FSW_noncomm), rep(c("Commercial", "Non commercial"), each = length(time)))
+colnames(condom_Low_FSW) = c("time", as.character(seq(1, (length(condom_Low_FSW[1,])-2))), "variable")
+
+condom_Low_FSW_melted = reshape2::melt(condom_Low_FSW, id.vars = c("time", "variable"))
+colnames(condom_Low_FSW_melted) = c("time", "variable", "run", "value")
+
+condom_GPF_noncomm = data.frame(time, t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_noncomm[,3,][,6]})))))
+colnames(condom_GPF_noncomm) = c("time", as.character(seq(1, (length(condom_GPF_noncomm[1,])-1))))
+condom_GPF_noncomm_melted = reshape2::melt(condom_GPF_noncomm, id.vars = c("time"))
+
+condom_GPM_noncomm = data.frame(time, t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_noncomm[,6,][,3]})))))
+colnames(condom_GPM_noncomm) = c("time", as.character(seq(1, (length(condom_GPM_noncomm[1,])-1))))
+condom_GPM_noncomm_melted = reshape2::melt(condom_GPM_noncomm, id.vars = c("time"))
+
+
+
+# testing -----------------------------------------------------------------
+
+
+
+testing_rate_ratio_F_M = data.frame(time, t((do.call(rbind, lapply(lapply(res_best_runs, function(x)  {x$testing_prob}), function(x) {return(x[,c(3)])}))/do.call(rbind, lapply(lapply(res_best_runs, function(x)  {x$testing_prob}), function(x) {return(x[,c(6)])})))))
+
+colnames(testing_rate_ratio_F_M) = c("time", as.character(seq(1, (length(testing_rate_ratio_F_M[1,])-1))))
+
+testing_rate_ratio_F_M_melted = reshape2::melt(testing_rate_ratio_F_M, id.vars = c("time"))
+
+colnames(testing_rate_ratio_F_M_melted) = c("time", "run", "value")
+
+Diagnosed_Women_Men_ratio_On_ART = Diagnosed_Women_Men_ratio[Diagnosed_Women_Men_ratio$variable == "Diagnosed On ART",]
+
+
+testing_rate_ratio_F_M_Women_Men_ratio_On_ART = data.frame(x=testing_rate_ratio_F_M_melted$value, y=Diagnosed_Women_Men_ratio_On_ART$value)
+
+ggplot() + geom_point(data = testing_rate_ratio_F_M_Women_Men_ratio_On_ART,
+                      aes(x = x, y= y)) + theme_bw() + labs(x = "Probability of being tested in last year and knows the result ratio F:M",
+                                                            y = "Ratio of F:M on ART")
+
+
+
+# OUTCOMES ----------------------------------------------------------------
+
+# next script
+
+
+
+###
+# res_best_runs
+
+
+
+frac_N_discard_points_graph = frac_N_discard_points
+frac_N_discard_points_graph[frac_N_discard_points_graph$variable == "Low Pro Ratio", c(2,3)] = frac_N_discard_points_graph[frac_N_discard_points_graph$variable == "Low Pro Ratio",c(2,3)]/100
+
+#####################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
