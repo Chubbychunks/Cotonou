@@ -29,6 +29,8 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     y$n_y_noncomm_2015_LowFSW_Client = y$n_y_noncomm_2015_ProFSW_Client
 
     y$n_y_noncomm_1985_GPF_Client = y$n_y_noncomm_1985_GPF_GPM
+    y$n_y_noncomm_1998_GPF_Client = y$n_y_noncomm_1998_GPF_GPM
+    y$n_y_noncomm_2011_GPF_Client = y$n_y_noncomm_2011_GPF_GPM
 
 
 
@@ -379,8 +381,8 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
   y$n_y_comm = array(data = c(y$n_y_comm_1985, y$n_y_comm_2002,
                               y$n_y_comm_2015, y$n_y_comm_2016), dim=c(Ncat, Ncat, 4))
-  y$n_y_noncomm = array(data = c(y$n_y_noncomm_1985, y$n_y_noncomm_2002,
-                                 y$n_y_noncomm_2015, y$n_y_noncomm_2016), dim=c(Ncat, Ncat, 4))
+  y$n_y_noncomm = array(data = c(y$n_y_noncomm_1985, y$n_y_noncomm_1998, y$n_y_noncomm_2002, y$n_y_noncomm_2011,
+                                 y$n_y_noncomm_2015, y$n_y_noncomm_2016), dim=c(Ncat, Ncat, 6))
 
   y$n_y_comm = aperm(y$n_y_comm, c(3, 1, 2))
   y$n_y_noncomm = aperm(y$n_y_noncomm, c(3, 1, 2))
@@ -684,6 +686,10 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     n_y_comm_2016 = matrix(1.02, Ncat, Ncat),
 
     n_y_noncomm_1985 = matrix(1.03, Ncat, Ncat),
+
+    n_y_noncomm_1998 = matrix(1.03, Ncat, Ncat),
+    n_y_noncomm_2011 = matrix(1.03, Ncat, Ncat),
+
     n_y_noncomm_2002 = matrix(1.03, Ncat, Ncat),
     n_y_noncomm_2015 = matrix(1.03, Ncat, Ncat),
 
@@ -1028,6 +1034,9 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     n_y_noncomm_1985 = matrix(1.03, Ncat, Ncat),
     n_y_noncomm_2002 = matrix(1.03, Ncat, Ncat),
     n_y_noncomm_2015 = matrix(1.03, Ncat, Ncat),
+
+    n_y_noncomm_1998 = matrix(1.03, Ncat, Ncat),
+    n_y_noncomm_2011 = matrix(1.03, Ncat, Ncat),
 
     n_y_noncomm_2016 = matrix(1.03, Ncat, Ncat),
 
@@ -1580,6 +1589,9 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    n_y_noncomm_1985 = matrix(1.03, Ncat, Ncat),
                    n_y_noncomm_2002 = matrix(1.03, Ncat, Ncat),
                    n_y_noncomm_2015 = matrix(1.03, Ncat, Ncat),
+
+                   n_y_noncomm_1998 = matrix(1.03, Ncat, Ncat),
+                   n_y_noncomm_2011 = matrix(1.03, Ncat, Ncat),
 
                    n_y_noncomm_2016 = matrix(1.03, Ncat, Ncat),
 
