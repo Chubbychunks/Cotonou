@@ -74,7 +74,7 @@ devtools::load_all()
 tbefore = Sys.time()
 
 
-number_simulations = 1
+number_simulations = 10
 batch_size = 1
 
 
@@ -1710,9 +1710,9 @@ pars = pars_keep
 
 new_values = rbind(
   rate_leave_pro_FSW = c(0.33, 0.33),
-
   prev_non_ben_fsw_1993 = c(0.163, 0.163),
-  prev_non_ben_fsw_2015= c(0.034, 0.034)
+  prev_non_ben_fsw_2015= c(0.034, 0.034),
+  fraction_FSW_foreign = c(0.9, 0.9)
 
 )
 
@@ -2193,7 +2193,10 @@ frac_N_discard_points_graph[frac_N_discard_points_graph$variable == "Low Pro Rat
 
 
 
-
+# when is the peak?
+lapply(result[[3]], function(x) {
+  time_with_mid[which(x$prev[,1] == max(x$prev[,1]))]
+})
 
 
 
