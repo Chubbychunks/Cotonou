@@ -20,6 +20,10 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   if(y$ignore_ranges_fc_c == 0) {
 
 
+
+    y$PrEP_loss_to_follow_up <- y$prep_dropout - y$rate_leave_pro_FSW - y$muF - 1/45 - 0.008
+
+
     y$frac_women_exFSW = y$frac_women_ProFSW
 
 
@@ -591,7 +595,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
   }
 
-  y$kappaa = c(y$prep_dropout, rep_len(0,(8)))
+  y$kappaa = c(y$PrEP_loss_to_follow_up, rep_len(0,(8)))
 
   y$kappab = y$kappaa
   y$kappac = y$kappaa
@@ -606,6 +610,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   # y$W4 = y$W4
 
   y$pfFSW_y = matrix(c(rep(0, 9), y$prev_non_ben_fsw_1993, c(rep(0, 8)), y$prev_non_ben_fsw_2015, c(rep(0, 8)), y$prev_non_ben_fsw_2015, c(rep(0, 8))), ncol = 9, nrow = 4, byrow = T)
+
 
 
 
