@@ -161,7 +161,7 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
             likelihood_count <- likelihood_count + 1
 
 
-            }
+          }
         }
       }
     }
@@ -258,18 +258,18 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
     # prep_fit = (PY_PrEP-250)^2
 
 
-#
-#     prep_fit = 0;
-#
-#     for(i in 1:length(PrEP_fitting[,1]))
-#     {
-#       time = PrEP_fitting[i, "time"]
-#       if(PrEP_fitting[i, "group"] == "S1a")
-#         prep_fit = prep_fit + (S1a[S1a$time == time, 1] - PrEP_fitting[i, "point"])^2
-#       if(PrEP_fitting[i, "group"] == "S1b")
-#         prep_fit = prep_fit + (S1b[S1b$time == time, 1] - PrEP_fitting[i, "point"])^2
-#       if(PrEP_fitting[i, "group"] == "S1c")
-#         prep_fit = prep_fit + (S1c[S1c$time == time, 1] - PrEP_fitting[i, "point"])^2
+    #
+    #     prep_fit = 0;
+    #
+    #     for(i in 1:length(PrEP_fitting[,1]))
+    #     {
+    #       time = PrEP_fitting[i, "time"]
+    #       if(PrEP_fitting[i, "group"] == "S1a")
+    #         prep_fit = prep_fit + (S1a[S1a$time == time, 1] - PrEP_fitting[i, "point"])^2
+    #       if(PrEP_fitting[i, "group"] == "S1b")
+    #         prep_fit = prep_fit + (S1b[S1b$time == time, 1] - PrEP_fitting[i, "point"])^2
+    #       if(PrEP_fitting[i, "group"] == "S1c")
+    #         prep_fit = prep_fit + (S1c[S1c$time == time, 1] - PrEP_fitting[i, "point"])^2
     # }
 
 
@@ -402,38 +402,41 @@ run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, 
     # this is the slowest part - simulating model
     res = parallel::parLapply(NULL, parameters, cotonou::return_outputs, main_model, time = time, outputs = outputs)
 
-    # model fitting
-    likelihood_list = parallel::parLapply(NULL, res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points, PrEP_fitting = PrEP_fitting)
 
-    sorted_likelihood_list = sort(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])))
-
-    best_runs = which(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
-
-
-
-    if(max(sorted_likelihood_list) > max_fit)
+    if(length(res[[1]]$prev[,1]) == length(time))
     {
+      # model fitting
+      likelihood_list = parallel::parLapply(NULL, res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points, PrEP_fitting = PrEP_fitting)
+
+      sorted_likelihood_list = sort(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])))
+
+      best_runs = which(unlist(parallel::parLapply(NULL, likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
+
+
+
+      if(max(sorted_likelihood_list) > max_fit)
+      {
+
+        ### minus 1
+        best_fit_pars_minus_1 = best_fit_pars
+        max_fit_minus_1 = max_fit
+
+
+        max_fit = max(sorted_likelihood_list)
+        best_fit_pars = parameters[best_runs]
+
+      } else if(max(sorted_likelihood_list) == max_fit)
+      {
+        best_fit_pars[(length(best_fit_pars) + 1 ):(length(best_fit_pars) + length(best_runs))] <- parameters[best_runs]
+      }
 
       ### minus 1
-      best_fit_pars_minus_1 = best_fit_pars
-      max_fit_minus_1 = max_fit
+      if(max(sorted_likelihood_list) == max_fit_minus_1)
+      {
+        best_fit_pars_minus_1[(length(best_fit_pars_minus_1) + 1 ):(length(best_fit_pars_minus_1) + length(best_runs))] <- parameters[best_runs]
 
-
-      max_fit = max(sorted_likelihood_list)
-      best_fit_pars = parameters[best_runs]
-
-    } else if(max(sorted_likelihood_list) == max_fit)
-    {
-      best_fit_pars[(length(best_fit_pars) + 1 ):(length(best_fit_pars) + length(best_runs))] <- parameters[best_runs]
+      }
     }
-
-    ### minus 1
-    if(max(sorted_likelihood_list) == max_fit_minus_1)
-    {
-      best_fit_pars_minus_1[(length(best_fit_pars_minus_1) + 1 ):(length(best_fit_pars_minus_1) + length(best_runs))] <- parameters[best_runs]
-
-    }
-
 
     print(max_fit)
     print(c(100*i/(number_simulations/batch_size), "%"))
@@ -479,45 +482,47 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
     # this is the slowest part - simulating model
     res = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
 
-    # model fitting
-    likelihood_list = lapply(res, cotonou::likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points, PrEP_fitting = PrEP_fitting)
+    if(length(res[[1]]$prev[,1]) == length(time))
 
-    sorted_likelihood_list = sort(unlist(lapply(likelihood_list, function(x) x[[1]])))
+    {# model fitting
+      likelihood_list = lapply(res, cotonou::likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points, PrEP_fitting = PrEP_fitting)
 
-    best_runs = which(unlist(lapply(likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
+      sorted_likelihood_list = sort(unlist(lapply(likelihood_list, function(x) x[[1]])))
 
-
-    prep_fit <- unlist(lapply(likelihood_list, function(x) x[[4]]))
-
+      best_runs = which(unlist(lapply(likelihood_list, function(x) x[[1]])) == max(sorted_likelihood_list))
 
 
-    if(max(sorted_likelihood_list) > max_fit)
-    {
+      prep_fit <- unlist(lapply(likelihood_list, function(x) x[[4]]))
+
+
+
+      if(max(sorted_likelihood_list) > max_fit)
+      {
+        ### minus 1
+        best_fit_pars_minus_1 = best_fit_pars
+        max_fit_minus_1 = max_fit
+
+
+        max_fit = max(sorted_likelihood_list)
+        best_fit_pars = parameters[best_runs]
+
+        prep_out = prep_fit[best_runs]
+
+      } else if(max(sorted_likelihood_list) == max_fit)
+      {
+        best_fit_pars[(length(best_fit_pars) + 1 ):(length(best_fit_pars) + length(best_runs))] <- parameters[best_runs]
+        prep_out[(length(prep_out) + 1 ):(length(prep_out) + length(best_runs))] <- prep_fit[best_runs]
+
+      }
+
       ### minus 1
-      best_fit_pars_minus_1 = best_fit_pars
-      max_fit_minus_1 = max_fit
+      if(max(sorted_likelihood_list) == max_fit_minus_1)
+      {
+        best_fit_pars_minus_1[(length(best_fit_pars_minus_1) + 1 ):(length(best_fit_pars_minus_1) + length(best_runs))] <- parameters[best_runs]
 
-
-      max_fit = max(sorted_likelihood_list)
-      best_fit_pars = parameters[best_runs]
-
-      prep_out = prep_fit[best_runs]
-
-    } else if(max(sorted_likelihood_list) == max_fit)
-    {
-      best_fit_pars[(length(best_fit_pars) + 1 ):(length(best_fit_pars) + length(best_runs))] <- parameters[best_runs]
-      prep_out[(length(prep_out) + 1 ):(length(prep_out) + length(best_runs))] <- prep_fit[best_runs]
+      }
 
     }
-
-    ### minus 1
-    if(max(sorted_likelihood_list) == max_fit_minus_1)
-    {
-      best_fit_pars_minus_1[(length(best_fit_pars_minus_1) + 1 ):(length(best_fit_pars_minus_1) + length(best_runs))] <- parameters[best_runs]
-
-    }
-
-
     print(max_fit)
     print(c(100*i/(number_simulations/batch_size), "%"))
 
