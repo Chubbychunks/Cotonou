@@ -403,7 +403,7 @@ run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, 
     res = parallel::parLapply(NULL, parameters, cotonou::return_outputs, main_model, time = time, outputs = outputs)
 
 
-    if(length(res[[1]]$prev[,1]) == length(time))
+    if(all(lapply(lapply(res, function(x) x$prev[,1]), length) == length(time)))
     {
       # model fitting
       likelihood_list = parallel::parLapply(NULL, res, likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points, PrEP_fitting = PrEP_fitting)
@@ -482,7 +482,11 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
     # this is the slowest part - simulating model
     res = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
 
-    if(length(res[[1]]$prev[,1]) == length(time))
+
+
+
+
+    if(all(lapply(lapply(res, function(x) x$prev[,1]), length) == length(time)))
 
     {# model fitting
       likelihood_list = lapply(res, cotonou::likelihood_rough, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points, PrEP_fitting = PrEP_fitting)
