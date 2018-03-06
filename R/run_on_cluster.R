@@ -23,7 +23,7 @@ quantile_95 <- function(x) return(quantile(x, probs = c(0.025, 0.5, 0.975)))
 #' @useDynLib cotonou
 return_outputs <- function(p, gen, time, outputs) {
   mod <- gen(user = p)
-  all_results <- mod$transform_variables(mod$run(time))
+  all_results <- mod$transform_variables(mod$run(time,  rtol = 10^-4))
   # counter <<- counter + 1
   # if (counter %% 10 == 0)
   #   print(counter)
