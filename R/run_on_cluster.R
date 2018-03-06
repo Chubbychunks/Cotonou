@@ -472,15 +472,24 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
   # results_list = list()
   for(i in 1:(number_simulations/batch_size))
   {
-    # LHS to create parameter sets
-    parameters <- cotonou::lhs_parameters(batch_size, set_pars = best_set, Ncat = 9, time = time,
-                                          ranges = ranges, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
+
+    worked = F
+    while(worked == F)
+    {
+      # LHS to create parameter sets
+      parameters <- cotonou::lhs_parameters(batch_size, set_pars = best_set, Ncat = 9, time = time,
+                                            ranges = ranges, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
 
 
-    # pars = parameters[(batch_size * (i - 1) + 1):(batch_size * i)]
+      # pars = parameters[(batch_size * (i - 1) + 1):(batch_size * i)]
 
-    # this is the slowest part - simulating model
-    res = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
+      # this is the slowest part - simulating model
+      res = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
+
+      if(all(lapply(lapply(res, function(x) x$prev[,1]), length) == length(time)))
+        worked = T
+
+    }
 
 
 
