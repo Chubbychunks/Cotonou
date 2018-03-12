@@ -21,9 +21,9 @@ quantile_95 <- function(x) return(quantile(x, probs = c(0.025, 0.5, 0.975)))
 
 #' @export
 #' @useDynLib cotonou
-return_outputs <- function(p, gen, time, outputs) {
+return_outputs <- function(p, gen, time, outputs, solving_method = "lsoda") {
   mod <- gen(user = p)
-  all_results <- mod$transform_variables(mod$run(time,  rtol = 10^-4))
+  all_results <- mod$transform_variables(mod$run(time,  rtol = 10^-4,  atol = 10^-4, method = solving_method))
   # counter <<- counter + 1
   # if (counter %% 10 == 0)
   #   print(counter)
@@ -452,7 +452,7 @@ run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, 
 
 #' @export
 #' @useDynLib cotonou
-run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points, PrEP_fitting = PrEP_fitting) {
+run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq, condom_seq, groups_seq, years_seq, best_set, time, ranges, outputs, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points, PrEP_fitting = PrEP_fitting, solving_method = "lsoda") {
 
 
 
@@ -484,7 +484,7 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
       # pars = parameters[(batch_size * (i - 1) + 1):(batch_size * i)]
 
       # this is the slowest part - simulating model
-      res = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
+      res = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs, solving_method = solving_method)
 
       if(all(lapply(lapply(res, function(x) x$prev[,1]), length) == length(time)))
         worked = T
