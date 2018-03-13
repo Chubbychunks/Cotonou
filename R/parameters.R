@@ -21,7 +21,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
 
 
-    y$PrEP_loss_to_follow_up <- y$prep_dropout - y$rate_leave_pro_FSW - y$muF - 1/45 - 0.008
+    y$PrEP_loss_to_follow_up <- y$prep_dropout # - y$rate_leave_pro_FSW - y$muF - 1/45 - 0.008
 
 
     y$frac_women_exFSW = y$frac_women_ProFSW
