@@ -643,6 +643,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
 
   #fixed pars list i think for the fix parameters function
   fixed_pars = list(
+    test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
+
     fraction_sexually_active_15_F = 0,
     fraction_sexually_active_15_M = 0,
 
@@ -989,6 +991,8 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
 
   #fixed pars list i think for the fix parameters function
   fixed_pars = list(
+    test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
+
     fraction_sexually_active_15_F = 0,
     fraction_sexually_active_15_M = 0,
 
