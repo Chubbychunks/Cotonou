@@ -830,7 +830,9 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     FSW_eligible = 1,
     GP_eligible = 1,
     prev_non_ben_fsw_1993 = 0.55,
-    prev_non_ben_fsw_2015 = 0.2
+    prev_non_ben_fsw_2015 = 0.2,
+    infected_FSW_incoming = 1
+
 
 
 
@@ -1179,7 +1181,9 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     GP_eligible = 1,
 
     prev_non_ben_fsw_1993 = 0.55,
-    prev_non_ben_fsw_2015 = 0.2
+    prev_non_ben_fsw_2015 = 0.2,
+    infected_FSW_incoming = 1
+
 
 
   )
