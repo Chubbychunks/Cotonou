@@ -21,7 +21,12 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
 
 
-    y$PrEP_loss_to_follow_up <- y$prep_dropout # - y$rate_leave_pro_FSW - y$muF - 1/45 - 0.008
+    if(y$prep_dropout - y$rate_leave_pro_FSW - y$muF - 1/45 - 0.008 > 0)
+    {
+      y$PrEP_loss_to_follow_up <- y$prep_dropout - y$rate_leave_pro_FSW - y$muF - 1/45 - 0.008
+    } else {
+      y$PrEP_loss_to_follow_up = 0
+    }
 
 
     y$frac_women_exFSW = y$frac_women_ProFSW
