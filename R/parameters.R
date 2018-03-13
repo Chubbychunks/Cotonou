@@ -604,6 +604,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
   y$kappab = y$kappaa
   y$kappac = y$kappaa
+  y$kappa1 = y$kappaa
 
   y$above_500_by_group = c(y$FSW_eligible, y$GP_eligible, y$GP_eligible,
                            y$GP_eligible, y$GP_eligible, y$GP_eligible,
@@ -643,7 +644,7 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
 
   #fixed pars list i think for the fix parameters function
   fixed_pars = list(
-    test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
+    # test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
 
     fraction_sexually_active_15_F = 0,
     fraction_sexually_active_15_M = 0,
@@ -789,6 +790,8 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     kappaa = c(0.2, rep_len(0,(9-1))),
     kappab = c(0.2, rep_len(0,(9-1))),
     kappac = c(0.2, rep_len(0,(9-1))),
+    kappa1 = c(0.2, rep_len(0,(9-1))),
+
     prep_dropout = 2,
     eP1a = 0.9,
     dur_FSW = 30,
@@ -991,7 +994,7 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
 
   #fixed pars list i think for the fix parameters function
   fixed_pars = list(
-    test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
+    # test_rate_prep = c(4, 0, 0, 0, 0, 0, 0, 0, 0),
 
     fraction_sexually_active_15_F = 0,
     fraction_sexually_active_15_M = 0,
@@ -1136,6 +1139,8 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     kappaa = c(0.2, rep_len(0,(9-1))),
     kappab = c(0.2, rep_len(0,(9-1))),
     kappac = c(0.2, rep_len(0,(9-1))),
+    kappa1 = c(0.2, rep_len(0,(9-1))),
+
     prep_dropout = 2,
     eP1a = 0.9,
     dur_FSW = 30,
