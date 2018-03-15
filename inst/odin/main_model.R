@@ -73,14 +73,14 @@ prop_FSW_I0_5 = I05[1]/(I01[1] + I02[1] + I03[1] + I04[1] + I05[1])
 
 
 # births and prep movement
-E0[] = if(replaceDeaths == 1) mu[i] * N[i] + nu * N[i] + alphaItot[i] + epsilon * Ntot * omega[i] - S0[i] * zeta[i] else new_people_in_group[i] - S0[i] * zeta[i] + new_people_in_group_FSW_only[i]
+E0[] = if(replaceDeaths == 1) mu[i] * N[i] + nu * N[i] + alphaItot[i] + epsilon * Ntot * omega[i] - S0[i] * zeta[i] else new_people_in_group[i] + new_people_in_group_FSW_only[i]
 E1a[] = zeta[i] * fPa * S0[i] - psia[i] * S1a[i] - kappaa[i] * S1a[i]
 E1b[] = zeta[i] * fPb * S0[i] + psia[i] * S1a[i] - psib[i] * S1b[i]  - kappab[i] * S1b[i]
 E1c[] = zeta[i] * fPc * S0[i] + psib[i] * S1b[i] - kappac[i] * S1c[i]
 E1d[] = kappaa[i] * S1a[i] + kappab[i] * S1b[i] + kappac[i] * S1c[i]
 
 
-deriv(S0[]) = E0[i] * (1 - infected_FSW_incoming * pfFSW[i]) - S0[i] * lambda_sum_0[i] - S0[i] * mu[i] - S0[i] * nu + rate_move_out[i] * S0[i] + sum(in_S0[i, ])
+deriv(S0[]) = E0[i] * (1 - infected_FSW_incoming * pfFSW[i]) - S0[i] * lambda_sum_0[i] - S0[i] * mu[i] - S0[i] * nu + rate_move_out[i] * S0[i] + sum(in_S0[i, ]) - S0[i] * zeta[i]
 deriv(S1a[]) = E1a[i] - S1a[i] * lambda_sum_1a[i] - S1a[i] * mu[i] - S1a[i] * nu + rate_move_out[i] * S1a[i] + sum(in_S1a[i, ])
 deriv(S1b[]) = E1b[i] - S1b[i] * lambda_sum_1b[i] - S1b[i] * mu[i] - S1b[i] * nu + rate_move_out[i] * S1b[i] + sum(in_S1b[i, ])
 deriv(S1c[]) = E1c[i] - S1c[i] * lambda_sum_1c[i] - S1c[i] * mu[i] - S1c[i] * nu + rate_move_out[i] * S1c[i] + sum(in_S1c[i, ])
