@@ -60,6 +60,9 @@ pfFSW_t[] = user()
 pfFSW_y[,] = user()
 infected_FSW_incoming = user()
 
+
+output(infected_FSW_incoming) = infected_FSW_incoming
+
 new_acute_infected[] = infected_FSW_incoming * prop_FSW_I0_1 * E0[i] * pfFSW[i]
 output(new_acute_infected[]) = new_acute_infected
 dim(new_acute_infected) = Ncat
@@ -819,10 +822,6 @@ dim(S1a_infections) = Ncat
 dim(S1b_infections) = Ncat
 dim(S1c_infections) = Ncat
 dim(S1d_infections) = Ncat
-
-# deriv(cumuTesting[]) = (tau[i] + tau_intervention[i] * PrEPOnOff) * S0[i] + (tau[i] + tau_intervention[i] * PrEPOnOff) * I01[i] +
-#   test_rate_prep[i] * I11[i] + (tau[i] + tau_intervention[i] * PrEPOnOff) * I02[i] + (tau[i] + tau_intervention[i] * PrEPOnOff) * I03[i] +
-#   (tau[i] + tau_intervention[i] * PrEPOnOff) * I04[i] + (RR_test_CD4200 * tau[i] + tau_intervention[i] * PrEPOnOff) * I05[i]
 
 
 

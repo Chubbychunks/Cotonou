@@ -52,7 +52,7 @@ test_that("all compartments positive", {
 # CUMULATIVE INFECTIONS ALWAYS POSITIVE
 
 test_that("cumulative infections", {
-  parameters <- lhs_parameters(1, S1b_init = rep_len(101, 9), S1c_init = rep_len(100, 9), par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
+  parameters <- lhs_parameters(1, infected_FSW_incoming = 0,S1b_init = rep_len(101, 9), S1c_init = rep_len(100, 9), par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
@@ -69,7 +69,7 @@ test_that("cumulative infections", {
 # no infected, no incidence?
 test_that("no incidence, no cumulative infections", {
 
-  pars = list(prev_init_FSW = 0, prev_init_rest = 0, infected_FSW_incoming = 0)
+  pars = list(prev_init_FSW = 0, infected_FSW_incoming = 0,prev_init_rest = 0, infected_FSW_incoming = 0)
 
   parameters <- lhs_parameters(1, forced_pars = modifyList(pars, list(time = time_default)), S1a_init = rep(100,9), S1b_init = rep(100,9), S1c_init = rep(100,9), S1b_init = rep_len(101, 9), S1c_init = rep_len(100, 9), par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default,
                                ranges = ranges_default[-which(rownames(ranges_default) %in% names(pars)),])
@@ -204,6 +204,72 @@ test_that("useless prep", {
 
   expect_true(all(abs(N1 - N2) < 10^-2))
 })
+
+
+test_that("useless prep with updated zeta", {
+
+  parameters <- lhs_parameters(1, I11_init = rep(100000, 9), I01_init = rep(100000, 9),
+
+                               PrEPOnOff = 1,
+
+                               eP0 = rep(0, 9), eP1a = rep(0, 9), eP1b = rep(0, 9), eP1c = rep(0, 9), eP1d = rep(0, 9),
+
+                               par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
+  result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
+
+  xx <- result[grep("cumuInf", names(result))] # grepping all the Ss
+  N1 <- rowSums(do.call(cbind, xx))
+
+
+  parameters2 <- lapply(parameters, modifyList, list(eP0 = rep(0, 9),PrEPOnOff = 0))
+
+  result2 = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters2)[[1]]
+
+  xx2 <- result2[grep("cumuInf", names(result2))] # grepping all the Ss
+  N2 <- rowSums(do.call(cbind, xx2))
+
+
+
+  result$lambda_0[35,,]
+  result$lambda_1a[35,,]
+
+
+
+  unlist(result$I01) - unlist(result2$I01)
+  unlist(result$I11) - unlist(result2$I11)
+
+
+
+
+  parameters3 <- lapply(parameters, modifyList, list(eP1a = rep(0.2, 9),PrEPOnOff = 0))
+
+  result3 = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters3)[[1]]
+
+  xx3 <- result3[grep("cumuInf", names(result3))] # grepping all the Ss
+  N3 <- rowSums(do.call(cbind, xx3))
+
+
+  parameters4 <- lapply(parameters, modifyList, list(eP1a = rep(1, 9),PrEPOnOff = 0))
+
+  result4 = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters4)[[1]]
+
+  xx4 <- result4[grep("cumuInf", names(result4))] # grepping all the Ss
+  N4 <- rowSums(do.call(cbind, xx4))
+
+
+  # NOTE FOR THIS TEST THAT IT ONLY WORKS IF PREP UPTAKE DOESNT HAPPEN EARLY!!!!! IT AFFECTS HOW THE POPULATION GROWS...
+
+  #   which(unlist(parameters) - unlist(parameters2) != 0)
+
+  expect_true(all(abs(N1 - N2) < 10^-2))
+  expect_true(all(abs(N1 - N3) < 10^-2))
+  expect_true(all(abs(N4 - N3) < 10^-10))
+
+
+})
+
+
+
 
 
 test_that("useful prep", {
