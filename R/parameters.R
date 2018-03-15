@@ -1756,7 +1756,10 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    prev_non_ben_fsw_2015 = 0.2,
 
 
-                   infected_FSW_incoming = 1
+                   infected_FSW_incoming = 1,
+
+                   prep_efficacious_y = c(0, 1, 1, 0, 0),
+                   prep_efficacious_t = c(1985, 2015, 2017, 2017.01, 2050)
 
 
 
