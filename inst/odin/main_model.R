@@ -73,11 +73,11 @@ dim(new_acute_infected) = Ncat
 # prop_FSW_I0_4 = I04[1]/(I01[1] + I02[1] + I03[1] + I04[1] + I05[1])
 # prop_FSW_I0_5 = I05[1]/(I01[1] + I02[1] + I03[1] + I04[1] + I05[1])
 
-prop_FSW_I0_1 = 0.2
-prop_FSW_I0_2 = 0.2
-prop_FSW_I0_3 = 0.2
-prop_FSW_I0_4 = 0.2
-prop_FSW_I0_5 = 0.2
+prop_FSW_I0_1 = 0.031904762
+prop_FSW_I0_2 = 0.235238095
+prop_FSW_I0_3 = 0.235238095
+prop_FSW_I0_4 = 0.319047619
+prop_FSW_I0_5 = 0.178571429
 
 # births and prep movement
 E0[] = new_people_in_group[i] + new_people_in_group_FSW_only[i]

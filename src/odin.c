@@ -922,11 +922,11 @@ double compute_lambda(double c_comm, double p_comm, double S0, double S1a, doubl
 static void main_model_finalize(SEXP main_model_ptr);
 SEXP main_model_create(SEXP user, SEXP odin_use_dde) {
   main_model_pars *main_model_p = (main_model_pars*) Calloc(1, main_model_pars);
-  main_model_p->prop_FSW_I0_1 = 0.20000000000000001;
-  main_model_p->prop_FSW_I0_2 = 0.20000000000000001;
-  main_model_p->prop_FSW_I0_3 = 0.20000000000000001;
-  main_model_p->prop_FSW_I0_4 = 0.20000000000000001;
-  main_model_p->prop_FSW_I0_5 = 0.20000000000000001;
+  main_model_p->prop_FSW_I0_1 = 0.031904762000000003;
+  main_model_p->prop_FSW_I0_2 = 0.23523809500000001;
+  main_model_p->prop_FSW_I0_3 = 0.23523809500000001;
+  main_model_p->prop_FSW_I0_4 = 0.319047619;
+  main_model_p->prop_FSW_I0_5 = 0.178571429;
   main_model_p->testpar = 1;
   main_model_p->replaceDeaths = NA_REAL;
   main_model_p->pfFSW_t = NULL;
