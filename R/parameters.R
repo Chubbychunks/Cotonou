@@ -600,7 +600,9 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
   }
 
-  y$kappaa = c(y$PrEP_loss_to_follow_up, rep_len(0,(8)))
+  # y$kappaa = c(y$PrEP_loss_to_follow_up, rep_len(0,(8)))
+
+  y$kappaa = c(y$prep_dropout, rep_len(0,(8)))
 
   y$kappab = y$kappaa
   y$kappac = y$kappaa
