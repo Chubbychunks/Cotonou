@@ -600,9 +600,9 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
   }
 
-  # y$kappaa = c(y$PrEP_loss_to_follow_up, rep_len(0,(8)))
+  y$kappaa = c(y$PrEP_loss_to_follow_up, rep_len(0,(8)))
 
-  y$kappaa = c(y$prep_dropout, rep_len(0,(8)))
+  # y$kappaa = c(y$prep_dropout, rep_len(0,(8)))
 
   y$kappab = y$kappaa
   y$kappac = y$kappaa
@@ -1595,13 +1595,13 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
 
 
-                   fP_t_comm = c(1985, 2014, 2015, 2016, 2040),
+                   fP_t_comm = c(1985, 2014, 2015, 2016, 2060),
                    fP_y_comm = matrix(
                      rep(c(1, 1, 1, 1, 1), Ncat), ncol = Ncat),
 
 
 
-                   fP_t_noncomm = c(1985, 2014, 2015, 2016, 2040),
+                   fP_t_noncomm = c(1985, 2014, 2015, 2016, 2060),
                    fP_y_noncomm = matrix(
                      rep(c(1, 1, 1, 1, 1), Ncat), ncol = Ncat),
 
@@ -1750,7 +1750,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    long_intervention = 0,
                    FSW_eligible = 1,
                    GP_eligible = 1,
-                   pfFSW_t = c(1985, 1993, 2015, 2050),
+                   pfFSW_t = c(1985, 1993, 2015, 2060),
 
                    pfFSW_y = matrix(c(rep(0, 9), 0.55, c(rep(0, 8)), 0.2, c(rep(0, 8)), 0.2, c(rep(0, 8))), ncol = 9, nrow = 4, byrow = T),
 
@@ -1761,7 +1761,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    infected_FSW_incoming = 1,
 
                    prep_efficacious_y = c(0, 1, 1, 0, 0),
-                   prep_efficacious_t = c(1985, 2015, 2017, 2017.01, 2050)
+                   prep_efficacious_t = c(1985, 2015, 2017, 2017.01, 2060)
 
 
 

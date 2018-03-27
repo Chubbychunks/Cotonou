@@ -80,7 +80,7 @@ batch_size = 1
 
 epi_start = 1986
 # epi_end = 2030
-epi_end = 2035
+epi_end = 2055
 
 # setup -------------------------------------------------------------------
 par_seq = c("c_comm", "c_noncomm")
