@@ -578,7 +578,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$viral_supp_y[2,] = c(y$viral_supp_y_2015_ProFSW, rep_len(y$viral_supp_y_1986_rest, 8))
   y$viral_supp_y[3,] = y$viral_supp_y[2,]
 
-  y$infect_ART_y = y$viral_supp_y * y$ART_eff
+  y$infect_ART_y = 1-(y$viral_supp_y * y$ART_eff)
   y$infect_ART_t = y$viral_supp_t
 
 
