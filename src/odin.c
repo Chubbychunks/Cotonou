@@ -3407,9 +3407,6 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   for (int i = 0; i < main_model_p->dim_new_people_in_group_FSW_only; ++i) {
     main_model_p->new_people_in_group_FSW_only[i] = main_model_p->rate_leave_pro_FSW * main_model_p->N[i] * main_model_p->fraction_FSW_foreign * main_model_p->FSW_ONLY[i];
   }
-  for (int i = 0; i < main_model_p->dim_E0; ++i) {
-    main_model_p->E0[i] = main_model_p->new_people_in_group[i] + main_model_p->new_people_in_group_FSW_only[i];
-  }
   for (int i = 0; i < main_model_p->dim_E1a; ++i) {
     main_model_p->E1a[i] = main_model_p->zeta[i] * main_model_p->fPa * S0[i] - main_model_p->psia[i] * S1a[i] - main_model_p->kappaa[i] * S1a[i];
   }
@@ -3421,6 +3418,12 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   }
   for (int i = 0; i < main_model_p->dim_E1d; ++i) {
     main_model_p->E1d[i] = main_model_p->kappaa[i] * S1a[i] + main_model_p->kappab[i] * S1b[i] + main_model_p->kappac[i] * S1c[i];
+  }
+  for (int i = 0; i < main_model_p->dim_alphaItot; ++i) {
+    main_model_p->alphaItot[i] = main_model_p->alpha01[i] * I01[i] + main_model_p->alpha11[i] * I11[i] + main_model_p->alpha02[i] * I02[i] + main_model_p->alpha03[i] * I03[i] + main_model_p->alpha04[i] * I04[i] + main_model_p->alpha05[i] * I05[i] + main_model_p->alpha22[i] * I22[i] + main_model_p->alpha23[i] * I23[i] + main_model_p->alpha24[i] * I24[i] + main_model_p->alpha25[i] * I25[i] + main_model_p->alpha32[i] * I32[i] + main_model_p->alpha33[i] * I33[i] + main_model_p->alpha34[i] * I34[i] + main_model_p->alpha35[i] * I35[i] + main_model_p->alpha42[i] * I42[i] + main_model_p->alpha43[i] * I43[i] + main_model_p->alpha44[i] * I44[i] + main_model_p->alpha45[i] * I45[i];
+  }
+  for (int i = 0; i < main_model_p->dim_E0; ++i) {
+    main_model_p->E0[i] = (main_model_p->replaceDeaths == 1 ? main_model_p->mu[i] * main_model_p->N[i] + main_model_p->nu * main_model_p->N[i] + main_model_p->alphaItot[i] + main_model_p->epsilon * Ntot * main_model_p->omega[i] : main_model_p->new_people_in_group[i] + main_model_p->new_people_in_group_FSW_only[i]);
   }
   for (int i = 0; i < main_model_p->dim_c_comm_balanced; ++i) {
     main_model_p->c_comm_balanced[i] = main_model_p->c_comm[i];
@@ -4031,18 +4034,15 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     output[67] = prev_FSW;
     output[68] = prev_client;
     memcpy(output_frac_N, main_model_p->frac_N, main_model_p->dim_frac_N * sizeof(double));
+    memcpy(output_E1a, main_model_p->E1a, main_model_p->dim_E1a * sizeof(double));
+    memcpy(output_E1b, main_model_p->E1b, main_model_p->dim_E1b * sizeof(double));
+    memcpy(output_E1c, main_model_p->E1c, main_model_p->dim_E1c * sizeof(double));
+    memcpy(output_E1d, main_model_p->E1d, main_model_p->dim_E1d * sizeof(double));
     for (int i = 0; i < main_model_p->dim_new_acute_infected; ++i) {
       main_model_p->new_acute_infected[i] = main_model_p->infected_FSW_incoming * main_model_p->prop_FSW_I0_1 * main_model_p->E0[i] * main_model_p->pfFSW[i];
     }
     memcpy(output_new_acute_infected, main_model_p->new_acute_infected, main_model_p->dim_new_acute_infected * sizeof(double));
     memcpy(output_E0, main_model_p->E0, main_model_p->dim_E0 * sizeof(double));
-    memcpy(output_E1a, main_model_p->E1a, main_model_p->dim_E1a * sizeof(double));
-    memcpy(output_E1b, main_model_p->E1b, main_model_p->dim_E1b * sizeof(double));
-    memcpy(output_E1c, main_model_p->E1c, main_model_p->dim_E1c * sizeof(double));
-    memcpy(output_E1d, main_model_p->E1d, main_model_p->dim_E1d * sizeof(double));
-    for (int i = 0; i < main_model_p->dim_alphaItot; ++i) {
-      main_model_p->alphaItot[i] = main_model_p->alpha01[i] * I01[i] + main_model_p->alpha11[i] * I11[i] + main_model_p->alpha02[i] * I02[i] + main_model_p->alpha03[i] * I03[i] + main_model_p->alpha04[i] * I04[i] + main_model_p->alpha05[i] * I05[i] + main_model_p->alpha22[i] * I22[i] + main_model_p->alpha23[i] * I23[i] + main_model_p->alpha24[i] * I24[i] + main_model_p->alpha25[i] * I25[i] + main_model_p->alpha32[i] * I32[i] + main_model_p->alpha33[i] * I33[i] + main_model_p->alpha34[i] * I34[i] + main_model_p->alpha35[i] * I35[i] + main_model_p->alpha42[i] * I42[i] + main_model_p->alpha43[i] * I43[i] + main_model_p->alpha44[i] * I44[i] + main_model_p->alpha45[i] * I45[i];
-    }
     memcpy(output_alphaItot, main_model_p->alphaItot, main_model_p->dim_alphaItot * sizeof(double));
     for (int i = 0; i < main_model_p->dim_prev; ++i) {
       main_model_p->prev[i] = 100 * (I01[i] + I11[i] + I02[i] + I03[i] + I04[i] + I05[i] + I22[i] + I23[i] + I24[i] + I25[i] + I32[i] + I33[i] + I34[i] + I35[i] + I42[i] + I43[i] + I44[i] + I45[i]) / main_model_p->N[i];
@@ -4499,14 +4499,6 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   output[67] = prev_FSW;
   output[68] = prev_client;
   memcpy(output_frac_N, main_model_p->frac_N, main_model_p->dim_frac_N * sizeof(double));
-  for (int i = 0; i < main_model_p->dim_E0; ++i) {
-    main_model_p->E0[i] = main_model_p->new_people_in_group[i] + main_model_p->new_people_in_group_FSW_only[i];
-  }
-  for (int i = 0; i < main_model_p->dim_new_acute_infected; ++i) {
-    main_model_p->new_acute_infected[i] = main_model_p->infected_FSW_incoming * main_model_p->prop_FSW_I0_1 * main_model_p->E0[i] * main_model_p->pfFSW[i];
-  }
-  memcpy(output_new_acute_infected, main_model_p->new_acute_infected, main_model_p->dim_new_acute_infected * sizeof(double));
-  memcpy(output_E0, main_model_p->E0, main_model_p->dim_E0 * sizeof(double));
   for (int i = 0; i < main_model_p->dim_E1a; ++i) {
     main_model_p->E1a[i] = main_model_p->zeta[i] * main_model_p->fPa * S0[i] - main_model_p->psia[i] * S1a[i] - main_model_p->kappaa[i] * S1a[i];
   }
@@ -4526,6 +4518,14 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   for (int i = 0; i < main_model_p->dim_alphaItot; ++i) {
     main_model_p->alphaItot[i] = main_model_p->alpha01[i] * I01[i] + main_model_p->alpha11[i] * I11[i] + main_model_p->alpha02[i] * I02[i] + main_model_p->alpha03[i] * I03[i] + main_model_p->alpha04[i] * I04[i] + main_model_p->alpha05[i] * I05[i] + main_model_p->alpha22[i] * I22[i] + main_model_p->alpha23[i] * I23[i] + main_model_p->alpha24[i] * I24[i] + main_model_p->alpha25[i] * I25[i] + main_model_p->alpha32[i] * I32[i] + main_model_p->alpha33[i] * I33[i] + main_model_p->alpha34[i] * I34[i] + main_model_p->alpha35[i] * I35[i] + main_model_p->alpha42[i] * I42[i] + main_model_p->alpha43[i] * I43[i] + main_model_p->alpha44[i] * I44[i] + main_model_p->alpha45[i] * I45[i];
   }
+  for (int i = 0; i < main_model_p->dim_E0; ++i) {
+    main_model_p->E0[i] = (main_model_p->replaceDeaths == 1 ? main_model_p->mu[i] * main_model_p->N[i] + main_model_p->nu * main_model_p->N[i] + main_model_p->alphaItot[i] + main_model_p->epsilon * Ntot * main_model_p->omega[i] : main_model_p->new_people_in_group[i] + main_model_p->new_people_in_group_FSW_only[i]);
+  }
+  for (int i = 0; i < main_model_p->dim_new_acute_infected; ++i) {
+    main_model_p->new_acute_infected[i] = main_model_p->infected_FSW_incoming * main_model_p->prop_FSW_I0_1 * main_model_p->E0[i] * main_model_p->pfFSW[i];
+  }
+  memcpy(output_new_acute_infected, main_model_p->new_acute_infected, main_model_p->dim_new_acute_infected * sizeof(double));
+  memcpy(output_E0, main_model_p->E0, main_model_p->dim_E0 * sizeof(double));
   memcpy(output_alphaItot, main_model_p->alphaItot, main_model_p->dim_alphaItot * sizeof(double));
   for (int i = 0; i < main_model_p->dim_prev; ++i) {
     main_model_p->prev[i] = 100 * (I01[i] + I11[i] + I02[i] + I03[i] + I04[i] + I05[i] + I22[i] + I23[i] + I24[i] + I25[i] + I32[i] + I33[i] + I34[i] + I35[i] + I42[i] + I43[i] + I44[i] + I45[i]) / main_model_p->N[i];

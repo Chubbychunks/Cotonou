@@ -274,14 +274,20 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   )
 
 
+  y$betaMtoF_noncomm_FSW = y$betaMtoF_baseline * (1 + (y$RR_beta_HSV2_noncomm_a - 1) * y$prev_HSV2_FSW + (y$RR_beta_HSV2_noncomm_t - 1) * y$prev_HSV2_Client)
+  y$betaFtoM_noncomm_client = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + (y$RR_beta_HSV2_noncomm_a - 1) * y$prev_HSV2_Client + (y$RR_beta_HSV2_noncomm_t - 1) * y$prev_HSV2_FSW)
+
   y$betaMtoF_noncomm = y$betaMtoF_baseline * (1 + (y$RR_beta_HSV2_noncomm_a - 1) * y$prev_HSV2_GPF + (y$RR_beta_HSV2_noncomm_t - 1) * y$prev_HSV2_GPM)
   y$betaFtoM_noncomm = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + (y$RR_beta_HSV2_noncomm_a - 1) * y$prev_HSV2_GPM + (y$RR_beta_HSV2_noncomm_t - 1) * y$prev_HSV2_GPF)
+
   y$betaMtoF_comm = y$betaMtoF_baseline * (1 + (y$RR_beta_HSV2_comm_a - 1) * y$prev_HSV2_FSW + (y$RR_beta_HSV2_comm_t - 1) * y$prev_HSV2_Client)
   y$betaFtoM_comm = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + (y$RR_beta_HSV2_comm_a - 1) * y$prev_HSV2_Client + (y$RR_beta_HSV2_comm_t - 1) * y$prev_HSV2_FSW)
 
   # if any beta becomes > 1, then make them all zero and flag it
-  if(y$betaMtoF_noncomm * y$infect_acute >= 1 || y$betaMtoF_comm * y$infect_acute >= 1 || y$betaFtoM_noncomm * y$infect_acute >= 1 || y$betaFtoM_comm * y$infect_acute >= 1)
+  if(y$betaMtoF_noncomm_FSW * y$infect_acute >= 1 || y$betaFtoM_noncomm_client * y$infect_acute >= 1 || y$betaMtoF_noncomm * y$infect_acute >= 1 || y$betaMtoF_comm * y$infect_acute >= 1 || y$betaFtoM_noncomm * y$infect_acute >= 1 || y$betaFtoM_comm * y$infect_acute >= 1)
   {
+    y$betaMtoF_noncomm_FSW = 0
+    y$betaFtoM_noncomm_client = 0
     y$betaMtoF_noncomm = 0
     y$betaFtoM_noncomm = 0
     y$betaMtoF_comm = 0
@@ -516,7 +522,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
 
     y$beta_comm = c(y$betaMtoF_comm, y$betaMtoF_comm, y$betaMtoF_comm, y$betaMtoF_comm, y$betaFtoM_comm, y$betaFtoM_comm, 0, 0, 0)
-    y$beta_noncomm = c(y$betaMtoF_noncomm, y$betaMtoF_noncomm, y$betaMtoF_noncomm, y$betaMtoF_noncomm, y$betaFtoM_noncomm, y$betaFtoM_noncomm, 0, 0, 0)
+    y$beta_noncomm = c(y$betaMtoF_noncomm_FSW, y$betaMtoF_noncomm, y$betaMtoF_noncomm, y$betaMtoF_noncomm, y$betaFtoM_noncomm_client, y$betaFtoM_noncomm, 0, 0, 0)
 
 
 
@@ -1761,7 +1767,9 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    infected_FSW_incoming = 1,
 
                    prep_efficacious_y = c(0, 1, 1, 0, 0),
-                   prep_efficacious_t = c(1985, 2015, 2017, 2017.01, 2060)
+                   prep_efficacious_t = c(1985, 2015, 2017, 2017.01, 2060),
+
+                   PrEP_loss_to_follow_up = 0.1
 
 
 

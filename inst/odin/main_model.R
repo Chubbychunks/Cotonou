@@ -88,7 +88,7 @@ prop_FSW_I0_5 = 0.178571429
 
 
 # births and prep movement
-E0[] = new_people_in_group[i] + new_people_in_group_FSW_only[i]
+E0[] = if(replaceDeaths == 1) mu[i] * N[i] + nu * N[i] + alphaItot[i] + epsilon * Ntot * omega[i]  else new_people_in_group[i] + new_people_in_group_FSW_only[i]
 E1a[] = zeta[i] * fPa * S0[i] - psia[i] * S1a[i] - kappaa[i] * S1a[i]
 E1b[] = zeta[i] * fPb * S0[i] + psia[i] * S1a[i] - psib[i] * S1b[i]  - kappab[i] * S1b[i]
 E1c[] = zeta[i] * fPc * S0[i] + psib[i] * S1b[i] - kappac[i] * S1c[i]
