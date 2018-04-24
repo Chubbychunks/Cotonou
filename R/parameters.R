@@ -588,8 +588,21 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$infect_ART_t = y$viral_supp_t
 
 
-  y$rho = c(y$ART_recruit_rate_FSW, rep_len(y$ART_recruit_rate_rest, 5), 0, 0, 0)
-  y$iota = c(y$ART_reinit_rate_FSW, rep_len(y$ART_reinit_rate_rest, 5), 0, 0, 0)
+
+
+  y$rho = c(y$ART_recruit_rate_FSW, y$ART_recruit_rate_rest,
+            y$ART_recruit_rate_rest,
+            y$ART_recruit_rate_rest,
+            y$ART_recruit_rate_rest * y$ART_init_ratio_MF,
+            y$ART_recruit_rate_rest * y$ART_init_ratio_MF, 0, 0, 0)
+
+
+
+  y$iota = c(y$ART_reinit_rate_FSW, y$ART_reinit_rate_rest,
+             y$ART_reinit_rate_rest,
+             y$ART_reinit_rate_rest,
+             y$ART_reinit_rate_rest * y$ART_init_ratio_MF,
+             y$ART_reinit_rate_rest * y$ART_init_ratio_MF, 0, 0, 0)
 
 
 
@@ -839,7 +852,11 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     GP_eligible = 1,
     prev_non_ben_fsw_1993 = 0.55,
     prev_non_ben_fsw_2015 = 0.2,
-    infected_FSW_incoming = 1
+    infected_FSW_incoming = 1,
+    ART_recruit_rate_rest = 0.1,
+    ART_reinit_rate_rest = 0.1,
+
+    ART_init_ratio_MF = 2
 
 
 
@@ -1190,7 +1207,11 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
 
     prev_non_ben_fsw_1993 = 0.55,
     prev_non_ben_fsw_2015 = 0.2,
-    infected_FSW_incoming = 1
+    infected_FSW_incoming = 1,
+    ART_recruit_rate_rest = 0.1,
+    ART_reinit_rate_rest = 0.1,
+
+    ART_init_ratio_MF = 2
 
 
 
@@ -1769,7 +1790,12 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    prep_efficacious_y = c(0, 1, 1, 0, 0),
                    prep_efficacious_t = c(1985, 2015, 2017, 2017.01, 2060),
 
-                   PrEP_loss_to_follow_up = 0.1
+                   PrEP_loss_to_follow_up = 0.1,
+
+                   ART_recruit_rate_rest = 0.1,
+                   ART_reinit_rate_rest = 0.1,
+
+                   ART_init_ratio_MF = 2
 
 
 

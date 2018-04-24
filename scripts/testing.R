@@ -64,7 +64,7 @@ odin::odin_package(".") # looks for any models inside inst/odin
 devtools::load_all()
 
 
-# devtools::test()
+devtools::test()
 
 
 
@@ -616,7 +616,7 @@ best_set = list(
 
 # ranges ------------------------------------------------------------------
 ranges = rbind(
-
+  ART_init_ratio_MF = c(1, 3),
   infected_FSW_incoming = c(1,1),
   n_y_noncomm_1998_GPF_GPM = c(34, 44),
   n_y_noncomm_2011_GPF_GPM = c(29, 38),
