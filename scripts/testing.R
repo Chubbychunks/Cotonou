@@ -15,6 +15,7 @@ devtools::load_all()
 
 devtools::test()
 
+
 ##############################################################################################
 #############################################################################################
 #############################################################################################
@@ -745,8 +746,18 @@ ranges = rbind(
   #BETA
   betaMtoF_baseline = c(0.0006, 0.00109), # baseline male to female transmission rate
   RR_beta_FtM = c(0.53, 2), # RR for transmission female to male
-  RR_beta_HSV2_comm_a = c(1.4, 2.1), # RR for commercial sex acts where the susceptible individual is infected HSV2
-  RR_beta_HSV2_noncomm_a = c(2.2, 3.4), # RR for non commercial sex acts where the susceptible individual is infected HSV2
+
+
+  # RR_beta_HSV2_comm_a = c(1.4, 2.1), # RR for commercial sex acts where the susceptible individual is infected HSV2
+  # RR_beta_HSV2_noncomm_a = c(2.2, 3.4), # RR for non commercial sex acts where the susceptible individual is infected HSV2
+
+  RR_beta_HSV2_a_FSW = c(0.9, 2.3),
+  RR_beta_HSV2_a_client = c(1.5, 2.2),
+  RR_beta_HSV2_a_GPF = c(1.8, 3.4),
+  RR_beta_HSV2_a_GPM = c(2.2, 4.3),
+
+
+
   prev_HSV2_FSW = c(0.87, 0.94), # prevalence HSV2 in FSW
   prev_HSV2_Client = c(0.18, 0.28), # prevalence HSV2 in clients
   prev_HSV2_GPF = c(0.27, 0.32), # prevalence of HSV2 in GPF

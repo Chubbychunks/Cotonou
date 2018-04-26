@@ -274,24 +274,42 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   )
 
 
-  y$betaMtoF_noncomm_FSW = y$betaMtoF_baseline * (1 + (y$RR_beta_HSV2_noncomm_a - 1) * y$prev_HSV2_FSW + (y$RR_beta_HSV2_noncomm_t - 1) * y$prev_HSV2_Client)
-  y$betaFtoM_noncomm_client = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + (y$RR_beta_HSV2_noncomm_a - 1) * y$prev_HSV2_Client + (y$RR_beta_HSV2_noncomm_t - 1) * y$prev_HSV2_FSW)
 
-  y$betaMtoF_noncomm = y$betaMtoF_baseline * (1 + (y$RR_beta_HSV2_noncomm_a - 1) * y$prev_HSV2_GPF + (y$RR_beta_HSV2_noncomm_t - 1) * y$prev_HSV2_GPM)
-  y$betaFtoM_noncomm = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + (y$RR_beta_HSV2_noncomm_a - 1) * y$prev_HSV2_GPM + (y$RR_beta_HSV2_noncomm_t - 1) * y$prev_HSV2_GPF)
 
-  y$betaMtoF_comm = y$betaMtoF_baseline * (1 + (y$RR_beta_HSV2_comm_a - 1) * y$prev_HSV2_FSW + (y$RR_beta_HSV2_comm_t - 1) * y$prev_HSV2_Client)
-  y$betaFtoM_comm = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + (y$RR_beta_HSV2_comm_a - 1) * y$prev_HSV2_Client + (y$RR_beta_HSV2_comm_t - 1) * y$prev_HSV2_FSW)
+
+  y$betaMtoF_FSW = y$betaMtoF_baseline * (1 + (y$RR_beta_HSV2_a_FSW - 1) * y$prev_HSV2_FSW)
+
+  y$betaFtoM_client = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + (y$RR_beta_HSV2_a_client - 1) * y$prev_HSV2_Client)
+
+  y$betaMtoF_GPF = y$betaMtoF_baseline * (1 + (y$RR_beta_HSV2_a_GPF - 1) * y$prev_HSV2_GPF)
+
+  y$betaFtoM_GPM = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + (y$RR_beta_HSV2_a_GPM - 1) * y$prev_HSV2_GPM)
+
+
+  # y$betaMtoF_noncomm_FSW = y$betaMtoF_baseline * (1 + (y$RR_beta_HSV2_noncomm_a - 1) * y$prev_HSV2_FSW + (y$RR_beta_HSV2_noncomm_t - 1) * y$prev_HSV2_Client)
+  # y$betaFtoM_noncomm_client = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + (y$RR_beta_HSV2_noncomm_a - 1) * y$prev_HSV2_Client + (y$RR_beta_HSV2_noncomm_t - 1) * y$prev_HSV2_FSW)
+  #
+  # y$betaMtoF_noncomm = y$betaMtoF_baseline * (1 + (y$RR_beta_HSV2_noncomm_a - 1) * y$prev_HSV2_GPF + (y$RR_beta_HSV2_noncomm_t - 1) * y$prev_HSV2_GPM)
+  # y$betaFtoM_noncomm = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + (y$RR_beta_HSV2_noncomm_a - 1) * y$prev_HSV2_GPM + (y$RR_beta_HSV2_noncomm_t - 1) * y$prev_HSV2_GPF)
+  #
+  # y$betaMtoF_comm = y$betaMtoF_baseline * (1 + (y$RR_beta_HSV2_comm_a - 1) * y$prev_HSV2_FSW + (y$RR_beta_HSV2_comm_t - 1) * y$prev_HSV2_Client)
+  # y$betaFtoM_comm = y$betaMtoF_baseline * y$RR_beta_FtM * y$RR_beta_circum * (1 + (y$RR_beta_HSV2_comm_a - 1) * y$prev_HSV2_Client + (y$RR_beta_HSV2_comm_t - 1) * y$prev_HSV2_FSW)
 
   # if any beta becomes > 1, then make them all zero and flag it
-  if(y$betaMtoF_noncomm_FSW * y$infect_acute >= 1 || y$betaFtoM_noncomm_client * y$infect_acute >= 1 || y$betaMtoF_noncomm * y$infect_acute >= 1 || y$betaMtoF_comm * y$infect_acute >= 1 || y$betaFtoM_noncomm * y$infect_acute >= 1 || y$betaFtoM_comm * y$infect_acute >= 1)
-  {
-    y$betaMtoF_noncomm_FSW = 0
-    y$betaFtoM_noncomm_client = 0
-    y$betaMtoF_noncomm = 0
-    y$betaFtoM_noncomm = 0
-    y$betaMtoF_comm = 0
-    y$betaFtoM_comm = 0
+  # if(y$betaMtoF_noncomm_FSW * y$infect_acute >= 1 || y$betaFtoM_noncomm_client * y$infect_acute >= 1 || y$betaMtoF_noncomm * y$infect_acute >= 1 || y$betaMtoF_comm * y$infect_acute >= 1 || y$betaFtoM_noncomm * y$infect_acute >= 1 || y$betaFtoM_comm * y$infect_acute >= 1)
+  if(y$betaMtoF_FSW * y$infect_acute >= 1 || y$betaFtoM_client * y$infect_acute >= 1 || y$betaMtoF_GPF * y$infect_acute >= 1 || y$betaFtoM_GPM * y$infect_acute >= 1)
+    {
+    # y$betaMtoF_noncomm_FSW = 0
+    # y$betaFtoM_noncomm_client = 0
+    # y$betaMtoF_noncomm = 0
+    # y$betaFtoM_noncomm = 0
+    # y$betaMtoF_comm = 0
+    # y$betaFtoM_comm = 0
+    y$betaMtoF_FSW = 0
+    y$betaFtoM_client = 0
+    y$betaMtoF_GPF = 0
+    y$betaFtoM_GPM = 0
+
     y$beta_above_1 = 1
   }
 
@@ -521,8 +539,11 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     y$rate_move_in[5,6] = y$prop_client_GPM * (y$rate_leave_client + y$muM + y$nu) # moving from GPM to client
 
 
-    y$beta_comm = c(y$betaMtoF_comm, y$betaMtoF_comm, y$betaMtoF_comm, y$betaMtoF_comm, y$betaFtoM_comm, y$betaFtoM_comm, 0, 0, 0)
-    y$beta_noncomm = c(y$betaMtoF_noncomm_FSW, y$betaMtoF_noncomm, y$betaMtoF_noncomm, y$betaMtoF_noncomm, y$betaFtoM_noncomm_client, y$betaFtoM_noncomm, 0, 0, 0)
+
+
+
+    y$beta_comm = c(y$betaMtoF_FSW, y$betaMtoF_GPF, y$betaMtoF_GPF, y$betaMtoF_GPF, y$betaFtoM_client, y$betaFtoM_GPM, 0, 0, 0)
+    y$beta_noncomm = c(y$betaMtoF_FSW, y$betaMtoF_GPF, y$betaMtoF_GPF, y$betaMtoF_GPF, y$betaFtoM_client, y$betaFtoM_GPM, 0, 0, 0)
 
 
 
@@ -856,7 +877,12 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     ART_recruit_rate_rest = 0.1,
     ART_reinit_rate_rest = 0.1,
 
-    ART_init_ratio_MF = 2
+    ART_init_ratio_MF = 2,
+
+    RR_beta_HSV2_a_FSW = 1,
+    RR_beta_HSV2_a_client = 1,
+    RR_beta_HSV2_a_GPF = 1,
+    RR_beta_HSV2_a_GPM = 1
 
 
 
@@ -1211,7 +1237,12 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     ART_recruit_rate_rest = 0.1,
     ART_reinit_rate_rest = 0.1,
 
-    ART_init_ratio_MF = 2
+    ART_init_ratio_MF = 2,
+
+    RR_beta_HSV2_a_FSW = 1,
+    RR_beta_HSV2_a_client = 1,
+    RR_beta_HSV2_a_GPF = 1,
+    RR_beta_HSV2_a_GPM = 1
 
 
 
@@ -1795,7 +1826,12 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    ART_recruit_rate_rest = 0.1,
                    ART_reinit_rate_rest = 0.1,
 
-                   ART_init_ratio_MF = 2
+                   ART_init_ratio_MF = 2,
+
+                   RR_beta_HSV2_a_FSW = 1,
+                   RR_beta_HSV2_a_client = 1,
+                   RR_beta_HSV2_a_GPF = 1,
+                   RR_beta_HSV2_a_GPM = 1
 
 
 
