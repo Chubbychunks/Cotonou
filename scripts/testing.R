@@ -617,6 +617,18 @@ best_set = list(
 
 # ranges ------------------------------------------------------------------
 ranges = rbind(
+
+
+  testing_prob_men_2006 = c(0.0975, 0.21),
+  testing_prob_men_2008 = c(0.1, 0.26),
+  testing_prob_men_2012 = c(0.058, 0.26), # NOTE 0.26 is from MICHEL 2008
+
+  testing_prob_women_2006 = c(0.142, 0.4),
+  testing_prob_women_2008 = c(0.21, 0.54),
+  testing_prob_women_2012 = c(0.331, 0.513),
+
+
+
   ART_init_ratio_MF = c(1, 3),
   infected_FSW_incoming = c(1,1),
   n_y_noncomm_1998_GPF_GPM = c(34, 44),
@@ -1217,7 +1229,7 @@ time_with_mid <- seq(epi_start, epi_end, length.out = (epi_end - epi_start + 0.5
 # result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points,
 #   frac_N_discard_points = frac_N_discard_points_no_FSW_LB, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points, PrEP_fitting = PrEP_fitting)
 result <- cotonou::run_model(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq,
-                             years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
+                             years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = CEA_outputs)
 # result <- cotonou::just_parameters(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs)
 #
 # result

@@ -591,6 +591,23 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$zetab_y <- rbind(y$zetab_y, y$zetab_y[nrow(y$zetab_y),])
   y$zetac_y <- rbind(y$zetac_y, y$zetac_y[nrow(y$zetac_y),])
 
+
+
+
+  y$testing_prob_y[which(y$testing_prob_t == 2006), c(2,3,4)] <- y$testing_prob_women_2006
+  y$testing_prob_y[which(y$testing_prob_t == 2008), c(2,3,4)] <- y$testing_prob_women_2008
+  y$testing_prob_y[which(y$testing_prob_t == 2012), c(2,3,4)] <- y$testing_prob_women_2012
+  y$testing_prob_y[which(y$testing_prob_t == 2013), c(2,3,4)] <- y$testing_prob_women_2012
+  y$testing_prob_y[which(y$testing_prob_t == 2015), c(2,3,4)] <- y$testing_prob_women_2012
+  y$testing_prob_y[which(y$testing_prob_t == 2016), c(2,3,4)] <- y$testing_prob_women_2012
+
+  y$testing_prob_y[which(y$testing_prob_t == 2006), c(5,6)] <- y$testing_prob_men_2006
+  y$testing_prob_y[which(y$testing_prob_t == 2008), c(5,6)] <- y$testing_prob_men_2008
+  y$testing_prob_y[which(y$testing_prob_t == 2012), c(5,6)] <- y$testing_prob_men_2012
+  y$testing_prob_y[which(y$testing_prob_t == 2013), c(5,6)] <- y$testing_prob_men_2012
+  y$testing_prob_y[which(y$testing_prob_t == 2015), c(5,6)] <- y$testing_prob_men_2012
+  y$testing_prob_y[which(y$testing_prob_t == 2016), c(5,6)] <- y$testing_prob_men_2012
+
   y$testing_prob_y <- rbind(y$testing_prob_y, y$testing_prob_y[nrow(y$testing_prob_y),])
   y$testing_prob_t <- c(y$testing_prob_t, max(y$time))
   y$ART_prob_y <- rbind(y$ART_prob_y, y$ART_prob_y[nrow(y$ART_prob_y),])
@@ -882,10 +899,16 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     RR_beta_HSV2_a_FSW = 1,
     RR_beta_HSV2_a_client = 1,
     RR_beta_HSV2_a_GPF = 1,
-    RR_beta_HSV2_a_GPM = 1
+    RR_beta_HSV2_a_GPM = 1,
 
 
+    testing_prob_men_2006 = 0.111,
+    testing_prob_men_2008 = 0.112,
+    testing_prob_men_2012 = 0.113,
 
+    testing_prob_women_2006 = 0.114,
+    testing_prob_women_2008 = 0.115,
+    testing_prob_women_2012 = 0.116
 
 
   )
@@ -1242,7 +1265,16 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     RR_beta_HSV2_a_FSW = 1,
     RR_beta_HSV2_a_client = 1,
     RR_beta_HSV2_a_GPF = 1,
-    RR_beta_HSV2_a_GPM = 1
+    RR_beta_HSV2_a_GPM = 1,
+
+
+    testing_prob_men_2006 = 0.111,
+    testing_prob_men_2008 = 0.112,
+    testing_prob_men_2012 = 0.113,
+
+    testing_prob_women_2006 = 0.114,
+    testing_prob_women_2008 = 0.115,
+    testing_prob_women_2012 = 0.116
 
 
 
@@ -1831,7 +1863,16 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    RR_beta_HSV2_a_FSW = 1,
                    RR_beta_HSV2_a_client = 1,
                    RR_beta_HSV2_a_GPF = 1,
-                   RR_beta_HSV2_a_GPM = 1
+                   RR_beta_HSV2_a_GPM = 1,
+
+
+                   testing_prob_men_2006 = 0.111,
+                   testing_prob_men_2008 = 0.112,
+                   testing_prob_men_2012 = 0.113,
+
+                   testing_prob_women_2006 = 0.114,
+                   testing_prob_women_2008 = 0.115,
+                   testing_prob_women_2012 = 0.116
 
 
 
