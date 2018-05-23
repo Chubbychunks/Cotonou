@@ -3,4 +3,3 @@
 \name{doesthiswork}
 \alias{doesthiswork}
 \title{The model in odin syntax}
-

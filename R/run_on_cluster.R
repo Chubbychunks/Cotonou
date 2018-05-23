@@ -667,16 +667,28 @@ run_model_with_fit_for_correlations_cluster <- function(number_simulations, par_
 #' @export
 #' @useDynLib cotonou
 likelihood_lazymcmc <- function(x, time, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points, PrEP_fitting) {
+
+  the_N = data.frame(time, x$N[,1], rowSums(x$N[,c(5, 6, 8)]), rowSums(x$N[,c(1, 2, 3, 4, 7)]))
+
+  the_HIV_pos = data.frame(time, x$HIV_positive[,1], rowSums(x$HIV_positive[,c(5, 6, 8)]), rowSums(x$HIV_positive[,c(1, 2, 3, 4, 7)]))
+
+  the_On_ART = data.frame(time, x$HIV_positive_On_ART[,1], rowSums(x$HIV_positive_On_ART[,c(5, 6, 8)]), rowSums(x$HIV_positive_On_ART[,c(1, 2, 3, 4, 7)]))
+
+
+
+
+  names(the_N) = c("time", "Pro FSW", "Men", "Women")
+  names(the_HIV_pos) = c("time", "Pro FSW", "Men", "Women")
+
+  names(the_On_ART) = c("time", "Pro FSW", "Men", "Women")
+
   the_prev = data.frame(time, x$prev_FSW, x$prev_LowFSW, x$prev_client, x$prev_women, x$prev_men)
   names(the_prev) = c("time", "Pro FSW", "Low-level FSW", "Clients", "Women", "Men")
 
   the_frac_N = data.frame(time, x$frac_N[,c(1, 5, 7, 8)], x$frac_N[,1] + x$frac_N[,2], x$frac_N[,2]/ x$frac_N[,1])
   names(the_frac_N) = c("time", "Pro FSW", "Clients", "Virgin female", "Virgin male", "Active FSW", "Low Pro Ratio")
 
-
-  message = "nothing"
-
-  likelihood_count <- 0
+  lik <- 0
   ##
   frac_count <- 0
 
@@ -700,194 +712,55 @@ likelihood_lazymcmc <- function(x, time, prev_points, frac_N_discard_points, Nto
   }
 
   if(frac_count != length(frac_N_discard_points[,1]))
-    message = "frac count"
+    lik = -1000000
 
 
 
-
-
-
-
-  prev_fits = c()
 
   if(frac_count == length(frac_N_discard_points[,1])) {
+
+
     # prevalence
     for(i in 1:length(prev_points[,1]))
     {
+      HIV_pos = subset(the_HIV_pos, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
+      N = subset(the_N, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
 
-      point = subset(the_prev, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
+      # point = subset(the_prev, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
       # point = the_prev[the_prev$time == prev_points[i, "time"], as.character(prev_points[i, "variable"])]
-      if(!is.na(point)) {{if((point < prev_points[i, "upper"]) && (point > prev_points[i, "lower"]))
+      if(!is.na(HIV_pos)) {
+
+        # print(lik)
+        lik = lik + dbinom(x = prev_points[i, "x"], size = prev_points[i, "N"], prob = as.numeric(HIV_pos/N), log = T)
+        # lik = lik + dbinom(x = prev_points[i, "x"], size = round(as.numeric(N)), prob = as.numeric(HIV_pos/N), log = T)
+        # lik = lik + dbinom(x = (prev_points[i, "value"]*as.numeric(N)/100), size = as.numeric(N), prob = prev_points[i, "value"]/100, log = T)
+
+      }
+    }
+
+
+    # ART_data_points_FSW = ART_data_points[ART_data_points$variable == "Pro FSW",]
+    # fitting to ART cov
+    if(all(!is.na(x$ART_coverage_FSW))){
+      for(i in 1:length(ART_data_points[,1]))
       {
-        likelihood_count <- likelihood_count + 1
-        prev_fits <- c(prev_fits, i)
-      }}}
-    }
-  }
 
 
+        the_time = ART_data_points[i, "time"]
+        N = subset(the_N, time == the_time, select = as.character(ART_data_points[i, "variable"]))
+        On_ART = subset(the_On_ART, time == the_time, select = as.character(ART_data_points[i, "variable"]))
 
-  if("All" %in% levels(ART_data_points$variable))
-  {
-
-    # ART_ratio = x$Women_on_ART/x$Men_on_ART
-    # if(all(ART_ratio[!is.na(ART_ratio)] > 1 & ART_ratio[!is.na(ART_ratio)] < 2))
-    #   likelihood_count <- likelihood_count + 1
-
-    ART_data_points_allgroups = ART_data_points[ART_data_points$variable == "All",]
-    # fitting to ART cov
-    if(likelihood_count > 0)
-    {
-      if(all(!is.na(x$ART_coverage_all))){
-
-        for(i in 1:length(ART_data_points_allgroups[,1]))
-        {
-          the_time = ART_data_points_allgroups[i, "time"]
-          if(x$ART_coverage_all[which(time == the_time)] > ART_data_points_allgroups[i, "Lower"] && x$ART_coverage_all[which(time == the_time)] < ART_data_points_allgroups[i, "Upper"]) {
-            likelihood_count <- likelihood_count + 1
-          }
-        }
-      }
-    }
-  }
-
-  if("Pro FSW" %in% levels(ART_data_points$variable))
-  {
+        # print(lik)
+        lik = lik + dbinom(x = ART_data_points[i, "x"], size = round(as.numeric(N)), prob = (as.numeric(On_ART)/as.numeric(N)), log = T)
 
 
-
-    ART_data_points_FSW = ART_data_points[ART_data_points$variable == "Pro FSW",]
-    # fitting to ART cov
-    if(likelihood_count > 0)
-    {
-      if(all(!is.na(x$ART_coverage_FSW))){
-        for(i in 1:length(ART_data_points_FSW[,1]))
-        {
-          the_time = ART_data_points_FSW[i, "time"]
-          if(x$ART_coverage_FSW[which(time == the_time)] > ART_data_points_FSW[i, "Lower"] && x$ART_coverage_FSW[which(time == the_time)] < ART_data_points_FSW[i, "Upper"]) {
-            likelihood_count <- likelihood_count + 1
-          }
-        }
-      }
-    }
-  }
-
-
-
-  if("Numbers FSW" %in% levels(ART_data_points$variable))
-  {
-
-    ART_data_points_FSW = ART_data_points[ART_data_points$variable == "Numbers FSW",]
-    # fitting to ART cov
-    if(likelihood_count > 0)
-    {
-      if(all(!is.na(x$ART_coverage_FSW))){
-        for(i in 1:length(ART_data_points_FSW[,1]))
-        {
-          the_time = ART_data_points_FSW[i, "time"]
-
-
-          if(x$HIV_positive_On_ART[which(time == the_time),1]  > ART_data_points_FSW[i, "Lower"] && x$HIV_positive_On_ART[which(time == the_time),1] < ART_data_points_FSW[i, "Upper"]) {
-
-            likelihood_count <- likelihood_count + 1
-
-
-          }
-        }
       }
     }
 
 
-
-
-
   }
 
-
-
-
-
-
-  prep_tasp_fit = Inf
-  if(!is.null(PrEP_fitting) && sum(time %% 1 != 0) > 1)
-  {
-
-
-
-
-
-    # PrEP
-
-    if(length(time == 589)) {
-      total_on_prep = data.frame(time, x["FSW_On_PrEP_all_cats"])
-
-      PY_PrEP =
-        total_on_prep[which(time == 2015 + 1/12),2]/12 +
-        total_on_prep[which(time == 2015 + 2/12),2]/12 +
-        total_on_prep[which(time == 2015 + 3/12),2]/12 +
-        total_on_prep[which(time == 2015 + 4/12),2]/12 +
-        total_on_prep[which(time == 2015 + 5/12),2]/12 +
-        total_on_prep[which(time == 2015 + 6/12),2]/12 +
-        total_on_prep[which(time == 2015 + 7/12),2]/12 +
-        total_on_prep[which(time == 2015 + 8/12),2]/12 +
-        total_on_prep[which(time == 2015 + 9/12),2]/12 +
-        total_on_prep[which(time == 2015 + 10/12),2]/12 +
-        total_on_prep[which(time == 2015 + 11/12),2]/12 +
-        total_on_prep[which(time == 2016),2]/12 +
-
-        total_on_prep[which(time == 2016 + 1/12),2]/12 +
-        total_on_prep[which(time == 2016 + 2/12),2]/12 +
-        total_on_prep[which(time == 2016 + 3/12),2]/12 +
-        total_on_prep[which(time == 2016 + 4/12),2]/12 +
-        total_on_prep[which(time == 2016 + 5/12),2]/12 +
-        total_on_prep[which(time == 2016 + 6/12),2]/12 +
-        total_on_prep[which(time == 2016 + 7/12),2]/12 +
-        total_on_prep[which(time == 2016 + 8/12),2]/12 +
-        total_on_prep[which(time == 2016 + 9/12),2]/12 +
-        total_on_prep[which(time == 2016 + 10/12),2]/12 +
-        total_on_prep[which(time == 2016 + 11/12),2]/12 +
-        total_on_prep[which(time == 2017),2]/12
-
-
-
-
-      PrEPinitiations = x["PrEPinitiations"][[1]][,1]
-
-      # data.frame(time, PrEPinitiations)
-
-      Total_PrEPinitiations = PrEPinitiations[which(time == 2017)] -
-        PrEPinitiations[which(time == 2015)]
-
-
-      number_on_prep_end_of_study = total_on_prep[which(time == 2017),2]
-
-
-      # TasP
-
-      TasP_initiations = x["TasPinitiations"][[1]][,1][which(time == 2017)] - x["TasPinitiations"][[1]][,1][which(time == 2015)]
-
-      Number_on_ART_end_of_study = x["HIV_positive_On_ART"][[1]][,1][which(time == 2017)]
-
-      Number_on_ART_end_of_year1 = x["HIV_positive_On_ART"][[1]][,1][which(time == 2016)]
-
-
-
-      prep_tasp_fit = (PY_PrEP-250)^2 + (Total_PrEPinitiations - 256)^2 + (number_on_prep_end_of_study - 121)^2 +
-        (TasP_initiations - 107)^2 + (Number_on_ART_end_of_study - 137)^2 + (Number_on_ART_end_of_year1 - 122)^2
-
-
-    }
-
-
-
-
-  }
-
-
-
-
-  return (list(likelihood_count, prev_fits, message, prep_tasp_fit))
-  # return (list(likelihood_count, frac_count))
+  return(lik)
 
 }
 
