@@ -186,7 +186,8 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
       # print(c(par_seq[par], groups_seq[group], years_seq[year]))
     }}}}
     # print(list(what_we_got, years_seq, groups_seq, par_seq, what_we_got_condom))
-    colnames(what_we_got) = c("par", "year", "group")
+    if(length(what_we_got) > 0)
+    {colnames(what_we_got) = c("par", "year", "group")
 
     # now we have to fill in the rest of the years... IF 2 OR MORE YEARS FOR SAME GROUP AND PARM
     # all years before earliest one is same as earliest estimate,
@@ -232,24 +233,24 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
 
         if(par_counts[i,"freq"] > 1) {
-        for(j in 1:(length(unlist(the_years))-1)) {
-          slope = (y[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j+1])][[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j+1])]][par_counts[i, "group"]] -
-                     y[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])][[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])]][par_counts[i, "group"]]) /
-            (years_seq[unlist(the_years)][j+1] - years_seq[unlist(the_years)][j])
+          for(j in 1:(length(unlist(the_years))-1)) {
+            slope = (y[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j+1])][[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j+1])]][par_counts[i, "group"]] -
+                       y[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])][[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])]][par_counts[i, "group"]]) /
+              (years_seq[unlist(the_years)][j+1] - years_seq[unlist(the_years)][j])
 
-          for(k in (years_seq[unlist(the_years)][j]+1):(years_seq[unlist(the_years)][j+1]-1))
-          {
-            if(paste0(par_seq[par_counts[i, "par"]], "_", k) %in% names(y))
-              y[paste0(par_seq[par_counts[i, "par"]], "_", k)][[paste0(par_seq[par_counts[i, "par"]], "_", k)]][par_counts[i, "group"]] = slope *
-                (k - years_seq[unlist(the_years)][j]) +
-                y[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])][[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])]][par_counts[i, "group"]]
+            for(k in (years_seq[unlist(the_years)][j]+1):(years_seq[unlist(the_years)][j+1]-1))
+            {
+              if(paste0(par_seq[par_counts[i, "par"]], "_", k) %in% names(y))
+                y[paste0(par_seq[par_counts[i, "par"]], "_", k)][[paste0(par_seq[par_counts[i, "par"]], "_", k)]][par_counts[i, "group"]] = slope *
+                  (k - years_seq[unlist(the_years)][j]) +
+                  y[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])][[paste0(par_seq[par_counts[i, "par"]], "_", years_seq[unlist(the_years)][j])]][par_counts[i, "group"]]
+            }
           }
-        }
         }
       }
     }
 
-
+    }
   }
   #   print("after")
   #   print(y)
@@ -908,7 +909,10 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
 
     testing_prob_women_2006 = 0.114,
     testing_prob_women_2008 = 0.115,
-    testing_prob_women_2012 = 0.116
+    testing_prob_women_2012 = 0.116,
+
+    ART_recruit_rate_FSW = 1,
+    ART_reinit_rate_FSW = 1
 
 
   )
@@ -1274,7 +1278,10 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
 
     testing_prob_women_2006 = 0.114,
     testing_prob_women_2008 = 0.115,
-    testing_prob_women_2012 = 0.116
+    testing_prob_women_2012 = 0.116,
+
+    ART_recruit_rate_FSW = 1,
+    ART_reinit_rate_FSW = 1
 
 
 
@@ -1872,7 +1879,10 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
                    testing_prob_women_2006 = 0.114,
                    testing_prob_women_2008 = 0.115,
-                   testing_prob_women_2012 = 0.116
+                   testing_prob_women_2012 = 0.116,
+
+                   ART_recruit_rate_FSW = 1,
+                   ART_reinit_rate_FSW = 1
 
 
 

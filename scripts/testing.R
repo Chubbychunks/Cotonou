@@ -16,7 +16,18 @@ devtools::load_all()
 devtools::test()
 
 
-##############################################################################################
+ranges_mcmc = rbind(
+
+  who_believe_comm = c(0, 1),
+
+  epsilon_2002 = c(2.70e-02, 2.700e-02)
+
+
+)
+parameters = cotonou::lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
+                                     ranges = ranges_mcmc, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
+
+#########################################################################################
 #############################################################################################
 #############################################################################################
 #  _        _   _   _ _   _  ____ _   _
@@ -35,6 +46,198 @@ devtools::test()
 # |  _ <| |_| | |\  | | |__| |_| | |___ / ___ \| |___
 # |_| \_\\___/|_| \_| |_____\___/ \____/_/   \_\_____|
 #
+
+prev_points_FSW_Cotonou_centrale_lower_bound$x = c(195, 74, 122, 116)
+prev_points_FSW_Cotonou_centrale_lower_bound$N = c(366, 190, 417, 620)
+
+ART_data_points_with_numbers_reduced = ART_data_points_with_numbers[c(1,2,5),]
+ART_data_points_with_numbers_reduced$x = c(, , 49)
+# ART_data_points_with_numbers_reduced$N = c(, , 207)
+
+
+# 2017 MEN ART COVERAGE
+# NUM
+# (2369 + 5223)/2 # littoral, L + O + A
+#
+# # DENOM
+# (3500 + 3500 + 1900 + 3100)/2
+#
+#
+# # 2017 WOMEN ART COVERAGE
+# # NUM
+# (6155 + 13050)/2 # littoral, L + O + A
+#
+# # DENOM
+# (3800 + 3800 + 3000 + 5000)/2
+
+# audit report 2017, by site table:
+# 3908 men and 9784 women = 13692 total
+
+# ranges of coverage give 0.57 to 0.80 coverage in 2017
+# average is 0.685
+
+# this makes denominator of 13692/0.685 = 19988
+
+
+
+
+ART_data_points_lazymcmc = data.frame(time = c(2017, 2017, 2015),
+                                      variable = c("Men", "Women","Pro FSW"),
+                                      x = c(3908, 9784, 49))#,
+                                      # N = c(19988, 207))
+
+parameters = cotonou::lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
+               ranges = ranges, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
+
+res = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
+
+
+
+x = res[[1]]
+
+likelihood_lazymcmc <- function(x, time, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points, PrEP_fitting) {
+
+  the_N = data.frame(time, x$N[,1], rowSums(x$N[,c(5, 6, 8)]), rowSums(x$N[,c(1, 2, 3, 4, 7)]))
+
+  the_HIV_pos = data.frame(time, x$HIV_positive[,1], rowSums(x$HIV_positive[,c(5, 6, 8)]), rowSums(x$HIV_positive[,c(1, 2, 3, 4, 7)]))
+
+  the_On_ART = data.frame(time, x$HIV_positive_On_ART[,1], rowSums(x$HIV_positive_On_ART[,c(5, 6, 8)]), rowSums(x$HIV_positive_On_ART[,c(1, 2, 3, 4, 7)]))
+
+
+
+
+  names(the_N) = c("time", "Pro FSW", "Men", "Women")
+  names(the_HIV_pos) = c("time", "Pro FSW", "Men", "Women")
+
+  names(the_On_ART) = c("time", "Pro FSW", "Men", "Women")
+
+  the_prev = data.frame(time, x$prev_FSW, x$prev_LowFSW, x$prev_client, x$prev_women, x$prev_men)
+  names(the_prev) = c("time", "Pro FSW", "Low-level FSW", "Clients", "Women", "Men")
+
+  the_frac_N = data.frame(time, x$frac_N[,c(1, 5, 7, 8)], x$frac_N[,1] + x$frac_N[,2], x$frac_N[,2]/ x$frac_N[,1])
+  names(the_frac_N) = c("time", "Pro FSW", "Clients", "Virgin female", "Virgin male", "Active FSW", "Low Pro Ratio")
+
+  lik <- 0
+  ##
+  frac_count <- 0
+
+  if(all(!is.na(unlist(the_frac_N)))) {
+    for (i in 1:length(frac_N_discard_points[,1]))
+    {
+      if(all(the_frac_N[, as.character(frac_N_discard_points[i, "variable"])] < frac_N_discard_points[i, "max"]) &&
+         all(the_frac_N[,  as.character(frac_N_discard_points[i, "variable"])] > frac_N_discard_points[i, "min"])) {
+        frac_count <- frac_count + 1
+      }
+    }
+  }
+
+  # if the run doesn't fit within the Ntot CIs, then set the frac_count to 0 so the run doesn't pass
+  if(!(all(!is.na(x$Ntot)) &&
+       x$Ntot[which(time == 1992)] < Ntot_data_points[1, "upper"] && x$Ntot[which(time == 1992)] > Ntot_data_points[1, "lower"] &&
+       x$Ntot[which(time == 2002)] < Ntot_data_points[2, "upper"] && x$Ntot[which(time == 2002)] > Ntot_data_points[2, "lower"] &&
+       x$Ntot[which(time == 2013)] < Ntot_data_points[3, "upper"] && x$Ntot[which(time == 2013)] > Ntot_data_points[3, "lower"])) {
+    frac_count <- 0
+    message = "Ntot"
+  }
+
+  if(frac_count != length(frac_N_discard_points[,1]))
+    lik = -1000000
+
+
+
+  prev_fits = c()
+
+  if(frac_count == length(frac_N_discard_points[,1])) {
+    # prevalence
+    for(i in 1:length(prev_points[,1]))
+    {
+
+
+
+
+      HIV_pos = subset(the_HIV_pos, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
+      N = subset(the_N, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
+
+      # point = subset(the_prev, time == prev_points[i, "time"], select = as.character(prev_points[i, "variable"]))
+      # point = the_prev[the_prev$time == prev_points[i, "time"], as.character(prev_points[i, "variable"])]
+      if(!is.na(HIV_pos)) {
+
+        print(lik)
+        # lik = lik + dbinom(prev_points[i, "x"], prev_points[i, "N"], prob = as.numeric(point)/100, log = T)
+        lik = lik + dbinom(x = (prev_points[i, "value"]*as.numeric(N)/100), size = as.numeric(N), prob = prev_points[i, "value"]/100, log = T)
+
+      }
+    }
+
+
+    # ART_data_points_FSW = ART_data_points[ART_data_points$variable == "Pro FSW",]
+    # fitting to ART cov
+
+    if(all(!is.na(x$ART_coverage_FSW))){
+      for(i in 1:length(ART_data_points[,1]))
+      {
+
+
+        the_time = ART_data_points[i, "time"]
+        N = subset(the_N, time == the_time, select = as.character(ART_data_points[i, "variable"]))
+        On_ART = subset(the_On_ART, time == the_time, select = as.character(ART_data_points[i, "variable"]))
+
+        print(lik)
+        lik = lik + dbinom(x = ART_data_points[i, "x"], size = as.numeric(N), prob = (as.numeric(On_ART)/as.numeric(N)), log = T)
+
+
+      }
+    }
+
+
+  }
+
+
+
+    if("Numbers FSW" %in% levels(ART_data_points$variable))
+    {
+
+      ART_data_points_FSW = ART_data_points[ART_data_points$variable == "Numbers FSW",]
+      # fitting to ART cov
+      if(likelihood_count > 0)
+      {
+        if(all(!is.na(x$ART_coverage_FSW))){
+          for(i in 1:length(ART_data_points_FSW[,1]))
+          {
+            the_time = ART_data_points_FSW[i, "time"]
+
+
+            if(x$HIV_positive_On_ART[which(time == the_time),1]  > ART_data_points_FSW[i, "Lower"] && x$HIV_positive_On_ART[which(time == the_time),1] < ART_data_points_FSW[i, "Upper"]) {
+
+              likelihood_count <- likelihood_count + 1
+
+
+            }
+          }
+        }
+      }
+
+
+
+
+
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+  return (list(likelihood_count, prev_fits, message, prep_tasp_fit))
+  # return (list(likelihood_count, frac_count))
+
+}
+
 
 
 
@@ -875,7 +1078,7 @@ ranges = rbind(
 
 
 # outputs -----------------------------------------------------------------
-outputs = c("S0", "S1a", "S1b","prep_efficacious", "S1c", "S1d", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
+outputs = c("S0", "S1a", "S1b","HIV_positive_On_ART","prep_efficacious", "S1c", "S1d", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d", "HIV_positive")
 
 
 CEA_outputs = unique(c("testpar","pfFSW", "prop_FSW_I0_1", "prop_FSW_I0_2", "prop_FSW_I0_3", "prop_FSW_I0_4", "prop_FSW_I0_5","prev_non_ben_fsw_1993",
