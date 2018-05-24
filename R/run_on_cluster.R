@@ -667,6 +667,7 @@ run_model_with_fit_for_correlations_cluster <- function(number_simulations, par_
 #' @useDynLib cotonou
 likelihood_lazymcmc <- function(x, time, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points, PrEP_fitting) {
 
+
   the_N = data.frame(time, x$N[,1], rowSums(x$N[,c(5, 6, 8)]), rowSums(x$N[,c(1, 2, 3, 4, 7)]))
 
   the_HIV_pos = data.frame(time, x$HIV_positive[,1], rowSums(x$HIV_positive[,c(5, 6, 8)]), rowSums(x$HIV_positive[,c(1, 2, 3, 4, 7)]))
@@ -687,7 +688,6 @@ likelihood_lazymcmc <- function(x, time, prev_points, frac_N_discard_points, Nto
   the_frac_N = data.frame(time, x$frac_N[,c(1, 5, 7, 8)], x$frac_N[,1] + x$frac_N[,2], x$frac_N[,2]/ x$frac_N[,1])
   names(the_frac_N) = c("time", "Pro FSW", "Clients", "Virgin female", "Virgin male", "Active FSW", "Low Pro Ratio")
 
-  lik <- 0
   ##
   frac_count <- 0
 
@@ -710,13 +710,17 @@ likelihood_lazymcmc <- function(x, time, prev_points, frac_N_discard_points, Nto
     message = "Ntot"
   }
 
-  if(frac_count != length(frac_N_discard_points[,1]))
-    lik = -1000000
+  # if(frac_count != length(frac_N_discard_points[,1]))
 
 
 
+  lik = -1000000
+  # print(paste0("frac_count ",frac_count, "lik ", lik))
+# print(the_N)
 
   if(frac_count == length(frac_N_discard_points[,1])) {
+
+    lik <- 0
 
 
     # prevalence
@@ -729,7 +733,7 @@ likelihood_lazymcmc <- function(x, time, prev_points, frac_N_discard_points, Nto
       # point = the_prev[the_prev$time == prev_points[i, "time"], as.character(prev_points[i, "variable"])]
       if(!is.na(HIV_pos)) {
 
-        # print(lik)
+
         lik = lik + dbinom(x = as.numeric(prev_points[i, "x"]), size = as.numeric(prev_points[i, "N"]), prob = as.numeric(HIV_pos)/as.numeric(N), log = T)
         # lik = lik + dbinom(x = prev_points[i, "x"], size = round(as.numeric(N)), prob = as.numeric(HIV_pos/N), log = T)
         # lik = lik + dbinom(x = (prev_points[i, "value"]*as.numeric(N)/100), size = as.numeric(N), prob = prev_points[i, "value"]/100, log = T)
@@ -760,6 +764,7 @@ likelihood_lazymcmc <- function(x, time, prev_points, frac_N_discard_points, Nto
   }
 
   return(lik)
+
 
 }
 

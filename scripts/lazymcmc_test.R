@@ -277,6 +277,10 @@ parTab_create = data.frame(
   upper_bound = ranges[,2]
 
 )
+
+parTab_create[parTab_create$lower_bound ==parTab_create$upper_bound, "fixed"] = 1
+
+
 rownames(parTab_create) = NULL
 write.csv(parTab_create, file = "parTab.csv")
 
@@ -1187,7 +1191,8 @@ create_lik <- function(parTab, data, PRIOR_FUNC,...){
 
   prev_points_FSW_Cotonou_centrale_lower_bound_mid_year = prev_points_FSW_Cotonou_centrale_lower_bound
   prev_points_FSW_Cotonou_centrale_lower_bound_mid_year$time = prev_points_FSW_Cotonou_centrale_lower_bound_mid_year$time + 0.5
-
+  prev_points_FSW_Cotonou_centrale_lower_bound$x = c(195, 74, 122, 116)
+  prev_points_FSW_Cotonou_centrale_lower_bound$N = c(366, 190, 417, 620)
 
   # frac N data points ------------------------------------------------------
   frac_N_data_points = data.frame(time = c(1998, 2014,
@@ -1433,20 +1438,32 @@ create_lik <- function(parTab, data, PRIOR_FUNC,...){
     #ranges = NULL needs to be changed to incorporate those that vary!
 
     # run model
-    res = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
+    # res = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
+
+
+    res = cotonou::return_outputs(parameters[[1]], cotonou::main_model, time = time, outputs = outputs)
 
     # calculate likelihood
-    likelihood_list = lapply(res, cotonou::likelihood_lazymcmc, time = time,
-                             prev_points = prev_points_FSW_Cotonou_centrale_lower_bound,
-                             frac_N_discard_points = frac_N_discard_points_no_FSW_LB,
-                             Ntot_data_points = Ntot_data_points,
-                             ART_data_points = ART_data_points_lazymcmc,
-                             PrEP_fitting = NULL)
+    # likelihood_list = lapply(res, cotonou::likelihood_lazymcmc, time = time,
+    #                          prev_points = prev_points_FSW_Cotonou_centrale_lower_bound,
+    #                          frac_N_discard_points = frac_N_discard_points_no_FSW_LB,
+    #                          Ntot_data_points = Ntot_data_points,
+    #                          ART_data_points = ART_data_points_lazymcmc,
+    #                          PrEP_fitting = PrEP_fitting)
+
+    lik = cotonou::likelihood_lazymcmc(res, time = time,
+                        prev_points = prev_points_FSW_Cotonou_centrale_lower_bound,
+                        frac_N_discard_points = frac_N_discard_points_no_FSW_LB,
+                        Ntot_data_points = Ntot_data_points,
+                        ART_data_points = ART_data_points_lazymcmc,
+                        PrEP_fitting = PrEP_fitting)
 
 
-    lik = likelihood_list[[1]]
 
-    lik
+    # lik = likelihood_list[[1]]
+
+    return(lik)
+    # return(par_names)
   }
   return(likelihood_func)
 }
@@ -1464,14 +1481,6 @@ devtools::install_github("jameshay218/lazymcmc")
 library(lazymcmc)
 
 
-startTab <- parTab
-startTab$values <- c(2.3, 0.17)
-
-output <- run_MCMC(parTab=startTab, data=dat, mcmcPars=mcmcPars, filename="SIR_fitting",
-                   CREATE_POSTERIOR_FUNC = create_lik, mvrPars = NULL, PRIOR_FUNC=NULL,
-                   S0=999,I0=1,R0=0,SIR_odes=SIR_odes)
-chain <- read.csv(output$file)
-plot(coda::as.mcmc(chain[,c("R0","gamma")]))
 
 
 
@@ -1482,3 +1491,20 @@ mcmcPars <- c("iterations"=10000,popt=0.44,opt_freq=100,thin=1,burnin=0,adaptive
 res <- run_MCMC(parTab,data,mcmcPars,"test",create_lik,NULL,NULL,0.1)
 chain <- read.csv(res$file)
 plot(coda::as.mcmc(chain))
+
+
+
+
+
+
+
+startTab <- parTab
+startTab$values <- c(2.3, 0.17)
+
+output <- run_MCMC(parTab=startTab, data=dat, mcmcPars=mcmcPars, filename="SIR_fitting",
+                   CREATE_POSTERIOR_FUNC = create_lik, mvrPars = NULL, PRIOR_FUNC=NULL,
+                   S0=999,I0=1,R0=0,SIR_odes=SIR_odes)
+chain <- read.csv(output$file)
+plot(coda::as.mcmc(chain[,c("R0","gamma")]))
+
+
