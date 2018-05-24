@@ -47,6 +47,7 @@ parameters = cotonou::lhs_parameters(number_simulations, set_pars = best_set, Nc
 res = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
 
 
+likelihood_list = lapply(res, cotonou::likelihood_lazymcmc, time = time, prev_points = prev_points, frac_N_discard_points = frac_N_discard_points, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points, PrEP_fitting = PrEP_fitting)
 
 x = res[[1]]
 

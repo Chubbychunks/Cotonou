@@ -663,7 +663,6 @@ run_model_with_fit_for_correlations_cluster <- function(number_simulations, par_
 }
 
 
-
 #' @export
 #' @useDynLib cotonou
 likelihood_lazymcmc <- function(x, time, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points, PrEP_fitting) {
@@ -731,7 +730,7 @@ likelihood_lazymcmc <- function(x, time, prev_points, frac_N_discard_points, Nto
       if(!is.na(HIV_pos)) {
 
         # print(lik)
-        lik = lik + dbinom(x = prev_points[i, "x"], size = prev_points[i, "N"], prob = as.numeric(HIV_pos/N), log = T)
+        lik = lik + dbinom(x = as.numeric(prev_points[i, "x"]), size = as.numeric(prev_points[i, "N"]), prob = as.numeric(HIV_pos)/as.numeric(N), log = T)
         # lik = lik + dbinom(x = prev_points[i, "x"], size = round(as.numeric(N)), prob = as.numeric(HIV_pos/N), log = T)
         # lik = lik + dbinom(x = (prev_points[i, "value"]*as.numeric(N)/100), size = as.numeric(N), prob = prev_points[i, "value"]/100, log = T)
 
