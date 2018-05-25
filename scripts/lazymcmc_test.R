@@ -270,13 +270,35 @@ ranges = rbind(
 
 parTab_create = data.frame(
   names = rownames(ranges),
-  values = rowMeans(ranges),
+  values = ranges[,1],
   fixed = 0,
   steps = 0.1,
   lower_bound = ranges[,1],
   upper_bound = ranges[,2]
 
 )
+
+
+good_previous_fit = get(load("best_pars_combined_0904_top.Rdata"))
+
+good_previous_fit_variedpars = good_previous_fit[[1]][rownames(ranges)]
+
+j=0
+for(i in 1:length(rownames(ranges)))
+{
+  if(parTab_create[i,"names"] %in% names(good_previous_fit_variedpars))
+  {
+    parTab_create[i, "values"] = as.numeric(good_previous_fit_variedpars[as.character(parTab_create[i,"names"])][[1]][1]);
+    j=j+1
+  }
+
+
+}
+sum(names(good_previous_fit_variedpars) == rownames(ranges), na.rm = T)
+
+
+
+
 
 parTab_create[parTab_create$lower_bound ==parTab_create$upper_bound, "fixed"] = 1
 
@@ -1093,7 +1115,7 @@ create_lik <- function(parTab, data, PRIOR_FUNC,...){
 
 
   # outputs -----------------------------------------------------------------
-  outputs = c("HIV_positive_On_ART","pc_of_FOI_on_clients_from_pro_FSW", "S0", "S1a", "S1b", "S1c", "S1d", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
+  outputs = c("HIV_positive_On_ART","lambda_sum_0","HIV_positive","pc_of_FOI_on_clients_from_pro_FSW", "S0", "S1a", "S1b", "S1c", "S1d", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d")
 
 
   # prev_points -------------------------------------------------------------
@@ -1416,7 +1438,7 @@ create_lik <- function(parTab, data, PRIOR_FUNC,...){
   par_names <- rownames(ranges)
 
 
-  # pars = as.numeric(ranges[,1])
+  # pars = parTab_create$values
 
   ## using the `...` bit.
   likelihood_func <- function(pars){
@@ -1485,26 +1507,1219 @@ library(lazymcmc)
 
 
 
-
-mcmcPars <- c("iterations"=10000,popt=0.44,opt_freq=100,thin=1,burnin=0,adaptive_period=5000,save_block=1000)
-
+before = Sys.time()
+mcmcPars <- c("iterations"=4000,popt=0.44,opt_freq=1000,thin=10,burnin=0,adaptive_period=4000,save_block=100)
+Rprof(tmp <- tempfile())
 res <- run_MCMC(parTab,data,mcmcPars,"test",create_lik,NULL,NULL,0.1)
+Rprof()
+summaryRprof(tmp)
+after = Sys.time()
+
+after - before
+
+
 chain <- read.csv(res$file)
 plot(coda::as.mcmc(chain))
 
 
 
 
+mcmc_results = read.csv("test_univariate_chain_2505.csv")
+
+
+plot(mcmc_results$lnlike)
+
+#from 100 onwards?
+
+mcmc_results_without_burnin = mcmc_results[-c(1:100),]
+
+
+test_set = mcmc_results_without_burnin[45,]
+
+
+names(test_set)
+
+ranges_post = ranges
+for(i in 1:length(ranges[,1])) {
+  ranges_post[i,1] = as.numeric(test_set[rownames(ranges)[i]])
+  ranges_post[i,2] = ranges_post[i,1]
+}
+
+
+parameters = cotonou::lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
+                                     ranges = ranges_post, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
 
 
 
-startTab <- parTab
-startTab$values <- c(2.3, 0.17)
+#ranges = NULL needs to be changed to incorporate those that vary!
 
-output <- run_MCMC(parTab=startTab, data=dat, mcmcPars=mcmcPars, filename="SIR_fitting",
-                   CREATE_POSTERIOR_FUNC = create_lik, mvrPars = NULL, PRIOR_FUNC=NULL,
-                   S0=999,I0=1,R0=0,SIR_odes=SIR_odes)
-chain <- read.csv(output$file)
-plot(coda::as.mcmc(chain[,c("R0","gamma")]))
+# run model
+# res = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
+
+
+# res = cotonou::return_outputs(parameters[[1]], cotonou::main_model, time = time, outputs = CEA_outputs)
+
+res_best_runs = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = CEA_outputs)
+
+# res_best_runs[[1]] = res
+
+# ignore these ######################################
+# frac_ProFSW_F = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N), function(x) (x[,1]/(x[,1] + x[,2] + x[,3] + x[,4] + x[,7])))), 2, cotonou::quantile_95)))
+# frac_ProFSW_F = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N/x$frac_F), function(x) x[,1])), 2, cotonou::quantile_95)))
+
+
+
+annual_client_volume_pro_FSW = data.frame(time, t(do.call(rbind, lapply(res_best_runs, function(x)  {x$c_comm[,1]}))))
+colnames(annual_client_volume_pro_FSW) = c("time", as.character(seq(1, (length(annual_client_volume_pro_FSW[1,])-1))))
+annual_client_volume_pro_FSW_melted = reshape2::melt(annual_client_volume_pro_FSW, id.vars = c("time"))
+
+
+
+N_Pro_FSW = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(1)])}))))
+colnames(N_Pro_FSW) = c("time", as.character(seq(1, (length(N_Pro_FSW[1,])-1))))
+N_Pro_FSW_melted = reshape2::melt(N_Pro_FSW, id.vars = c("time"))
+colnames(N_Pro_FSW_melted) = c("time", "run", "value")
+N_Low_FSW = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(2)])}))))
+colnames(N_Low_FSW) = c("time", as.character(seq(1, (length(N_Low_FSW[1,])-1))))
+N_Low_FSW_melted = reshape2::melt(N_Low_FSW, id.vars = c("time"))
+colnames(N_Low_FSW_melted) = c("time", "run", "value")
+N_Client = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(5)])}))))
+colnames(N_Client) = c("time", as.character(seq(1, (length(N_Client[1,])-1))))
+N_Client_melted = reshape2::melt(N_Client, id.vars = c("time"))
+colnames(N_Client_melted) = c("time", "run", "value")
+
+
+
+Fraction_F =   do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(1, 2, 3, 4, 7)])}), rowSums)) /
+  (do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(5, 6)])}), rowSums)) + do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$N}), function(x) {return(x[,c(1, 2, 3, 4, 7)])}), rowSums)))
+
+
+lambda_sum_0_ProFSW = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,1]))))
+lambda_sum_0_LowFSW = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,2]))))
+lambda_sum_0_GPF = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,3]))))
+lambda_sum_0_FormerFSW = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,4]))))
+lambda_sum_0_Client = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,5]))))
+lambda_sum_0_GPM = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,6]))))
+lambda_sum_0_Virgin_Female = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,7]))))
+lambda_sum_0_Virgin_Male = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,8]))))
+lambda_sum_0_Former_FSW_Outside = data.frame(t(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$lambda_sum_0), function(x) x[,9]))))
+
+
+
+
+lambda_sum_0_indiv = rbind(lambda_sum_0_ProFSW, lambda_sum_0_LowFSW, lambda_sum_0_GPF,
+                           lambda_sum_0_FormerFSW, lambda_sum_0_Client, lambda_sum_0_GPM)
+
+
+lambda_sum_0_indiv = data.frame(time, rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM"), each = length(time)), lambda_sum_0_indiv)
+
+
+colnames(lambda_sum_0_indiv) = c("time", "variable", as.character(seq(1, length(lambda_sum_0_ProFSW[1,]))))
+lambda_sum_0_indiv_melted = reshape2::melt(lambda_sum_0_indiv, id.vars = c("time", "variable"))
+colnames(lambda_sum_0_indiv_melted) = c("time", "variable", "run", "value")
+lambda_sum_0_indiv_melted$variable = factor(lambda_sum_0_indiv_melted$variable, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM"))
+
+
+
+
+
+
+frac_ProFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,1])), 2, cotonou::quantile_95)))
+frac_LowFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,2])), 2, cotonou::quantile_95)))
+frac_GPF = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,3])), 2, cotonou::quantile_95)))
+frac_FormerFSW = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,4])), 2, cotonou::quantile_95)))
+frac_Client = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,5])), 2, cotonou::quantile_95)))
+frac_GPM = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,6])), 2, cotonou::quantile_95)))
+frac_Virgin_Female = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,7])), 2, cotonou::quantile_95)))
+frac_Virgin_Male = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,8])), 2, cotonou::quantile_95)))
+frac_Former_FSW_Outside = data.frame(time, t(apply(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$frac_N*100), function(x) x[,9])), 2, cotonou::quantile_95)))
+frac_Active_FSW = data.frame(time, t(apply(do.call(rbind, lapply(res_best_runs, function(x) {100*(x$frac_N[,1] + x$frac_N[,2])})), 2, cotonou::quantile_95)))
+Ratio_Low_Pro = data.frame(time, t(apply(do.call(rbind, lapply(res_best_runs, function(x) {x$frac_N[,2]/ x$frac_N[,1]})), 2, cotonou::quantile_95)))
+
+frac = rbind(frac_ProFSW, frac_LowFSW, frac_GPF, frac_FormerFSW, frac_Client, frac_GPM, frac_Virgin_Female, frac_Virgin_Male, frac_Former_FSW_Outside, frac_Active_FSW, Ratio_Low_Pro)
+frac = data.frame(frac, group = rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "Active FSW", "Low Pro Ratio"), each = length(time)))
+colnames(frac) = c("time", "Lower", "Median", "Upper", "variable")
+frac$variable = factor(frac$variable, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Former FSW outside Cotonou", "Active FSW", "Low Pro Ratio"))
+
+prev_FSW = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$prev_FSW)), 2, cotonou::quantile_95))
+prev_LowFSW = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$prev_LowFSW)), 2, cotonou::quantile_95))
+prev_client = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$prev_client)), 2, cotonou::quantile_95))
+prev_women = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$prev_women)), 2, cotonou::quantile_95))
+prev_men = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$prev_men)), 2, cotonou::quantile_95))
+prev = rbind(prev_FSW, prev_LowFSW, prev_client, prev_women, prev_men)
+prev = data.frame(time, prev, rep(c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"), each = length(time)))
+colnames(prev) = c("time", "Lower", "Median", "Upper", "variable")
+prev$variable = factor(prev$variable, levels = c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"))
+
+
+prev_FSW_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$prev_FSW)))
+prev_LowFSW_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$prev_LowFSW)))
+prev_client_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$prev_client)))
+prev_women_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$prev_women)))
+prev_men_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$prev_men)))
+prev_indiv = rbind(prev_FSW_indiv, prev_LowFSW_indiv, prev_client_indiv, prev_women_indiv, prev_men_indiv)
+
+prev_indiv = data.frame(time, rep(c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"), each = length(time)), prev_indiv)
+
+
+colnames(prev_indiv) = c("time", "variable", as.character(seq(1, length(prev_FSW_indiv[1,]))))
+
+prev_indiv_melted = reshape2::melt(prev_indiv, id.vars = c("time", "variable"))
+
+colnames(prev_indiv_melted) = c("time", "variable", "run", "value")
+
+prev_indiv_melted$variable = factor(prev_indiv_melted$variable, levels = c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"))
+
+
+
+
+Ntot = data.frame(time, t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$Ntot)), 2, cotonou::quantile_95)))
+colnames(Ntot) = c("time", "Lower", "Median", "Upper")
+
+
+ART_coverage_women = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_women)), 2, cotonou::quantile_95))
+ART_coverage_men = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_men)), 2, cotonou::quantile_95))
+ART_coverage_FSW = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_FSW)), 2, cotonou::quantile_95))
+ART_coverage_all = t(apply(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_all)), 2, cotonou::quantile_95))
+ART_coverage = rbind(ART_coverage_women, ART_coverage_men, ART_coverage_FSW, ART_coverage_all)
+ART_coverage = data.frame(time, ART_coverage, rep(c("Women", "Men", "Pro FSW", "All"), each = length(time)))
+colnames(ART_coverage) = c("time", "Lower", "Median", "Upper", "variable")
+ART_coverage$variable = factor(ART_coverage$variable, levels = c("Pro FSW", "Women", "Men", "All"))
+ART_coverage = ART_coverage[ART_coverage$variable == "All" | ART_coverage$variable == "Pro FSW",]
+
+
+
+ART_FSW_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_FSW)))
+ART_women_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_women)))
+ART_men_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_men)))
+
+ART_all_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$ART_coverage_all)))
+
+
+ART_indiv = rbind(ART_FSW_indiv, ART_all_indiv)
+
+ART_indiv = data.frame(time, rep(c("Pro FSW", "All"), each = length(time)), ART_indiv)
+
+
+colnames(ART_indiv) = c("time", "variable", as.character(seq(1, length(ART_FSW_indiv[1,]))))
+
+ART_indiv_melted = reshape2::melt(ART_indiv, id.vars = c("time", "variable"))
+
+colnames(ART_indiv_melted) = c("time", "variable", "run", "value")
+
+ART_indiv_melted$variable = factor(ART_indiv_melted$variable, levels = c("Pro FSW", "All"))
+
+
+# N of FSW on ART
+
+
+N_ART_FSW_indiv = t(do.call(rbind, lapply(res_best_runs, function(x) x$HIV_positive_On_ART[,1])))
+
+
+N_ART_FSW_indiv = data.frame(time, rep(c("Pro FSW"), each = length(time)), N_ART_FSW_indiv)
+
+
+colnames(N_ART_FSW_indiv) = c("time", "variable", as.character(seq(1, length(N_ART_FSW_indiv[1,])-2)))
+
+N_ART_FSW_indiv_melted = reshape2::melt(N_ART_FSW_indiv, id.vars = c("time", "variable"))
+
+colnames(N_ART_FSW_indiv_melted) = c("time", "variable", "run", "value")
+
+
+
+# N on ART and N off ART diagnosed
+Diagnosed_Off_ART_FSW = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x) {x$I22 + x$I23 + x$I24 + x$I25}), function(x) x[,1]))))
+Diagnosed_On_ART_FSW = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x) {x$I32 + x$I33 + x$I34 + x$I35}), function(x) x[,1]))))
+Diagnosed_Dropout_ART_FSW = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x) {x$I42 + x$I43 + x$I44 + x$I45}), function(x) x[,1]))))
+Diagnosed_ALL_FSW = data.frame(time, t(do.call(rbind, lapply(lapply(res_best_runs, function(x) {x$I22 + x$I23 + x$I24 + x$I25 + x$I32 + x$I33 + x$I34 + x$I35 + x$I42 + x$I43 + x$I44 + x$I45}), function(x) x[,1]))))
+
+Diagnosed_FSW = data.frame(rbind(Diagnosed_Off_ART_FSW, Diagnosed_On_ART_FSW, Diagnosed_Dropout_ART_FSW, Diagnosed_ALL_FSW),
+                           rep(c("Diagnosed Off ART", "Diagnosed On ART", "Dropout", "All diagnosed"), each = length(time)))
+colnames(Diagnosed_FSW) = c("time", as.character(seq(1, (length(Diagnosed_Off_ART_FSW[1,])-1))), "variable")
+
+Diagnosed_FSW_melted = reshape2::melt(Diagnosed_FSW, id.vars = c("time", "variable"))
+
+Diagnosed_FSW_melted$group = "FSW"
+
+colnames(Diagnosed_FSW_melted) = c("time", "variable", "run", "value", "group")
+
+
+Diagnosed_Off_ART_All = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I22 + x$I23 + x$I24 + x$I25}), function(x) {return(x[,c(1, 2, 3, 4, 5, 6, 7, 8)])}), rowSums))))
+Diagnosed_On_ART_All = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I32 + x$I33 + x$I34 + x$I35}), function(x) {return(x[,c(1, 2, 3, 4, 5, 6, 7, 8)])}), rowSums))))
+Diagnosed_Dropout_ART_All = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I42 + x$I43 + x$I44 + x$I45}), function(x) {return(x[,c(1, 2, 3, 4, 5, 6, 7, 8)])}), rowSums))))
+
+Diagnosed_All = data.frame(rbind(Diagnosed_Off_ART_All, Diagnosed_On_ART_All, Diagnosed_Dropout_ART_All),
+                           rep(c("Diagnosed Off ART", "Diagnosed On ART", "Dropout"), each = length(time)))
+colnames(Diagnosed_All) = c("time", as.character(seq(1, (length(Diagnosed_Off_ART_All[1,])-1))), "variable")
+
+Diagnosed_All_melted = reshape2::melt(Diagnosed_All, id.vars = c("time", "variable"))
+
+Diagnosed_All_melted$group = "All"
+
+
+colnames(Diagnosed_All_melted) = c("time", "variable", "run", "value", "group")
+
+
+Diagnosed = rbind(Diagnosed_FSW_melted, Diagnosed_All_melted)
+
+
+
+Diagnosed_Off_ART_Men = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I22 + x$I23 + x$I24 + x$I25}), function(x) {return(x[,c(5, 6)])}), rowSums))))
+Diagnosed_On_ART_Men = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I32 + x$I33 + x$I34 + x$I35}), function(x) {return(x[,c(5, 6)])}), rowSums))))
+Diagnosed_Dropout_ART_Men = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I42 + x$I43 + x$I44 + x$I45}), function(x) {return(x[,c(5, 6)])}), rowSums))))
+
+Diagnosed_Men = data.frame(rbind(Diagnosed_Off_ART_Men, Diagnosed_On_ART_Men, Diagnosed_Dropout_ART_Men),
+                           rep(c("Diagnosed Off ART", "Diagnosed On ART", "Dropout"), each = length(time)))
+colnames(Diagnosed_Men) = c("time", as.character(seq(1, (length(Diagnosed_Off_ART_Men[1,])-1))), "variable")
+
+Diagnosed_Men_melted = reshape2::melt(Diagnosed_Men, id.vars = c("time", "variable"))
+
+Diagnosed_Men_melted$group = "Men"
+
+
+colnames(Diagnosed_Men_melted) = c("time", "variable", "run", "value", "group")
+
+
+
+Diagnosed_Off_ART_Women = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I22 + x$I23 + x$I24 + x$I25}), function(x) {return(x[,c(1, 2, 3, 4)])}), rowSums))))
+Diagnosed_On_ART_Women = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I32 + x$I33 + x$I34 + x$I35}), function(x) {return(x[,c(1, 2, 3, 4)])}), rowSums))))
+Diagnosed_Dropout_ART_Women = data.frame(time, t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x)  {x$I42 + x$I43 + x$I44 + x$I45}), function(x) {return(x[,c(1, 2, 3, 4)])}), rowSums))))
+
+Diagnosed_Women = data.frame(rbind(Diagnosed_Off_ART_Women, Diagnosed_On_ART_Women, Diagnosed_Dropout_ART_Women),
+                             rep(c("Diagnosed Off ART", "Diagnosed On ART", "Dropout"), each = length(time)))
+colnames(Diagnosed_Women) = c("time", as.character(seq(1, (length(Diagnosed_Off_ART_Women[1,])-1))), "variable")
+
+Diagnosed_Women_melted = reshape2::melt(Diagnosed_Women, id.vars = c("time", "variable"))
+
+Diagnosed_Women_melted$group = "Women"
+
+
+colnames(Diagnosed_Women_melted) = c("time", "variable", "run", "value", "group")
+
+Diagnosed_Women_Men = rbind(Diagnosed_Women_melted, Diagnosed_Men_melted)
+
+Diagnosed_Women_Men_ratio = data.frame(Diagnosed_Women_melted[,c("time", "variable", "run")],
+                                       value = Diagnosed_Women_melted$value/Diagnosed_Men_melted$value)
+
+
+HIV_deaths = data.frame(time[-1], t(do.call(rbind, lapply(lapply(lapply(res_best_runs, function(x) x$cumuHIVDeaths), rowSums), diff) )))
+
+colnames(HIV_deaths) = c("time", as.character(seq(1, (length(HIV_deaths[1,])-1))))
+
+HIV_deaths_melted = reshape2::melt(HIV_deaths, id.vars = c("time"))
+
+
+
+
+
+
+
+pc_OfWomen_ProFSW = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1]))/
+                                         (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7]))
+
+
+                                         )))
+
+pc_OfWomen_LowFSW = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2]))/
+                                         (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                            do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7])))))
+
+
+
+pc_OfWomen_Active_FSW = data.frame(time, t(100*(do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) + do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])))/
+                                             (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                                do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                                do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                                do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                                do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7])))))
+
+
+pc_OfWomen_GPF = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3]))/
+                                      (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                         do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                         do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                         do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                         do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7])))))
+
+pc_OfWomen_FormerFSW = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))/
+                                            (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                               do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                               do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                               do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                               do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7])))))
+
+
+
+pc_OfMen_Client = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,5]))/
+                                       (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,5])) +
+                                          do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,6]))+
+                                          do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,8])))))
+
+
+pc_OfMen_GPM = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,6]))/
+                                    (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,5])) +
+                                       do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,6]))+
+                                       do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,8])))))
+
+
+pc_OfWomen_VF = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7]))/
+                                     (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,1])) +
+                                        do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,2])) +
+                                        do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,3])) +
+                                        do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,4]))+
+                                        do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,7])))))
+
+
+pc_OfMen_VM = data.frame(time, t(100*do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,8]))/
+                                   (do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,5])) +
+                                      do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,6]))+
+                                      do.call(rbind, lapply(lapply(res_best_runs, function(x) x$N), function(x) x[,8])))))
+
+Ratio_Low_Pro = data.frame(time, t(do.call(rbind, lapply(res_best_runs, function(x) {x$frac_N[,2]/ x$frac_N[,1]}))))
+
+
+frac_by_gender = rbind(pc_OfWomen_ProFSW,
+                       pc_OfWomen_LowFSW,
+                       pc_OfWomen_GPF,
+                       pc_OfWomen_FormerFSW,
+                       pc_OfMen_Client,
+                       pc_OfMen_GPM,
+                       pc_OfWomen_VF,
+                       pc_OfMen_VM,
+                       pc_OfWomen_Active_FSW,
+                       Ratio_Low_Pro
+)
+frac_by_gender = data.frame(frac_by_gender, group = rep(c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Active FSW", "Low Pro Ratio"), each = length(time)))
+colnames(frac_by_gender) = c("time",as.character(seq(1, (length(pc_OfWomen_ProFSW[1,])-1))),  "variable")
+frac_by_gender$variable = factor(frac_by_gender$variable, levels = c("Pro FSW", "Low-level FSW", "GPF", "Former FSW in Cotonou", "Clients", "GPM", "Virgin female", "Virgin male", "Active FSW", "Low Pro Ratio"))
+
+
+frac_by_gender_melted = reshape2::melt(frac_by_gender, id.vars = c("time", "variable"))
+
+colnames(frac_by_gender_melted) = c("time", "variable", "run", "value")
+
+colnames(pc_OfWomen_ProFSW) = c("time", as.character(seq(1, (length(pc_OfWomen_ProFSW[1,])-1))))
+colnames(pc_OfWomen_LowFSW) = c("time", as.character(seq(1, (length(pc_OfWomen_LowFSW[1,])-1))))
+colnames(pc_OfWomen_Active_FSW) = c("time", as.character(seq(1, (length(pc_OfWomen_Active_FSW[1,])-1))))
+colnames(pc_OfMen_Client) = c("time", as.character(seq(1, (length(pc_OfMen_Client[1,])-1))))
+
+
+colnames(pc_OfWomen_VF) = c("time", as.character(seq(1, (length(pc_OfWomen_VF[1,])-1))))
+colnames(pc_OfMen_VM) = c("time", as.character(seq(1, (length(pc_OfMen_VM[1,])-1))))
+
+pc_OfWomen_ProFSW_melted = reshape2::melt(pc_OfWomen_ProFSW, id.vars = c("time"))
+pc_OfWomen_LowFSW_melted = reshape2::melt(pc_OfWomen_LowFSW, id.vars = c("time"))
+pc_OfWomen_Active_FSW_melted = reshape2::melt(pc_OfWomen_Active_FSW, id.vars = c("time"))
+pc_OfMen_Client_melted = reshape2::melt(pc_OfMen_Client, id.vars = c("time"))
+
+
+
+pc_OfWomen_VF_melted = reshape2::melt(pc_OfWomen_VF, id.vars = c("time"))
+pc_OfMen_VM_melted = reshape2::melt(pc_OfMen_VM, id.vars = c("time"))
+
+
+
+
+
+
+
+condom_Pro_FSW_comm = t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_comm[,1,][,5]}))))
+condom_Pro_FSW_noncomm = t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_noncomm[,1,][,5]}))))
+
+condom_Pro_FSW = data.frame(time, rbind(condom_Pro_FSW_comm, condom_Pro_FSW_noncomm), rep(c("Commercial", "Non commercial"), each = length(time)))
+colnames(condom_Pro_FSW) = c("time", as.character(seq(1, (length(condom_Pro_FSW[1,])-2))), "variable")
+
+condom_Pro_FSW_melted = reshape2::melt(condom_Pro_FSW, id.vars = c("time", "variable"))
+colnames(condom_Pro_FSW_melted) = c("time", "variable", "run", "value")
+
+
+condom_Low_FSW_comm = t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_comm[,2,][,5]}))))
+condom_Low_FSW_noncomm = t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_noncomm[,2,][,5]}))))
+
+condom_Low_FSW = data.frame(time, rbind(condom_Low_FSW_comm, condom_Low_FSW_noncomm), rep(c("Commercial", "Non commercial"), each = length(time)))
+colnames(condom_Low_FSW) = c("time", as.character(seq(1, (length(condom_Low_FSW[1,])-2))), "variable")
+
+condom_Low_FSW_melted = reshape2::melt(condom_Low_FSW, id.vars = c("time", "variable"))
+colnames(condom_Low_FSW_melted) = c("time", "variable", "run", "value")
+
+condom_GPF_noncomm = data.frame(time, t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_noncomm[,3,][,6]})))))
+colnames(condom_GPF_noncomm) = c("time", as.character(seq(1, (length(condom_GPF_noncomm[1,])-1))))
+condom_GPF_noncomm_melted = reshape2::melt(condom_GPF_noncomm, id.vars = c("time"))
+
+condom_GPM_noncomm = data.frame(time, t((do.call(rbind, lapply(res_best_runs, function(x)  {x$fc_noncomm[,6,][,3]})))))
+colnames(condom_GPM_noncomm) = c("time", as.character(seq(1, (length(condom_GPM_noncomm[1,])-1))))
+condom_GPM_noncomm_melted = reshape2::melt(condom_GPM_noncomm, id.vars = c("time"))
+
+
+
+
+
+
+testing_rate_ratio_F_M = data.frame(time, t((do.call(rbind, lapply(lapply(res_best_runs, function(x)  {x$testing_prob}), function(x) {return(x[,c(3)])}))/do.call(rbind, lapply(lapply(res_best_runs, function(x)  {x$testing_prob}), function(x) {return(x[,c(6)])})))))
+
+colnames(testing_rate_ratio_F_M) = c("time", as.character(seq(1, (length(testing_rate_ratio_F_M[1,])-1))))
+
+testing_rate_ratio_F_M_melted = reshape2::melt(testing_rate_ratio_F_M, id.vars = c("time"))
+
+colnames(testing_rate_ratio_F_M_melted) = c("time", "run", "value")
+
+Diagnosed_Women_Men_ratio_On_ART = Diagnosed_Women_Men_ratio[Diagnosed_Women_Men_ratio$variable == "Diagnosed On ART",]
+
+
+testing_rate_ratio_F_M_Women_Men_ratio_On_ART = data.frame(x=testing_rate_ratio_F_M_melted$value, y=Diagnosed_Women_Men_ratio_On_ART$value)
+
+
+pfFSW = data.frame(time, t(do.call(rbind, lapply(res_best_runs, function(x)  {x$pfFSW[,1]}))))
+colnames(pfFSW) = c("time", as.character(seq(1, (length(pfFSW[1,])-1))))
+pfFSW_melted = reshape2::melt(pfFSW, id.vars = c("time"))
+colnames(pfFSW_melted) = c("time", "run", "value")
+
+
+
+ART_inits = data.frame(time = time[-length(time)], t(do.call(rbind,lapply(res_best_runs, function(x)  {diff(rowSums(x$cumuARTinitiations))}))))
+colnames(ART_inits) = c("time", as.character(seq(1, (length(ART_inits[1,])-1))))
+ART_inits_melted = reshape2::melt(ART_inits, id.vars = c("time"))
+colnames(ART_inits_melted) = c("time", "run", "value")
+
+
+
+# Ratio female:male of rate of initiation per infected = 8.0/4.68 = 1.7
+# to compare to the data, I am taking the number of initiations that years as a fraction of the total nubmer of PLHIV that year
+
+
+
+# DENOMINTOR = ALL POSTIIVES
+female_ART_init_rate_from_all_HIV_pos = data.frame(time = time[-length(time)], t(do.call(rbind,lapply(res_best_runs, function(x)  {
+  a = diff(rowSums(x$cumuARTinitiations[,c(1,2,3,4)])) # number of female ART initiations per year
+  b = rowSums(x$HIV_positive[,c(1,2,3,4)])[-length(time)] # number of HIV positive females at the beginning of the year
+  return(a/b)
+}))))
+
+
+male_ART_init_rate_from_all_HIV_pos = data.frame(time = time[-length(time)], t(do.call(rbind,lapply(res_best_runs, function(x)  {
+  c = diff(rowSums(x$cumuARTinitiations[,c(5,6)])) # number of male ART initiations per year
+  d = rowSums(x$HIV_positive[,c(5,6)])[-length(time)] # number of HIV positive males at the beginning of the year
+  return(c/d)
+}))))
+
+
+
+
+
+
+
+# DENOMINTOR = ALL POSTIIVES NOT ON ART
+
+female_ART_init_rate_from_all_HIV_pos_NOT_ON_ART = data.frame(time = time[-length(time)], t(do.call(rbind,lapply(res_best_runs, function(x)  {
+  a = diff(rowSums(x$cumuARTinitiations[,c(1,2,3,4)])) # number of female ART initiations per year
+  b = rowSums(x$HIV_positive[,c(1,2,3,4)] - x$HIV_positive_On_ART[,c(1,2,3,4)])[-length(time)] # number of HIV positive females not on ART at the beginning of the year
+  return(a/b)
+}))))
+# female_ART_init_rate_from_all_HIV_pos_NOT_ON_ART
+
+
+
+male_ART_init_rate_from_all_HIV_pos_NOT_ON_ART = data.frame(time = time[-length(time)], t(do.call(rbind,lapply(res_best_runs, function(x)  {
+  a = diff(rowSums(x$cumuARTinitiations[,c(5,6)])) # number of female ART initiations per year
+  b = rowSums(x$HIV_positive[,c(5,6)] - x$HIV_positive_On_ART[,c(5,6)])[-length(time)] # number of HIV positive females not on ART at the beginning of the year
+  return(a/b)
+}))))
+# male_ART_init_rate_from_all_HIV_pos_NOT_ON_ART
+
+
+
+
+
+# FEMALE TO MALE RATIO OF INITIATION RATES WHERE DENOMINATOR IS ART POSITIVE NOT ON ART
+
+FtM_ratio_ART_initiation_rates_from_HIVpos_not_on_ART = data.frame(time = time[-length(time)], t(do.call(rbind, lapply(res_best_runs, function(x)  {
+  a = diff(rowSums(x$cumuARTinitiations[,c(1,2,3,4)])) # number of female ART initiations per year
+  b = rowSums(x$HIV_positive[,c(1,2,3,4)] - x$HIV_positive_On_ART[,c(1,2,3,4)])[-length(time)] # number of HIV positive females not on ART at the beginning of the year
+  c = diff(rowSums(x$cumuARTinitiations[,c(5,6)])) # number of female ART initiations per year
+  d = rowSums(x$HIV_positive[,c(5,6)] - x$HIV_positive_On_ART[,c(5,6)])[-length(time)] # number of HIV positive females not on ART at the beginning of the year
+  return((a/b)/(c/d))
+}))))
+
+colnames(FtM_ratio_ART_initiation_rates_from_HIVpos_not_on_ART) = c("time", as.character(seq(1, (length(FtM_ratio_ART_initiation_rates_from_HIVpos_not_on_ART[1,])-1))))
+
+FtM_ratio_ART_initiation_rates_from_HIVpos_not_on_ART_melted = reshape2::melt(FtM_ratio_ART_initiation_rates_from_HIVpos_not_on_ART, id.vars = c("time"))
+
+
+
+ART_inits_ratio_F_over_M =  data.frame(time = time[-length(time)], t(do.call(rbind,lapply(res_best_runs, function(x)  {diff(rowSums(x$cumuARTinitiations[,c(1,2,3,4)])) /
+    diff(rowSums(x$cumuARTinitiations[,c(5,6)]))}))))
+ART_inits_ratio_F_over_M_melted = reshape2::melt(ART_inits_ratio_F_over_M, id.vars = c("time"))
+
+
+
+
+ART_inits_cumu = data.frame(time = time, t(do.call(rbind,lapply(res_best_runs, function(x)  {rowSums(x$cumuARTinitiations)}))))
+colnames(ART_inits_cumu) = c("time", as.character(seq(1, (length(ART_inits_cumu[1,])-1))))
+ART_inits_cumu_melted = reshape2::melt(ART_inits_cumu, id.vars = c("time"))
+colnames(ART_inits_cumu_melted) = c("time", "run", "value")
+
+
+
+ART_REinits_cumu = data.frame(time = time, t(do.call(rbind,lapply(res_best_runs, function(x)  {rowSums(x$cumuARTREinitiations)}))))
+colnames(ART_REinits_cumu) = c("time", as.character(seq(1, (length(ART_REinits_cumu[1,])-1))))
+ART_REinits_cumu_melted = reshape2::melt(ART_REinits_cumu, id.vars = c("time"))
+colnames(ART_REinits_cumu_melted) = c("time", "run", "value")
+
+
+
+ART_REinits = data.frame(time = time[-length(time)], t(do.call(rbind,lapply(res_best_runs, function(x)  {diff(rowSums(x$cumuARTREinitiations))}))))
+colnames(ART_REinits) = c("time", as.character(seq(1, (length(ART_REinits[1,])-1))))
+ART_REinits_melted = reshape2::melt(ART_REinits, id.vars = c("time"))
+colnames(ART_REinits_melted) = c("time", "run", "value")
+
+
+
+
+frac_ART_inits_REinits = data.frame(time = time[-length(time)])
+for(i in 2:(length(res_best_runs)+1))
+{
+  frac_ART_inits_REinits[,i] = ART_REinits[,i]/(ART_inits[,i] + ART_REinits[,i]) * 100
+}
+colnames(frac_ART_inits_REinits) = c("time", as.character(seq(1, (length(frac_ART_inits_REinits[1,])-1))))
+frac_ART_inits_REinits_melted = reshape2::melt(frac_ART_inits_REinits, id.vars = c("time"))
+colnames(frac_ART_inits_REinits_melted) = c("time", "run", "value")
+
+
+
+
+ART_init_rate_from_all_HIV_pos_NOT_ON_ART_by_sex = data.frame(
+  Women_2014 = unlist(female_ART_init_rate_from_all_HIV_pos_NOT_ON_ART[which(time == 2014),c(2:(length(res_best_runs)+1))]),
+  Women_2015 = unlist(female_ART_init_rate_from_all_HIV_pos_NOT_ON_ART[which(time == 2015),c(2:(length(res_best_runs)+1))]),
+
+  Men_2014 = unlist(male_ART_init_rate_from_all_HIV_pos_NOT_ON_ART[which(time == 2014),c(2:(length(res_best_runs)+1))]),
+  Men_2015 = unlist(male_ART_init_rate_from_all_HIV_pos_NOT_ON_ART[which(time == 2015),c(2:(length(res_best_runs)+1))])
+)
+
+
+ART_init_rate_from_all_HIV_pos_NOT_ON_ART_by_sex_melted = reshape2::melt(ART_init_rate_from_all_HIV_pos_NOT_ON_ART_by_sex)
+
+levels(ART_init_rate_from_all_HIV_pos_NOT_ON_ART_by_sex_melted) = c("Women_2014","Women_2015", "Men_2014","Men_2015")
+
+
+###################
+
+
+
+
+
+
+require(ggplot2)
+
+
+
+
+# want plots on number of initiations of ART, dropout, reinitiations! compare to data points from the reports!
+
+# need to do difference between years for cumulative art inits etc
+
+
+prev_axes = data.frame(variable = c(rep("Pro FSW", 2),
+                                    rep("Clients", 2),
+                                    rep("Women", 2),
+                                    rep("Men", 2),
+                                    rep("Low-level FSW", 2)),
+                       time = c(rep(c(1986, 2025), 5)),
+                       value = c(0, 70, 0, 70, 0, 15, 0, 15, 0, 70)
+)
+prev_points_80s = prev_points_all[c(1,2,3),]
+
+
+prev_points[prev_points$time == "2015", "lower"][1] = 13.79
+
+# plot prevalence in each group indiv runs
+g1=ggplot() + geom_line(data = prev_indiv_melted, aes(x = time, y = value, factor = variable, factor = run), alpha = 0.3) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
+  geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
+  geom_point(data = prev_points_80s, aes(x = time, y = value), colour = "red")+
+  geom_blank(data = prev_axes, aes(x = time, y = value))+
+  theme(text = element_text(size=20))
+
+g1
+
+
+ART_data_points_with_numbers_FSW = data.frame(time = c(2012, 2014, 2015, 2016, 2017),
+                                              Lower = c(27,	34,	42, 53,	73),
+                                              Upper = c(37, 46, 56, 83, 107),
+                                              variable = rep("Pro FSW", 5),
+                                              datatype = c("data", "data", "data", "counterfactual", "counterfactual"))
+
+ART_data_points_with_numbers_FSW_points = data.frame(time = c(2012, 2014, 2015, 2016, 2017),
+                                                     value = c(32,	40,	49, 53,	73),
+                                                     variable = rep("Pro FSW", 5),
+                                                     datatype = c("data", "data", "data", "counterfactual", "counterfactual"))
+
+
+g7=ggplot() + geom_line(data = N_ART_FSW_indiv_melted, aes(x = time, y = value, factor = variable, factor = run), alpha = 1) + ggtitle("Number of professional FSW on ART") +theme_bw() +
+  geom_errorbar(data = ART_data_points_with_numbers_FSW, aes(x = time, ymin = Lower, ymax = Upper, col = datatype)) + labs(x = "Year") +
+  scale_x_continuous(breaks = seq(2000, 2018, 1), limits = c(2000,2018))+
+  labs(y = "")+
+  geom_point(data = ART_data_points_with_numbers_FSW_points, aes(x = time, y = value, col = datatype))+
+  theme(text = element_text(size=20),plot.title = element_text(hjust = 0.5))+
+  theme(text = element_text(size=24),
+        legend.text=element_text(size=18),
+        legend.key.size = unit(1.3, 'lines'))+ annotate("text", x = 2008.8, y = 70, size = 7,col = "black", label = "Data on numbers of FSW file active \n from Luc +- 15% \n Fitting to 2015 estimate only")
+
+g7
+
+
+
+
+frac_by_gender_discard_points_no_FSW_LB = data.frame(variable = c("Pro FSW", "Clients", "Virgin female", "Virgin male", "Active FSW", "Low Pro Ratio"),
+                                                     min = c(0, 0.074, 0.07896475, 0.07039551, 0.0048, .01),
+                                                     max = c(0.0143/2, 0.3 , 0.2, 0.17,  0.0143, .05))
+
+
+
+# plot fraction in each group
+g2=ggplot(frac_by_gender_melted) + geom_line(aes(x = time, y = value, factor = run))  +
+  theme_bw() + labs(y = "Percent in each group in their respective gender (%)") +  facet_wrap(~variable, scales = "free") +
+  # geom_point(data = frac_N_data_points, aes(x = time, y = point), size = I(2), color = "red", shape = 15) +
+  geom_hline(data = frac_by_gender_discard_points_no_FSW_LB, aes(yintercept = 100*min), size = I(0.5), color = "red", linetype = 1, alpha = 0.7) +
+  geom_hline(data = frac_by_gender_discard_points_no_FSW_LB, aes(yintercept = 100*max), size = I(0.5), color = "red", linetype = 1, alpha = 0.7)+
+  theme(text = element_text(size=20))
+g2
+
+
+
+
+
+
+g3=ggplot() + geom_line(data = pc_OfWomen_ProFSW_melted, aes(x = time, y = value, factor = variable), alpha = 1) + theme_bw() + labs(y = "% of all women 15-59 that are pro FSW")+
+  theme(text = element_text(size=20)) + geom_hline(yintercept = 0.24,col = "orange", linetype="dashed") + geom_hline(yintercept = 0.72, linetype="dashed",col = "red")+
+  theme(text = element_text(size=24),
+        legend.text=element_text(size=18),
+        legend.key.size = unit(1.3, 'lines'))+ annotate("text", x = 2002.8, y = 0.7, size = 7,col = "red", label = "Fitted to below this line")+
+  theme(text = element_text(size=24),
+        legend.text=element_text(size=18),
+        legend.key.size = unit(1.3, 'lines'))+ annotate("text", x = 2003.8, y = 0.3, size = 7,col = "orange", label = "Original estimate lower bound ")
+g3
+
+
+
+
+
+
+# g3b=ggplot() + geom_line(data = pc_OfWomen_ProFSW_melted, aes(x = time, y = value, factor = variable), alpha = 1) + theme_bw() + labs(y = "% of all women 15-59 that are pro FSW")+
+#   theme(text = element_text(size=20)) + geom_hline(yintercept = 0.24,col = "orange", linetype="dashed") + geom_hline(yintercept = 0.72, linetype="dashed",col = "red")+
+#   theme(text = element_text(size=24),
+#         legend.text=element_text(size=18),
+#         legend.key.size = unit(1.3, 'lines'))+ annotate("text", x = 2002.8, y = 0.7, size = 7,col = "red", label = "Fitted to below this line")+
+#   theme(text = element_text(size=24),
+#         legend.text=element_text(size=18),
+#         legend.key.size = unit(1.3, 'lines'))+ annotate("text", x = 2003.8, y = 0.3, size = 7,col = "orange", label = "Original estimate lower bound ")
+# g3b
+
+
+g4=ggplot() + geom_line(data = pc_OfWomen_LowFSW_melted, aes(x = time, y = value, factor = variable), alpha = 0.3) + theme_bw() + labs(y = "% of all women 15-59 that are low level FSW")+
+  theme(text = element_text(size=20))
+
+
+g4b = ggplot() + geom_line(data = pc_OfWomen_VF_melted, aes(x = time, y = value, factor = variable), alpha = 0.3) + theme_bw() + labs(y = "% of all women 15-59 that are virgins")+
+  theme(text = element_text(size=20))+ geom_hline(yintercept = c(7.9, 20), col = "red") +
+  theme(text = element_text(size=24), legend.text=element_text(size=18),
+        legend.key.size = unit(1.3, 'lines'))+ annotate("text", x = 2010, y = 19, size = 7,col = "red", label = "Fitting")
+
+g4b
+
+
+g5=ggplot() + geom_line(data = pc_OfMen_Client_melted, aes(x = time, y = value, factor = variable), alpha = 1) + theme_bw() + labs(y = "% of all men 15-59 that are clients")+
+  theme(text = element_text(size=20)) + geom_hline(yintercept = c(7.4, 30), col = "red") +
+  theme(text = element_text(size=24), legend.text=element_text(size=18),
+        legend.key.size = unit(1.3, 'lines'))+ annotate("text", x = 2003.8, y = 28, size = 7,col = "red", label = "Fitting")
+
+g5
+
+g5b = ggplot() + geom_line(data = pc_OfMen_VM_melted, aes(x = time, y = value, factor = variable), alpha = 0.3) + theme_bw() + labs(y = "% of all men 15-59 that are virgins")+
+  theme(text = element_text(size=20))+ geom_hline(yintercept = c(7, 17), col = "red")+
+  theme(text = element_text(size=24), legend.text=element_text(size=18),
+        legend.key.size = unit(1.3, 'lines'))+ annotate("text", x = 2010, y = 15, size = 7,col = "red", label = "Fitting")
+
+g5b
+# # plot prevalence in each group
+# ggplot() + geom_line(data = prev, aes(x = time, y = Median))+ geom_ribbon(data = prev, aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
+#   geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper)) +
+#   geom_point(data = prev_points_80s, aes(x = time, y = value), colour = "red")+
+#   geom_blank(data = prev_axes, aes(x = time, y = value))
+#
+
+
+
+
+# plot total population size
+g6=ggplot(Ntot) + geom_line(aes(x = time, y = Median)) + geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) +
+  theme_bw() + labs(y = "Total population size of Grand Cotonou") +
+  geom_point(data = Ntot_data_points, aes(x = time, y = point, color = colour), size = I(2), shape = 15) + geom_errorbar(data = Ntot_data_points, aes(x = time, ymax = upper, ymin = lower, color = colour), width = 2)+
+  theme(text = element_text(size=20))
+
+
+# ggplot(ART_coverage) +
+#   geom_line(aes(x = time, y = Median))+ geom_ribbon(aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.5) + theme_bw() +
+#   facet_wrap(~variable) + labs(y = "ART coverage ") +
+#   geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower, ymax = Upper), colour = "darkred")
+
+
+
+
+
+ART_data_points = data.frame(time = c(2011, 2012, 2013, 2014, 2015, 2016, 2017,
+
+                                      2012, 2014, 2015, 2016, 2017
+),
+Lower = c(0.33, 0.42, 0.44, 0.39, 0.44, 0.51, 0.57,
+
+          0.09,	0.14,	0.2,	0.22,	0.3
+
+),
+Upper = c(0.52, 0.66, 0.69, 0.61, 0.69, 0.8, 0.8,
+          0.13, 0.2, 0.28, 0.3, 0.42
+
+),
+variable = c("All", "All", "All", "All", "All", "All", "All",
+             "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW", "Pro FSW"))
+
+
+ART_data_points$Data = c(rep("UNAIDS (fitted 2011 & 2017 only)", 7), rep("File active FSW (X-validation)", 5))
+
+art_cov = data.frame(time = 2017, variable = "All", Upper = 0.91, Lower = 0.6, Data = "Audit report 2017 (x-validation)")
+
+ART_data_points = rbind(ART_data_points, art_cov)
+
+ART_text = data.frame(time = 2010, variable = "Pro FSW", value = 50)
+
+
+
+
+g8=ggplot() + geom_line(data = ART_indiv_melted, aes(x = time, y = value*100, factor = variable, factor = run), alpha = 0.3) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "ART coverage (%)") +
+  geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower*100, ymax = Upper*100, col = Data), size = I(1))+
+  theme(text = element_text(size=20)) + theme(legend.position = "top") + geom_text(data = ART_text, aes(x = time, y = value, factor = variable),
+                                                                                   label = "2016 & 2017 are counterfactuals \n NOT including FSW on TasP/PrEP", size = 5)
+g8
+
+
+g9=ggplot() + geom_line(data = lambda_sum_0_indiv_melted[lambda_sum_0_indiv_melted$time > 2009,], aes(x = time, y = value*100, factor = variable, factor = run), alpha = 0.3) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "Force of infection on susceptibles off PrEP (%)")+
+  theme(text = element_text(size=20))
+
+
+Diagnosed_FSW_melted$col = Diagnosed_FSW_melted$variable
+Diagnosed_FSW_melted$col = ifelse(Diagnosed_FSW_melted$col == "Diagnosed Off ART", "#7fc97f",
+                                  ifelse(Diagnosed_FSW_melted$col == "Diagnosed On ART", "#beaed4",
+                                         ifelse(Diagnosed_FSW_melted$col == "Dropout", "#fdc086", 0)))
+
+
+# 2012 FSW IBBA ever tested 0.75 - 0.83
+# EQS mapping 2012 N = 889 - 1391
+# 2012 prevalence = 27.4% [0.23 - 0.322]
+# lower N diagnosed = 0.75 * 889 * 0.23 =
+# upper N diagnosed = 0.83 * 1391 * 0.322 =
+
+
+# bounds of infected ever tested = 304 * 0.75, 304 * 0.83 = 228 - 252
+pc_diagnosed = data.frame(time = 2012, Lower = 153, Upper = 372, variable = "Pro FSW")
+
+g10=ggplot() + geom_line(data = Diagnosed_FSW_melted, aes(x = time, y = value, factor = variable, factor = run, colour = variable), alpha = 1) + theme_bw() + labs(y = "Numbers of pro FSW in Grand Cotonou")+
+  scale_x_continuous(breaks = seq(min(time), max(time), 4) ) +
+  scale_y_continuous(breaks = seq(min(Diagnosed$value), #max(Diagnosed_FSW_melted$value), 20) )+
+                                  380, 40) )+
+  theme(text = element_text(size=20), legend.position = "top")+
+  geom_errorbar(data = ART_data_points_with_numbers_FSW, size=1,aes(x = time, ymin = Lower, ymax = Upper), col ="#4daf4a") +
+  labs(x = "Year")+
+  geom_errorbar(data = pc_diagnosed, size=1, aes(x = time, ymin = Lower, ymax = Upper), col ="#e41a1c") +
+  labs(x = "Year")+ scale_colour_brewer(type = "qual", palette = 6) +
+  theme(text = element_text(size=24),
+        legend.text=element_text(size=18))+ annotate("text", x = 2003.8, y = 222, size = 7,col = "#e41a1c", label = "Number of FSW * \n prevalence * \n % ever tested \n (cross-validation)")
+
+g10
+# #
+# ggplot() + geom_line(data = Diagnosed_All_melted, aes(x = time, y = value, factor = variable, factor = run, colour = variable), alpha = 1) + theme_bw() + labs(y = "Numbers of all people in Grand Cotonou")+
+#   scale_x_continuous(breaks = seq(min(time), max(time)+1, 4) ) +
+#   scale_y_continuous(breaks = seq(min(Diagnosed$value), max(Diagnosed$value), 1000) ) +
+#   geom_vline(xintercept=2005, col = "black", alpha = 0.5, linetype = "dashed") +
+#   geom_text(aes(x=2005, label="CD4 < 200", y=-400))+
+#   geom_vline(xintercept=2012, col = "black", alpha = 0.5, linetype = "dashed") +
+#   geom_text(aes(x=2012, label="CD4 < 350", y=-800))+
+#   geom_vline(xintercept=2015, col = "black", alpha = 0.5, linetype = "dashed") +
+#   geom_text(aes(x=2015, label="CD4 < 500", y=-400))+
+#   geom_vline(xintercept=2016, col = "black", alpha = 0.5, linetype = "dashed") +
+#   geom_text(aes(x=2016, label="Everyone", y=-800))
+# #
+
+
+# I2x= Diagnosed_All_melted[Diagnosed_All_melted$variable == "Diagnosed Off ART",]
+# I3x= Diagnosed_All_melted[Diagnosed_All_melted$variable == "Diagnosed On ART",]
+# I4x= Diagnosed_All_melted[Diagnosed_All_melted$variable == "Dropout",]
+
+
+I2xF= Diagnosed_Women_melted[Diagnosed_Women_melted$variable == "Diagnosed Off ART",]
+I3xF= Diagnosed_Women_melted[Diagnosed_Women_melted$variable == "Diagnosed On ART",]
+I4xF= Diagnosed_Women_melted[Diagnosed_Women_melted$variable == "Dropout",]
+
+
+I2xM= Diagnosed_Men_melted[Diagnosed_Men_melted$variable == "Diagnosed Off ART",]
+I3xM= Diagnosed_Men_melted[Diagnosed_Men_melted$variable == "Diagnosed On ART",]
+I4xM= Diagnosed_Men_melted[Diagnosed_Men_melted$variable == "Dropout",]
+
+
+
+
+
+
+
+diag_off_art_auditF = data.frame(time = 2017, Lower = 195, Upper = 209, variable = "Women")
+diag_off_art_auditM = data.frame(time = 2017, Lower = 100, Upper = 109, variable = "Men")
+
+
+
+g10a = ggplot() + geom_line(data = I2xF, aes(x = time, y = value, factor = variable, factor = run), colour = "black", alpha = 1) + theme_bw() +
+  labs(y = "")+
+  scale_x_continuous(breaks = seq(min(time), max(time)+1, 4) ) +
+  scale_y_continuous(breaks = seq(min(Diagnosed$value), max(Diagnosed$value), 1000) ) +
+  geom_vline(xintercept=2005, col = "black", alpha = 0.5, linetype = "dashed") +
+  geom_text(aes(x=2005, label="CD4 < 200", y=-400))+
+  geom_vline(xintercept=2012, col = "black", alpha = 0.5, linetype = "dashed") +
+  geom_text(aes(x=2012, label="CD4 < 350", y=-800))+
+  geom_vline(xintercept=2015, col = "black", alpha = 0.5, linetype = "dashed") +
+  geom_text(aes(x=2015, label="CD4 < 500", y=-400))+
+  geom_vline(xintercept=2016, col = "black", alpha = 0.5, linetype = "dashed") +
+  theme(text = element_text(size=20), legend.position = "none",plot.title = element_text(hjust = 0.5))+
+  geom_errorbar(data = diag_off_art_auditF, size=1, aes(x = time, ymin = Lower, ymax = Upper), col ="#e41a1c") +
+  ggtitle("Numbers of all women in Grand Cotonou diagnosed NOT on ART compared to data in red (Pre-ART audit report 2017)")
+g10a
+
+
+
+
+g10b = ggplot() + geom_line(data = I2xM, aes(x = time, y = value, factor = variable, factor = run), colour = "black", alpha = 1) + theme_bw() +
+  labs(y = "")+
+  scale_x_continuous(breaks = seq(min(time), max(time)+1, 4) ) +
+  scale_y_continuous(breaks = seq(min(Diagnosed$value), max(Diagnosed$value), 1000) ) +
+  geom_vline(xintercept=2005, col = "black", alpha = 0.5, linetype = "dashed") +
+  geom_text(aes(x=2005, label="CD4 < 200", y=-400))+
+  geom_vline(xintercept=2012, col = "black", alpha = 0.5, linetype = "dashed") +
+  geom_text(aes(x=2012, label="CD4 < 350", y=-800))+
+  geom_vline(xintercept=2015, col = "black", alpha = 0.5, linetype = "dashed") +
+  geom_text(aes(x=2015, label="CD4 < 500", y=-400))+
+  geom_vline(xintercept=2016, col = "black", alpha = 0.5, linetype = "dashed") +
+  theme(text = element_text(size=20), legend.position = "none",plot.title = element_text(hjust = 0.5))+
+  geom_errorbar(data = diag_off_art_auditM, size=1, aes(x = time, ymin = Lower, ymax = Upper), col ="#e41a1c") +
+  ggtitle("Numbers of all men in Grand Cotonou diagnosed NOT on ART compared to data in red (Pre-ART audit report 2017)")
+g10b
+
+
+
+
+I2xF_2017 = data.frame(
+  # Women_2016=I2xF[I2xF$time == 2016, "value"],
+  Women_2017=I2xF[I2xF$time == 2017, "value"],
+  # Men_2016=I2xM[I2xM$time == 2016, "value"],
+  Men_2017=I2xM[I2xM$time == 2017, "value"]
+)
+I2xF_2017_melted = reshape2::melt(I2xF_2017)
+
+g10c = ggplot(I2xF_2017_melted, aes(x = variable, y=value)) + geom_boxplot() + theme_bw() +
+  geom_errorbar(aes(x = "Women_2017", ymax = 201, ymin = 215), col = "red", width = I(0.2))+
+  geom_errorbar(aes(x = "Men_2017", ymax = 108, ymin = 117), col = "red", width = I(0.2))+
+  theme(text = element_text(size=20), legend.position = "none",plot.title = element_text(hjust = 0.5)) +
+  labs(x = "Sex", y = "")+ ggtitle("Across the difference runs, the number of women and men in Grand Cotonou \n diagnosed but NOT on ART in 2016 and 2017 vs the data in red for 2017")
+g10c
+
+I3xF_2017 = data.frame(Women=I3xF[I3xF$time == 2017, "value"], Men=I3xM[I3xM$time == 2017, "value"])
+I3xF_2017_melted = reshape2::melt(I3xF_2017)
+
+g10d = ggplot(I3xF_2017_melted, aes(x = variable, y=value)) + geom_boxplot() + theme_bw() +
+  geom_errorbar(aes(x = "Women", ymax = 6155, ymin = 13050), col = "red", width = I(0.2))+
+  geom_errorbar(aes(x = "Men", ymax = 2369, ymin = 5223), col = "red", width = I(0.2))+
+  theme(text = element_text(size=20), legend.position = "none",plot.title = element_text(hjust = 0.5)) +
+  labs(x = "Sex", y = "")+
+  ggtitle("Number of women and men in Grand Cotonou diagnosed \n ON ART in 2017 vs the data in red")
+g10d
+
+I4xF_2015 = data.frame(Women=I4xF[I4xF$time == 2015, "value"], Men=I4xM[I4xM$time == 2015, "value"])
+I4xF_2017_melted = data.frame(variable = "All", value = rowSums(I4xF_2015))
+
+
+
+
+g12=ggplot() + geom_line(data = Diagnosed_Women_Men_ratio[Diagnosed_Women_Men_ratio$variable == "Diagnosed On ART",], aes(x = time, y = value, factor = variable, factor = run), alpha = 1) +
+  theme_bw() + labs(y = "")+
+  ggtitle("Ratio of Women:Men on ART compared to data (2017) in red from audit 2017")+
+  scale_x_continuous(breaks = seq(min(time), (max(time)+1), 4) ) +
+  scale_y_continuous(breaks = seq(1, 5, 0.2) )+
+  theme(text = element_text(size=20), legend.position = "none",plot.title = element_text(hjust = 0.5)) +
+  geom_point(aes(x = 2017, y = 2.5), col = "red", size = I(03))+
+  # geom_hline(yintercept = c(1,2), col = "orange") +
+  theme(text = element_text(size=24),
+        legend.text=element_text(size=18))#+ annotate("text", x = 1994, y = 2.5, size = 7,col = "orange")
+
+g12
+
+
+g10e = ggplot(I4xF_2017_melted, aes(x = variable, y=value)) + geom_boxplot() + theme_bw() +
+  # geom_errorbar(aes(x = "Women", ymax = 6155, ymin = 13050), col = "red", width = I(0.2))+
+  geom_errorbar(aes(x = "All", ymax = 56, ymin = 56), col = "red", width = I(0.2))+
+  theme(text = element_text(size=20), legend.position = "none",plot.title = element_text(hjust = 0.5)) +
+  labs(x = "Sex", y = "")+
+  ggtitle("Number of women and men in Grand Cotonou in dropout \n from ART in 2017 vs the data in red (Lower bound)")
+g10e
+
+
+g10f = ggplot() + geom_line(data = ART_inits_cumu_melted, aes(x = time, y = value, factor = run), alpha = 1) + theme_bw() +
+  labs(y = "")+
+  theme(text = element_text(size=20), legend.position = "none",plot.title = element_text(hjust = 0.5))+
+  ggtitle("Cumulative ART initiations of all groups combined")
+
+g10f
+
+g10g = ggplot() + geom_line(data = ART_inits_melted, aes(x = time, y = value, factor = run), alpha = 1) + theme_bw() +
+  labs(y = "")+
+  scale_x_continuous(breaks = seq(min(time), max(time), 2) ) +
+  theme(text = element_text(size=20), legend.position = "none",plot.title = element_text(hjust = 0.5)) +
+  geom_errorbar(aes(x = 2015, ymax = 2051, ymin = 1318), col = "red", width = I(0.5), size = I(02))+
+  ggtitle("Numbers of ART initiations each year of all groups combined vs. the data in red")
+
+
+g10g
+
+
+
+
+g10h=ggplot() + geom_line(data = ART_inits_ratio_F_over_M_melted, aes(x = time, y = value, factor = variable), alpha = 1) +
+  theme_bw() + labs(y = "")+
+  scale_x_continuous(breaks = seq(min(time), (max(time)+3), 2) ) +
+  scale_y_continuous(breaks = seq(1, 5, 0.2) )+
+  theme(text = element_text(size=20),plot.title = element_text(hjust = 0.5)) +
+  geom_point(aes(x = 2015, y = 2.4), col = "red", size = I(03))+
+  ggtitle("Ratio of ART initiations women:Men, \n compared with data from audit 2017 in red")
+g10h
+
+
+
+
+g10i=ggplot() + geom_line(data = FtM_ratio_ART_initiation_rates_from_HIVpos_not_on_ART_melted, aes(x = time, y = value, factor = variable), alpha = 1) +
+  theme_bw() + labs(y = "")+
+  scale_x_continuous(breaks = seq(min(time), (max(time)+3), 2) ) +
+  scale_y_continuous(breaks = seq(1, 5, 0.2) )+
+  theme(text = element_text(size=20),plot.title = element_text(hjust = 0.5)) +
+  geom_point(aes(x = 2015, y = 1.7), col = "red", size = I(03))+
+  ggtitle("Ratio of ART initiation rate from HIV+ not on ART Women:Men, \n compared with data from audit 2017 in red")
+g10i
+
+g10j = ggplot(ART_init_rate_from_all_HIV_pos_NOT_ON_ART_by_sex_melted, aes(x = variable, y = value)) + geom_boxplot() + theme_bw() +
+  theme(text = element_text(size=20),plot.title = element_text(hjust = 0.5)) +
+  labs(y = "")+
+  geom_point(aes(x = "Women_2015", y = 0.169), col = "red", size = 3)+
+  geom_point(aes(x = "Men_2015", y = 0.1), col = "red", size = 3)+
+  ggtitle("ART initiation rate from HIV+ not on ART Women & Men in 2014 and 2015, \n compared with data for 2015 in red")
+g10j
+
+
+# Ratio female:male of rate of initiation per infected = 8.0/4.68 = 1.7
+
+
+
+
+g10k = ggplot() + geom_line(data = ART_REinits_cumu_melted, aes(x = time, y = value, factor = run), alpha = 1) + theme_bw() +
+  labs(y = "")+
+  scale_x_continuous(breaks = seq(min(time), max(time), 2) ) +
+  theme(text = element_text(size=20), legend.position = "none",plot.title = element_text(hjust = 0.5)) +
+  # geom_errorbar(aes(x = 2015, ymax = 2051, ymin = 1318), col = "red", width = I(0.5), size = I(02))+
+  ggtitle("Cumulative numbers of ART RE initiations each year of all groups combined")
+
+
+g10k
+
+
+g10l = ggplot() + geom_line(data = ART_REinits_melted, aes(x = time, y = value, factor = run), alpha = 1) + theme_bw() +
+  labs(y = "")+
+  scale_x_continuous(breaks = seq(min(time), max(time), 2) ) +
+  theme(text = element_text(size=20), legend.position = "none",plot.title = element_text(hjust = 0.5)) +
+  geom_point(aes(x = 2015, y = 213), size = 5, col = "red") +
+  ggtitle("Numbers of ART RE initiations each year of all groups combined vs. the data in red") +
+  geom_text(col = "red",aes(x=2002, label="Data from monitoring reports for 2015 \n for Littoral + Atlantique + Oueme", y=300), size = 8)
+
+
+
+g10l
+
+
+
+
+g10m = ggplot() + geom_line(data = frac_ART_inits_REinits_melted[frac_ART_inits_REinits_melted$time > 1999,], aes(x = time, y = value, factor = run), alpha = 1) + theme_bw() +
+  labs(y = "")+
+  scale_x_continuous(breaks = seq(min(time), max(time), 2) ) +
+  theme(text = element_text(size=20), legend.position = "none",plot.title = element_text(hjust = 0.5)) +
+  geom_point(aes(x = 2013.5, y = 8), size = 5, col = "red") +
+  geom_point(aes(x = 2014.5, y = 7), size = 5, col = "red") +
+  geom_point(aes(x = 2015, y = 7), size = 5, col = "red") +
+  geom_point(aes(x = 2015.5, y = 9), size = 5, col = "red") +
+  geom_point(aes(x = 2016, y = 12), size = 5, col = "red") +
+  geom_point(aes(x = 2017, y = 11), size = 5, col = "red") +
+  ggtitle("Percent of ART initiations which are RE initiations (%) vs. the data in red")  +
+  geom_text(col = "red",aes(x=2005, label="Data from monitoring reports by semester for BENIN", y=30), size = 8)
+
+g10m
+# ggplot() + geom_line(data = I2x, aes(x = time, y = value, factor = variable, factor = run, colour = variable), alpha = 1) + theme_bw() + labs(y = "Numbers of all people in Grand Cotonou")+
+#   scale_x_continuous(breaks = seq(min(time), max(time)+1, 4) ) +
+#   scale_y_continuous(breaks = seq(min(Diagnosed$value), max(Diagnosed$value), 1000) ) +
+#   geom_vline(xintercept=2005, col = "black", alpha = 0.5, linetype = "dashed") +
+#   geom_text(aes(x=2005, label="CD4 < 200", y=-400))+
+#   geom_vline(xintercept=2012, col = "black", alpha = 0.5, linetype = "dashed") +
+#   geom_text(aes(x=2012, label="CD4 < 350", y=-800))+
+#   geom_vline(xintercept=2015, col = "black", alpha = 0.5, linetype = "dashed") +
+#   geom_text(aes(x=2015, label="CD4 < 500", y=-400))+
+#   geom_vline(xintercept=2016, col = "black", alpha = 0.5, linetype = "dashed")
+
+
+
+
+#
+#
+# ggplot() + geom_line(data = Diagnosed_Women_Men, aes(x = time, y = value, factor = variable, factor = run, colour = variable, linetype = group), alpha = 1) + theme_bw() + labs(y = "Numbers of all people in Grand Cotonou")+
+#   scale_x_continuous(breaks = seq(min(time), max(time), 4) ) +
+#   scale_y_continuous(breaks = seq(min(Diagnosed$value), max(Diagnosed$value), 1000) )
+#
+# ggplot() + geom_line(data = Diagnosed_Women_Men_ratio, aes(x = time, y = value, factor = variable, factor = run, colour = variable), alpha = 1) +
+#   theme_bw() + labs(y = "Ratio of Women:Men")+
+#   scale_x_continuous(breaks = seq(min(time), max(time), 4) ) +
+#   scale_y_continuous(breaks = seq(1, 5, 0.2) )
+
+# ggplot() + geom_line(data = Diagnosed, aes(x = time, y = value, factor = variable, factor = run, colour = group), alpha = 1) + theme_bw() + facet_wrap(~variable, scales = "fixed") + labs(y = "Numbers of all people in Grand Cotonou") +
+#   scale_x_continuous(breaks = seq(min(time), max(time), 4) ) +
+#   scale_y_continuous(breaks = seq(min(Diagnosed$value), max(Diagnosed$value), 1000) )
+#
+# #
+
+g11=ggplot() + geom_line(data = Diagnosed_Women_Men_ratio[Diagnosed_Women_Men_ratio$variable == "Diagnosed Off ART",], aes(x = time, y = value, factor = variable, factor = run, colour = variable), alpha = 1) +
+  theme_bw() + labs(y = "Ratio of Women:Men")+
+  scale_x_continuous(breaks = seq(min(time), max(time), 4) ) +
+  scale_y_continuous(breaks = seq(1, 5, 0.2) )+
+  theme(text = element_text(size=20))
+
+
+
+# cross validation to ratio female:male on ART from audit report 2017
+
+
+HIV_deaths_aidsinfo = data.frame(time = seq(1990, 2016),
+                                 lower = c(100,100,100,100,100,100,100,100,200,200,200,500,500,500,500,500,500,500,500,200,200,200,200,200,200,200,100),
+                                 upper = c(300,300,300,300,300,400,400,500,600,900,1200,1500,1500,1500,1500,2000,2000,2000,2000,900,900,800,1300,1300,1300,1300,700))
+
+g13=ggplot() + geom_line(data = HIV_deaths_melted, aes(x = time, y = value, factor = variable), alpha = 1) + theme_bw() +
+  labs(y = "HIV deaths") +
+  geom_errorbar(data = HIV_deaths_aidsinfo, aes(x = time, ymin = lower, ymax = upper), col = "orange")+
+  theme(text = element_text(size=20)) +
+  theme(text = element_text(size=24),
+        legend.text=element_text(size=18))+ annotate("text", x = 1992, y = 1700, size = 7,col = "orange",
+                                                     label = "Cross validation")
+
+g13
+
+
+
+# EQS 2012 mapping 889 – 1391
+EQS_mapping = data.frame(time = 2012, lower = 889, upper = 1391)
+g14=ggplot() + geom_line(data = N_Pro_FSW_melted, aes(x = time, y = value, factor = run), alpha = 1) + theme_bw() +
+  labs(y = "Number of Pro FSW") +
+  theme(text = element_text(size=20)) +
+  geom_errorbar(data = EQS_mapping, aes(x = time, ymin = lower, ymax = upper), col = "red")+
+  theme(text = element_text(size=24),
+        legend.text=element_text(size=18))+ annotate("text", x = 1992, y = 1200, size = 7,col = "red",
+                                                     label = "Fitting to EQS mapping,\n  CI given by Michel")
+
+g14
+
+N_low_level = data.frame(time = 2012, lower = 2000, upper = 3000)
+
+g15=ggplot() + geom_line(data = N_Low_FSW_melted, aes(x = time, y = value, factor = run), alpha = 1) + theme_bw() +
+  labs(y = "Number of Low level FSW") +
+  theme(text = element_text(size=20)) +
+  geom_errorbar(data = N_low_level, aes(x = time, ymin = lower, ymax = upper), col = "orange")+
+  theme(text = element_text(size=24),
+        legend.text=element_text(size=18))+ annotate("text", x = 1992, y = 2750, size = 7,col = "orange",
+                                                     label = "Cross validating")
+
+
+low_pro_ratio = N_Low_FSW_melted
+low_pro_ratio$value = N_Low_FSW_melted$value / N_Pro_FSW_melted$value
+
+g22 = ggplot() + geom_line(data = low_pro_ratio, aes(x = time, y = value, factor = run), alpha = 1) + theme_bw() +
+  labs(y = "Ratio of low level FSW to pro FSW") +
+  theme(text = element_text(size=20)) +
+  theme(text = element_text(size=24),
+        legend.text=element_text(size=18))+ annotate("text", x = 1992, y = 4.5, size = 7,col = "red",
+                                                     label = "Fitting") +
+  geom_hline(yintercept = c(1, 5), col = "red")
+
+
+# lowndes 2002 19970
+
+g16=ggplot() + geom_line(data = N_Client_melted, aes(x = time, y = value, factor = run), alpha = 1) + theme_bw() +
+  labs(y = "Number of Clients")
+
+
+
+
+
+
+
+
+g17=ggplot() + geom_line(data = condom_Pro_FSW_melted, aes(x = time, y = value, colour = variable, factor = run), alpha = 1) +
+  theme_bw() + labs(y = "Condom use of Pro FSW")+
+  theme(text = element_text(size=20))
+
+g18=ggplot() + geom_line(data = condom_Low_FSW_melted, aes(x = time, y = value, colour = variable, factor = run), alpha = 1) +
+  theme_bw() + labs(y = "Condom use of Low level FSW")+
+  theme(text = element_text(size=20))
+
+g19=ggplot() + geom_line(data = condom_GPF_noncomm_melted, aes(x = time, y = value, factor = variable), alpha = 1) +
+  theme_bw() + labs(y = "Condom use of GPF")+
+  theme(text = element_text(size=20))
+
+# ggplot() + geom_line(data = condom_GPM_noncomm_melted, aes(x = time, y = value, factor = variable), alpha = 1) +
+#   theme_bw() + labs(y = "Condom use of GPM")
+
+
+#
+
+
+
+g20=ggplot() + geom_line(data = annual_client_volume_pro_FSW_melted, aes(x = time, y = value, factor = variable), alpha = 1) +
+  theme_bw() + labs(y = "Annual client volume for Pro FSW")+
+  theme(text = element_text(size=20))
+
+g21=ggplot() + geom_line(data = pfFSW_melted, aes(x = time, y = value*100, factor = run), alpha = 1) +
+  theme_bw() + labs(y = "HIV prevalence of incoming FSWs from neighbouring countries(%)")+
+  theme(text = element_text(size=20))
+
+
+
+
+
+
+plotlist = list(g1, g3, g4,g4b, g5,g5b, g6, g7, g8, g9, g10,
+                g10a, g10b, g10c, g10d,g12, g10e, g10f, g10g, g10h, g10i, g10j,
+                g13, g14, g15, g16, g17, g18, g19, g20, g21, g22)
+
+# outputfolder = "0103"
+
+
+for(i in 1:length(plotlist))
+
+{
+  jpeg(filename=paste0("C:\\Users\\eg1012\\Google Drive\\Imperial\\Cotonou\\Models\\Transmission Model\\Outputs/",
+                       batch_folder, "/","all", i,".jpg"), width = 1000, height = 600)
+  print(plotlist[i][[1]])
+  dev.off()
+}
 
 

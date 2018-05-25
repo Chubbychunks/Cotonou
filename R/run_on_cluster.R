@@ -668,6 +668,8 @@ run_model_with_fit_for_correlations_cluster <- function(number_simulations, par_
 likelihood_lazymcmc <- function(x, time, prev_points, frac_N_discard_points, Ntot_data_points, ART_data_points, PrEP_fitting) {
 
 
+
+
   the_N = data.frame(time, x$N[,1], rowSums(x$N[,c(5, 6, 8)]), rowSums(x$N[,c(1, 2, 3, 4, 7)]))
 
   the_HIV_pos = data.frame(time, x$HIV_positive[,1], rowSums(x$HIV_positive[,c(5, 6, 8)]), rowSums(x$HIV_positive[,c(1, 2, 3, 4, 7)]))
@@ -676,6 +678,9 @@ likelihood_lazymcmc <- function(x, time, prev_points, frac_N_discard_points, Nto
 
 
 
+  the_2012_inc_FSW = x$lambda_sum_0[which(time == 2013),1]
+
+  names(the_2012_inc_FSW) = c("time", "Pro FSW")
 
   names(the_N) = c("time", "Pro FSW", "Men", "Women")
   names(the_HIV_pos) = c("time", "Pro FSW", "Men", "Women")
@@ -714,7 +719,7 @@ likelihood_lazymcmc <- function(x, time, prev_points, frac_N_discard_points, Nto
 
 
 
-  lik = -1000000
+  lik = -Inf
   # print(paste0("frac_count ",frac_count, "lik ", lik))
 # print(the_N)
 
@@ -760,8 +765,18 @@ likelihood_lazymcmc <- function(x, time, prev_points, frac_N_discard_points, Nto
       }
     }
 
+    lik = lik + dbinom(x = as.numeric(6), size = as.numeric(425), prob = the_2012_inc_FSW, log = T)
+
+
+
+
+
+
+
 
   }
+
+  # print(paste(frac_count, "frac"))
 
   return(lik)
 
