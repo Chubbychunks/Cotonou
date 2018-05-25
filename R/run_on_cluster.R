@@ -680,7 +680,6 @@ likelihood_lazymcmc <- function(x, time, prev_points, frac_N_discard_points, Nto
 
   the_2012_inc_FSW = x$lambda_sum_0[which(time == 2013),1]
 
-  names(the_2012_inc_FSW) = c("time", "Pro FSW")
 
   names(the_N) = c("time", "Pro FSW", "Men", "Women")
   names(the_HIV_pos) = c("time", "Pro FSW", "Men", "Women")
