@@ -2,6 +2,9 @@
 # CREATE parTab
 
 
+
+
+
 # ranges ------------------------------------------------------------------
 
 # yup
@@ -1508,7 +1511,7 @@ library(lazymcmc)
 
 
 before = Sys.time()
-mcmcPars <- c("iterations"=4000,popt=0.44,opt_freq=1000,thin=10,burnin=0,adaptive_period=4000,save_block=100)
+mcmcPars <- c("iterations"=25000,popt=0.44,opt_freq=1000,thin=10,burnin=0,adaptive_period=4000,save_block=100)
 Rprof(tmp <- tempfile())
 res <- run_MCMC(parTab,data,mcmcPars,"test",create_lik,NULL,NULL,0.1)
 Rprof()
@@ -1524,42 +1527,134 @@ plot(coda::as.mcmc(chain))
 
 
 
-mcmc_results = read.csv("test_univariate_chain_2505.csv")
+
+
+
+
+
+
+#  ____  _____ ____  _   _ _   _____ ____     ___  _____   __  __  ____ __  __  ____
+# |  _ \| ____/ ___|| | | | | |_   _/ ___|   / _ \|  ___| |  \/  |/ ___|  \/  |/ ___|
+# | |_) |  _| \___ \| | | | |   | | \___ \  | | | | |_    | |\/| | |   | |\/| | |
+# |  _ <| |___ ___) | |_| | |___| |  ___) | | |_| |  _|   | |  | | |___| |  | | |___
+# |_| \_\_____|____/ \___/|_____|_| |____/   \___/|_|     |_|  |_|\____|_|  |_|\____|
+
+
+
+mcmc_results = read.csv("test_univariate_chain_2905.csv")
 
 
 plot(mcmc_results$lnlike)
 
 #from 100 onwards?
 
-mcmc_results_without_burnin = mcmc_results[-c(1:100),]
+mcmc_results_without_burnin = mcmc_results[c((length(mcmc_results[,1])-1999):length(mcmc_results[,1])),]
+
+mcmc_results_without_burnin = mcmc_results_without_burnin[seq(1, length(mcmc_results_without_burnin[,1]), 20),]
 
 
-test_set = mcmc_results_without_burnin[45,]
+
+# test_set = mcmc_results_without_burnin[45,]
 
 
-names(test_set)
+# names(test_set)
 
-ranges_post = ranges
-for(i in 1:length(ranges[,1])) {
-  ranges_post[i,1] = as.numeric(test_set[rownames(ranges)[i]])
-  ranges_post[i,2] = ranges_post[i,1]
+
+# mcmc_results_without_burnin = mcmc_results_without_burnin[c(1:3),]
+
+parameters = list()
+
+for(j in 1:length(mcmc_results_without_burnin[,1]))
+{
+  ranges_post = ranges
+  for(i in 1:length(ranges[,1])) {
+    ranges_post[i,1] = as.numeric(mcmc_results_without_burnin[j,][rownames(ranges)[i]])
+    ranges_post[i,2] = ranges_post[i,1]
+  }
+
+
+  parameters[[j]] = cotonou::lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
+                                       ranges = ranges_post, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
+
+
 }
 
-
-parameters = cotonou::lhs_parameters(number_simulations, set_pars = best_set, Ncat = 9, time = time,
-                                     ranges = ranges_post, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq)
+parameters = lapply(parameters, function(x) x[[1]])
 
 
+# ################ CEA ----------------------------------------------------
+CEA_outputs = unique(c(
+  "prev_non_ben_fsw_1993",
+  "prev_non_ben_fsw_2015",
+  "testpar","pfFSW", "prop_FSW_I0_1", "prop_FSW_I0_2", "prop_FSW_I0_3", "prop_FSW_I0_4", "prop_FSW_I0_5",
+  "gamma32_without_supp",
+  "gamma33_without_supp",
+  "gamma34_without_supp",
+  "alpha33_without_supp",
+  "alpha34_without_supp",
+  "alpha35_without_supp",
+  "gamma32",
+  "gamma33",
+  "gamma34",
+  "alpha33",
+  "alpha34",
+  "alpha35",
+  "cost_Initiation_of_ART_study_FSW",
+  "cost_Initiation_of_ART_government_FSW",
+  "cost_1_year_of_ART_study_FSW",
+  "cost_1_year_of_ART_government_FSW",
+  "cost_Initiation_ART_rest_of_population",
+  "cost_1_year_of_ART_rest_of_population",
+  "cost_FSW_initiation_ART_Patient_costs",
+  "cost_FSW_1_year_ART_Patient_costs",
 
-#ranges = NULL needs to be changed to incorporate those that vary!
+  "cost_Initiation_of_PrEP_study",
+  "cost_1_year_PrEP_perfect_adherence_study",
+  "cost_1_year_PrEP_intermediate_adherence_study",
+  "cost_1_year_PrEP_non_adherence_study",
+  "cost_Initiation_of_PrEP_government",
+  "cost_1_year_PrEP_perfect_adherence_government",
+  "cost_1_year_PrEP_intermediate_adherence_government",
+  "cost_1_year_PrEP_non_adherence_government",
+  "cost_PREP_initiation_Patient_costs",
+  "cost_PREP_1_year_ART_Patient_costs",
 
-# run model
-# res = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = outputs)
+  "W0", "W1", "W2", "W3", "Number_DALY_W1","Number_DALY_W2", "Number_DALY_W3", "FSW_On_PrEP_all_cats", "PrEPinitiations", "PrEPinitiations1a",
+  "PrEPinitiations1b", "PrEPinitiations1c", "pc_susceptible_FSW_On_PrEP", "pc_all_FSW_On_PrEP", "Number_Susceptibles",
+  "HIV_positive_On_ART", "HIV_positive_Diagnosed_Off_ART", "Primary_Off_ART",
+  "CD4_above_500_Off_ART", "CD4_350_500_Off_ART", "CD4_200_350_Off_ART", "CD4_below_200_Off_ART", "cumuDeaths_On_ART", "HIV_positive", "ec", "cumuARTinitiations","cumuARTREinitiations", "rate_leave_pro_FSW","tau_intervention",
+  "testing_prob", "tau", "N", "S0", "S1a", "S1b", "S1c", "S1d", "I01", "I11", "I02", "I03", "I04",
+  "I05", "I22", "I23", "I24", "I25", "I32", "I33", "I34", "I35",  "I42", "I43", "I44", "I45", "prev",
+  "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client",
+  "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW",
+  "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm",
+  "fc_noncomm", "N", "cumuHIVDeaths", "lambda_sum_0", "lambda_sum_1a", "lambda_sum_1b", "lambda_sum_1c",
+  "lambda_sum_1d", "S0", "S1a", "S1b", "S1c", "S1d", "OnPrEP1a", "OnPrEP1b",
+  "OnPrEP1c", "ART_eligible_CD4_above_500", "ART_eligible_CD4_350_500","ART_eligible_CD4_200_349","ART_eligible_CD4_below_200",
+  "cumuAllDeaths", "cumuHIVDeaths", "cumuARTinitiations", "cumuARTREinitiations",
+  "OnPrEP", "ART_sex_ratio", "pc_S1b", "pc_S1a", "pc_S1c", "cumuInf",
+  "intervention_ART_increase", "testing_prob", "rho_intervention",
+  "ART_eligible_CD4_above_500", "ART_eligible_CD4_350_500", "ART_eligible_CD4_200_349",
+  "ART_eligible_CD4_below_200", "new_people_in_group_FSW_only", "rate_move_out", "rate_move_in",
+  "FSW_out", "FSW_in", "zeta", "tau", "prep_offering_rate", "intervention_testing_increase", "sigma",
+  "PrEPOnOff", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW",
+  "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced",
+  "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all",
+  "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a",
+  "lambda_1b", "lambda_1c", "lambda_1d"))
+
+# ################ CEA ----------------------------------------------------
 
 
-# res = cotonou::return_outputs(parameters[[1]], cotonou::main_model, time = time, outputs = CEA_outputs)
+
+########################################################################################## CEA
+
 
 res_best_runs = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = CEA_outputs)
+
+# res_best_runs[[1]]$lambda_sum_0[which(time == 2013)]
+
+lapply(res_best_runs, function(x) x$lambda_sum_0[which(time == 2013)])
 
 # res_best_runs[[1]] = res
 
@@ -2112,6 +2207,32 @@ levels(ART_init_rate_from_all_HIV_pos_NOT_ON_ART_by_sex_melted) = c("Women_2014"
 
 
 
+prev_indiv_ribbon = data.frame(time, rep(c("Pro FSW", "Low-level FSW", "Clients", "Women", "Men"), each = length(time)), rbind(t(apply(prev_FSW_indiv, 1, function(x) quantile(x, c(0.05, 0.95)))),
+                          t(apply(prev_LowFSW_indiv, 1, function(x) quantile(x, c(0.05, 0.95)))),
+                          t(apply(prev_client_indiv, 1, function(x) quantile(x, c(0.05, 0.95)))),
+                          t(apply(prev_women_indiv, 1, function(x) quantile(x, c(0.05, 0.95)))),
+                          t(apply(prev_men_indiv, 1, function(x) quantile(x, c(0.05, 0.95))))))
+colnames(prev_indiv_ribbon) = c("time", "variable", "Lower", "Upper")
+# prev_indiv_ribbon_melted = reshape2::melt(prev_indiv_ribbon,id.vars = c("time", "variable"))
+
+N_ART_FSW_indiv_ribbon = data.frame(time, "Pro FSW", t(apply(N_ART_FSW_indiv[, -c(1, 2)], 1, function(x) quantile(x, c(0.05, 0.95)))))
+colnames(N_ART_FSW_indiv_ribbon) = c("time", "variable", "Lower", "Upper")
+
+
+
+
+
+ART_indiv_ribbon = data.frame(time,
+                               rep(c("Pro FSW", "All"), each = length(time)),
+                               rbind(t(apply(ART_FSW_indiv, 1, function(x) quantile(x, c(0.05, 0.95)))),
+                                     t(apply(ART_all_indiv, 1, function(x) quantile(x, c(0.05, 0.95))))
+                                   ))
+colnames(ART_indiv_ribbon) = c("time", "variable", "Lower", "Upper")
+
+
+
+
+
 
 
 
@@ -2139,12 +2260,23 @@ prev_points_80s = prev_points_all[c(1,2,3),]
 prev_points[prev_points$time == "2015", "lower"][1] = 13.79
 
 # plot prevalence in each group indiv runs
-g1=ggplot() + geom_line(data = prev_indiv_melted, aes(x = time, y = value, factor = variable, factor = run), alpha = 0.3) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
+# g1=ggplot() + geom_line(data = prev_indiv_melted, aes(x = time, y = value, factor = variable, factor = run), alpha = 0.3) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
+#   geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
+#   geom_point(data = prev_points_80s, aes(x = time, y = value), colour = "red")+
+#   geom_blank(data = prev_axes, aes(x = time, y = value))+
+#   theme(text = element_text(size=20))
+#
+# g1
+
+g1=ggplot() +
+  # geom_line(data = prev_indiv_melted, aes(x = time, y = value, factor = variable, factor = run), alpha = 0.3) +
+  theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
   geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
   geom_point(data = prev_points_80s, aes(x = time, y = value), colour = "red")+
   geom_blank(data = prev_axes, aes(x = time, y = value))+
-  theme(text = element_text(size=20))
-
+  theme(text = element_text(size=20)) +
+  geom_ribbon(data = prev_indiv_ribbon, aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.3)
+# geom_polygon(data = prev_indiv_melted, aes(x = time, y = value, factor = variable, factor = run))
 g1
 
 
@@ -2160,7 +2292,9 @@ ART_data_points_with_numbers_FSW_points = data.frame(time = c(2012, 2014, 2015, 
                                                      datatype = c("data", "data", "data", "counterfactual", "counterfactual"))
 
 
-g7=ggplot() + geom_line(data = N_ART_FSW_indiv_melted, aes(x = time, y = value, factor = variable, factor = run), alpha = 1) + ggtitle("Number of professional FSW on ART") +theme_bw() +
+g7=ggplot() +
+  # geom_line(data = N_ART_FSW_indiv_melted, aes(x = time, y = value, factor = variable, factor = run), alpha = 1) +
+  ggtitle("Number of professional FSW on ART") +theme_bw() +
   geom_errorbar(data = ART_data_points_with_numbers_FSW, aes(x = time, ymin = Lower, ymax = Upper, col = datatype)) + labs(x = "Year") +
   scale_x_continuous(breaks = seq(2000, 2018, 1), limits = c(2000,2018))+
   labs(y = "")+
@@ -2168,7 +2302,8 @@ g7=ggplot() + geom_line(data = N_ART_FSW_indiv_melted, aes(x = time, y = value, 
   theme(text = element_text(size=20),plot.title = element_text(hjust = 0.5))+
   theme(text = element_text(size=24),
         legend.text=element_text(size=18),
-        legend.key.size = unit(1.3, 'lines'))+ annotate("text", x = 2008.8, y = 70, size = 7,col = "black", label = "Data on numbers of FSW file active \n from Luc +- 15% \n Fitting to 2015 estimate only")
+        legend.key.size = unit(1.3, 'lines'))+ annotate("text", x = 2008.8, y = 70, size = 7,col = "black", label = "Data on numbers of FSW file active \n from Luc +- 15% \n Fitting to 2015 estimate only")+
+  geom_ribbon(data = N_ART_FSW_indiv_ribbon, aes(x = time, ymin = Lower, ymax = Upper), alpha = 0.3)
 
 g7
 
@@ -2300,10 +2435,14 @@ ART_text = data.frame(time = 2010, variable = "Pro FSW", value = 50)
 
 
 
-g8=ggplot() + geom_line(data = ART_indiv_melted, aes(x = time, y = value*100, factor = variable, factor = run), alpha = 0.3) + theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "ART coverage (%)") +
+g8=ggplot() +
+  # geom_line(data = ART_indiv_melted, aes(x = time, y = value*100, factor = variable, factor = run), alpha = 0.3) +
+  theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "ART coverage (%)") +
   geom_errorbar(data = ART_data_points, aes(x = time, ymin = Lower*100, ymax = Upper*100, col = Data), size = I(1))+
   theme(text = element_text(size=20)) + theme(legend.position = "top") + geom_text(data = ART_text, aes(x = time, y = value, factor = variable),
-                                                                                   label = "2016 & 2017 are counterfactuals \n NOT including FSW on TasP/PrEP", size = 5)
+                                                                                   label = "2016 & 2017 are counterfactuals \n NOT including FSW on TasP/PrEP", size = 5)+
+geom_ribbon(data = ART_indiv_ribbon, aes(x = time, ymin = Lower*100, ymax = Upper*100), alpha = 0.3)
+
 g8
 
 
