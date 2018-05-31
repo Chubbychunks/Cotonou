@@ -1544,7 +1544,10 @@ plot(coda::as.mcmc(chain))
 mcmc_results = read.csv("test_univariate_chain_2905.csv")
 
 
-plot(mcmc_results$lnlike)
+plot(mcmc_results[c(),lnlike)
+
+
+plot(as.mcmc(mcmc_results))
 
 #from 100 onwards?
 
