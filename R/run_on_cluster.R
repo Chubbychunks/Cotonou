@@ -764,6 +764,7 @@ likelihood_lazymcmc <- function(x, time, prev_points, frac_N_discard_points, Nto
       }
     }
 
+
     lik = lik + dbinom(x = as.numeric(6), size = as.numeric(425), prob = the_2012_inc_FSW, log = T)
 
 
@@ -836,7 +837,7 @@ lazymcmc_for_cluster <- function(good_previous_fit_variedpars, ranges, best_set,
   #                        ART_data_points,
   #                        PrEP_fitting,
   #                        PRIOR_FUNC,...)
-  create_lik <- function(parTab, data, PRIOR_FUNC,...)
+  create_lik <- function(parTab_create, data, PRIOR_FUNC,...)
 
 
   {
@@ -871,7 +872,7 @@ lazymcmc_for_cluster <- function(good_previous_fit_variedpars, ranges, best_set,
     return(likelihood_func)
   }
 
-  f <- create_lik(parTab = parTab, data = NULL, PRIOR_FUNC = NULL, ranges, best_set, time,
+  f <- create_lik(parTab_create = parTab_create, data = NULL, PRIOR_FUNC = NULL, ranges, best_set, time,
                   par_seq, condom_seq, groups_seq, years_seq, outputs,
                   prev_points,
                   frac_N_discard_points,
@@ -879,9 +880,9 @@ lazymcmc_for_cluster <- function(good_previous_fit_variedpars, ranges, best_set,
                   ART_data_points,
                   PrEP_fitting)
 
-  if(is.numeric(f(parTab$values))) {
+  if(is.numeric(f(parTab_create$values))) {
     mcmcPars <- c("iterations"=iterations,popt=popt,opt_freq=opt_freq,thin=thin,burnin=burnin,adaptive_period=adaptive_period,save_block=save_block)
-    res <- lazymcmc::run_MCMC(parTab,
+    res <- lazymcmc::run_MCMC(parTab = parTab_create,
                               mcmcPars = mcmcPars,
                               filename = "test",
                               CREATE_POSTERIOR_FUNC = create_lik,
