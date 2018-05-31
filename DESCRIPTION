@@ -15,5 +15,6 @@ Imports:
     odin,
     deSolve,
     plyr,
-    abind
+    abind,
+    lazymcmc
 RoxygenNote: 6.0.1
