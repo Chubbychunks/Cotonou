@@ -798,7 +798,7 @@ lazymcmc_for_cluster <- function(good_previous_fit_variedpars, ranges, best_set,
                                  thin,
                                  burnin,
                                  adaptive_period,
-                                 save_block) {
+                                 save_block, filename) {
 
   # CREATING PARTAB WHICH IS THE INPUT DATAFRAME
   parTab_create = data.frame(
@@ -884,7 +884,7 @@ lazymcmc_for_cluster <- function(good_previous_fit_variedpars, ranges, best_set,
     mcmcPars <- c("iterations"=iterations,popt=popt,opt_freq=opt_freq,thin=thin,burnin=burnin,adaptive_period=adaptive_period,save_block=save_block)
     res <- lazymcmc::run_MCMC(parTab = parTab_create,
                               mcmcPars = mcmcPars,
-                              filename = "test",
+                              filename = filename,
                               CREATE_POSTERIOR_FUNC = create_lik,
                               mvrPars = NULL, PRIOR_FUNC = NULL, OPT_TUNING = 0.1,
                               ranges = ranges,

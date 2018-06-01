@@ -1054,7 +1054,7 @@ good_previous_fit_variedpars = good_previous_fit[[1]][rownames(ranges)]
 
 
 
-cotonou::lazymcmc_for_cluster(good_previous_fit_variedpars = good_previous_fit_variedpars,
+lazymcmc_for_cluster(good_previous_fit_variedpars = good_previous_fit_variedpars,
                      ranges = ranges,
                      best_set = best_set, time = time,
                      par_seq = par_seq, condom_seq = condom_seq,
@@ -1070,9 +1070,8 @@ cotonou::lazymcmc_for_cluster(good_previous_fit_variedpars = good_previous_fit_v
                      thin = 1,
                      burnin = 0,
                      adaptive_period = 0,
-                     save_block = 100)
-
-
+                     save_block = 100,
+                     filename = "lol")
 
 
 lazymcmc_for_cluster <- function(good_previous_fit_variedpars, ranges, best_set, time,
@@ -1088,7 +1087,7 @@ lazymcmc_for_cluster <- function(good_previous_fit_variedpars, ranges, best_set,
                                  thin,
                                  burnin,
                                  adaptive_period,
-                                 save_block) {
+                                 save_block, filename) {
 
   # CREATING PARTAB WHICH IS THE INPUT DATAFRAME
   parTab_create = data.frame(
@@ -1174,7 +1173,7 @@ lazymcmc_for_cluster <- function(good_previous_fit_variedpars, ranges, best_set,
     mcmcPars <- c("iterations"=iterations,popt=popt,opt_freq=opt_freq,thin=thin,burnin=burnin,adaptive_period=adaptive_period,save_block=save_block)
     res <- lazymcmc::run_MCMC(parTab = parTab_create,
                               mcmcPars = mcmcPars,
-                              filename = "test",
+                              filename = filename,
                               CREATE_POSTERIOR_FUNC = create_lik,
                               mvrPars = NULL, PRIOR_FUNC = NULL, OPT_TUNING = 0.1,
                               ranges = ranges,
@@ -1196,7 +1195,6 @@ lazymcmc_for_cluster <- function(good_previous_fit_variedpars, ranges, best_set,
 
 
 }
-
 
 
 
