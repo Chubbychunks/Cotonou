@@ -1539,19 +1539,20 @@ plot(coda::as.mcmc(chain))
 # |  _ <| |___ ___) | |_| | |___| |  ___) | | |_| |  _|   | |  | | |___| |  | | |___
 # |_| \_\_____|____/ \___/|_____|_| |____/   \___/|_|     |_|  |_|\____|_|  |_|\____|
 
+batch_folder = "0806"
+
+mcmc_results = read.csv("0106_many_chains_actual_MCMC_top_fit_5_repetition_1_univariate_chain.csv")
 
 
-mcmc_results = read.csv("test_univariate_chain_2905.csv")
-
-
-plot(mcmc_results[c(),lnlike)
+plot(mcmc_results[,"lnlike"])
 
 
 plot(as.mcmc(mcmc_results))
 
 #from 100 onwards?
 
-mcmc_results_without_burnin = mcmc_results[c((length(mcmc_results[,1])-1999):length(mcmc_results[,1])),]
+# mcmc_results_without_burnin = mcmc_results[c((length(mcmc_results[,1])-1999):length(mcmc_results[,1])),]
+mcmc_results_without_burnin = mcmc_results[c(99:length(mcmc_results[,1])),]
 
 mcmc_results_without_burnin = mcmc_results_without_burnin[seq(1, length(mcmc_results_without_burnin[,1]), 20),]
 
@@ -1561,6 +1562,16 @@ mcmc_results_without_burnin = mcmc_results_without_burnin[seq(1, length(mcmc_res
 
 
 # names(test_set)
+epi_start = 1986
+# epi_end = 2030
+epi_end = 2035
+
+# setup -------------------------------------------------------------------
+par_seq = c("c_comm", "c_noncomm")
+condom_seq = c("fc_y_comm", "fc_y_noncomm", "n_y_comm", "n_y_noncomm")
+groups_seq = c("ProFSW", "LowFSW", "GPF", "FormerFSW", "Client", "GPM", "VirginF", "VirginM", "FormerFSWoutside")
+years_seq = seq(1985, 2016)
+time <- seq(epi_start, epi_end, length.out = epi_end - epi_start + 1)
 
 
 # mcmc_results_without_burnin = mcmc_results_without_burnin[c(1:3),]
@@ -1651,6 +1662,9 @@ CEA_outputs = unique(c(
 
 
 ########################################################################################## CEA
+
+
+
 
 
 res_best_runs = lapply(parameters, cotonou::return_outputs, cotonou::main_model, time = time, outputs = CEA_outputs)
@@ -2248,7 +2262,35 @@ require(ggplot2)
 
 # need to do difference between years for cumulative art inits etc
 
+prev_points = data.frame(time = c(1986, 1987, 1988, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015,
+                                  1998, 2002, 2005, 2008, 2012, 2015,
+                                  1998, 2008, 2011,
+                                  1998, 2008, 2011,
+                                  2012, 2015),
+                         variable = c(rep("Pro FSW", 11),
+                                      rep("Clients", 6),
+                                      rep("Women", 3),
+                                      rep("Men", 3),
+                                      rep("Low-level FSW", 2)),
+                         value = c(3.3, 8.2, 19.2, 53.3, 48.7, 40.6, 38.9, 34.8, 29.3, 27.4, 18.7,
+                                   100*0.084, 9, 6.9, 5.8, 100*0.028, 100*0.016,
+                                   100*0.035, 100*0.04, 2.2,
+                                   100*0.033, 100*0.02, 1.6,
+                                   100*0.084, 100*0.043),
+                         lower = c(3.3, 8.2, 19.2, 48.02, 43.02, 36.58, 31.97, 30.42, 24.93, 23.01, 15.71,
+                                   100*0.05898524, 100*0.068218538, 100*0.04293149, 100*0.034772131, 100*0.012660836, 100*0.006039259,
+                                   100*0.024181624, 100*0.030073668, 100*0.012980254,
+                                   100*0.022857312, 100*0.012427931, 100*0.007517563,
+                                   # 100*0.091838441, 100*0.026704897),
+                                   100*0.055700329, 100*0.024043597),
 
+                         upper = c(3.3, 8.2, 19.2, 58.48, 54.42, 44.67, 46.27, 39.38, 33.88, 32.23, 22.01,
+                                   100*0.11561791, 100*0.115608811, 100*0.105215792, 100*0.090216628, 100*0.051602442, 100*0.035338436,
+                                   100*0.047726245, 100*0.052817187, 100*0.035296286,
+                                   100*0.047183668, 100*0.029774338, 100*0.028546718,
+                                   100*0.120857355, 100*0.069311506))
+prev_points_all = prev_points
+prev_points = prev_points[-c(1,2,3),]
 prev_axes = data.frame(variable = c(rep("Pro FSW", 2),
                                     rep("Clients", 2),
                                     rep("Women", 2),
@@ -2271,10 +2313,14 @@ prev_points[prev_points$time == "2015", "lower"][1] = 13.79
 #
 # g1
 
+# levels(prev_indiv_ribbon$variable) <- factor(prev_indiv_ribbon$variable, levels(prev_indiv_ribbon$variable)[c(4,2,1,5,3)])
+  # c("Pro FSW", "Low-level FSW", "Clients", "Men", "Women")
+
 g1=ggplot() +
   # geom_line(data = prev_indiv_melted, aes(x = time, y = value, factor = variable, factor = run), alpha = 0.3) +
   theme_bw() + facet_wrap(~variable, scales = "free") + labs(y = "prevalence (%)") +
-  geom_point(data = prev_points, aes(x = time, y = value))+ geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
+  geom_point(data = prev_points, aes(x = time, y = value))+
+  geom_errorbar(data = prev_points, aes(x = time, ymin = lower, ymax = upper))+
   geom_point(data = prev_points_80s, aes(x = time, y = value), colour = "red")+
   geom_blank(data = prev_axes, aes(x = time, y = value))+
   theme(text = element_text(size=20)) +
@@ -2572,7 +2618,7 @@ g10c = ggplot(I2xF_2017_melted, aes(x = variable, y=value)) + geom_boxplot() + t
   geom_errorbar(aes(x = "Women_2017", ymax = 201, ymin = 215), col = "red", width = I(0.2))+
   geom_errorbar(aes(x = "Men_2017", ymax = 108, ymin = 117), col = "red", width = I(0.2))+
   theme(text = element_text(size=20), legend.position = "none",plot.title = element_text(hjust = 0.5)) +
-  labs(x = "Sex", y = "")+ ggtitle("Across the difference runs, the number of women and men in Grand Cotonou \n diagnosed but NOT on ART in 2016 and 2017 vs the data in red for 2017")
+  labs(x = "Sex", y = "")+ ggtitle("Across the difference runs, the number of women and men in Grand Cotonou \n diagnosed but NOT on ART in 2017 vs the data in red for 2017")
 g10c
 
 I3xF_2017 = data.frame(Women=I3xF[I3xF$time == 2017, "value"], Men=I3xM[I3xM$time == 2017, "value"])
