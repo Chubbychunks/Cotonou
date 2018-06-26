@@ -79,6 +79,12 @@ likelihood_rough <- function(x, time, prev_points, frac_N_discard_points, Ntot_d
 
   prev_fits = c()
 
+  if(!(x$N[,1][which(time == 2012)] > 889 && x$N[,1][which(time == 2012)] < 1391))
+    frac_count = 0
+
+
+
+
   if(frac_count == length(frac_N_discard_points[,1])) {
     # prevalence
     for(i in 1:length(prev_points[,1]))
