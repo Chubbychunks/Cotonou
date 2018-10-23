@@ -860,22 +860,16 @@ typedef struct main_model_pars {
   void *interpolate_c_comm;
   void *interpolate_c_noncomm;
   void *interpolate_ART_eligible_CD4_above_500;
-  double ART_eligible_CD4_above_500;
   void *interpolate_ART_eligible_CD4_350_500;
-  double ART_eligible_CD4_350_500;
   void *interpolate_ART_eligible_CD4_200_349;
-  double ART_eligible_CD4_200_349;
   void *interpolate_ART_eligible_CD4_below_200;
-  double ART_eligible_CD4_below_200;
   void *interpolate_testing_prob;
   void *interpolate_tau_intervention;
   void *interpolate_rho_intervention;
   void *interpolate_prep_efficacious;
-  double prep_efficacious;
   void *interpolate_viral_supp;
   void *interpolate_infect_ART;
   void *interpolate_epsilon;
-  double epsilon;
   void *interpolate_prep_offered;
   void *interpolate_fc_comm;
   void *interpolate_fP_comm;
@@ -901,15 +895,64 @@ SEXP get_list_element(SEXP list, const char *name);
 void odin_interpolate_check(size_t nx, size_t ny, size_t i, const char *name_arg, const char *name_target);
 double odin_sum1(double *x, int from_i, int to_i);
 double odin_sum2(double *x, int from_i, int to_i, int from_j, int to_j, int dim_x_1);
-#ifndef _CINTERPOLATE_H_
-#define _CINTERPOLATE_H_
-
+#ifndef CINTERPOLTE_CINTERPOLATE_H_
+#define CINTERPOLTE_CINTERPOLATE_H_
 #include <stddef.h> // size_t
+#include <stdbool.h> // bool
 
+// Allow use from C++
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// There are only three functions in the interface; allocation,
+// evaluation and freeing.
+
+// Allocate an interpolation object.
+//
+//   type: The mode of interpolation. Must be one of "constant",
+//       "linear" or "spline" (an R error is thrown if a different
+//       value is given).
+//
+//   n: The number of `x` points to interpolate over
+//
+//   ny: the number of `y` points per `x` point.  This is 1 in the
+//       case of zimple interpolation as used by Rs `interpolate()`
+//
+//   x: an array of `x` values of length `n`
+//
+//   y: an array of `ny` sets of `y` values.  This is in R's matrix
+//       order (i.e., the first `n` values are the first series to
+//       interpolate over).
+//
+//   auto_free: automatically clean up the interpolation object on
+//   return to R. This uses `R_alloc` for allocations rather than
+//   `Calloc` so freeing will always happen (even on error elsewhere
+//   in the code). However, this prevents returning back a pointer to
+//   R that will last longer than the call into C code.
+//
+// The return value is an opaque pointer that can be passed through to
+// `cinterpolate_eval` and `cinterpolate_free`
 void *cinterpolate_alloc(const char *type, size_t n, size_t ny,
-                         double *x, double *y);
+                         double *x, double *y, bool auto_free);
+
+// Evaluate the interpolated function at a new `x` point.
+//
+//   x: A new, single, `x` point to interpolate `y` values to
+//
+//   obj: The interpolation object, as returned by `cinterpolate_alloc`
+//
+//   y: An array of length `ny` to store the interpolated values
 int cinterpolate_eval(double x, void *obj, double *y);
+
+// Clean up all allocated memory
+//
+//   obj: The interpolation object, as returned by `cinterpolate_alloc`
 void cinterpolate_free(void *obj);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 double FOI_part(double I, double N, double beta, double RR, double fc, double fP, double n, double eP, double ec);
@@ -2794,85 +2837,85 @@ SEXP main_model_set_user(main_model_pars *main_model_p, SEXP user) {
   odin_interpolate_check(main_model_p->dim_pfFSW_t, main_model_p->dim_pfFSW_y_1, 1, "pfFSW_y", "pfFSW");
   odin_interpolate_check(main_model_p->dim_pfFSW, main_model_p->dim_pfFSW_y_2, 2, "pfFSW_y", "pfFSW");
   cinterpolate_free(main_model_p->interpolate_pfFSW);
-  main_model_p->interpolate_pfFSW = cinterpolate_alloc("linear", main_model_p->dim_pfFSW_t, main_model_p->dim_pfFSW, main_model_p->pfFSW_t, main_model_p->pfFSW_y);
+  main_model_p->interpolate_pfFSW = cinterpolate_alloc("linear", main_model_p->dim_pfFSW_t, main_model_p->dim_pfFSW, main_model_p->pfFSW_t, main_model_p->pfFSW_y, false);
   odin_interpolate_check(main_model_p->dim_c_t_comm, main_model_p->dim_c_y_comm_1, 1, "c_y_comm", "c_comm");
   odin_interpolate_check(main_model_p->dim_c_comm, main_model_p->dim_c_y_comm_2, 2, "c_y_comm", "c_comm");
   cinterpolate_free(main_model_p->interpolate_c_comm);
-  main_model_p->interpolate_c_comm = cinterpolate_alloc("linear", main_model_p->dim_c_t_comm, main_model_p->dim_c_comm, main_model_p->c_t_comm, main_model_p->c_y_comm);
+  main_model_p->interpolate_c_comm = cinterpolate_alloc("linear", main_model_p->dim_c_t_comm, main_model_p->dim_c_comm, main_model_p->c_t_comm, main_model_p->c_y_comm, false);
   odin_interpolate_check(main_model_p->dim_c_t_noncomm, main_model_p->dim_c_y_noncomm_1, 1, "c_y_noncomm", "c_noncomm");
   odin_interpolate_check(main_model_p->dim_c_noncomm, main_model_p->dim_c_y_noncomm_2, 2, "c_y_noncomm", "c_noncomm");
   cinterpolate_free(main_model_p->interpolate_c_noncomm);
-  main_model_p->interpolate_c_noncomm = cinterpolate_alloc("linear", main_model_p->dim_c_t_noncomm, main_model_p->dim_c_noncomm, main_model_p->c_t_noncomm, main_model_p->c_y_noncomm);
+  main_model_p->interpolate_c_noncomm = cinterpolate_alloc("linear", main_model_p->dim_c_t_noncomm, main_model_p->dim_c_noncomm, main_model_p->c_t_noncomm, main_model_p->c_y_noncomm, false);
   odin_interpolate_check(main_model_p->dim_ART_eligible_CD4_above_500_t, main_model_p->dim_ART_eligible_CD4_above_500_y, 0, "ART_eligible_CD4_above_500_y", "ART_eligible_CD4_above_500");
   cinterpolate_free(main_model_p->interpolate_ART_eligible_CD4_above_500);
-  main_model_p->interpolate_ART_eligible_CD4_above_500 = cinterpolate_alloc("constant", main_model_p->dim_ART_eligible_CD4_above_500_t, 1, main_model_p->ART_eligible_CD4_above_500_t, main_model_p->ART_eligible_CD4_above_500_y);
+  main_model_p->interpolate_ART_eligible_CD4_above_500 = cinterpolate_alloc("constant", main_model_p->dim_ART_eligible_CD4_above_500_t, 1, main_model_p->ART_eligible_CD4_above_500_t, main_model_p->ART_eligible_CD4_above_500_y, false);
   odin_interpolate_check(main_model_p->dim_ART_eligible_CD4_350_500_t, main_model_p->dim_ART_eligible_CD4_350_500_y, 0, "ART_eligible_CD4_350_500_y", "ART_eligible_CD4_350_500");
   cinterpolate_free(main_model_p->interpolate_ART_eligible_CD4_350_500);
-  main_model_p->interpolate_ART_eligible_CD4_350_500 = cinterpolate_alloc("constant", main_model_p->dim_ART_eligible_CD4_350_500_t, 1, main_model_p->ART_eligible_CD4_350_500_t, main_model_p->ART_eligible_CD4_350_500_y);
+  main_model_p->interpolate_ART_eligible_CD4_350_500 = cinterpolate_alloc("constant", main_model_p->dim_ART_eligible_CD4_350_500_t, 1, main_model_p->ART_eligible_CD4_350_500_t, main_model_p->ART_eligible_CD4_350_500_y, false);
   odin_interpolate_check(main_model_p->dim_ART_eligible_CD4_200_349_t, main_model_p->dim_ART_eligible_CD4_200_349_y, 0, "ART_eligible_CD4_200_349_y", "ART_eligible_CD4_200_349");
   cinterpolate_free(main_model_p->interpolate_ART_eligible_CD4_200_349);
-  main_model_p->interpolate_ART_eligible_CD4_200_349 = cinterpolate_alloc("constant", main_model_p->dim_ART_eligible_CD4_200_349_t, 1, main_model_p->ART_eligible_CD4_200_349_t, main_model_p->ART_eligible_CD4_200_349_y);
+  main_model_p->interpolate_ART_eligible_CD4_200_349 = cinterpolate_alloc("constant", main_model_p->dim_ART_eligible_CD4_200_349_t, 1, main_model_p->ART_eligible_CD4_200_349_t, main_model_p->ART_eligible_CD4_200_349_y, false);
   odin_interpolate_check(main_model_p->dim_ART_eligible_CD4_below_200_t, main_model_p->dim_ART_eligible_CD4_below_200_y, 0, "ART_eligible_CD4_below_200_y", "ART_eligible_CD4_below_200");
   cinterpolate_free(main_model_p->interpolate_ART_eligible_CD4_below_200);
-  main_model_p->interpolate_ART_eligible_CD4_below_200 = cinterpolate_alloc("constant", main_model_p->dim_ART_eligible_CD4_below_200_t, 1, main_model_p->ART_eligible_CD4_below_200_t, main_model_p->ART_eligible_CD4_below_200_y);
+  main_model_p->interpolate_ART_eligible_CD4_below_200 = cinterpolate_alloc("constant", main_model_p->dim_ART_eligible_CD4_below_200_t, 1, main_model_p->ART_eligible_CD4_below_200_t, main_model_p->ART_eligible_CD4_below_200_y, false);
   odin_interpolate_check(main_model_p->dim_testing_prob_t, main_model_p->dim_testing_prob_y_1, 1, "testing_prob_y", "testing_prob");
   odin_interpolate_check(main_model_p->dim_testing_prob, main_model_p->dim_testing_prob_y_2, 2, "testing_prob_y", "testing_prob");
   cinterpolate_free(main_model_p->interpolate_testing_prob);
-  main_model_p->interpolate_testing_prob = cinterpolate_alloc("linear", main_model_p->dim_testing_prob_t, main_model_p->dim_testing_prob, main_model_p->testing_prob_t, main_model_p->testing_prob_y);
+  main_model_p->interpolate_testing_prob = cinterpolate_alloc("linear", main_model_p->dim_testing_prob_t, main_model_p->dim_testing_prob, main_model_p->testing_prob_t, main_model_p->testing_prob_y, false);
   odin_interpolate_check(main_model_p->dim_tau_intervention_t, main_model_p->dim_tau_intervention_y_1, 1, "tau_intervention_y", "tau_intervention");
   odin_interpolate_check(main_model_p->dim_tau_intervention, main_model_p->dim_tau_intervention_y_2, 2, "tau_intervention_y", "tau_intervention");
   cinterpolate_free(main_model_p->interpolate_tau_intervention);
-  main_model_p->interpolate_tau_intervention = cinterpolate_alloc("constant", main_model_p->dim_tau_intervention_t, main_model_p->dim_tau_intervention, main_model_p->tau_intervention_t, main_model_p->tau_intervention_y);
+  main_model_p->interpolate_tau_intervention = cinterpolate_alloc("constant", main_model_p->dim_tau_intervention_t, main_model_p->dim_tau_intervention, main_model_p->tau_intervention_t, main_model_p->tau_intervention_y, false);
   odin_interpolate_check(main_model_p->dim_rho_intervention_t, main_model_p->dim_rho_intervention_y_1, 1, "rho_intervention_y", "rho_intervention");
   odin_interpolate_check(main_model_p->dim_rho_intervention, main_model_p->dim_rho_intervention_y_2, 2, "rho_intervention_y", "rho_intervention");
   cinterpolate_free(main_model_p->interpolate_rho_intervention);
-  main_model_p->interpolate_rho_intervention = cinterpolate_alloc("constant", main_model_p->dim_rho_intervention_t, main_model_p->dim_rho_intervention, main_model_p->rho_intervention_t, main_model_p->rho_intervention_y);
+  main_model_p->interpolate_rho_intervention = cinterpolate_alloc("constant", main_model_p->dim_rho_intervention_t, main_model_p->dim_rho_intervention, main_model_p->rho_intervention_t, main_model_p->rho_intervention_y, false);
   odin_interpolate_check(main_model_p->dim_prep_efficacious_t, main_model_p->dim_prep_efficacious_y, 0, "prep_efficacious_y", "prep_efficacious");
   cinterpolate_free(main_model_p->interpolate_prep_efficacious);
-  main_model_p->interpolate_prep_efficacious = cinterpolate_alloc("constant", main_model_p->dim_prep_efficacious_t, 1, main_model_p->prep_efficacious_t, main_model_p->prep_efficacious_y);
+  main_model_p->interpolate_prep_efficacious = cinterpolate_alloc("constant", main_model_p->dim_prep_efficacious_t, 1, main_model_p->prep_efficacious_t, main_model_p->prep_efficacious_y, false);
   odin_interpolate_check(main_model_p->dim_viral_supp_t, main_model_p->dim_viral_supp_y_1, 1, "viral_supp_y", "viral_supp");
   odin_interpolate_check(main_model_p->dim_viral_supp, main_model_p->dim_viral_supp_y_2, 2, "viral_supp_y", "viral_supp");
   cinterpolate_free(main_model_p->interpolate_viral_supp);
-  main_model_p->interpolate_viral_supp = cinterpolate_alloc("constant", main_model_p->dim_viral_supp_t, main_model_p->dim_viral_supp, main_model_p->viral_supp_t, main_model_p->viral_supp_y);
+  main_model_p->interpolate_viral_supp = cinterpolate_alloc("constant", main_model_p->dim_viral_supp_t, main_model_p->dim_viral_supp, main_model_p->viral_supp_t, main_model_p->viral_supp_y, false);
   odin_interpolate_check(main_model_p->dim_infect_ART_t, main_model_p->dim_infect_ART_y_1, 1, "infect_ART_y", "infect_ART");
   odin_interpolate_check(main_model_p->dim_infect_ART, main_model_p->dim_infect_ART_y_2, 2, "infect_ART_y", "infect_ART");
   cinterpolate_free(main_model_p->interpolate_infect_ART);
-  main_model_p->interpolate_infect_ART = cinterpolate_alloc("constant", main_model_p->dim_infect_ART_t, main_model_p->dim_infect_ART, main_model_p->infect_ART_t, main_model_p->infect_ART_y);
+  main_model_p->interpolate_infect_ART = cinterpolate_alloc("constant", main_model_p->dim_infect_ART_t, main_model_p->dim_infect_ART, main_model_p->infect_ART_t, main_model_p->infect_ART_y, false);
   odin_interpolate_check(main_model_p->dim_epsilon_t, main_model_p->dim_epsilon_y, 0, "epsilon_y", "epsilon");
   cinterpolate_free(main_model_p->interpolate_epsilon);
-  main_model_p->interpolate_epsilon = cinterpolate_alloc("constant", main_model_p->dim_epsilon_t, 1, main_model_p->epsilon_t, main_model_p->epsilon_y);
+  main_model_p->interpolate_epsilon = cinterpolate_alloc("constant", main_model_p->dim_epsilon_t, 1, main_model_p->epsilon_t, main_model_p->epsilon_y, false);
   odin_interpolate_check(main_model_p->dim_prep_intervention_t, main_model_p->dim_prep_intervention_y_1, 1, "prep_intervention_y", "prep_offered");
   odin_interpolate_check(main_model_p->dim_prep_offered, main_model_p->dim_prep_intervention_y_2, 2, "prep_intervention_y", "prep_offered");
   cinterpolate_free(main_model_p->interpolate_prep_offered);
-  main_model_p->interpolate_prep_offered = cinterpolate_alloc("constant", main_model_p->dim_prep_intervention_t, main_model_p->dim_prep_offered, main_model_p->prep_intervention_t, main_model_p->prep_intervention_y);
+  main_model_p->interpolate_prep_offered = cinterpolate_alloc("constant", main_model_p->dim_prep_intervention_t, main_model_p->dim_prep_offered, main_model_p->prep_intervention_t, main_model_p->prep_intervention_y, false);
   odin_interpolate_check(main_model_p->dim_fc_t_comm, main_model_p->dim_fc_y_comm_1, 1, "fc_y_comm", "fc_comm");
   odin_interpolate_check(main_model_p->dim_fc_comm_1, main_model_p->dim_fc_y_comm_2, 2, "fc_y_comm", "fc_comm");
   odin_interpolate_check(main_model_p->dim_fc_comm_2, main_model_p->dim_fc_y_comm_3, 3, "fc_y_comm", "fc_comm");
   cinterpolate_free(main_model_p->interpolate_fc_comm);
-  main_model_p->interpolate_fc_comm = cinterpolate_alloc("linear", main_model_p->dim_fc_t_comm, main_model_p->dim_fc_comm, main_model_p->fc_t_comm, main_model_p->fc_y_comm);
+  main_model_p->interpolate_fc_comm = cinterpolate_alloc("linear", main_model_p->dim_fc_t_comm, main_model_p->dim_fc_comm, main_model_p->fc_t_comm, main_model_p->fc_y_comm, false);
   odin_interpolate_check(main_model_p->dim_fP_t_comm, main_model_p->dim_fP_y_comm_1, 1, "fP_y_comm", "fP_comm");
   odin_interpolate_check(main_model_p->dim_fP_comm, main_model_p->dim_fP_y_comm_2, 2, "fP_y_comm", "fP_comm");
   cinterpolate_free(main_model_p->interpolate_fP_comm);
-  main_model_p->interpolate_fP_comm = cinterpolate_alloc("linear", main_model_p->dim_fP_t_comm, main_model_p->dim_fP_comm, main_model_p->fP_t_comm, main_model_p->fP_y_comm);
+  main_model_p->interpolate_fP_comm = cinterpolate_alloc("linear", main_model_p->dim_fP_t_comm, main_model_p->dim_fP_comm, main_model_p->fP_t_comm, main_model_p->fP_y_comm, false);
   odin_interpolate_check(main_model_p->dim_fc_t_noncomm, main_model_p->dim_fc_y_noncomm_1, 1, "fc_y_noncomm", "fc_noncomm");
   odin_interpolate_check(main_model_p->dim_fc_noncomm_1, main_model_p->dim_fc_y_noncomm_2, 2, "fc_y_noncomm", "fc_noncomm");
   odin_interpolate_check(main_model_p->dim_fc_noncomm_2, main_model_p->dim_fc_y_noncomm_3, 3, "fc_y_noncomm", "fc_noncomm");
   cinterpolate_free(main_model_p->interpolate_fc_noncomm);
-  main_model_p->interpolate_fc_noncomm = cinterpolate_alloc("linear", main_model_p->dim_fc_t_noncomm, main_model_p->dim_fc_noncomm, main_model_p->fc_t_noncomm, main_model_p->fc_y_noncomm);
+  main_model_p->interpolate_fc_noncomm = cinterpolate_alloc("linear", main_model_p->dim_fc_t_noncomm, main_model_p->dim_fc_noncomm, main_model_p->fc_t_noncomm, main_model_p->fc_y_noncomm, false);
   odin_interpolate_check(main_model_p->dim_fP_t_noncomm, main_model_p->dim_fP_y_noncomm_1, 1, "fP_y_noncomm", "fP_noncomm");
   odin_interpolate_check(main_model_p->dim_fP_noncomm, main_model_p->dim_fP_y_noncomm_2, 2, "fP_y_noncomm", "fP_noncomm");
   cinterpolate_free(main_model_p->interpolate_fP_noncomm);
-  main_model_p->interpolate_fP_noncomm = cinterpolate_alloc("linear", main_model_p->dim_fP_t_noncomm, main_model_p->dim_fP_noncomm, main_model_p->fP_t_noncomm, main_model_p->fP_y_noncomm);
+  main_model_p->interpolate_fP_noncomm = cinterpolate_alloc("linear", main_model_p->dim_fP_t_noncomm, main_model_p->dim_fP_noncomm, main_model_p->fP_t_noncomm, main_model_p->fP_y_noncomm, false);
   odin_interpolate_check(main_model_p->dim_n_t_comm, main_model_p->dim_n_y_comm_1, 1, "n_y_comm", "n_comm");
   odin_interpolate_check(main_model_p->dim_n_comm_1, main_model_p->dim_n_y_comm_2, 2, "n_y_comm", "n_comm");
   odin_interpolate_check(main_model_p->dim_n_comm_2, main_model_p->dim_n_y_comm_3, 3, "n_y_comm", "n_comm");
   cinterpolate_free(main_model_p->interpolate_n_comm);
-  main_model_p->interpolate_n_comm = cinterpolate_alloc("linear", main_model_p->dim_n_t_comm, main_model_p->dim_n_comm, main_model_p->n_t_comm, main_model_p->n_y_comm);
+  main_model_p->interpolate_n_comm = cinterpolate_alloc("linear", main_model_p->dim_n_t_comm, main_model_p->dim_n_comm, main_model_p->n_t_comm, main_model_p->n_y_comm, false);
   odin_interpolate_check(main_model_p->dim_n_t_noncomm, main_model_p->dim_n_y_noncomm_1, 1, "n_y_noncomm", "n_noncomm");
   odin_interpolate_check(main_model_p->dim_n_noncomm_1, main_model_p->dim_n_y_noncomm_2, 2, "n_y_noncomm", "n_noncomm");
   odin_interpolate_check(main_model_p->dim_n_noncomm_2, main_model_p->dim_n_y_noncomm_3, 3, "n_y_noncomm", "n_noncomm");
   cinterpolate_free(main_model_p->interpolate_n_noncomm);
-  main_model_p->interpolate_n_noncomm = cinterpolate_alloc("linear", main_model_p->dim_n_t_noncomm, main_model_p->dim_n_noncomm, main_model_p->n_t_noncomm, main_model_p->n_y_noncomm);
+  main_model_p->interpolate_n_noncomm = cinterpolate_alloc("linear", main_model_p->dim_n_t_noncomm, main_model_p->dim_n_noncomm, main_model_p->n_t_noncomm, main_model_p->n_y_noncomm, false);
   main_model_p->dim = main_model_p->offset_I45 + main_model_p->dim_I45;
   main_model_p->dim_output = main_model_p->offset_output_rate_move_out + main_model_p->dim_rate_move_out;
   return R_NilValue;
@@ -3307,23 +3350,29 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   cinterpolate_eval(t, main_model_p->interpolate_pfFSW, main_model_p->pfFSW);
   cinterpolate_eval(t, main_model_p->interpolate_c_comm, main_model_p->c_comm);
   cinterpolate_eval(t, main_model_p->interpolate_c_noncomm, main_model_p->c_noncomm);
-  cinterpolate_eval(t, main_model_p->interpolate_ART_eligible_CD4_above_500, &(main_model_p->ART_eligible_CD4_above_500));
-  cinterpolate_eval(t, main_model_p->interpolate_ART_eligible_CD4_350_500, &(main_model_p->ART_eligible_CD4_350_500));
-  cinterpolate_eval(t, main_model_p->interpolate_ART_eligible_CD4_200_349, &(main_model_p->ART_eligible_CD4_200_349));
-  cinterpolate_eval(t, main_model_p->interpolate_ART_eligible_CD4_below_200, &(main_model_p->ART_eligible_CD4_below_200));
+  double ART_eligible_CD4_above_500 = 0.0;
+  cinterpolate_eval(t, main_model_p->interpolate_ART_eligible_CD4_above_500, &ART_eligible_CD4_above_500);
+  double ART_eligible_CD4_350_500 = 0.0;
+  cinterpolate_eval(t, main_model_p->interpolate_ART_eligible_CD4_350_500, &ART_eligible_CD4_350_500);
+  double ART_eligible_CD4_200_349 = 0.0;
+  cinterpolate_eval(t, main_model_p->interpolate_ART_eligible_CD4_200_349, &ART_eligible_CD4_200_349);
+  double ART_eligible_CD4_below_200 = 0.0;
+  cinterpolate_eval(t, main_model_p->interpolate_ART_eligible_CD4_below_200, &ART_eligible_CD4_below_200);
   cinterpolate_eval(t, main_model_p->interpolate_testing_prob, main_model_p->testing_prob);
   cinterpolate_eval(t, main_model_p->interpolate_tau_intervention, main_model_p->tau_intervention);
   cinterpolate_eval(t, main_model_p->interpolate_rho_intervention, main_model_p->rho_intervention);
-  cinterpolate_eval(t, main_model_p->interpolate_prep_efficacious, &(main_model_p->prep_efficacious));
+  double prep_efficacious = 0.0;
+  cinterpolate_eval(t, main_model_p->interpolate_prep_efficacious, &prep_efficacious);
   for (int i = 0; i < main_model_p->dim_tau; ++i) {
     main_model_p->tau[i] = -log(1 - main_model_p->testing_prob[i]);
   }
   cinterpolate_eval(t, main_model_p->interpolate_viral_supp, main_model_p->viral_supp);
   for (int i = 0; i < main_model_p->dim_cumuARTinitiations_not_TasP; ++i) {
-    deriv_cumuARTinitiations_not_TasP[i] = (main_model_p->rho[i] * main_model_p->ART_eligible_CD4_above_500 * main_model_p->above_500_by_group[i]) * I22[i] + (main_model_p->rho[i] * main_model_p->ART_eligible_CD4_350_500) * I23[i] + (main_model_p->rho[i] * main_model_p->ART_eligible_CD4_200_349) * I24[i] + (main_model_p->rho[i] * main_model_p->ART_eligible_CD4_below_200) * I25[i];
+    deriv_cumuARTinitiations_not_TasP[i] = (main_model_p->rho[i] * ART_eligible_CD4_above_500 * main_model_p->above_500_by_group[i]) * I22[i] + (main_model_p->rho[i] * ART_eligible_CD4_350_500) * I23[i] + (main_model_p->rho[i] * ART_eligible_CD4_200_349) * I24[i] + (main_model_p->rho[i] * ART_eligible_CD4_below_200) * I25[i];
   }
   cinterpolate_eval(t, main_model_p->interpolate_infect_ART, main_model_p->infect_ART);
-  cinterpolate_eval(t, main_model_p->interpolate_epsilon, &(main_model_p->epsilon));
+  double epsilon = 0.0;
+  cinterpolate_eval(t, main_model_p->interpolate_epsilon, &epsilon);
   cinterpolate_eval(t, main_model_p->interpolate_prep_offered, main_model_p->prep_offered);
   for (int i = 0; i < main_model_p->dim_zeta; ++i) {
     main_model_p->zeta[i] = (main_model_p->tau[i] + main_model_p->tau_intervention[i]) * main_model_p->sigma[i] * main_model_p->prep_offered[i] * main_model_p->PrEPOnOff;
@@ -3353,13 +3402,13 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     deriv_cumuDeaths_On_ART[i] = (main_model_p->alpha32[i] + main_model_p->mu[i]) * I32[i] + (main_model_p->alpha33[i] + main_model_p->mu[i]) * I33[i] + (main_model_p->alpha34[i] + main_model_p->mu[i]) * I34[i] + (main_model_p->alpha35[i] + main_model_p->mu[i]) * I35[i];
   }
   for (int i = 0; i < main_model_p->dim_eP1a_effective; ++i) {
-    main_model_p->eP1a_effective[i] = main_model_p->eP1a[i] * main_model_p->prep_efficacious;
+    main_model_p->eP1a_effective[i] = main_model_p->eP1a[i] * prep_efficacious;
   }
   for (int i = 0; i < main_model_p->dim_eP1b_effective; ++i) {
-    main_model_p->eP1b_effective[i] = main_model_p->eP1b[i] * main_model_p->prep_efficacious;
+    main_model_p->eP1b_effective[i] = main_model_p->eP1b[i] * prep_efficacious;
   }
   for (int i = 0; i < main_model_p->dim_eP1c_effective; ++i) {
-    main_model_p->eP1c_effective[i] = main_model_p->eP1c[i] * main_model_p->prep_efficacious;
+    main_model_p->eP1c_effective[i] = main_model_p->eP1c[i] * prep_efficacious;
   }
   cinterpolate_eval(t, main_model_p->interpolate_fc_comm, main_model_p->fc_comm);
   cinterpolate_eval(t, main_model_p->interpolate_fP_comm, main_model_p->fP_comm);
@@ -3371,7 +3420,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     deriv_cumuHIVDeaths[i] = main_model_p->alpha01[i] * I01[i] + main_model_p->alpha11[i] * I11[i] + main_model_p->alpha02[i] * I02[i] + main_model_p->alpha03[i] * I03[i] + main_model_p->alpha04[i] * I04[i] + main_model_p->alpha05[i] * I05[i] + main_model_p->alpha22[i] * I22[i] + main_model_p->alpha23[i] * I23[i] + main_model_p->alpha24[i] * I24[i] + main_model_p->alpha25[i] * I25[i] + main_model_p->alpha32[i] * I32[i] + main_model_p->alpha33[i] * I33[i] + main_model_p->alpha34[i] * I34[i] + main_model_p->alpha35[i] * I35[i] + main_model_p->alpha42[i] * I42[i] + main_model_p->alpha43[i] * I43[i] + main_model_p->alpha44[i] * I44[i] + main_model_p->alpha45[i] * I45[i];
   }
   for (int i = 0; i < main_model_p->dim_cumuARTinitiations; ++i) {
-    deriv_cumuARTinitiations[i] = (main_model_p->rho_intervention[i] + main_model_p->rho[i] * main_model_p->ART_eligible_CD4_above_500 * main_model_p->above_500_by_group[i]) * I22[i] + (main_model_p->rho[i] * main_model_p->ART_eligible_CD4_350_500 + main_model_p->rho_intervention[i]) * I23[i] + (main_model_p->rho[i] * main_model_p->ART_eligible_CD4_200_349 + main_model_p->rho_intervention[i]) * I24[i] + (main_model_p->rho[i] * main_model_p->ART_eligible_CD4_below_200 + main_model_p->rho_intervention[i]) * I25[i];
+    deriv_cumuARTinitiations[i] = (main_model_p->rho_intervention[i] + main_model_p->rho[i] * ART_eligible_CD4_above_500 * main_model_p->above_500_by_group[i]) * I22[i] + (main_model_p->rho[i] * ART_eligible_CD4_350_500 + main_model_p->rho_intervention[i]) * I23[i] + (main_model_p->rho[i] * ART_eligible_CD4_200_349 + main_model_p->rho_intervention[i]) * I24[i] + (main_model_p->rho[i] * ART_eligible_CD4_below_200 + main_model_p->rho_intervention[i]) * I25[i];
   }
   for (int i = 0; i < main_model_p->dim_TasPinitiations; ++i) {
     deriv_TasPinitiations[i] = (main_model_p->rho_intervention[i]) * I22[i] + (main_model_p->rho_intervention[i]) * I23[i] + (main_model_p->rho_intervention[i]) * I24[i] + (main_model_p->rho_intervention[i]) * I25[i];
@@ -3402,7 +3451,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   }
   double Ntot = (main_model_p->Ncat == 9 ? (main_model_p->N[0] + main_model_p->N[1] + main_model_p->N[2] + main_model_p->N[3] + main_model_p->N[4] + main_model_p->N[5] + main_model_p->N[6] + main_model_p->N[7]) : odin_sum1(main_model_p->N, 0, main_model_p->dim_N - 1));
   for (int i = 0; i < main_model_p->dim_new_people_in_group; ++i) {
-    main_model_p->new_people_in_group[i] = (main_model_p->epsilon + main_model_p->mu[i] + main_model_p->nu) * Ntot * main_model_p->omega[i];
+    main_model_p->new_people_in_group[i] = (epsilon + main_model_p->mu[i] + main_model_p->nu) * Ntot * main_model_p->omega[i];
   }
   for (int i = 0; i < main_model_p->dim_new_people_in_group_FSW_only; ++i) {
     main_model_p->new_people_in_group_FSW_only[i] = main_model_p->rate_leave_pro_FSW * main_model_p->N[i] * main_model_p->fraction_FSW_foreign * main_model_p->FSW_ONLY[i];
@@ -3423,7 +3472,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     main_model_p->alphaItot[i] = main_model_p->alpha01[i] * I01[i] + main_model_p->alpha11[i] * I11[i] + main_model_p->alpha02[i] * I02[i] + main_model_p->alpha03[i] * I03[i] + main_model_p->alpha04[i] * I04[i] + main_model_p->alpha05[i] * I05[i] + main_model_p->alpha22[i] * I22[i] + main_model_p->alpha23[i] * I23[i] + main_model_p->alpha24[i] * I24[i] + main_model_p->alpha25[i] * I25[i] + main_model_p->alpha32[i] * I32[i] + main_model_p->alpha33[i] * I33[i] + main_model_p->alpha34[i] * I34[i] + main_model_p->alpha35[i] * I35[i] + main_model_p->alpha42[i] * I42[i] + main_model_p->alpha43[i] * I43[i] + main_model_p->alpha44[i] * I44[i] + main_model_p->alpha45[i] * I45[i];
   }
   for (int i = 0; i < main_model_p->dim_E0; ++i) {
-    main_model_p->E0[i] = (main_model_p->replaceDeaths == 1 ? main_model_p->mu[i] * main_model_p->N[i] + main_model_p->nu * main_model_p->N[i] + main_model_p->alphaItot[i] + main_model_p->epsilon * Ntot * main_model_p->omega[i] : main_model_p->new_people_in_group[i] + main_model_p->new_people_in_group_FSW_only[i]);
+    main_model_p->E0[i] = (main_model_p->replaceDeaths == 1 ? main_model_p->mu[i] * main_model_p->N[i] + main_model_p->nu * main_model_p->N[i] + main_model_p->alphaItot[i] + epsilon * Ntot * main_model_p->omega[i] : main_model_p->new_people_in_group[i] + main_model_p->new_people_in_group_FSW_only[i]);
   }
   for (int i = 0; i < main_model_p->dim_c_comm_balanced; ++i) {
     main_model_p->c_comm_balanced[i] = main_model_p->c_comm[i];
@@ -3674,28 +3723,28 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     deriv_I05[i] = main_model_p->infected_FSW_incoming * main_model_p->prop_FSW_I0_5 * main_model_p->E0[i] * main_model_p->pfFSW[i] + main_model_p->gamma04[i] * I04[i] - I05[i] * (main_model_p->RR_test_CD4200 * main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing + main_model_p->alpha05[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I05[i] + odin_sum2(main_model_p->in_I05, i, i, 0, main_model_p->dim_in_I05_2 - 1, main_model_p->dim_in_I05_1);
   }
   for (int i = 0; i < main_model_p->dim_I22; ++i) {
-    deriv_I22[i] = (main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I01[i] + main_model_p->test_rate_prep[i] * I11[i] + (main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I02[i] - I22[i] * (main_model_p->gamma22[i] + main_model_p->rho_intervention[i] + main_model_p->rho[i] * main_model_p->ART_eligible_CD4_above_500 * main_model_p->above_500_by_group[i] + main_model_p->alpha22[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I22[i] + odin_sum2(main_model_p->in_I22, i, i, 0, main_model_p->dim_in_I22_2 - 1, main_model_p->dim_in_I22_1);
+    deriv_I22[i] = (main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I01[i] + main_model_p->test_rate_prep[i] * I11[i] + (main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I02[i] - I22[i] * (main_model_p->gamma22[i] + main_model_p->rho_intervention[i] + main_model_p->rho[i] * ART_eligible_CD4_above_500 * main_model_p->above_500_by_group[i] + main_model_p->alpha22[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I22[i] + odin_sum2(main_model_p->in_I22, i, i, 0, main_model_p->dim_in_I22_2 - 1, main_model_p->dim_in_I22_1);
   }
   for (int i = 0; i < main_model_p->dim_I23; ++i) {
-    deriv_I23[i] = main_model_p->gamma22[i] * I22[i] + (main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I03[i] - I23[i] * (main_model_p->gamma23[i] + main_model_p->rho[i] * main_model_p->ART_eligible_CD4_350_500 + main_model_p->rho_intervention[i] + main_model_p->alpha23[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I23[i] + odin_sum2(main_model_p->in_I23, i, i, 0, main_model_p->dim_in_I23_2 - 1, main_model_p->dim_in_I23_1);
+    deriv_I23[i] = main_model_p->gamma22[i] * I22[i] + (main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I03[i] - I23[i] * (main_model_p->gamma23[i] + main_model_p->rho[i] * ART_eligible_CD4_350_500 + main_model_p->rho_intervention[i] + main_model_p->alpha23[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I23[i] + odin_sum2(main_model_p->in_I23, i, i, 0, main_model_p->dim_in_I23_2 - 1, main_model_p->dim_in_I23_1);
   }
   for (int i = 0; i < main_model_p->dim_I24; ++i) {
-    deriv_I24[i] = main_model_p->gamma23[i] * I23[i] + (main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I04[i] - I24[i] * (main_model_p->gamma24[i] + main_model_p->rho[i] * main_model_p->ART_eligible_CD4_200_349 + main_model_p->rho_intervention[i] + main_model_p->alpha24[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I24[i] + odin_sum2(main_model_p->in_I24, i, i, 0, main_model_p->dim_in_I24_2 - 1, main_model_p->dim_in_I24_1);
+    deriv_I24[i] = main_model_p->gamma23[i] * I23[i] + (main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I04[i] - I24[i] * (main_model_p->gamma24[i] + main_model_p->rho[i] * ART_eligible_CD4_200_349 + main_model_p->rho_intervention[i] + main_model_p->alpha24[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I24[i] + odin_sum2(main_model_p->in_I24, i, i, 0, main_model_p->dim_in_I24_2 - 1, main_model_p->dim_in_I24_1);
   }
   for (int i = 0; i < main_model_p->dim_I25; ++i) {
-    deriv_I25[i] = main_model_p->gamma24[i] * I24[i] + (main_model_p->RR_test_CD4200 * main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I05[i] - I25[i] * (main_model_p->rho[i] * main_model_p->ART_eligible_CD4_below_200 + main_model_p->rho_intervention[i] + main_model_p->alpha25[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I25[i] + odin_sum2(main_model_p->in_I25, i, i, 0, main_model_p->dim_in_I25_2 - 1, main_model_p->dim_in_I25_1);
+    deriv_I25[i] = main_model_p->gamma24[i] * I24[i] + (main_model_p->RR_test_CD4200 * main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I05[i] - I25[i] * (main_model_p->rho[i] * ART_eligible_CD4_below_200 + main_model_p->rho_intervention[i] + main_model_p->alpha25[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I25[i] + odin_sum2(main_model_p->in_I25, i, i, 0, main_model_p->dim_in_I25_2 - 1, main_model_p->dim_in_I25_1);
   }
   for (int i = 0; i < main_model_p->dim_I32; ++i) {
-    deriv_I32[i] = (main_model_p->rho[i] * main_model_p->ART_eligible_CD4_above_500 * main_model_p->above_500_by_group[i] + main_model_p->rho_intervention[i]) * I22[i] + main_model_p->iota[i] * I42[i] - I32[i] * (main_model_p->gamma32[i] + main_model_p->phi2[i] + main_model_p->alpha32[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I32[i] + odin_sum2(main_model_p->in_I32, i, i, 0, main_model_p->dim_in_I32_2 - 1, main_model_p->dim_in_I32_1);
+    deriv_I32[i] = (main_model_p->rho[i] * ART_eligible_CD4_above_500 * main_model_p->above_500_by_group[i] + main_model_p->rho_intervention[i]) * I22[i] + main_model_p->iota[i] * I42[i] - I32[i] * (main_model_p->gamma32[i] + main_model_p->phi2[i] + main_model_p->alpha32[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I32[i] + odin_sum2(main_model_p->in_I32, i, i, 0, main_model_p->dim_in_I32_2 - 1, main_model_p->dim_in_I32_1);
   }
   for (int i = 0; i < main_model_p->dim_I33; ++i) {
-    deriv_I33[i] = main_model_p->gamma32[i] * I32[i] + (main_model_p->rho[i] * main_model_p->ART_eligible_CD4_350_500 + main_model_p->rho_intervention[i]) * I23[i] + main_model_p->iota[i] * I43[i] - I33[i] * (main_model_p->gamma33[i] + main_model_p->phi3[i] + main_model_p->alpha33[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I33[i] + odin_sum2(main_model_p->in_I33, i, i, 0, main_model_p->dim_in_I33_2 - 1, main_model_p->dim_in_I33_1);
+    deriv_I33[i] = main_model_p->gamma32[i] * I32[i] + (main_model_p->rho[i] * ART_eligible_CD4_350_500 + main_model_p->rho_intervention[i]) * I23[i] + main_model_p->iota[i] * I43[i] - I33[i] * (main_model_p->gamma33[i] + main_model_p->phi3[i] + main_model_p->alpha33[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I33[i] + odin_sum2(main_model_p->in_I33, i, i, 0, main_model_p->dim_in_I33_2 - 1, main_model_p->dim_in_I33_1);
   }
   for (int i = 0; i < main_model_p->dim_I34; ++i) {
-    deriv_I34[i] = main_model_p->gamma33[i] * I33[i] + (main_model_p->rho[i] * main_model_p->ART_eligible_CD4_200_349 + main_model_p->rho_intervention[i]) * I24[i] + main_model_p->iota[i] * I44[i] - I34[i] * (main_model_p->gamma34[i] + main_model_p->phi4[i] + main_model_p->alpha34[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I34[i] + odin_sum2(main_model_p->in_I34, i, i, 0, main_model_p->dim_in_I34_2 - 1, main_model_p->dim_in_I34_1);
+    deriv_I34[i] = main_model_p->gamma33[i] * I33[i] + (main_model_p->rho[i] * ART_eligible_CD4_200_349 + main_model_p->rho_intervention[i]) * I24[i] + main_model_p->iota[i] * I44[i] - I34[i] * (main_model_p->gamma34[i] + main_model_p->phi4[i] + main_model_p->alpha34[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I34[i] + odin_sum2(main_model_p->in_I34, i, i, 0, main_model_p->dim_in_I34_2 - 1, main_model_p->dim_in_I34_1);
   }
   for (int i = 0; i < main_model_p->dim_I35; ++i) {
-    deriv_I35[i] = main_model_p->gamma34[i] * I34[i] + (main_model_p->rho[i] * main_model_p->ART_eligible_CD4_below_200 + main_model_p->rho_intervention[i]) * I25[i] + main_model_p->iota[i] * I45[i] - I35[i] * (main_model_p->phi5[i] + main_model_p->alpha35[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I35[i] + odin_sum2(main_model_p->in_I35, i, i, 0, main_model_p->dim_in_I35_2 - 1, main_model_p->dim_in_I35_1);
+    deriv_I35[i] = main_model_p->gamma34[i] * I34[i] + (main_model_p->rho[i] * ART_eligible_CD4_below_200 + main_model_p->rho_intervention[i]) * I25[i] + main_model_p->iota[i] * I45[i] - I35[i] * (main_model_p->phi5[i] + main_model_p->alpha35[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I35[i] + odin_sum2(main_model_p->in_I35, i, i, 0, main_model_p->dim_in_I35_2 - 1, main_model_p->dim_in_I35_1);
   }
   for (int i = 0; i < main_model_p->dim_I42; ++i) {
     deriv_I42[i] = main_model_p->phi2[i] * I32[i] - I42[i] * (main_model_p->gamma42[i] + main_model_p->iota[i] + main_model_p->alpha42[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I42[i] + odin_sum2(main_model_p->in_I42, i, i, 0, main_model_p->dim_in_I42_2 - 1, main_model_p->dim_in_I42_1);
@@ -3832,10 +3881,10 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     memcpy(output_alpha35_without_supp, main_model_p->alpha35_without_supp, main_model_p->dim_alpha35_without_supp * sizeof(double));
     output[7] = main_model_p->who_believe_comm;
     memcpy(output_above_500_by_group, main_model_p->above_500_by_group, main_model_p->dim_above_500_by_group * sizeof(double));
-    output[8] = main_model_p->ART_eligible_CD4_above_500;
-    output[9] = main_model_p->ART_eligible_CD4_350_500;
-    output[10] = main_model_p->ART_eligible_CD4_200_349;
-    output[11] = main_model_p->ART_eligible_CD4_below_200;
+    output[8] = ART_eligible_CD4_above_500;
+    output[9] = ART_eligible_CD4_350_500;
+    output[10] = ART_eligible_CD4_200_349;
+    output[11] = ART_eligible_CD4_below_200;
     memcpy(output_infect_ART_y, main_model_p->infect_ART_y, main_model_p->dim_infect_ART_y * sizeof(double));
     memcpy(output_infect_ART_t, main_model_p->infect_ART_t, main_model_p->dim_infect_ART_t * sizeof(double));
     memcpy(output_testing_prob, main_model_p->testing_prob, main_model_p->dim_testing_prob * sizeof(double));
@@ -3846,7 +3895,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     output[14] = main_model_p->fPa;
     output[15] = main_model_p->fPb;
     output[16] = main_model_p->fPc;
-    output[17] = main_model_p->prep_efficacious;
+    output[17] = prep_efficacious;
     memcpy(output_tau, main_model_p->tau, main_model_p->dim_tau * sizeof(double));
     memcpy(output_iota, main_model_p->iota, main_model_p->dim_iota * sizeof(double));
     memcpy(output_rho, main_model_p->rho, main_model_p->dim_rho * sizeof(double));
@@ -3962,7 +4011,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     output[56] = main_model_p->Nage;
     output[57] = main_model_p->dur_FSW;
     memcpy(output_infect_ART, main_model_p->infect_ART, main_model_p->dim_infect_ART * sizeof(double));
-    output[58] = main_model_p->epsilon;
+    output[58] = epsilon;
     memcpy(output_zeta, main_model_p->zeta, main_model_p->dim_zeta * sizeof(double));
     memcpy(output_prep_offered, main_model_p->prep_offered, main_model_p->dim_prep_offered * sizeof(double));
     memcpy(output_omega, main_model_p->omega, main_model_p->dim_omega * sizeof(double));
@@ -4002,7 +4051,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     memcpy(output_n_noncomm, main_model_p->n_noncomm, main_model_p->dim_n_noncomm * sizeof(double));
     double Ntot_inc_former_FSW_nonCot = odin_sum1(main_model_p->N, 0, main_model_p->dim_N - 1);
     output[59] = Ntot_inc_former_FSW_nonCot;
-    double new_people = main_model_p->epsilon * Ntot;
+    double new_people = epsilon * Ntot;
     output[60] = new_people;
     memcpy(output_new_people_in_group, main_model_p->new_people_in_group, main_model_p->dim_new_people_in_group * sizeof(double));
     memcpy(output_new_people_in_group_FSW_only, main_model_p->new_people_in_group_FSW_only, main_model_p->dim_new_people_in_group_FSW_only * sizeof(double));
@@ -4236,14 +4285,18 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   cinterpolate_eval(t, main_model_p->interpolate_c_noncomm, main_model_p->c_noncomm);
   output[7] = main_model_p->who_believe_comm;
   memcpy(output_above_500_by_group, main_model_p->above_500_by_group, main_model_p->dim_above_500_by_group * sizeof(double));
-  cinterpolate_eval(t, main_model_p->interpolate_ART_eligible_CD4_above_500, &(main_model_p->ART_eligible_CD4_above_500));
-  output[8] = main_model_p->ART_eligible_CD4_above_500;
-  cinterpolate_eval(t, main_model_p->interpolate_ART_eligible_CD4_350_500, &(main_model_p->ART_eligible_CD4_350_500));
-  output[9] = main_model_p->ART_eligible_CD4_350_500;
-  cinterpolate_eval(t, main_model_p->interpolate_ART_eligible_CD4_200_349, &(main_model_p->ART_eligible_CD4_200_349));
-  output[10] = main_model_p->ART_eligible_CD4_200_349;
-  cinterpolate_eval(t, main_model_p->interpolate_ART_eligible_CD4_below_200, &(main_model_p->ART_eligible_CD4_below_200));
-  output[11] = main_model_p->ART_eligible_CD4_below_200;
+  double ART_eligible_CD4_above_500 = 0.0;
+  cinterpolate_eval(t, main_model_p->interpolate_ART_eligible_CD4_above_500, &ART_eligible_CD4_above_500);
+  output[8] = ART_eligible_CD4_above_500;
+  double ART_eligible_CD4_350_500 = 0.0;
+  cinterpolate_eval(t, main_model_p->interpolate_ART_eligible_CD4_350_500, &ART_eligible_CD4_350_500);
+  output[9] = ART_eligible_CD4_350_500;
+  double ART_eligible_CD4_200_349 = 0.0;
+  cinterpolate_eval(t, main_model_p->interpolate_ART_eligible_CD4_200_349, &ART_eligible_CD4_200_349);
+  output[10] = ART_eligible_CD4_200_349;
+  double ART_eligible_CD4_below_200 = 0.0;
+  cinterpolate_eval(t, main_model_p->interpolate_ART_eligible_CD4_below_200, &ART_eligible_CD4_below_200);
+  output[11] = ART_eligible_CD4_below_200;
   memcpy(output_infect_ART_y, main_model_p->infect_ART_y, main_model_p->dim_infect_ART_y * sizeof(double));
   memcpy(output_infect_ART_t, main_model_p->infect_ART_t, main_model_p->dim_infect_ART_t * sizeof(double));
   cinterpolate_eval(t, main_model_p->interpolate_testing_prob, main_model_p->testing_prob);
@@ -4257,8 +4310,9 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   output[14] = main_model_p->fPa;
   output[15] = main_model_p->fPb;
   output[16] = main_model_p->fPc;
-  cinterpolate_eval(t, main_model_p->interpolate_prep_efficacious, &(main_model_p->prep_efficacious));
-  output[17] = main_model_p->prep_efficacious;
+  double prep_efficacious = 0.0;
+  cinterpolate_eval(t, main_model_p->interpolate_prep_efficacious, &prep_efficacious);
+  output[17] = prep_efficacious;
   for (int i = 0; i < main_model_p->dim_tau; ++i) {
     main_model_p->tau[i] = -log(1 - main_model_p->testing_prob[i]);
   }
@@ -4379,8 +4433,9 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   output[57] = main_model_p->dur_FSW;
   cinterpolate_eval(t, main_model_p->interpolate_infect_ART, main_model_p->infect_ART);
   memcpy(output_infect_ART, main_model_p->infect_ART, main_model_p->dim_infect_ART * sizeof(double));
-  cinterpolate_eval(t, main_model_p->interpolate_epsilon, &(main_model_p->epsilon));
-  output[58] = main_model_p->epsilon;
+  double epsilon = 0.0;
+  cinterpolate_eval(t, main_model_p->interpolate_epsilon, &epsilon);
+  output[58] = epsilon;
   cinterpolate_eval(t, main_model_p->interpolate_prep_offered, main_model_p->prep_offered);
   for (int i = 0; i < main_model_p->dim_zeta; ++i) {
     main_model_p->zeta[i] = (main_model_p->tau[i] + main_model_p->tau_intervention[i]) * main_model_p->sigma[i] * main_model_p->prep_offered[i] * main_model_p->PrEPOnOff;
@@ -4428,17 +4483,17 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   memcpy(output_beta_noncomm, main_model_p->beta_noncomm, main_model_p->dim_beta_noncomm * sizeof(double));
   memcpy(output_eP0, main_model_p->eP0, main_model_p->dim_eP0 * sizeof(double));
   for (int i = 0; i < main_model_p->dim_eP1a_effective; ++i) {
-    main_model_p->eP1a_effective[i] = main_model_p->eP1a[i] * main_model_p->prep_efficacious;
+    main_model_p->eP1a_effective[i] = main_model_p->eP1a[i] * prep_efficacious;
   }
   memcpy(output_eP1a_effective, main_model_p->eP1a_effective, main_model_p->dim_eP1a_effective * sizeof(double));
   memcpy(output_eP1a, main_model_p->eP1a, main_model_p->dim_eP1a * sizeof(double));
   for (int i = 0; i < main_model_p->dim_eP1b_effective; ++i) {
-    main_model_p->eP1b_effective[i] = main_model_p->eP1b[i] * main_model_p->prep_efficacious;
+    main_model_p->eP1b_effective[i] = main_model_p->eP1b[i] * prep_efficacious;
   }
   memcpy(output_eP1b_effective, main_model_p->eP1b_effective, main_model_p->dim_eP1b_effective * sizeof(double));
   memcpy(output_eP1b, main_model_p->eP1b, main_model_p->dim_eP1b * sizeof(double));
   for (int i = 0; i < main_model_p->dim_eP1c_effective; ++i) {
-    main_model_p->eP1c_effective[i] = main_model_p->eP1c[i] * main_model_p->prep_efficacious;
+    main_model_p->eP1c_effective[i] = main_model_p->eP1c[i] * prep_efficacious;
   }
   memcpy(output_eP1c_effective, main_model_p->eP1c_effective, main_model_p->dim_eP1c_effective * sizeof(double));
   memcpy(output_eP1c, main_model_p->eP1c, main_model_p->dim_eP1c * sizeof(double));
@@ -4461,10 +4516,10 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   double Ntot = (main_model_p->Ncat == 9 ? (main_model_p->N[0] + main_model_p->N[1] + main_model_p->N[2] + main_model_p->N[3] + main_model_p->N[4] + main_model_p->N[5] + main_model_p->N[6] + main_model_p->N[7]) : odin_sum1(main_model_p->N, 0, main_model_p->dim_N - 1));
   double Ntot_inc_former_FSW_nonCot = odin_sum1(main_model_p->N, 0, main_model_p->dim_N - 1);
   output[59] = Ntot_inc_former_FSW_nonCot;
-  double new_people = main_model_p->epsilon * Ntot;
+  double new_people = epsilon * Ntot;
   output[60] = new_people;
   for (int i = 0; i < main_model_p->dim_new_people_in_group; ++i) {
-    main_model_p->new_people_in_group[i] = (main_model_p->epsilon + main_model_p->mu[i] + main_model_p->nu) * Ntot * main_model_p->omega[i];
+    main_model_p->new_people_in_group[i] = (epsilon + main_model_p->mu[i] + main_model_p->nu) * Ntot * main_model_p->omega[i];
   }
   for (int i = 0; i < main_model_p->dim_new_people_in_group_FSW_only; ++i) {
     main_model_p->new_people_in_group_FSW_only[i] = main_model_p->rate_leave_pro_FSW * main_model_p->N[i] * main_model_p->fraction_FSW_foreign * main_model_p->FSW_ONLY[i];
@@ -4519,7 +4574,7 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
     main_model_p->alphaItot[i] = main_model_p->alpha01[i] * I01[i] + main_model_p->alpha11[i] * I11[i] + main_model_p->alpha02[i] * I02[i] + main_model_p->alpha03[i] * I03[i] + main_model_p->alpha04[i] * I04[i] + main_model_p->alpha05[i] * I05[i] + main_model_p->alpha22[i] * I22[i] + main_model_p->alpha23[i] * I23[i] + main_model_p->alpha24[i] * I24[i] + main_model_p->alpha25[i] * I25[i] + main_model_p->alpha32[i] * I32[i] + main_model_p->alpha33[i] * I33[i] + main_model_p->alpha34[i] * I34[i] + main_model_p->alpha35[i] * I35[i] + main_model_p->alpha42[i] * I42[i] + main_model_p->alpha43[i] * I43[i] + main_model_p->alpha44[i] * I44[i] + main_model_p->alpha45[i] * I45[i];
   }
   for (int i = 0; i < main_model_p->dim_E0; ++i) {
-    main_model_p->E0[i] = (main_model_p->replaceDeaths == 1 ? main_model_p->mu[i] * main_model_p->N[i] + main_model_p->nu * main_model_p->N[i] + main_model_p->alphaItot[i] + main_model_p->epsilon * Ntot * main_model_p->omega[i] : main_model_p->new_people_in_group[i] + main_model_p->new_people_in_group_FSW_only[i]);
+    main_model_p->E0[i] = (main_model_p->replaceDeaths == 1 ? main_model_p->mu[i] * main_model_p->N[i] + main_model_p->nu * main_model_p->N[i] + main_model_p->alphaItot[i] + epsilon * Ntot * main_model_p->omega[i] : main_model_p->new_people_in_group[i] + main_model_p->new_people_in_group_FSW_only[i]);
   }
   for (int i = 0; i < main_model_p->dim_new_acute_infected; ++i) {
     main_model_p->new_acute_infected[i] = main_model_p->infected_FSW_incoming * main_model_p->prop_FSW_I0_1 * main_model_p->E0[i] * main_model_p->pfFSW[i];
@@ -4688,7 +4743,7 @@ SEXP main_model_deriv_r(SEXP main_model_ptr, SEXP t, SEXP state) {
 // This will mostly be useful for debugging.
 SEXP main_model_contents(SEXP main_model_ptr) {
   main_model_pars *main_model_p = main_model_get_pointer(main_model_ptr, 1);
-  SEXP state = PROTECT(allocVector(VECSXP, 876));
+  SEXP state = PROTECT(allocVector(VECSXP, 870));
   SET_VECTOR_ELT(state, 0, ScalarInteger(main_model_p->odin_use_dde));
   SET_VECTOR_ELT(state, 1, ScalarReal(main_model_p->prop_FSW_I0_1));
   SET_VECTOR_ELT(state, 2, ScalarReal(main_model_p->prop_FSW_I0_2));
@@ -5858,15 +5913,9 @@ SEXP main_model_contents(SEXP main_model_ptr) {
   SET_VECTOR_ELT(state, 845, allocVector(REALSXP, main_model_p->dim_rate_move_out));
   memcpy(REAL(VECTOR_ELT(state, 845)), main_model_p->rate_move_out, main_model_p->dim_rate_move_out * sizeof(double));
   SET_VECTOR_ELT(state, 846, ScalarInteger(main_model_p->offset_output_rate_move_out));
-  SET_VECTOR_ELT(state, 851, ScalarReal(main_model_p->ART_eligible_CD4_above_500));
-  SET_VECTOR_ELT(state, 853, ScalarReal(main_model_p->ART_eligible_CD4_350_500));
-  SET_VECTOR_ELT(state, 855, ScalarReal(main_model_p->ART_eligible_CD4_200_349));
-  SET_VECTOR_ELT(state, 857, ScalarReal(main_model_p->ART_eligible_CD4_below_200));
-  SET_VECTOR_ELT(state, 862, ScalarReal(main_model_p->prep_efficacious));
-  SET_VECTOR_ELT(state, 866, ScalarReal(main_model_p->epsilon));
-  SET_VECTOR_ELT(state, 874, ScalarInteger(main_model_p->dim));
-  SET_VECTOR_ELT(state, 875, ScalarInteger(main_model_p->dim_output));
-  SEXP state_names = PROTECT(allocVector(STRSXP, 876));
+  SET_VECTOR_ELT(state, 868, ScalarInteger(main_model_p->dim));
+  SET_VECTOR_ELT(state, 869, ScalarInteger(main_model_p->dim_output));
+  SEXP state_names = PROTECT(allocVector(STRSXP, 870));
   SET_STRING_ELT(state_names, 0, mkChar("odin_use_dde"));
   SET_STRING_ELT(state_names, 1, mkChar("prop_FSW_I0_1"));
   SET_STRING_ELT(state_names, 2, mkChar("prop_FSW_I0_2"));
@@ -6718,31 +6767,25 @@ SEXP main_model_contents(SEXP main_model_ptr) {
   SET_STRING_ELT(state_names, 848, mkChar("interpolate_c_comm"));
   SET_STRING_ELT(state_names, 849, mkChar("interpolate_c_noncomm"));
   SET_STRING_ELT(state_names, 850, mkChar("interpolate_ART_eligible_CD4_above_500"));
-  SET_STRING_ELT(state_names, 851, mkChar("ART_eligible_CD4_above_500"));
-  SET_STRING_ELT(state_names, 852, mkChar("interpolate_ART_eligible_CD4_350_500"));
-  SET_STRING_ELT(state_names, 853, mkChar("ART_eligible_CD4_350_500"));
-  SET_STRING_ELT(state_names, 854, mkChar("interpolate_ART_eligible_CD4_200_349"));
-  SET_STRING_ELT(state_names, 855, mkChar("ART_eligible_CD4_200_349"));
-  SET_STRING_ELT(state_names, 856, mkChar("interpolate_ART_eligible_CD4_below_200"));
-  SET_STRING_ELT(state_names, 857, mkChar("ART_eligible_CD4_below_200"));
-  SET_STRING_ELT(state_names, 858, mkChar("interpolate_testing_prob"));
-  SET_STRING_ELT(state_names, 859, mkChar("interpolate_tau_intervention"));
-  SET_STRING_ELT(state_names, 860, mkChar("interpolate_rho_intervention"));
-  SET_STRING_ELT(state_names, 861, mkChar("interpolate_prep_efficacious"));
-  SET_STRING_ELT(state_names, 862, mkChar("prep_efficacious"));
-  SET_STRING_ELT(state_names, 863, mkChar("interpolate_viral_supp"));
-  SET_STRING_ELT(state_names, 864, mkChar("interpolate_infect_ART"));
-  SET_STRING_ELT(state_names, 865, mkChar("interpolate_epsilon"));
-  SET_STRING_ELT(state_names, 866, mkChar("epsilon"));
-  SET_STRING_ELT(state_names, 867, mkChar("interpolate_prep_offered"));
-  SET_STRING_ELT(state_names, 868, mkChar("interpolate_fc_comm"));
-  SET_STRING_ELT(state_names, 869, mkChar("interpolate_fP_comm"));
-  SET_STRING_ELT(state_names, 870, mkChar("interpolate_fc_noncomm"));
-  SET_STRING_ELT(state_names, 871, mkChar("interpolate_fP_noncomm"));
-  SET_STRING_ELT(state_names, 872, mkChar("interpolate_n_comm"));
-  SET_STRING_ELT(state_names, 873, mkChar("interpolate_n_noncomm"));
-  SET_STRING_ELT(state_names, 874, mkChar("dim"));
-  SET_STRING_ELT(state_names, 875, mkChar("dim_output"));
+  SET_STRING_ELT(state_names, 851, mkChar("interpolate_ART_eligible_CD4_350_500"));
+  SET_STRING_ELT(state_names, 852, mkChar("interpolate_ART_eligible_CD4_200_349"));
+  SET_STRING_ELT(state_names, 853, mkChar("interpolate_ART_eligible_CD4_below_200"));
+  SET_STRING_ELT(state_names, 854, mkChar("interpolate_testing_prob"));
+  SET_STRING_ELT(state_names, 855, mkChar("interpolate_tau_intervention"));
+  SET_STRING_ELT(state_names, 856, mkChar("interpolate_rho_intervention"));
+  SET_STRING_ELT(state_names, 857, mkChar("interpolate_prep_efficacious"));
+  SET_STRING_ELT(state_names, 858, mkChar("interpolate_viral_supp"));
+  SET_STRING_ELT(state_names, 859, mkChar("interpolate_infect_ART"));
+  SET_STRING_ELT(state_names, 860, mkChar("interpolate_epsilon"));
+  SET_STRING_ELT(state_names, 861, mkChar("interpolate_prep_offered"));
+  SET_STRING_ELT(state_names, 862, mkChar("interpolate_fc_comm"));
+  SET_STRING_ELT(state_names, 863, mkChar("interpolate_fP_comm"));
+  SET_STRING_ELT(state_names, 864, mkChar("interpolate_fc_noncomm"));
+  SET_STRING_ELT(state_names, 865, mkChar("interpolate_fP_noncomm"));
+  SET_STRING_ELT(state_names, 866, mkChar("interpolate_n_comm"));
+  SET_STRING_ELT(state_names, 867, mkChar("interpolate_n_noncomm"));
+  SET_STRING_ELT(state_names, 868, mkChar("dim"));
+  SET_STRING_ELT(state_names, 869, mkChar("dim_output"));
   setAttrib(state, R_NamesSymbol, state_names);
   UNPROTECT(2);
   return state;
@@ -7519,23 +7562,24 @@ double odin_sum2(double *x, int from_i, int to_i, int from_j, int to_j, int dim_
   return tot;
 }
 // This construction is to help odin
-#ifndef _CINTERPOLATE_H_
+#ifndef CINTERPOLTE_CINTERPOLATE_H_
 #include <cinterpolate/cinterpolate.h>
 #endif
 
 #include <R_ext/Rdynload.h>
 
 void * cinterpolate_alloc(const char *type, size_t n, size_t ny,
-                          double *x, double *y) {
+                          double *x, double *y, bool auto_clean) {
   typedef void* interpolate_alloc_t(const char *, size_t, size_t,
-                                    double*, double*);
+                                    double*, double*, bool);
   static interpolate_alloc_t *fun;
   if (fun == NULL) {
     fun = (interpolate_alloc_t*)
       R_GetCCallable("cinterpolate", "interpolate_alloc");
   }
-  return fun(type, n, ny, x, y);
+  return fun(type, n, ny, x, y, auto_clean);
 }
+
 
 int cinterpolate_eval(double x, void *obj, double *y) {
   typedef int interpolate_eval_t(double, void*, double*);
@@ -7546,6 +7590,7 @@ int cinterpolate_eval(double x, void *obj, double *y) {
   }
   return fun(x, obj, y);
 }
+
 
 void cinterpolate_free(void *obj) {
   typedef int interpolate_free_t(void*);
