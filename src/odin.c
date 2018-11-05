@@ -856,6 +856,9 @@ typedef struct main_model_pars {
   int dim_rate_move_out;
   double *rate_move_out;
   int offset_output_rate_move_out;
+  int dim_rate_move_out_PrEP;
+  double *rate_move_out_PrEP;
+  int offset_output_rate_move_out_PrEP;
   void *interpolate_pfFSW;
   void *interpolate_c_comm;
   void *interpolate_c_noncomm;
@@ -1277,6 +1280,7 @@ SEXP main_model_create(SEXP user, SEXP odin_use_dde) {
   main_model_p->in_I45 = NULL;
   main_model_p->rate_move_in = NULL;
   main_model_p->rate_move_out = NULL;
+  main_model_p->rate_move_out_PrEP = NULL;
   SEXP main_model_ptr = PROTECT(R_MakeExternalPtr(main_model_p, R_NilValue, R_NilValue));
   R_RegisterCFinalizer(main_model_ptr, main_model_finalize);
   main_model_set_user(main_model_p, user);
@@ -2834,6 +2838,11 @@ SEXP main_model_set_user(main_model_pars *main_model_p, SEXP user) {
   main_model_p->rate_move_out = (double*) Calloc(main_model_p->dim_rate_move_out, double);
   main_model_p->offset_output_rate_move_out = main_model_p->offset_output_rate_move_in + main_model_p->dim_rate_move_in;
   get_user_array(user, "rate_move_out", true, main_model_p->rate_move_out, 1, main_model_p->dim_rate_move_out);
+  Free(main_model_p->rate_move_out_PrEP);
+  main_model_p->dim_rate_move_out_PrEP = main_model_p->Ncat;
+  main_model_p->rate_move_out_PrEP = (double*) Calloc(main_model_p->dim_rate_move_out_PrEP, double);
+  main_model_p->offset_output_rate_move_out_PrEP = main_model_p->offset_output_rate_move_out + main_model_p->dim_rate_move_out;
+  get_user_array(user, "rate_move_out_PrEP", true, main_model_p->rate_move_out_PrEP, 1, main_model_p->dim_rate_move_out_PrEP);
   odin_interpolate_check(main_model_p->dim_pfFSW_t, main_model_p->dim_pfFSW_y_1, 1, "pfFSW_y", "pfFSW");
   odin_interpolate_check(main_model_p->dim_pfFSW, main_model_p->dim_pfFSW_y_2, 2, "pfFSW_y", "pfFSW");
   cinterpolate_free(main_model_p->interpolate_pfFSW);
@@ -2917,7 +2926,7 @@ SEXP main_model_set_user(main_model_pars *main_model_p, SEXP user) {
   cinterpolate_free(main_model_p->interpolate_n_noncomm);
   main_model_p->interpolate_n_noncomm = cinterpolate_alloc("linear", main_model_p->dim_n_t_noncomm, main_model_p->dim_n_noncomm, main_model_p->n_t_noncomm, main_model_p->n_y_noncomm, false);
   main_model_p->dim = main_model_p->offset_I45 + main_model_p->dim_I45;
-  main_model_p->dim_output = main_model_p->offset_output_rate_move_out + main_model_p->dim_rate_move_out;
+  main_model_p->dim_output = main_model_p->offset_output_rate_move_out_PrEP + main_model_p->dim_rate_move_out_PrEP;
   return R_NilValue;
 }
 // Wrapper around this for use from R.
@@ -3200,6 +3209,7 @@ void main_model_finalize(SEXP main_model_ptr) {
     Free(main_model_p->in_I45);
     Free(main_model_p->rate_move_in);
     Free(main_model_p->rate_move_out);
+    Free(main_model_p->rate_move_out_PrEP);
     cinterpolate_free(main_model_p->interpolate_pfFSW);
     cinterpolate_free(main_model_p->interpolate_c_comm);
     cinterpolate_free(main_model_p->interpolate_c_noncomm);
@@ -3692,18 +3702,6 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   for (int i = 0; i < main_model_p->dim_S0; ++i) {
     deriv_S0[i] = main_model_p->E0[i] * (1 - main_model_p->infected_FSW_incoming * main_model_p->pfFSW[i]) - S0[i] * main_model_p->lambda_sum_0[i] - S0[i] * main_model_p->mu[i] - S0[i] * main_model_p->nu + main_model_p->rate_move_out[i] * S0[i] + odin_sum2(main_model_p->in_S0, i, i, 0, main_model_p->dim_in_S0_2 - 1, main_model_p->dim_in_S0_1) - S0[i] * main_model_p->zeta[i];
   }
-  for (int i = 0; i < main_model_p->dim_S1a; ++i) {
-    deriv_S1a[i] = main_model_p->E1a[i] - S1a[i] * main_model_p->lambda_sum_1a[i] - S1a[i] * main_model_p->mu[i] - S1a[i] * main_model_p->nu + main_model_p->rate_move_out[i] * S1a[i] + odin_sum2(main_model_p->in_S1a, i, i, 0, main_model_p->dim_in_S1a_2 - 1, main_model_p->dim_in_S1a_1);
-  }
-  for (int i = 0; i < main_model_p->dim_S1b; ++i) {
-    deriv_S1b[i] = main_model_p->E1b[i] - S1b[i] * main_model_p->lambda_sum_1b[i] - S1b[i] * main_model_p->mu[i] - S1b[i] * main_model_p->nu + main_model_p->rate_move_out[i] * S1b[i] + odin_sum2(main_model_p->in_S1b, i, i, 0, main_model_p->dim_in_S1b_2 - 1, main_model_p->dim_in_S1b_1);
-  }
-  for (int i = 0; i < main_model_p->dim_S1c; ++i) {
-    deriv_S1c[i] = main_model_p->E1c[i] - S1c[i] * main_model_p->lambda_sum_1c[i] - S1c[i] * main_model_p->mu[i] - S1c[i] * main_model_p->nu + main_model_p->rate_move_out[i] * S1c[i] + odin_sum2(main_model_p->in_S1c, i, i, 0, main_model_p->dim_in_S1c_2 - 1, main_model_p->dim_in_S1c_1);
-  }
-  for (int i = 0; i < main_model_p->dim_S1d; ++i) {
-    deriv_S1d[i] = main_model_p->E1d[i] - S1d[i] * main_model_p->lambda_sum_1d[i] - S1d[i] * main_model_p->mu[i] - S1d[i] * main_model_p->nu + main_model_p->rate_move_out[i] * S1d[i] + odin_sum2(main_model_p->in_S1d, i, i, 0, main_model_p->dim_in_S1d_2 - 1, main_model_p->dim_in_S1d_1);
-  }
   for (int i = 0; i < main_model_p->dim_I01; ++i) {
     deriv_I01[i] = main_model_p->infected_FSW_incoming * main_model_p->prop_FSW_I0_1 * main_model_p->E0[i] * main_model_p->pfFSW[i] + S0[i] * main_model_p->lambda_sum_0[i] + S1d[i] * main_model_p->lambda_sum_1d[i] - I01[i] * (main_model_p->gamma01[i] + main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing + main_model_p->alpha01[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I01[i] + odin_sum2(main_model_p->in_I01, i, i, 0, main_model_p->dim_in_I01_2 - 1, main_model_p->dim_in_I01_1) + main_model_p->kappa1[i] * I11[i];
   }
@@ -3757,6 +3755,18 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
   }
   for (int i = 0; i < main_model_p->dim_I45; ++i) {
     deriv_I45[i] = main_model_p->gamma44[i] * I44[i] + main_model_p->phi5[i] * I35[i] - I45[i] * (main_model_p->iota[i] + main_model_p->alpha45[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I45[i] + odin_sum2(main_model_p->in_I45, i, i, 0, main_model_p->dim_in_I45_2 - 1, main_model_p->dim_in_I45_1);
+  }
+  for (int i = 0; i < main_model_p->dim_S1a; ++i) {
+    deriv_S1a[i] = main_model_p->E1a[i] - S1a[i] * main_model_p->lambda_sum_1a[i] - S1a[i] * main_model_p->mu[i] - S1a[i] * main_model_p->nu + main_model_p->rate_move_out_PrEP[i] * S1a[i] + odin_sum2(main_model_p->in_S1a, i, i, 0, main_model_p->dim_in_S1a_2 - 1, main_model_p->dim_in_S1a_1);
+  }
+  for (int i = 0; i < main_model_p->dim_S1b; ++i) {
+    deriv_S1b[i] = main_model_p->E1b[i] - S1b[i] * main_model_p->lambda_sum_1b[i] - S1b[i] * main_model_p->mu[i] - S1b[i] * main_model_p->nu + main_model_p->rate_move_out_PrEP[i] * S1b[i] + odin_sum2(main_model_p->in_S1b, i, i, 0, main_model_p->dim_in_S1b_2 - 1, main_model_p->dim_in_S1b_1);
+  }
+  for (int i = 0; i < main_model_p->dim_S1c; ++i) {
+    deriv_S1c[i] = main_model_p->E1c[i] - S1c[i] * main_model_p->lambda_sum_1c[i] - S1c[i] * main_model_p->mu[i] - S1c[i] * main_model_p->nu + main_model_p->rate_move_out_PrEP[i] * S1c[i] + odin_sum2(main_model_p->in_S1c, i, i, 0, main_model_p->dim_in_S1c_2 - 1, main_model_p->dim_in_S1c_1);
+  }
+  for (int i = 0; i < main_model_p->dim_S1d; ++i) {
+    deriv_S1d[i] = main_model_p->E1d[i] - S1d[i] * main_model_p->lambda_sum_1d[i] - S1d[i] * main_model_p->mu[i] - S1d[i] * main_model_p->nu + main_model_p->rate_move_out_PrEP[i] * S1d[i] + odin_sum2(main_model_p->in_S1d, i, i, 0, main_model_p->dim_in_S1d_2 - 1, main_model_p->dim_in_S1d_1);
   }
   if (output != NULL) {
     double *output_infect_ART_y = output + 74;
@@ -3865,6 +3875,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     double *output_M_noncomm = output + main_model_p->offset_output_M_noncomm;
     double *output_rate_move_in = output + main_model_p->offset_output_rate_move_in;
     double *output_rate_move_out = output + main_model_p->offset_output_rate_move_out;
+    double *output_rate_move_out_PrEP = output + main_model_p->offset_output_rate_move_out_PrEP;
     memcpy(output_pfFSW, main_model_p->pfFSW, main_model_p->dim_pfFSW * sizeof(double));
     output[0] = main_model_p->infected_FSW_incoming;
     output[1] = main_model_p->prop_FSW_I0_1;
@@ -4132,6 +4143,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     double FSW_out = main_model_p->rate_move_out[0] * main_model_p->N[0];
     output[73] = FSW_out;
     memcpy(output_rate_move_out, main_model_p->rate_move_out, main_model_p->dim_rate_move_out * sizeof(double));
+    memcpy(output_rate_move_out_PrEP, main_model_p->rate_move_out_PrEP, main_model_p->dim_rate_move_out_PrEP * sizeof(double));
   }
 }
 
@@ -4266,6 +4278,7 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   double *output_M_noncomm = output + main_model_p->offset_output_M_noncomm;
   double *output_rate_move_in = output + main_model_p->offset_output_rate_move_in;
   double *output_rate_move_out = output + main_model_p->offset_output_rate_move_out;
+  double *output_rate_move_out_PrEP = output + main_model_p->offset_output_rate_move_out_PrEP;
   cinterpolate_eval(t, main_model_p->interpolate_pfFSW, main_model_p->pfFSW);
   memcpy(output_pfFSW, main_model_p->pfFSW, main_model_p->dim_pfFSW * sizeof(double));
   output[0] = main_model_p->infected_FSW_incoming;
@@ -4703,6 +4716,7 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   double FSW_out = main_model_p->rate_move_out[0] * main_model_p->N[0];
   output[73] = FSW_out;
   memcpy(output_rate_move_out, main_model_p->rate_move_out, main_model_p->dim_rate_move_out * sizeof(double));
+  memcpy(output_rate_move_out_PrEP, main_model_p->rate_move_out_PrEP, main_model_p->dim_rate_move_out_PrEP * sizeof(double));
 }
 
 // deSolve interface
@@ -4743,7 +4757,7 @@ SEXP main_model_deriv_r(SEXP main_model_ptr, SEXP t, SEXP state) {
 // This will mostly be useful for debugging.
 SEXP main_model_contents(SEXP main_model_ptr) {
   main_model_pars *main_model_p = main_model_get_pointer(main_model_ptr, 1);
-  SEXP state = PROTECT(allocVector(VECSXP, 870));
+  SEXP state = PROTECT(allocVector(VECSXP, 873));
   SET_VECTOR_ELT(state, 0, ScalarInteger(main_model_p->odin_use_dde));
   SET_VECTOR_ELT(state, 1, ScalarReal(main_model_p->prop_FSW_I0_1));
   SET_VECTOR_ELT(state, 2, ScalarReal(main_model_p->prop_FSW_I0_2));
@@ -5913,9 +5927,13 @@ SEXP main_model_contents(SEXP main_model_ptr) {
   SET_VECTOR_ELT(state, 845, allocVector(REALSXP, main_model_p->dim_rate_move_out));
   memcpy(REAL(VECTOR_ELT(state, 845)), main_model_p->rate_move_out, main_model_p->dim_rate_move_out * sizeof(double));
   SET_VECTOR_ELT(state, 846, ScalarInteger(main_model_p->offset_output_rate_move_out));
-  SET_VECTOR_ELT(state, 868, ScalarInteger(main_model_p->dim));
-  SET_VECTOR_ELT(state, 869, ScalarInteger(main_model_p->dim_output));
-  SEXP state_names = PROTECT(allocVector(STRSXP, 870));
+  SET_VECTOR_ELT(state, 847, ScalarInteger(main_model_p->dim_rate_move_out_PrEP));
+  SET_VECTOR_ELT(state, 848, allocVector(REALSXP, main_model_p->dim_rate_move_out_PrEP));
+  memcpy(REAL(VECTOR_ELT(state, 848)), main_model_p->rate_move_out_PrEP, main_model_p->dim_rate_move_out_PrEP * sizeof(double));
+  SET_VECTOR_ELT(state, 849, ScalarInteger(main_model_p->offset_output_rate_move_out_PrEP));
+  SET_VECTOR_ELT(state, 871, ScalarInteger(main_model_p->dim));
+  SET_VECTOR_ELT(state, 872, ScalarInteger(main_model_p->dim_output));
+  SEXP state_names = PROTECT(allocVector(STRSXP, 873));
   SET_STRING_ELT(state_names, 0, mkChar("odin_use_dde"));
   SET_STRING_ELT(state_names, 1, mkChar("prop_FSW_I0_1"));
   SET_STRING_ELT(state_names, 2, mkChar("prop_FSW_I0_2"));
@@ -6763,29 +6781,32 @@ SEXP main_model_contents(SEXP main_model_ptr) {
   SET_STRING_ELT(state_names, 844, mkChar("dim_rate_move_out"));
   SET_STRING_ELT(state_names, 845, mkChar("rate_move_out"));
   SET_STRING_ELT(state_names, 846, mkChar("offset_output_rate_move_out"));
-  SET_STRING_ELT(state_names, 847, mkChar("interpolate_pfFSW"));
-  SET_STRING_ELT(state_names, 848, mkChar("interpolate_c_comm"));
-  SET_STRING_ELT(state_names, 849, mkChar("interpolate_c_noncomm"));
-  SET_STRING_ELT(state_names, 850, mkChar("interpolate_ART_eligible_CD4_above_500"));
-  SET_STRING_ELT(state_names, 851, mkChar("interpolate_ART_eligible_CD4_350_500"));
-  SET_STRING_ELT(state_names, 852, mkChar("interpolate_ART_eligible_CD4_200_349"));
-  SET_STRING_ELT(state_names, 853, mkChar("interpolate_ART_eligible_CD4_below_200"));
-  SET_STRING_ELT(state_names, 854, mkChar("interpolate_testing_prob"));
-  SET_STRING_ELT(state_names, 855, mkChar("interpolate_tau_intervention"));
-  SET_STRING_ELT(state_names, 856, mkChar("interpolate_rho_intervention"));
-  SET_STRING_ELT(state_names, 857, mkChar("interpolate_prep_efficacious"));
-  SET_STRING_ELT(state_names, 858, mkChar("interpolate_viral_supp"));
-  SET_STRING_ELT(state_names, 859, mkChar("interpolate_infect_ART"));
-  SET_STRING_ELT(state_names, 860, mkChar("interpolate_epsilon"));
-  SET_STRING_ELT(state_names, 861, mkChar("interpolate_prep_offered"));
-  SET_STRING_ELT(state_names, 862, mkChar("interpolate_fc_comm"));
-  SET_STRING_ELT(state_names, 863, mkChar("interpolate_fP_comm"));
-  SET_STRING_ELT(state_names, 864, mkChar("interpolate_fc_noncomm"));
-  SET_STRING_ELT(state_names, 865, mkChar("interpolate_fP_noncomm"));
-  SET_STRING_ELT(state_names, 866, mkChar("interpolate_n_comm"));
-  SET_STRING_ELT(state_names, 867, mkChar("interpolate_n_noncomm"));
-  SET_STRING_ELT(state_names, 868, mkChar("dim"));
-  SET_STRING_ELT(state_names, 869, mkChar("dim_output"));
+  SET_STRING_ELT(state_names, 847, mkChar("dim_rate_move_out_PrEP"));
+  SET_STRING_ELT(state_names, 848, mkChar("rate_move_out_PrEP"));
+  SET_STRING_ELT(state_names, 849, mkChar("offset_output_rate_move_out_PrEP"));
+  SET_STRING_ELT(state_names, 850, mkChar("interpolate_pfFSW"));
+  SET_STRING_ELT(state_names, 851, mkChar("interpolate_c_comm"));
+  SET_STRING_ELT(state_names, 852, mkChar("interpolate_c_noncomm"));
+  SET_STRING_ELT(state_names, 853, mkChar("interpolate_ART_eligible_CD4_above_500"));
+  SET_STRING_ELT(state_names, 854, mkChar("interpolate_ART_eligible_CD4_350_500"));
+  SET_STRING_ELT(state_names, 855, mkChar("interpolate_ART_eligible_CD4_200_349"));
+  SET_STRING_ELT(state_names, 856, mkChar("interpolate_ART_eligible_CD4_below_200"));
+  SET_STRING_ELT(state_names, 857, mkChar("interpolate_testing_prob"));
+  SET_STRING_ELT(state_names, 858, mkChar("interpolate_tau_intervention"));
+  SET_STRING_ELT(state_names, 859, mkChar("interpolate_rho_intervention"));
+  SET_STRING_ELT(state_names, 860, mkChar("interpolate_prep_efficacious"));
+  SET_STRING_ELT(state_names, 861, mkChar("interpolate_viral_supp"));
+  SET_STRING_ELT(state_names, 862, mkChar("interpolate_infect_ART"));
+  SET_STRING_ELT(state_names, 863, mkChar("interpolate_epsilon"));
+  SET_STRING_ELT(state_names, 864, mkChar("interpolate_prep_offered"));
+  SET_STRING_ELT(state_names, 865, mkChar("interpolate_fc_comm"));
+  SET_STRING_ELT(state_names, 866, mkChar("interpolate_fP_comm"));
+  SET_STRING_ELT(state_names, 867, mkChar("interpolate_fc_noncomm"));
+  SET_STRING_ELT(state_names, 868, mkChar("interpolate_fP_noncomm"));
+  SET_STRING_ELT(state_names, 869, mkChar("interpolate_n_comm"));
+  SET_STRING_ELT(state_names, 870, mkChar("interpolate_n_noncomm"));
+  SET_STRING_ELT(state_names, 871, mkChar("dim"));
+  SET_STRING_ELT(state_names, 872, mkChar("dim_output"));
   setAttrib(state, R_NamesSymbol, state_names);
   UNPROTECT(2);
   return state;
@@ -6892,8 +6913,8 @@ SEXP main_model_variable_order(SEXP main_model_ptr) {
 SEXP main_model_output_order(SEXP main_model_ptr) {
   main_model_pars *main_model_p = main_model_get_pointer(main_model_ptr, 1);
   int *tmp;
-  SEXP state_len = PROTECT(allocVector(VECSXP, 180));
-  SEXP state_names = PROTECT(allocVector(STRSXP, 180));
+  SEXP state_len = PROTECT(allocVector(VECSXP, 181));
+  SEXP state_names = PROTECT(allocVector(STRSXP, 181));
   SET_VECTOR_ELT(state_len, 0, R_NilValue);
   SET_STRING_ELT(state_names, 0, mkChar("infected_FSW_incoming"));
   SET_VECTOR_ELT(state_len, 1, R_NilValue);
@@ -7308,6 +7329,8 @@ SEXP main_model_output_order(SEXP main_model_ptr) {
   SET_STRING_ELT(state_names, 178, mkChar("rate_move_in"));
   SET_VECTOR_ELT(state_len, 179, ScalarInteger(main_model_p->dim_rate_move_out));
   SET_STRING_ELT(state_names, 179, mkChar("rate_move_out"));
+  SET_VECTOR_ELT(state_len, 180, ScalarInteger(main_model_p->dim_rate_move_out_PrEP));
+  SET_STRING_ELT(state_names, 180, mkChar("rate_move_out_PrEP"));
   setAttrib(state_len, R_NamesSymbol, state_names);
   UNPROTECT(2);
   return state_len;

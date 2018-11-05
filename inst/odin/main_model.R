@@ -96,10 +96,10 @@ E1d[] = kappaa[i] * S1a[i] + kappab[i] * S1b[i] + kappac[i] * S1c[i]
 
 
 deriv(S0[]) = E0[i] * (1 - infected_FSW_incoming * pfFSW[i]) - S0[i] * lambda_sum_0[i] - S0[i] * mu[i] - S0[i] * nu + rate_move_out[i] * S0[i] + sum(in_S0[i, ]) - S0[i] * zeta[i]
-deriv(S1a[]) = E1a[i] - S1a[i] * lambda_sum_1a[i] - S1a[i] * mu[i] - S1a[i] * nu + rate_move_out[i] * S1a[i] + sum(in_S1a[i, ])
-deriv(S1b[]) = E1b[i] - S1b[i] * lambda_sum_1b[i] - S1b[i] * mu[i] - S1b[i] * nu + rate_move_out[i] * S1b[i] + sum(in_S1b[i, ])
-deriv(S1c[]) = E1c[i] - S1c[i] * lambda_sum_1c[i] - S1c[i] * mu[i] - S1c[i] * nu + rate_move_out[i] * S1c[i] + sum(in_S1c[i, ])
-deriv(S1d[]) = E1d[i] - S1d[i] * lambda_sum_1d[i] - S1d[i] * mu[i] - S1d[i] * nu + rate_move_out[i] * S1d[i] + sum(in_S1d[i, ])
+deriv(S1a[]) = E1a[i] - S1a[i] * lambda_sum_1a[i] - S1a[i] * mu[i] - S1a[i] * nu + rate_move_out_PrEP[i] * S1a[i] + sum(in_S1a[i, ])
+deriv(S1b[]) = E1b[i] - S1b[i] * lambda_sum_1b[i] - S1b[i] * mu[i] - S1b[i] * nu + rate_move_out_PrEP[i] * S1b[i] + sum(in_S1b[i, ])
+deriv(S1c[]) = E1c[i] - S1c[i] * lambda_sum_1c[i] - S1c[i] * mu[i] - S1c[i] * nu + rate_move_out_PrEP[i] * S1c[i] + sum(in_S1c[i, ])
+deriv(S1d[]) = E1d[i] - S1d[i] * lambda_sum_1d[i] - S1d[i] * mu[i] - S1d[i] * nu + rate_move_out_PrEP[i] * S1d[i] + sum(in_S1d[i, ])
 
 #primary infection
 deriv(I01[]) = infected_FSW_incoming * prop_FSW_I0_1 * E0[i] * pfFSW[i] + S0[i] * lambda_sum_0[i] + S1d[i] * lambda_sum_1d[i] - I01[i] * (gamma01[i] + tau[i] + tau_intervention[i] * TasP_testing + alpha01[i] + mu[i] + nu) + rate_move_out[i] * I01[i] + sum(in_I01[i, ]) +
@@ -232,6 +232,7 @@ output(new_people_in_group_FSW_only[]) = new_people_in_group_FSW_only
 
 rate_move_in[,] = user()
 rate_move_out[] = user()
+rate_move_out_PrEP[] = user()
 
 
 
@@ -771,6 +772,7 @@ output(FSW_in) = FSW_in
 
 output(rate_move_in[,]) = rate_move_in
 output(rate_move_out[]) = rate_move_out
+output(rate_move_out_PrEP[]) = rate_move_out_PrEP
 
 
 output(E0[]) = E0
@@ -1686,3 +1688,4 @@ dim(in_I45) <- c(Ncat, Ncat)
 
 dim(rate_move_in) <- c(Ncat, Ncat)
 dim(rate_move_out) <- Ncat
+dim(rate_move_out_PrEP) <- Ncat

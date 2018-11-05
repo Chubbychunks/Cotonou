@@ -539,7 +539,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     y$rate_move_in[6,5] = y$rate_leave_client  # moving from client to GPM
     y$rate_move_in[5,6] = y$prop_client_GPM * (y$rate_leave_client + y$muM + y$nu) # moving from GPM to client
 
-
+    y$rate_move_out_PrEP = y$rate_move_out
 
 
 
@@ -724,6 +724,7 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
 
     rate_move_in = matrix(0, nrow = Ncat, ncol = Ncat),
     rate_move_out = rep_len(0, Ncat),
+    rate_move_out_PrEP = rep_len(0, Ncat),
     epsilon_y = 0,
     rate_enter_sexual_pop_F = 0.4,
     rate_enter_sexual_pop_M = 0.4,
@@ -1094,6 +1095,9 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
 
     rate_move_in = matrix(0, nrow = Ncat, ncol = Ncat),
     rate_move_out = rep_len(0, Ncat),
+    rate_move_out_PrEP = rep_len(0, Ncat),
+
+
     epsilon_y = 0,
     rate_enter_sexual_pop_F = 0.4,
     rate_enter_sexual_pop_M = 0.4,
@@ -1754,6 +1758,8 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    prop_low_FSW_GPF = 0.005204931, # 757 / 145439
                    rate_move_in = matrix(0, ncol = Ncat, nrow = Ncat),
                    rate_move_out = rep_len(0, Ncat),
+                   rate_move_out_PrEP = rep_len(0, Ncat),
+
                    rate_enter_sexual_pop_F = 1,
                    rate_enter_sexual_pop_M = 1,
 
