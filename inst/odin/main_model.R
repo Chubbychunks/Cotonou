@@ -826,6 +826,17 @@ initial(cumu_PrEP_dropouts[]) = 0
 
 deriv(cumuARTREinitiations[]) = iota[i] * I42[i] + iota[i] * I43[i] + iota[i] * I44[i] + iota[i] * I45[i]
 
+# PrEP initiations + testing initiations + ART RE INITIATIONS
+deriv(cumuTested_approx[]) = zeta[i] * S0[i] + # PrEP
+  (tau[i] + tau_intervention[i] * TasP_testing) * I01[i] +
+  test_rate_prep[i] * I11[i] +
+  (tau[i] + tau_intervention[i] * TasP_testing) * I02[i] + # TESTING into I22
+  (tau[i] + tau_intervention[i] * TasP_testing) * I03[i] + # TESTING into I23
+  (tau[i] + tau_intervention[i] * TasP_testing) * I04[i] +  # TESTING into I24
+  (RR_test_CD4200*tau[i] + tau_intervention[i] * TasP_testing) * I05[i] + # TESTING into I25
+  iota[i] * I42[i] + iota[i] * I43[i] + iota[i] * I44[i] + iota[i] * I45[i] # re-initiations
+
+
 
 
 
@@ -1246,6 +1257,8 @@ cumuInf_init[] = user()
 
 initial(cumuHIVDeaths[]) = 0
 initial(cumuARTREinitiations[]) = 0
+initial(cumuTested_approx[]) = 0
+
 # initial(cumuTesting[]) = 0
 
 initial(cumuARTinitiations[]) = 0
@@ -1543,6 +1556,8 @@ dim(cumuHIVDeaths) = Ncat
 dim(cumuARTinitiations) = Ncat
 dim(TasPinitiations) = Ncat
 dim(cumuARTREinitiations) = Ncat
+dim(cumuTested_approx) = Ncat
+
 dim(dropouts) = Ncat
 # dim(cumuTesting) = Ncat
 
