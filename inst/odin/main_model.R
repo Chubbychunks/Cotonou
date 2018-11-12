@@ -220,6 +220,8 @@ fraction_FSW_foreign = user()
 FSW_ONLY[] = user()
 dim(FSW_ONLY) = Ncat
 
+output(rate_leave_pro_FSW) = rate_leave_pro_FSW
+
 dim(new_people_in_group) = Ncat
 output(new_people_in_group[]) = new_people_in_group
 
