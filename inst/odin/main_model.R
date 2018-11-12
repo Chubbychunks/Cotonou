@@ -213,7 +213,19 @@ output(new_people) = new_people
 new_people_in_group[] = (epsilon + mu[i] + nu) * Ntot * omega[i]
 
 
-new_people_in_group_FSW_only[] =  rate_leave_pro_FSW * N[i] * fraction_FSW_foreign * FSW_ONLY[i]
+# new_people_in_group_FSW_only[] =  rate_leave_pro_FSW * N[i] * fraction_FSW_foreign * FSW_ONLY[i]
+
+
+rate_leave_pro_FSW_weight_by_PrEP[] = rate_move_out_PrEP[i] * pc_all_FSW_On_PrEP/100 + rate_move_out[i] * (1-pc_all_FSW_On_PrEP/100)
+new_people_in_group_FSW_only[] =  -1 * rate_leave_pro_FSW_weight_by_PrEP[i] * N[i] * fraction_FSW_foreign * FSW_ONLY[i]
+
+
+output(rate_leave_pro_FSW_weight_by_PrEP[]) = rate_leave_pro_FSW_weight_by_PrEP
+dim(rate_leave_pro_FSW_weight_by_PrEP) = Ncat
+
+# output(new_people_in_group_FSW_only_test[]) = new_people_in_group_FSW_only_test
+# dim(new_people_in_group_FSW_only_test) = Ncat
+
 
 rate_leave_pro_FSW = user()
 fraction_FSW_foreign = user()

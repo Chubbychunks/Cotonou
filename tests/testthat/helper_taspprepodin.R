@@ -605,7 +605,9 @@ ranges_default = rbind(
   ART_recruit_rate_rest = c(0.5, 1.5),
 
   ART_reinit_rate_FSW = c(0.25, 1.5),
-  ART_reinit_rate_rest = c(0.25, 1.5)
+  ART_reinit_rate_rest = c(0.25, 1.5),
+
+  PrEPOnOff = 1
 
 
 

@@ -36,6 +36,29 @@ devtools::test()
 # |_| \_\\___/|_| \_| |_____\___/ \____/_/   \_\_____|
 #
 
+
+parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
+result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
+
+
+result$rate_leave_pro_FSW
+result$rate_leave_pro_FSW_weight_by_PrEP
+
+result$rate_move_out_PrEP
+result$rate_move_out
+
+result$new_people_in_group_FSW_only[,c(1)] == result$new_people_in_group_FSW_only_test[,c(1)]
+
+result$frac_N
+
+
+parameters <- lapply(parameters, function(x) {x$rate_move_out_PrEP[1] = 0; return(x)})
+result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
+
+result$new_people_in_group_FSW_only[,c(1)] == result$new_people_in_group_FSW_only_test[,c(1)]
+
+
+
 ART_data_points_lazymcmc = data.frame(time = c(2017, 2017, 2015),
                                       variable = c("Men", "Women","Pro FSW"),
                                       x = c(3908, 9784, 49))#,
