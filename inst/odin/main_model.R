@@ -1342,7 +1342,7 @@ output(gamma32[]) = gamma32
 output(gamma33[]) = gamma33
 output(gamma34[]) = gamma34
 
-
+output(phi2[]) = phi2
 
 gamma42[] = user()
 gamma43[] = user()
