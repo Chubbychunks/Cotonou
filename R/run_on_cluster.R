@@ -452,7 +452,11 @@ run_model_with_fit_cluster_multiple <- function(batch_size, number_simulations, 
     gc()
   }
 
-  return(list(max_fit, best_fit_pars, max_fit_minus_1, best_fit_pars_minus_1, number_simulations))
+
+  # lazy! I am running model twice
+  res_final = parallel::parLapply(NULL, best_fit_pars, cotonou::return_outputs, main_model, time = time, outputs = outputs)
+
+  return(list(max_fit, best_fit_pars, max_fit_minus_1, best_fit_pars_minus_1, number_simulations, res_final))
 
   # return(list(parameters[best_runs], likelihood_list, out, best_runs))
 }
@@ -551,6 +555,9 @@ run_model_with_fit_multiple <- function(batch_size, number_simulations, par_seq,
 
     gc()
   }
+
+
+
 
   return(list(max_fit, best_fit_pars, max_fit_minus_1, best_fit_pars_minus_1, prep_out))
 
