@@ -1447,7 +1447,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    ART_eligible_CD4_200_349_t = c(1985, 2002, 2012, 2015, 2016),
                    ART_eligible_CD4_below_200_t = c(1985, 2002, 2012, 2015, 2016),
 
-                   ART_eligible_CD4_above_500_y = c(0, 0, 0, 0, 0),
+                   ART_eligible_CD4_above_500_y = c(0, 0, 0, 0, 1),
                    ART_eligible_CD4_350_500_y = c(0, 0, 0, 1, 1),
                    ART_eligible_CD4_200_349_y = c(0, 0.1, 1, 1, 1),
                    ART_eligible_CD4_below_200_y = c(0, 1, 1, 1, 1),
