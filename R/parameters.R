@@ -889,7 +889,7 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     long_intervention = 0,
     above_500_by_group = c(1, 1, 1, 1, 1, 1, 1, 1, 1),
     FSW_eligible = 0,
-    GP_eligible = 0,
+    GP_eligible = 1,
     prev_non_ben_fsw_1993 = 0.55,
     prev_non_ben_fsw_2015 = 0.2,
     infected_FSW_incoming = 1,
@@ -1260,7 +1260,7 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     long_intervention = 0,
     above_500_by_group = c(1, 1, 1, 1, 1, 1, 1, 1, 1),
     FSW_eligible = 0,
-    GP_eligible = 0,
+    GP_eligible = 1,
 
     prev_non_ben_fsw_1993 = 0.55,
     prev_non_ben_fsw_2015 = 0.2,
@@ -1852,7 +1852,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    TasP_testing = 0,
                    long_intervention = 0,
                    FSW_eligible = 0,
-                   GP_eligible = 0,
+                   GP_eligible = 1,
                    pfFSW_t = c(1985, 1993, 2015, 2060),
 
                    pfFSW_y = matrix(c(rep(0, 9), 0.55, c(rep(0, 8)), 0.2, c(rep(0, 8)), 0.2, c(rep(0, 8))), ncol = 9, nrow = 4, byrow = T),
