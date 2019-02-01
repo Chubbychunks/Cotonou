@@ -691,6 +691,7 @@ best_set = list(
 # ranges ------------------------------------------------------------------
 ranges = rbind(
 
+  rate_move_out_PrEP_FSW = c(1,2),
 
   testing_prob_men_2006 = c(0.0975, 0.21),
   testing_prob_men_2008 = c(0.1, 0.26),
