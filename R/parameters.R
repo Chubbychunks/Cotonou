@@ -540,7 +540,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     y$rate_move_in[5,6] = y$prop_client_GPM * (y$rate_leave_client + y$muM + y$nu) # moving from GPM to client
 
     y$rate_move_out_PrEP = y$rate_move_out
-    y$rate_move_out_PrEP[1] = y$rate_move_out_PrEP_FSW
+    y$rate_move_out_PrEP[1] = -y$rate_move_out_PrEP_FSW
 
 
 
