@@ -1121,7 +1121,7 @@ output(Ntot) = Ntot
 output(B_check_comm) = B_check_comm
 output(B_check_noncomm) = B_check_noncomm
 
-output(N[]) = N # is it worth outputting N? Once we have ages, it'll be better to have separate Ns for risk groups... but eugene ages can make N a matrix!
+output(N[]) = N
 output(prev_FSW) = prev_FSW
 output(prev_client) = prev_client
 output(prev[]) = prev

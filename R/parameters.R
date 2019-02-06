@@ -11,7 +11,7 @@ FormerFSWtoGPF <- function(x) {
 
 #' parameters which depend on others, etc
 #'
-#' Eugene's function to be documented
+#' Lily's function to be documented
 #' @export
 #' @useDynLib cotonou
 fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years_seq) {
@@ -21,9 +21,9 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
 
 
-    if(y$prep_dropout - y$rate_move_out_PrEP_FSW - y$muF - 1/45 - 0.008 > 0)
+    if(y$prep_dropout - y$rate_leave_pro_FSW - y$muF - 1/45 - 0.008 > 0)
     {
-      y$PrEP_loss_to_follow_up <- y$prep_dropout - y$rate_move_out_PrEP_FSW - y$muF - 1/45 - 0.008
+      y$PrEP_loss_to_follow_up <- y$prep_dropout - y$rate_leave_pro_FSW - y$muF - 1/45 - 0.008
     } else {
       y$PrEP_loss_to_follow_up = 0
     }
@@ -540,7 +540,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
     y$rate_move_in[5,6] = y$prop_client_GPM * (y$rate_leave_client + y$muM + y$nu) # moving from GPM to client
 
     y$rate_move_out_PrEP = y$rate_move_out
-    y$rate_move_out_PrEP[1] = -y$rate_move_out_PrEP_FSW
+    # y$rate_move_out_PrEP[1] = -y$rate_move_out_PrEP_FSW
 
 
 
@@ -914,8 +914,7 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     testing_prob_women_2012 = 0.116,
 
     ART_recruit_rate_FSW = 1,
-    ART_reinit_rate_FSW = 1,
-    rate_move_out_PrEP_FSW = 0.3
+    ART_reinit_rate_FSW = 1
 
 
   )
@@ -1287,8 +1286,7 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     testing_prob_women_2012 = 0.116,
 
     ART_recruit_rate_FSW = 1,
-    ART_reinit_rate_FSW = 1,
-    rate_move_out_PrEP_FSW = 0.3
+    ART_reinit_rate_FSW = 1
 
 
 
@@ -1891,8 +1889,7 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    testing_prob_women_2012 = 0.116,
 
                    ART_recruit_rate_FSW = 1,
-                   ART_reinit_rate_FSW = 1,
-                   rate_move_out_PrEP_FSW = 0.3
+                   ART_reinit_rate_FSW = 1
 
 
 
