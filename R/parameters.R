@@ -20,6 +20,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   if(y$ignore_ranges_fc_c == 0) {
 
 
+    y$PrEP_reinit_OnOff_y = c(0, 0, y$PrEP_reinits_on, y$PrEP_reinits_on)
 
     if(y$prep_dropout - y$rate_leave_pro_FSW - y$muF - 1/45 - 0.008 > 0)
     {
@@ -914,7 +915,12 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     testing_prob_women_2012 = 0.116,
 
     ART_recruit_rate_FSW = 1,
-    ART_reinit_rate_FSW = 1
+    ART_reinit_rate_FSW = 1,
+
+    PrEP_reinit_OnOff_t = c(1985, 2017, 2017.01, 2060),
+    PrEP_reinit_OnOff_y = c(0, 0, 1, 1),
+
+    PrEP_reinits_on = 1
 
 
   )
@@ -1286,7 +1292,12 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     testing_prob_women_2012 = 0.116,
 
     ART_recruit_rate_FSW = 1,
-    ART_reinit_rate_FSW = 1
+    ART_reinit_rate_FSW = 1,
+
+    PrEP_reinit_OnOff_t = c(1985, 2017, 2017.01, 2060),
+    PrEP_reinit_OnOff_y = c(0, 0, 1, 1),
+
+    PrEP_reinits_on = 1
 
 
 
@@ -1889,7 +1900,12 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    testing_prob_women_2012 = 0.116,
 
                    ART_recruit_rate_FSW = 1,
-                   ART_reinit_rate_FSW = 1
+                   ART_reinit_rate_FSW = 1,
+
+                   PrEP_reinit_OnOff_t = c(1985, 2017, 2017.01, 2060),
+                   PrEP_reinit_OnOff_y = c(0, 0, 1, 1),
+
+                   PrEP_reinits_on = 1
 
 
 

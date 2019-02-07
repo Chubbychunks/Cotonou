@@ -89,10 +89,10 @@ prop_FSW_I0_5 = 0.178571429
 
 # births and prep movement
 E0[] = if(replaceDeaths == 1) mu[i] * N[i] + nu * N[i] + alphaItot[i] + epsilon * Ntot * omega[i]  else new_people_in_group[i] + new_people_in_group_FSW_only[i]
-E1a[] = zeta[i] * fPa * S0[i] - psia[i] * S1a[i] - kappaa[i] * S1a[i]
-E1b[] = zeta[i] * fPb * S0[i] + psia[i] * S1a[i] - psib[i] * S1b[i]  - kappab[i] * S1b[i]
-E1c[] = zeta[i] * fPc * S0[i] + psib[i] * S1b[i] - kappac[i] * S1c[i]
-E1d[] = kappaa[i] * S1a[i] + kappab[i] * S1b[i] + kappac[i] * S1c[i]
+E1a[] = zeta[i] * fPa * S0[i] - psia[i] * S1a[i] - kappaa[i] * S1a[i]  + zeta_re[i] * fPa * S1d[i]
+E1b[] = zeta[i] * fPb * S0[i] + psia[i] * S1a[i] - psib[i] * S1b[i]  - kappab[i] * S1b[i] + zeta_re[i] * fPb * S1d[i]
+E1c[] = zeta[i] * fPc * S0[i] + psib[i] * S1b[i] - kappac[i] * S1c[i] + zeta_re[i] * fPc * S1d[i]
+E1d[] = kappaa[i] * S1a[i] + kappab[i] * S1b[i] + kappac[i] * S1c[i] - S1d[i] * zeta_re[i]
 
 
 deriv(S0[]) = E0[i] * (1 - infected_FSW_incoming * pfFSW[i]) - S0[i] * lambda_sum_0[i] - S0[i] * mu[i] - S0[i] * nu + rate_move_out[i] * S0[i] + sum(in_S0[i, ]) - S0[i] * zeta[i]
@@ -475,6 +475,13 @@ n_noncomm[,] = interpolate(n_t_noncomm, n_y_noncomm, "linear")
 # prep_intervention is offering rate sigma is acceptance rate
 zeta[] = (tau[i] + tau_intervention[i]) * sigma[i] * prep_offered[i] * PrEPOnOff
 
+zeta_re[] = zeta[] * PrEP_reinit_OnOff
+
+PrEP_reinit_OnOff = interpolate(PrEP_reinit_OnOff_t, PrEP_reinit_OnOff_y, "constant")
+
+PrEP_reinit_OnOff_t[] = user()
+PrEP_reinit_OnOff_y[,] = user()
+
 tau_intervention_t[] = user()
 tau_intervention_y[,] = user()
 
@@ -517,6 +524,7 @@ output(fPc) = fPc
 dim(zeta) = Ncat
 
 output(zeta[]) = zeta
+output(zeta_re[]) = zeta_re
 
 dim(sigma) = Ncat
 sigma[] = user()
