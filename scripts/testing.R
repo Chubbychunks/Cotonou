@@ -692,7 +692,7 @@ best_set = list(
 ranges = rbind(
 
   # rate_move_out_PrEP_FSW = c(1,2),
-
+  PrEPOnOff = c(1,1),
   testing_prob_men_2006 = c(0.0975, 0.21),
   testing_prob_men_2008 = c(0.1, 0.26),
   testing_prob_men_2012 = c(0.058, 0.26), # NOTE 0.26 is from MICHEL 2008
@@ -952,7 +952,15 @@ ranges = rbind(
 outputs = c("S0", "S1a", "S1b","HIV_positive_On_ART","prep_efficacious", "S1c", "S1d", "prev", "frac_N", "Ntot", "epsilon", "rate_leave_client", "alphaItot", "prev_FSW", "prev_LowFSW", "prev_client", "prev_men", "prev_women", "c_comm_balanced", "c_noncomm_balanced", "who_believe_comm", "ART_coverage_FSW", "ART_coverage_men", "ART_coverage_women", "ART_coverage_all", "rho", "n_comm", "n_noncomm", "fc_comm", "fc_noncomm", "N", "cumuHIVDeaths", "lambda_0", "lambda_1a", "lambda_1b", "lambda_1c", "lambda_1d", "HIV_positive")
 
 
-CEA_outputs = unique(c("testpar","pfFSW", "prop_FSW_I0_1", "prop_FSW_I0_2", "prop_FSW_I0_3", "prop_FSW_I0_4", "prop_FSW_I0_5","prev_non_ben_fsw_1993",
+CEA_outputs = unique(c(
+  "PrEP_reinit_OnOff_t",
+  "PrEP_reinit_OnOff_y",
+  "PrEP_reinit_OnOff",
+  "zeta_re",
+
+  "PrEPinitiations",
+
+  "testpar","pfFSW", "prop_FSW_I0_1", "prop_FSW_I0_2", "prop_FSW_I0_3", "prop_FSW_I0_4", "prop_FSW_I0_5","prev_non_ben_fsw_1993",
                        "prep_efficacious","prev_non_ben_fsw_2015",
                        "gamma32_without_supp",
                        "gamma33_without_supp",
@@ -1310,12 +1318,23 @@ time_with_mid <- seq(epi_start, epi_end, length.out = (epi_end - epi_start + 0.5
 # result
 
 
-result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = time, ranges = ranges, outputs = outputs, prev_points = prev_points,
+result <- cotonou::run_model_with_fit(number_simulations, par_seq = par_seq, condom_seq = condom_seq, groups_seq = groups_seq, years_seq = years_seq, best_set = best_set, time = seq(1986, 2035), ranges = ranges, outputs = CEA_outputs, prev_points = prev_points,
                                       frac_N_discard_points = frac_N_discard_points_no_FSW_LB, Ntot_data_points = Ntot_data_points, ART_data_points = ART_data_points, PrEP_fitting = PrEP_fitting)
 
 
 
-result[[3]] = result[[2]]
+# result[[3]] = result[[2]]
+
+result[[3]][[1]]$zeta_re
+result[[3]][[1]]$PrEP_reinit_OnOff
+result[[3]][[1]]$PrEP_reinit_OnOff_t
+result[[3]][[1]]$PrEP_reinit_OnOff_y
+
+
+result[[3]][[1]]$PrEPinitiations
+
+
+
 
 
 # test to explore the effect of incoming FSW prevalence into the model,

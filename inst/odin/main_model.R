@@ -475,12 +475,20 @@ n_noncomm[,] = interpolate(n_t_noncomm, n_y_noncomm, "linear")
 # prep_intervention is offering rate sigma is acceptance rate
 zeta[] = (tau[i] + tau_intervention[i]) * sigma[i] * prep_offered[i] * PrEPOnOff
 
-zeta_re[] = zeta[] * PrEP_reinit_OnOff
+zeta_re[] = zeta[i] * PrEP_reinit_OnOff
+
+dim(zeta_re) = Ncat
+dim(PrEP_reinit_OnOff_t) = user()
+dim(PrEP_reinit_OnOff_y) = user()
+
+output(PrEP_reinit_OnOff_y[]) = PrEP_reinit_OnOff_y
+output(PrEP_reinit_OnOff_t[]) = PrEP_reinit_OnOff_t
 
 PrEP_reinit_OnOff = interpolate(PrEP_reinit_OnOff_t, PrEP_reinit_OnOff_y, "constant")
 
+output(PrEP_reinit_OnOff) =PrEP_reinit_OnOff
 PrEP_reinit_OnOff_t[] = user()
-PrEP_reinit_OnOff_y[,] = user()
+PrEP_reinit_OnOff_y[] = user()
 
 tau_intervention_t[] = user()
 tau_intervention_y[,] = user()
@@ -804,11 +812,11 @@ output(E1c[]) = E1c
 output(E1d[]) = E1d
 
 deriv(cumuInf[]) = S0[i] * lambda_sum_0[i] + S1a[i] * lambda_sum_1a[i] + S1b[i] * lambda_sum_1b[i] + S1c[i] * lambda_sum_1c[i] + S1d[i] * lambda_sum_1d[i]
-deriv(PrEPinitiations[]) = zeta[i] * S0[i]
+deriv(PrEPinitiations[]) = zeta[i] * S0[i] + S1d[i] * zeta_re[i]
 
-deriv(PrEPinitiations1a[])  = zeta[i] * fPa * S0[i]
-deriv(PrEPinitiations1b[])  = zeta[i] * fPb * S0[i]
-deriv(PrEPinitiations1c[])  = zeta[i] * fPc * S0[i]
+deriv(PrEPinitiations1a[])  = zeta[i] * fPa * S0[i] + zeta_re[i] * fPa * S1d[i]
+deriv(PrEPinitiations1b[])  = zeta[i] * fPb * S0[i] + zeta_re[i] * fPb * S1d[i]
+deriv(PrEPinitiations1c[])  = zeta[i] * fPc * S0[i] + zeta_re[i] * fPc * S1d[i]
 
 deriv(cumuDeaths_On_ART[]) = (alpha32[i] + mu[i]) * I32[i] + (alpha33[i] + mu[i]) * I33[i] + (alpha34[i] + mu[i]) * I34[i] + (alpha35[i] + mu[i]) * I35[i]
 initial(cumuDeaths_On_ART[]) = 0

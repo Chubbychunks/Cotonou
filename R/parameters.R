@@ -20,7 +20,7 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   if(y$ignore_ranges_fc_c == 0) {
 
 
-    y$PrEP_reinit_OnOff_y = c(0, 0, y$PrEP_reinits_on, y$PrEP_reinits_on)
+    # y$PrEP_reinit_OnOff_y = c(0, 0, y$PrEP_reinits_on, y$PrEP_reinits_on)
 
     if(y$prep_dropout - y$rate_leave_pro_FSW - y$muF - 1/45 - 0.008 > 0)
     {
