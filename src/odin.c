@@ -3510,7 +3510,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     deriv_cumuARTREinitiations[i] = main_model_p->iota[i] * I42[i] + main_model_p->iota[i] * I43[i] + main_model_p->iota[i] * I44[i] + main_model_p->iota[i] * I45[i];
   }
   for (int i = 0; i < main_model_p->dim_cumuTested_approx; ++i) {
-    deriv_cumuTested_approx[i] = main_model_p->zeta[i] * S0[i] + (main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I01[i] + main_model_p->test_rate_prep[i] * I11[i] + (main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I02[i] + (main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I03[i] + (main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I04[i] + (main_model_p->RR_test_CD4200 * main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I05[i] + main_model_p->iota[i] * I42[i] + main_model_p->iota[i] * I43[i] + main_model_p->iota[i] * I44[i] + main_model_p->iota[i] * I45[i];
+    deriv_cumuTested_approx[i] = (main_model_p->fPa + main_model_p->fPb + main_model_p->fPc) * main_model_p->zeta[i] * S0[i] + (main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I01[i] + main_model_p->test_rate_prep[i] * I11[i] + (main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I02[i] + (main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I03[i] + (main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I04[i] + (main_model_p->RR_test_CD4200 * main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing) * I05[i] + main_model_p->iota[i] * I42[i] + main_model_p->iota[i] * I43[i] + main_model_p->iota[i] * I44[i] + main_model_p->iota[i] * I45[i];
   }
   for (int i = 0; i < main_model_p->dim_dropouts; ++i) {
     deriv_dropouts[i] = main_model_p->phi2[i] * I32[i] + main_model_p->phi3[i] * I33[i] + main_model_p->phi4[i] * I34[i] + main_model_p->phi5[i] * I35[i];
@@ -3519,7 +3519,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     deriv_cumuAllDeaths[i] = (main_model_p->alpha01[i] + main_model_p->mu[i]) * I01[i] + (main_model_p->alpha11[i] + main_model_p->mu[i]) * I11[i] + (main_model_p->alpha02[i] + main_model_p->mu[i]) * I02[i] + (main_model_p->alpha03[i] + main_model_p->mu[i]) * I03[i] + (main_model_p->alpha04[i] + main_model_p->mu[i]) * I04[i] + (main_model_p->alpha05[i] + main_model_p->mu[i]) * I05[i] + (main_model_p->alpha22[i] + main_model_p->mu[i]) * I22[i] + (main_model_p->alpha23[i] + main_model_p->mu[i]) * I23[i] + (main_model_p->alpha24[i] + main_model_p->mu[i]) * I24[i] + (main_model_p->alpha25[i] + main_model_p->mu[i]) * I25[i] + (main_model_p->alpha32[i] + main_model_p->mu[i]) * I32[i] + (main_model_p->alpha33[i] + main_model_p->mu[i]) * I33[i] + (main_model_p->alpha34[i] + main_model_p->mu[i]) * I34[i] + (main_model_p->alpha35[i] + main_model_p->mu[i]) * I35[i] + (main_model_p->alpha42[i] + main_model_p->mu[i]) * I42[i] + (main_model_p->alpha43[i] + main_model_p->mu[i]) * I43[i] + (main_model_p->alpha44[i] + main_model_p->mu[i]) * I44[i] + (main_model_p->alpha45[i] + main_model_p->mu[i]) * I45[i] + main_model_p->mu[i] * (S0[i] + S1a[i] + S1b[i] + S1c[i] + S1d[i]);
   }
   for (int i = 0; i < main_model_p->dim_PrEPinitiations; ++i) {
-    deriv_PrEPinitiations[i] = main_model_p->zeta[i] * S0[i] + S1d[i] * main_model_p->zeta_re[i];
+    deriv_PrEPinitiations[i] = (main_model_p->fPa + main_model_p->fPb + main_model_p->fPc) * main_model_p->zeta[i] * S0[i] + S1d[i] * (main_model_p->fPa + main_model_p->fPb + main_model_p->fPc) * main_model_p->zeta_re[i];
   }
   for (int i = 0; i < main_model_p->dim_PrEPinitiations1a; ++i) {
     deriv_PrEPinitiations1a[i] = main_model_p->zeta[i] * main_model_p->fPa * S0[i] + main_model_p->zeta_re[i] * main_model_p->fPa * S1d[i];
@@ -3547,7 +3547,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     main_model_p->E1c[i] = main_model_p->zeta[i] * main_model_p->fPc * S0[i] + main_model_p->psib[i] * S1b[i] - main_model_p->kappac[i] * S1c[i] + main_model_p->zeta_re[i] * main_model_p->fPc * S1d[i];
   }
   for (int i = 0; i < main_model_p->dim_E1d; ++i) {
-    main_model_p->E1d[i] = main_model_p->kappaa[i] * S1a[i] + main_model_p->kappab[i] * S1b[i] + main_model_p->kappac[i] * S1c[i] - S1d[i] * main_model_p->zeta_re[i];
+    main_model_p->E1d[i] = main_model_p->kappaa[i] * S1a[i] + main_model_p->kappab[i] * S1b[i] + main_model_p->kappac[i] * S1c[i] - (main_model_p->fPa + main_model_p->fPb + main_model_p->fPc) * S1d[i] * main_model_p->zeta_re[i];
   }
   for (int i = 0; i < main_model_p->dim_alphaItot; ++i) {
     main_model_p->alphaItot[i] = main_model_p->alpha01[i] * I01[i] + main_model_p->alpha11[i] * I11[i] + main_model_p->alpha02[i] * I02[i] + main_model_p->alpha03[i] * I03[i] + main_model_p->alpha04[i] * I04[i] + main_model_p->alpha05[i] * I05[i] + main_model_p->alpha22[i] * I22[i] + main_model_p->alpha23[i] * I23[i] + main_model_p->alpha24[i] * I24[i] + main_model_p->alpha25[i] * I25[i] + main_model_p->alpha32[i] * I32[i] + main_model_p->alpha33[i] * I33[i] + main_model_p->alpha34[i] * I34[i] + main_model_p->alpha35[i] * I35[i] + main_model_p->alpha42[i] * I42[i] + main_model_p->alpha43[i] * I43[i] + main_model_p->alpha44[i] * I44[i] + main_model_p->alpha45[i] * I45[i];
@@ -3828,7 +3828,7 @@ void main_model_deriv(main_model_pars *main_model_p, double t, double *state, do
     main_model_p->E0[i] = (main_model_p->replaceDeaths == 1 ? main_model_p->mu[i] * main_model_p->N[i] + main_model_p->nu * main_model_p->N[i] + main_model_p->alphaItot[i] + epsilon * Ntot * main_model_p->omega[i] : main_model_p->new_people_in_group[i] + main_model_p->new_people_in_group_FSW_only[i]);
   }
   for (int i = 0; i < main_model_p->dim_S0; ++i) {
-    deriv_S0[i] = main_model_p->E0[i] * (1 - main_model_p->infected_FSW_incoming * main_model_p->pfFSW[i]) - S0[i] * main_model_p->lambda_sum_0[i] - S0[i] * main_model_p->mu[i] - S0[i] * main_model_p->nu + main_model_p->rate_move_out[i] * S0[i] + odin_sum2(main_model_p->in_S0, i, i, 0, main_model_p->dim_in_S0_2 - 1, main_model_p->dim_in_S0_1) - S0[i] * main_model_p->zeta[i];
+    deriv_S0[i] = main_model_p->E0[i] * (1 - main_model_p->infected_FSW_incoming * main_model_p->pfFSW[i]) - S0[i] * main_model_p->lambda_sum_0[i] - S0[i] * main_model_p->mu[i] - S0[i] * main_model_p->nu + main_model_p->rate_move_out[i] * S0[i] + odin_sum2(main_model_p->in_S0, i, i, 0, main_model_p->dim_in_S0_2 - 1, main_model_p->dim_in_S0_1) - (main_model_p->fPa + main_model_p->fPb + main_model_p->fPc) * S0[i] * main_model_p->zeta[i];
   }
   for (int i = 0; i < main_model_p->dim_I01; ++i) {
     deriv_I01[i] = main_model_p->infected_FSW_incoming * main_model_p->prop_FSW_I0_1 * main_model_p->E0[i] * main_model_p->pfFSW[i] + S0[i] * main_model_p->lambda_sum_0[i] + S1d[i] * main_model_p->lambda_sum_1d[i] - I01[i] * (main_model_p->gamma01[i] + main_model_p->tau[i] + main_model_p->tau_intervention[i] * main_model_p->TasP_testing + main_model_p->alpha01[i] + main_model_p->mu[i] + main_model_p->nu) + main_model_p->rate_move_out[i] * I01[i] + odin_sum2(main_model_p->in_I01, i, i, 0, main_model_p->dim_in_I01_2 - 1, main_model_p->dim_in_I01_1) + main_model_p->kappa1[i] * I11[i];
@@ -4680,7 +4680,7 @@ void main_model_output(main_model_pars *main_model_p, double t, double *state, d
   }
   memcpy(output_E1c, main_model_p->E1c, main_model_p->dim_E1c * sizeof(double));
   for (int i = 0; i < main_model_p->dim_E1d; ++i) {
-    main_model_p->E1d[i] = main_model_p->kappaa[i] * S1a[i] + main_model_p->kappab[i] * S1b[i] + main_model_p->kappac[i] * S1c[i] - S1d[i] * main_model_p->zeta_re[i];
+    main_model_p->E1d[i] = main_model_p->kappaa[i] * S1a[i] + main_model_p->kappab[i] * S1b[i] + main_model_p->kappac[i] * S1c[i] - (main_model_p->fPa + main_model_p->fPb + main_model_p->fPc) * S1d[i] * main_model_p->zeta_re[i];
   }
   memcpy(output_E1d, main_model_p->E1d, main_model_p->dim_E1d * sizeof(double));
   for (int i = 0; i < main_model_p->dim_alphaItot; ++i) {

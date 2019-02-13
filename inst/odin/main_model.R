@@ -92,10 +92,10 @@ E0[] = if(replaceDeaths == 1) mu[i] * N[i] + nu * N[i] + alphaItot[i] + epsilon 
 E1a[] = zeta[i] * fPa * S0[i] - psia[i] * S1a[i] - kappaa[i] * S1a[i]  + zeta_re[i] * fPa * S1d[i]
 E1b[] = zeta[i] * fPb * S0[i] + psia[i] * S1a[i] - psib[i] * S1b[i]  - kappab[i] * S1b[i] + zeta_re[i] * fPb * S1d[i]
 E1c[] = zeta[i] * fPc * S0[i] + psib[i] * S1b[i] - kappac[i] * S1c[i] + zeta_re[i] * fPc * S1d[i]
-E1d[] = kappaa[i] * S1a[i] + kappab[i] * S1b[i] + kappac[i] * S1c[i] - S1d[i] * zeta_re[i]
+E1d[] = kappaa[i] * S1a[i] + kappab[i] * S1b[i] + kappac[i] * S1c[i] - (fPa + fPb + fPc) * S1d[i] * zeta_re[i]
 
 
-deriv(S0[]) = E0[i] * (1 - infected_FSW_incoming * pfFSW[i]) - S0[i] * lambda_sum_0[i] - S0[i] * mu[i] - S0[i] * nu + rate_move_out[i] * S0[i] + sum(in_S0[i, ]) - S0[i] * zeta[i]
+deriv(S0[]) = E0[i] * (1 - infected_FSW_incoming * pfFSW[i]) - S0[i] * lambda_sum_0[i] - S0[i] * mu[i] - S0[i] * nu + rate_move_out[i] * S0[i] + sum(in_S0[i, ]) - (fPa + fPb + fPc) * S0[i] * zeta[i]
 deriv(S1a[]) = E1a[i] - S1a[i] * lambda_sum_1a[i] - S1a[i] * mu[i] - S1a[i] * nu + rate_move_out_PrEP[i] * S1a[i] + sum(in_S1a[i, ])
 deriv(S1b[]) = E1b[i] - S1b[i] * lambda_sum_1b[i] - S1b[i] * mu[i] - S1b[i] * nu + rate_move_out_PrEP[i] * S1b[i] + sum(in_S1b[i, ])
 deriv(S1c[]) = E1c[i] - S1c[i] * lambda_sum_1c[i] - S1c[i] * mu[i] - S1c[i] * nu + rate_move_out_PrEP[i] * S1c[i] + sum(in_S1c[i, ])
@@ -812,7 +812,7 @@ output(E1c[]) = E1c
 output(E1d[]) = E1d
 
 deriv(cumuInf[]) = S0[i] * lambda_sum_0[i] + S1a[i] * lambda_sum_1a[i] + S1b[i] * lambda_sum_1b[i] + S1c[i] * lambda_sum_1c[i] + S1d[i] * lambda_sum_1d[i]
-deriv(PrEPinitiations[]) = zeta[i] * S0[i] + S1d[i] * zeta_re[i]
+deriv(PrEPinitiations[]) = (fPa + fPb + fPc) * zeta[i] * S0[i] + S1d[i] * (fPa + fPb + fPc) * zeta_re[i]
 
 deriv(PrEPinitiations1a[])  = zeta[i] * fPa * S0[i] + zeta_re[i] * fPa * S1d[i]
 deriv(PrEPinitiations1b[])  = zeta[i] * fPb * S0[i] + zeta_re[i] * fPb * S1d[i]
@@ -857,7 +857,7 @@ initial(cumu_PrEP_dropouts[]) = 0
 deriv(cumuARTREinitiations[]) = iota[i] * I42[i] + iota[i] * I43[i] + iota[i] * I44[i] + iota[i] * I45[i]
 
 # PrEP initiations + testing initiations + ART RE INITIATIONS
-deriv(cumuTested_approx[]) = zeta[i] * S0[i] + # PrEP
+deriv(cumuTested_approx[]) = (fPa + fPb + fPc) * zeta[i] * S0[i] + # PrEP
   (tau[i] + tau_intervention[i] * TasP_testing) * I01[i] +
   test_rate_prep[i] * I11[i] +
   (tau[i] + tau_intervention[i] * TasP_testing) * I02[i] + # TESTING into I22
