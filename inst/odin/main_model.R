@@ -1231,6 +1231,12 @@ Nage = user()
 count_PrEP_1a = user()
 count_PrEP_1b = user()
 count_PrEP_1c = user()
+
+output(count_PrEP_1a) = count_PrEP_1a
+output(count_PrEP_1b) = count_PrEP_1b
+output(count_PrEP_1c) = count_PrEP_1c
+
+
 # do this for all vars!
 initial(S0[]) = S0_init[i]
 S0_init[] = user()
