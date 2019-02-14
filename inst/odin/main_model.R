@@ -1228,7 +1228,9 @@ output(dur_FSW) = dur_FSW
 Ncat = user()
 Nage = user()
 
-
+count_PrEP_1a = user()
+count_PrEP_1b = user()
+count_PrEP_1c = user()
 # do this for all vars!
 initial(S0[]) = S0_init[i]
 S0_init[] = user()
