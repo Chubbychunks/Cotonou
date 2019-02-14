@@ -812,11 +812,11 @@ output(E1c[]) = E1c
 output(E1d[]) = E1d
 
 deriv(cumuInf[]) = S0[i] * lambda_sum_0[i] + S1a[i] * lambda_sum_1a[i] + S1b[i] * lambda_sum_1b[i] + S1c[i] * lambda_sum_1c[i] + S1d[i] * lambda_sum_1d[i]
-deriv(PrEPinitiations[]) = (fPa + fPb + fPc) * zeta[i] * S0[i] + S1d[i] * (fPa + fPb + fPc) * zeta_re[i]
+deriv(PrEPinitiations[]) = (fPa * count_PrEP_1a + fPb * count_PrEP_1b + fPc * count_PrEP_1c) * zeta[i] * S0[i] + S1d[i] * (fPa * count_PrEP_1a + fPb * count_PrEP_1b + fPc * count_PrEP_1c) * zeta_re[i]
 
-deriv(PrEPinitiations1a[])  = zeta[i] * fPa * S0[i] + zeta_re[i] * fPa * S1d[i]
-deriv(PrEPinitiations1b[])  = zeta[i] * fPb * S0[i] + zeta_re[i] * fPb * S1d[i]
-deriv(PrEPinitiations1c[])  = zeta[i] * fPc * S0[i] + zeta_re[i] * fPc * S1d[i]
+deriv(PrEPinitiations1a[])  = zeta[i] * count_PrEP_1a * fPa * S0[i] + zeta_re[i] * count_PrEP_1a * fPa * S1d[i]
+deriv(PrEPinitiations1b[])  = zeta[i] * count_PrEP_1b * fPb * S0[i] + zeta_re[i] * count_PrEP_1b * fPb * S1d[i]
+deriv(PrEPinitiations1c[])  = zeta[i] * count_PrEP_1c * fPc * S0[i] + zeta_re[i] * count_PrEP_1c * fPc * S1d[i]
 
 deriv(cumuDeaths_On_ART[]) = (alpha32[i] + mu[i]) * I32[i] + (alpha33[i] + mu[i]) * I33[i] + (alpha34[i] + mu[i]) * I34[i] + (alpha35[i] + mu[i]) * I35[i]
 initial(cumuDeaths_On_ART[]) = 0
@@ -850,14 +850,14 @@ deriv(TasPinitiations[]) = (rho_intervention[i]) * I22[i] + (rho_intervention[i]
 
 deriv(dropouts[]) = phi2[i] * I32[i] + phi3[i] * I33[i] + phi4[i] * I34[i] + phi5[i] * I35[i]
 
-deriv(cumu_PrEP_dropouts[]) = kappaa[i] * S1a[i] + kappab[i] * S1b[i] + kappac[i] * S1c[i]
+deriv(cumu_PrEP_dropouts[]) = kappaa[i] * count_PrEP_1a * S1a[i] + kappab[i] * count_PrEP_1b * S1b[i] + kappac[i] * S1c[i] * count_PrEP_1c
 dim(cumu_PrEP_dropouts) = Ncat
 initial(cumu_PrEP_dropouts[]) = 0
 
 deriv(cumuARTREinitiations[]) = iota[i] * I42[i] + iota[i] * I43[i] + iota[i] * I44[i] + iota[i] * I45[i]
 
 # PrEP initiations + testing initiations + ART RE INITIATIONS
-deriv(cumuTested_approx[]) = (fPa + fPb + fPc) * zeta[i] * S0[i] + # PrEP
+deriv(cumuTested_approx[]) = (fPa * count_PrEP_1a + fPb * count_PrEP_1b + fPc * count_PrEP_1c) * zeta[i] * S0[i] + # PrEP
   (tau[i] + tau_intervention[i] * TasP_testing) * I01[i] +
   test_rate_prep[i] * I11[i] +
   (tau[i] + tau_intervention[i] * TasP_testing) * I02[i] + # TESTING into I22
@@ -1105,22 +1105,22 @@ Women_on_ART = (I32[1] + I33[1] + I34[1] + I35[1] +
 ART_sex_ratio = Women_on_ART/Men_on_ART
 output(ART_sex_ratio) = ART_sex_ratio
 
-pc_S1a = (S1a[1]) * 100 / (S1a[1] + S1b[1] + S1c[1])
-pc_S1b = (S1b[1]) * 100 / (S1a[1] + S1b[1] + S1c[1])
-pc_S1c = (S1c[1]) * 100 / (S1a[1] + S1b[1] + S1c[1])
+# pc_S1a = (S1a[1]) * 100 / (S1a[1] + S1b[1] + S1c[1])
+# pc_S1b = (S1b[1]) * 100 / (S1a[1] + S1b[1] + S1c[1])
+# pc_S1c = (S1c[1]) * 100 / (S1a[1] + S1b[1] + S1c[1])
+#
+# output(pc_S1a) = pc_S1a
+# output(pc_S1b) = pc_S1b
+# output(pc_S1c) = pc_S1c
 
-output(pc_S1a) = pc_S1a
-output(pc_S1b) = pc_S1b
-output(pc_S1c) = pc_S1c
-
-pc_susceptible_FSW_On_PrEP = (S1a[1] + S1b[1] + S1c[1]) * 100 / (S0[1] + S1a[1] + S1b[1] + S1c[1] + S1d[1])
-pc_all_FSW_On_PrEP = (S1a[1] + S1b[1] + S1c[1]) * 100 / (S0[1] + S1a[1] + S1b[1] + S1c[1] + S1d[1] + I01[1] + I11[1] + I02[1] + I03[1] + I04[1] + I05[1] +
+pc_susceptible_FSW_On_PrEP = (S1a[1] * count_PrEP_1a + S1b[1] * count_PrEP_1b + S1c[1] * count_PrEP_1c) * 100 / (S0[1] + S1a[1] + S1b[1] + S1c[1] + S1d[1])
+pc_all_FSW_On_PrEP = (S1a[1] * count_PrEP_1a + S1b[1] * count_PrEP_1b + S1c[1] * count_PrEP_1c) * 100 / (S0[1] + S1a[1] + S1b[1] + S1c[1] + S1d[1] + I01[1] + I11[1] + I02[1] + I03[1] + I04[1] + I05[1] +
                                                            I22[1] + I23[1] + I24[1] + I25[1] + I32[1] + I33[1] + I34[1] + I35[1] +
                                                            I42[1] + I43[1] + I44[1] + I45[1])
 output(pc_susceptible_FSW_On_PrEP) = pc_susceptible_FSW_On_PrEP
 output(pc_all_FSW_On_PrEP) = pc_all_FSW_On_PrEP
 
-FSW_On_PrEP_all_cats = S1a[1] + S1b[1] + S1c[1]
+FSW_On_PrEP_all_cats = S1a[1] * count_PrEP_1a + S1b[1] * count_PrEP_1b + S1c[1] * count_PrEP_1c
 output(FSW_On_PrEP_all_cats) = FSW_On_PrEP_all_cats
 
 output(Men_on_ART) = Men_on_ART

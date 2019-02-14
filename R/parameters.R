@@ -1905,7 +1905,12 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    PrEP_reinit_OnOff_t = c(1985, 2017, 2017.01, 2060),
                    PrEP_reinit_OnOff_y = c(0, 0, 0, 0),
 
-                   PrEP_reinits_on = 1
+                   PrEP_reinits_on = 1,
+
+                   count_PrEP_1a = 1,
+                   count_PrEP_1b = 1,
+                   count_PrEP_1c = 1
+
 
 
 
