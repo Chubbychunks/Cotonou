@@ -40,7 +40,7 @@ test_that("all compartments positive", {
   parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
-  xx <- result[c(grep("S[0-9]|I[0-9]", names(result)))]
+  xx <- result[c(grep("S[0-9]|I[0-9][0-9]", names(result)))]
 
 
   xx = xx[!names(xx) %in% c("pc_S1a", "pc_S1b", "pc_S1c")]
@@ -295,7 +295,7 @@ test_that("useful prep", {
   result2 = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
-  expect_true(sum(unlist(result1[c(grep("I[0-9]", names(result1)))])) < sum(unlist(result2[c(grep("I[0-9]", names(result2)))])))
+  expect_true(sum(unlist(result1[c(grep("cumuInf", names(result1)))])) < sum(unlist(result2[c(grep("cumuInf", names(result2)))])))
 
 })
 
@@ -1532,7 +1532,7 @@ test_that("zeta vs prevalence", {
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
-  xx <- result[c(grep("I[0-9][0-9]", names(result)))]
+  xx <- result[c(grep("cumuInf", names(result)))]
   N1 <- rowSums(do.call(cbind, xx))
 
   newpars <- lhs_parameters(1, set_null = "sigma", par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default)[[1]]$sigma
@@ -1704,11 +1704,11 @@ test_that("testing vs prevalence", {
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
                                  infected_FSW_incoming = 0,
-                                 PrEPOnOff = 1
+                                 PrEPOnOff = 0
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
-  xx <- result[c(grep("I[0-9][0-9]", names(result)))]
+  xx <- result[c(grep("cumuInf", names(result)))]
   N1 <- rowSums(do.call(cbind, xx))
 
   parameters <- lapply(parameters, function(x) modifyList(as.list(x), list(testing_prob_y =  x$testing_prob_y * 0.5)))
