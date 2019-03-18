@@ -110,7 +110,7 @@ test_that("omega keeps consistent population?", {
   parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default,
                                forced_pars = list(omega = c(0.01, 0.02, 0.3, 0.1, 0.12, 0.25, 0.1, 0.1, 0), beta_comm = c(0,0,0,0,0,0,0,0,0), beta_noncomm = c(0,0,0,0,0,0,0,0,0),
                                                   infected_FSW_incoming = 0, S0_init = c(100*0.01, 100*0.02, 100*0.3, 100*0.1, 100*0.12, 100*0.25, 100*0.1, 100*0.1, 100*0),I01_init = c(100*0.01, 100*0.02, 100*0.3, 100*0.1, 100*0.12, 100*0.25, 100*0.1, 100*0.1, 100*0),
-                                                  time = time_default, replaceDeaths = 1, movement = 0))
+                                                  time = time_default, replaceDeaths = 1, movement = 0), set_null = list("prep_intervention_y", "zetaa_y", "zetab_y", "zetac_y"))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
@@ -126,7 +126,7 @@ test_that("omega keeps consistent population even with HIV? recruitment to PrEP 
   parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default, forced_pars = list(omega = c(0.01, 0.02, 0.3, 0.1, 0.12, 0.25, 0.1, 0.1, 0),
                                                                                                                                                                                                                                                             S0_init = c(100*0.01, 100*0.02, 100*0.3, 100*0.1, 100*0.12, 100*0.25, 100*0.1, 100*0.1, 100*0),
                                                                                                                                                                                                                                                             I01_init = c(100*0.01, 100*0.02, 100*0.3, 100*0.1, 100*0.12, 100*0.25, 100*0.1, 100*0.1, 100*0),
-                                                                                                                                                                                                                                                            time = time_default, replaceDeaths = 1, movement = 0, eP1a = rep(0, 9), eP1b = rep(0, 9), eP1c = rep(0, 9)), set_null = list("zetaa_y", "zetab_y", "zetac_y"))
+                                                                                                                                                                                                                                                            time = time_default, replaceDeaths = 1, movement = 0, eP1a = rep(0, 9), eP1b = rep(0, 9), eP1c = rep(0, 9)), set_null = list("prep_intervention_y", "zetaa_y", "zetab_y", "zetac_y"))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
@@ -138,7 +138,7 @@ test_that("omega keeps consistent population even with HIV? recruitment to PrEP 
 })
 
 test_that("growth rate zero if replacing deaths and if no zeta - otherwise it slightly doesn't work :(", {
-  parameters <- lhs_parameters(1, replaceDeaths = 1, movement = 0, epsilon_y = c(0,0,0,0,0), par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default, set_null = list("zetaa_y", "zetab_y", "zetac_y"))
+  parameters <- lhs_parameters(1, replaceDeaths = 1, movement = 0, epsilon_y = c(0,0,0,0,0), par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default, time = time_default, set_null = list("prep_intervention_y", "zetaa_y", "zetab_y", "zetac_y"))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
@@ -1047,21 +1047,21 @@ test_that("prevalence", {
 
 
 
-test_that("various betas", {
-  parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(time = time_default,
-                                 n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1,PrEP_loss_to_follow_up = 0.1
-                               ))
-
-  expect_true(parameters[[1]]$beta_noncomm[1] == parameters[[1]]$betaMtoF_noncomm_FSW)
-  expect_true(parameters[[1]]$beta_noncomm[2] == parameters[[1]]$betaMtoF_noncomm)
-  expect_true(parameters[[1]]$beta_noncomm[3] == parameters[[1]]$betaMtoF_noncomm)
-  expect_true(parameters[[1]]$beta_noncomm[4] == parameters[[1]]$betaMtoF_noncomm)
-  expect_true(parameters[[1]]$beta_noncomm[5] == parameters[[1]]$betaFtoM_noncomm_client)
-  expect_true(parameters[[1]]$beta_noncomm[6] == parameters[[1]]$betaFtoM_noncomm)
-
-})
+# test_that("various betas", {
+#   parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
+#                                forced_pars = list(time = time_default,
+#                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),
+#                                  n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1,PrEP_loss_to_follow_up = 0.1
+#                                ))
+#
+#   expect_true(parameters[[1]]$beta_noncomm[1] == parameters[[1]]$betaMtoF_noncomm_FSW)
+#   expect_true(parameters[[1]]$beta_noncomm[2] == parameters[[1]]$betaMtoF_noncomm)
+#   expect_true(parameters[[1]]$beta_noncomm[3] == parameters[[1]]$betaMtoF_noncomm)
+#   expect_true(parameters[[1]]$beta_noncomm[4] == parameters[[1]]$betaMtoF_noncomm)
+#   expect_true(parameters[[1]]$beta_noncomm[5] == parameters[[1]]$betaFtoM_noncomm_client)
+#   expect_true(parameters[[1]]$beta_noncomm[6] == parameters[[1]]$betaFtoM_noncomm)
+#
+# })
 # increase beta, increase overall prevalence
 
 
@@ -2001,9 +2001,9 @@ test_that("if rate_leave_low_FSW is 0, then FSW low out should equal zero", {
 
 test_that("There should be no one but pro FSW on PrEP", {
   parameters <- lhs_parameters(1, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default,
-                               ranges = ranges_default,
-                               forced_pars = list(time = time_default
-                                                  ))
+                               ranges = ranges_default[which(rownames(ranges_default) != "rate_leave_pro_FSW"),],
+                               forced_pars = list(time = time_default, rate_leave_pro_FSW = 0))
+
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
 
 
