@@ -473,7 +473,7 @@ test_that("fc ec 1b", {
 # condom efficacy is 1 and frequency of condom use is NOT 1 - some infections
 test_that("fc ec 1c", {
   parameters <- lhs_parameters(1, Ncat = 9, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(betaMtF_noncomm = 0.001,
+                               forced_pars = list(
                                  fc_y_comm_1985 = matrix(1, ncol=9,nrow=9), fc_y_comm_1993 = matrix(1, ncol=9,nrow=9),
                                  fc_y_comm_1995 = matrix(1, ncol=9,nrow=9), fc_y_comm_1998 = matrix(1, ncol=9,nrow=9),
                                  fc_y_comm_2002 = matrix(1, ncol=9,nrow=9), fc_y_comm_2005 = matrix(1, ncol=9,nrow=9),
@@ -550,7 +550,7 @@ test_that("fP eP 1", {
 # PREP efficacy is NOT 1 and frequency of PREP use is 1 - some infections
 test_that("fP eP 1b", {
   parameters <- lhs_parameters(1, Ncat = 9, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(PrEPOnOff = 1, betaMtF_noncomm = 0.001,
+                               forced_pars = list(PrEPOnOff = 1,
                                  eP0 = rep(0.9, 9), eP1a = rep(1, 9), eP1b = rep(1, 9), eP1c = rep(1, 9),
                                  fP_y_comm = matrix(1, nrow = 5, ncol = 9), fP_y_noncomm = matrix(1, nrow = 5, ncol = 9),
                                  fP_t_comm = c(1985, 2014, 2015, 2016, 2030),  fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
@@ -565,7 +565,7 @@ test_that("fP eP 1b", {
   expect_true(sum(c(xx$I01[,5], xx$I11[,5], xx$I01[,6], xx$I11[,6])) > 0)
 
   parameters <- lhs_parameters(1, Ncat = 9, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(PrEPOnOff = 1, betaMtF_noncomm = 0.001,
+                               forced_pars = list(PrEPOnOff = 1,
                                  eP0 = rep(1, 9), eP1a = rep(0.9, 9), eP1b = rep(1, 9), eP1c = rep(1, 9), eP1d = rep(1, 9),
                                  fP_y_comm = matrix(1, nrow = 5, ncol = 9), fP_y_noncomm = matrix(1, nrow = 5, ncol = 9),
                                  fP_t_comm = c(1985, 2014, 2015, 2016, 2030),  fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
@@ -584,7 +584,7 @@ test_that("fP eP 1b", {
   expect_true(sum(c(xx$I01[,5], xx$I11[,5], xx$I01[,6], xx$I11[,6])) > 0)
 
   parameters <- lhs_parameters(1, Ncat = 9, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(PrEPOnOff = 1, betaMtF_noncomm = 0.001,
+                               forced_pars = list(PrEPOnOff = 1,
                                  eP0 = rep(1, 9), eP1a = rep(1, 9), eP1b = rep(0.9, 9), eP1c = rep(1, 9), eP1d = rep(1, 9),
                                  fP_y_comm = matrix(1, nrow = 5, ncol = 9), fP_y_noncomm = matrix(1, nrow = 5, ncol = 9),
                                  fP_t_comm = c(1985, 2014, 2015, 2016, 2030),  fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
@@ -603,7 +603,7 @@ test_that("fP eP 1b", {
   expect_true(sum(c(xx$I01[,5], xx$I11[,5], xx$I01[,6], xx$I11[,6])) > 0)
 
   parameters <- lhs_parameters(1, Ncat = 9, par_seq = par_seq_default, condom_seq = condom_seq_default, groups_seq = groups_seq_default, years_seq = years_seq_default, set_pars = best_set_default, ranges = ranges_default,
-                               forced_pars = list(PrEPOnOff = 1, betaMtF_noncomm = 0.001,
+                               forced_pars = list(PrEPOnOff = 1,
                                  eP0 = rep(1, 9), eP1a = rep(1, 9), eP1b = rep(1, 9), eP1c = rep(0.9, 9), eP1d = rep(1, 9),
                                  fP_y_comm = matrix(1, nrow = 5, ncol = 9), fP_y_noncomm = matrix(1, nrow = 5, ncol = 9),
                                  fP_t_comm = c(1985, 2014, 2015, 2016, 2030),  fP_t_noncomm = c(1985, 2014, 2015, 2016, 2030),
@@ -1379,7 +1379,7 @@ test_that("eP vs prevalence", {
                                  sigma = c(1,1,1,1,1,1,1,1,1),
                                  test_rate_prep = c(4,1,1,1,1,1,1,1,1),
                                  PrEPOnOff = 1,
-                                 betaMtF_noncomm = 0.001, eP0 = rep(0.9, 9),
+                                   eP0 = rep(0.9, 9),
                                  infected_FSW_incoming = 0
                                ))
   result = run_model_for_tests(number_simulations = 1, time = time_default, parameters = parameters)[[1]]
@@ -1400,7 +1400,7 @@ test_that("eP vs prevalence", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1, betaMtF_noncomm = 0.001, eP1a = rep(0.9, 9),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,   eP1a = rep(0.9, 9),
                                  zetaa_y = array(data=c(0.2), dim = c(5, 9)),
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
@@ -1426,7 +1426,7 @@ test_that("eP vs prevalence", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,betaMtF_noncomm = 0.001, eP1b = rep(0.9, 9),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,  eP1b = rep(0.9, 9),
                                  zetaa_y = array(data=c(0.2), dim = c(5, 9)),
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
@@ -1451,7 +1451,7 @@ test_that("eP vs prevalence", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1, betaMtF_noncomm = 0.001, eP1c = rep(0.9, 9),
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,   eP1c = rep(0.9, 9),
                                  zetaa_y = array(data=c(0.2), dim = c(5, 9)),
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
@@ -1476,7 +1476,7 @@ test_that("eP vs prevalence", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1, betaMtF_noncomm = 0.001,
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,
                                  eP1d = rep(0.9, 9), eP0 = rep(0.9, 9),
                                  prep_intervention_y = matrix(c(1), ncol=9, nrow=4),
                                  sigma = c(1,1,1,1,1,1,1,1,1),
@@ -1519,7 +1519,7 @@ test_that("zeta vs prevalence", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1, betaMtF_noncomm = 0.001,
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,
 
                                  eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
                                  eP1d = rep(0, 9), eP0 = rep(0, 9),
@@ -1553,7 +1553,7 @@ test_that("zeta vs prevalence", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1, betaMtF_noncomm = 0.001,
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,
                                  eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
                                  eP1d = rep(0, 9), eP0 = rep(0, 9),
 
@@ -1585,7 +1585,7 @@ test_that("zeta vs prevalence", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1, betaMtF_noncomm = 0.001,
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,
                                  eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
                                  eP1d = rep(0, 9), eP0 = rep(0, 9),
 
@@ -1615,7 +1615,7 @@ test_that("zeta vs prevalence", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),kappaa = rep(0, 9), kappab = rep(0, 9), kappac = rep(0, 9),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1, betaMtF_noncomm = 0.001,
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,
                                  eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
                                  eP1d = rep(0, 9), eP0 = rep(0, 9),
 
@@ -1662,7 +1662,7 @@ test_that("ART vs prevalence", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),kappaa = rep(0, 9), kappab = rep(0, 9), kappac = rep(0, 9),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1, betaMtF_noncomm = 0.001,
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,
                                  eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
                                  eP1d = rep(0, 9), eP0 = rep(0, 9),
 
@@ -1696,7 +1696,7 @@ test_that("testing vs prevalence", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),kappaa = rep(0, 9), kappab = rep(0, 9), kappac = rep(0, 9),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1, betaMtF_noncomm = 0.001,
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,
                                  eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
                                  eP1d = rep(0, 9), eP0 = rep(0, 9),
 
@@ -1735,7 +1735,7 @@ test_that("adherence movements vs infections", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),kappaa = rep(0, 9), kappab = rep(0, 9), kappac = rep(0, 9),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1, betaMtF_noncomm = 0.001,
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,
                                  eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
                                  eP1d = rep(0, 9), eP0 = rep(0, 9),
 
@@ -1766,7 +1766,7 @@ test_that("adherence movements vs infections", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),kappaa = rep(0, 9), kappab = rep(0, 9), kappac = rep(0, 9),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1, betaMtF_noncomm = 0.001,
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,
                                  eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
                                  eP1d = rep(0, 9), eP0 = rep(0, 9),
 
@@ -1800,7 +1800,7 @@ test_that("prep dropout vs infections", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),kappaa = rep(0.1, 9), kappab = rep(0.1, 9), kappac = rep(0.1, 9),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1, betaMtF_noncomm = 0.001,
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,
                                  eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
                                  eP1d = rep(0, 9), eP0 = rep(0, 9),
 
@@ -1831,7 +1831,7 @@ test_that("prep dropout vs infections", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),kappaa = rep(0.1, 9), kappab = rep(0.1, 9), kappac = rep(0.1, 9),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1, betaMtF_noncomm = 0.001,
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,
                                  eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
                                  eP1d = rep(0, 9), eP0 = rep(0, 9),
 
@@ -1860,7 +1860,7 @@ test_that("prep dropout vs infections", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),kappaa = rep(0.1, 9), kappab = rep(0.1, 9), kappac = rep(0.1, 9),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1, betaMtF_noncomm = 0.001,
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,
                                  eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
                                  eP1d = rep(0, 9), eP0 = rep(0, 9),
 
@@ -1890,7 +1890,7 @@ test_that("prep dropout vs infections", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),kappaa = rep(0.1, 9), kappab = rep(0.1, 9), kappac = rep(0.1, 9),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1, betaMtF_noncomm = 0.001,
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,
                                  eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
                                  eP1d = rep(0, 9), eP0 = rep(0, 9),
 
@@ -1927,7 +1927,7 @@ test_that("ART dropout vs prevalence", {
                                forced_pars = list(
                                  time = time_default,
                                  n_y_noncomm = array(data = c(1), dim=c(7, 9, 9)),kappaa = rep(0.1, 9), kappab = rep(0.1, 9), kappac = rep(0.1, 9),
-                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1, betaMtF_noncomm = 0.001,
+                                 n_y_comm = array(data = c(1), dim=c(5, 9, 9)),ignore_ranges_fc_c = 1, PrEP_loss_to_follow_up = 0.1,
                                  eP1a = rep(0.6, 9), eP1b = rep(0.4, 9), eP1c = rep(0, 9),
                                  eP1d = rep(0, 9), eP0 = rep(0, 9),
 

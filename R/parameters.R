@@ -1628,9 +1628,9 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    fc_y_noncomm_1998 = matrix(0.4, Ncat, Ncat),
                    fc_y_noncomm_2002 = matrix(0.3, Ncat, Ncat),
                    fc_y_noncomm_2008 = matrix(0.3, Ncat, Ncat),
-                   fc_y_noncomm_2011 = matrix(0.3, Ncat, Ncat),
-                   fc_y_noncomm_2015 = matrix(0.5, Ncat, Ncat),
-                   fc_y_noncomm_2016 = matrix(0.5, Ncat, Ncat),
+                   # fc_y_noncomm_2011 = matrix(0.3, Ncat, Ncat),
+                   # fc_y_noncomm_2015 = matrix(0.5, Ncat, Ncat),
+                   # fc_y_noncomm_2016 = matrix(0.5, Ncat, Ncat),
 
 
 
@@ -1654,20 +1654,20 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    alpha02 = rep_len(0,Ncat),
                    alpha03 = 0.03,
                    alpha04 = 0.07,
-                   dur_below_200 = rep_len(0.3, Ncat),
+                   # dur_below_200 = rep_len(0.3, Ncat),
 
                    alpha11 = rep_len(0.01,Ncat),
 
-                   alpha21 = rep_len(0.01,Ncat),
+                   # alpha21 = rep_len(0.01,Ncat),
                    alpha22 = rep_len(0.01,Ncat),
                    alpha23 = rep_len(0.01,Ncat),
                    alpha24 = rep_len(0.01,Ncat),
                    alpha25 = rep_len(0.3,Ncat),
 
                    alpha32 = rep_len(0.01,Ncat),
-                   alpha33 = rep_len(0.01,Ncat),
-                   alpha34 = rep_len(0.01,Ncat),
-                   alpha35 = rep_len(0.3,Ncat),
+                   # alpha33 = rep_len(0.01,Ncat),
+                   # alpha34 = rep_len(0.01,Ncat),
+                   # alpha35 = rep_len(0.3,Ncat),
 
                    alpha42 = rep_len(0.01,Ncat),
                    alpha43 = rep_len(0.01,Ncat),
@@ -1675,19 +1675,19 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    alpha45 = rep_len(0.3,Ncat),
 
 
-                   beta = rep_len(0.005,Ncat),
-                   betaMtoF = 0.00193,
-                   betaFtoM = 0.00867,
+                   # beta = rep_len(0.005,Ncat),
+                   # betaMtoF = 0.00193,
+                   # betaFtoM = 0.00867,
 
-                   betaMtoF_noncomm = 0.00193,
-                   betaFtoM_noncomm = 0.00867,
-                   betaMtoF_comm = 0.00193,
-                   betaFtoM_comm = 0.00867,
+                   # betaMtoF_noncomm = 0.00193,
+                   # betaFtoM_noncomm = 0.00867,
+                   # betaMtoF_comm = 0.00193,
+                   # betaFtoM_comm = 0.00867,
 
                    #beta = 0,
 
-                   p_comm = matrix(1, ncol = Ncat, nrow = Ncat),
-                   p_noncomm = matrix(1, ncol = Ncat, nrow = Ncat),
+                   # p_comm = matrix(1, ncol = Ncat, nrow = Ncat),
+                   # p_noncomm = matrix(1, ncol = Ncat, nrow = Ncat),
 
 
                    ec = rep_len(0.8,Ncat),
@@ -1696,10 +1696,10 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
 
 
-                   epsilon = 0.001,
+                   # epsilon = 0.001,
 
-                   c_comm = rep_len(2, Ncat),
-                   c_noncomm = rep_len(2, Ncat),
+                   # c_comm = rep_len(2, Ncat),
+                   # c_noncomm = rep_len(2, Ncat),
                    #                    c_t_comm = c(1985, 1993, 1995, 1998, 2002, 2005, 2008, 2012, 2015, 2016),
                    #                    c_y_comm = matrix(rep(c(1, 2, 3, 1, 3, 4, 2, 1, 2, 4), Ncat), ncol = Ncat),
                    #
@@ -1718,20 +1718,20 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    fP_y_noncomm = matrix(
                      rep(c(1, 1, 1, 1, 1), Ncat), ncol = Ncat),
 
-                   n_y_comm_1985 = matrix(1.02, Ncat, Ncat),
-                   n_y_comm_2002 = matrix(1.02, Ncat, Ncat),
-                   n_y_comm_2015 = matrix(1.02, Ncat, Ncat),
+                   # n_y_comm_1985 = matrix(1.02, Ncat, Ncat),
+                   # n_y_comm_2002 = matrix(1.02, Ncat, Ncat),
+                   # n_y_comm_2015 = matrix(1.02, Ncat, Ncat),
 
-                   n_y_comm_2016 = matrix(1.02, Ncat, Ncat),
+                   # n_y_comm_2016 = matrix(1.02, Ncat, Ncat),
 
-                   n_y_noncomm_1985 = matrix(1.03, Ncat, Ncat),
-                   n_y_noncomm_2002 = matrix(1.03, Ncat, Ncat),
-                   n_y_noncomm_2015 = matrix(1.03, Ncat, Ncat),
+                   # n_y_noncomm_1985 = matrix(1.03, Ncat, Ncat),
+                   # n_y_noncomm_2002 = matrix(1.03, Ncat, Ncat),
+                   # n_y_noncomm_2015 = matrix(1.03, Ncat, Ncat),
 
-                   n_y_noncomm_1998 = matrix(1.03, Ncat, Ncat),
-                   n_y_noncomm_2011 = matrix(1.03, Ncat, Ncat),
+                   # n_y_noncomm_1998 = matrix(1.03, Ncat, Ncat),
+                   # n_y_noncomm_2011 = matrix(1.03, Ncat, Ncat),
 
-                   n_y_noncomm_2016 = matrix(1.03, Ncat, Ncat),
+                   # n_y_noncomm_2016 = matrix(1.03, Ncat, Ncat),
 
                    #n = 0,
 
@@ -1747,79 +1747,79 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
 
                    #                    p = matrix(1, NAge, NAge),
 
-                   ART_RR_prog = 10, # survival extension cofactor
+                   # ART_RR_prog = 10, # survival extension cofactor
                    # ART_RR_mort = 2.5, # survival extension cofactor
 
-                   infect_ART = c(0, rep_len(0, 8)),
+                   # infect_ART = c(0, rep_len(0, 8)),
                    infect_acute = 9, # RR for acute phase
                    infect_AIDS = 7.27, # RR for AIDS phase
 
                    dur_FSW = 30,
-                   OnPrEP_init = rep_len(0, Ncat),
+                   # OnPrEP_init = rep_len(0, Ncat),
 
 
                    # have to include the follow in the function for it to work just using generate_parameters(), and not lhs_parameters()
-                   SC_to_death = 10,
-                   prev_init_FSW = 0.04,
-                   prev_init_rest = 0.0008,
+                   # SC_to_death = 10,
+                   # prev_init_FSW = 0.04,
+                   # prev_init_rest = 0.0008,
                    rate_leave_pro_FSW = 0.2,
-                   rate_leave_client = 0.05,
-                   rate_leave_low_FSW = 0.1,
-                   prop_client_GPM = 0.2430057, # 27091/111483
-                   prop_pro_FSW_GPF = 0.004620494, # 672 / 145439
-                   prop_low_FSW_GPF = 0.005204931, # 757 / 145439
+                   # rate_leave_client = 0.05,
+                   # rate_leave_low_FSW = 0.1,
+                   # prop_client_GPM = 0.2430057, # 27091/111483
+                   # prop_pro_FSW_GPF = 0.004620494, # 672 / 145439
+                   # prop_low_FSW_GPF = 0.005204931, # 757 / 145439
                    rate_move_in = matrix(0, ncol = Ncat, nrow = Ncat),
                    rate_move_out = rep_len(0, Ncat),
                    rate_move_out_PrEP = rep_len(0, Ncat),
 
-                   rate_enter_sexual_pop_F = 1,
-                   rate_enter_sexual_pop_M = 1,
+                   # rate_enter_sexual_pop_F = 1,
+                   # rate_enter_sexual_pop_M = 1,
 
-                   fraction_F = 0.51,
+                   # fraction_F = 0.51,
                    fraction_FSW_foreign = 0.5,
                    replaceDeaths = 0,
-                   movement = 1,
+                   # movement = 1,
                    beta_comm = rep_len(0.002, Ncat),
 
                    beta_noncomm = rep_len(0.001, Ncat),
-                   muF = 0.02597403,
-                   muM = 0.02739726,
-                   RR_beta_FtM = 1,
-                   RR_beta_circum = 0.44,
+                   # muF = 0.02597403,
+                   # muM = 0.02739726,
+                   # RR_beta_FtM = 1,
+                   # RR_beta_circum = 0.44,
 
-                   prev_HSV2_FSW = 1,
-                   prev_HSV2_Client = 1,
-                   prev_HSV2_GPF = 1,
-                   prev_HSV2_GPM = 1,
-                   RR_beta_HSV2_comm_t = 1,
-                   RR_beta_HSV2_noncomm_t = 1,
-                   RR_beta_HSV2_comm_a = 2,
-                   RR_beta_HSV2_noncomm_a = 2,
+                   # prev_HSV2_FSW = 1,
+                   # prev_HSV2_Client = 1,
+                   # prev_HSV2_GPF = 1,
+                   # prev_HSV2_GPM = 1,
+                   # RR_beta_HSV2_comm_t = 1,
+                   # RR_beta_HSV2_noncomm_t = 1,
+                   # RR_beta_HSV2_comm_a = 2,
+                   # RR_beta_HSV2_noncomm_a = 2,
 
-                   betaMtoF_baseline = 0.00081,
+                   # betaMtoF_baseline = 0.00081,
 
 
                    who_believe_comm = 0,
-                   init_clientN_from_PCR = 0,
-                   fraction_sexually_active_15_F = 0,
-                   fraction_sexually_active_15_M = 0,
-                   beta_above_1 = 0,
-                   ignore_ranges_fc_c = 0,
-                   dropout_rate_not_FSW = 0.025,
-                   dropout_rate_FSW = 0.025,
+                   # init_clientN_from_PCR = 0,
+                   # fraction_sexually_active_15_F = 0,
+                   # fraction_sexually_active_15_M = 0,
+                   # beta_above_1 = 0,
+                   # ignore_ranges_fc_c = 0,
+                   # dropout_rate_not_FSW = 0.025,
+                   # dropout_rate_FSW = 0.025,
 
-                   delete = 0,
+                   # delete = 0,
                    nu = 0.02222222,
                    fPa = 0.5,
                    fPc = 0.4,
                    iota  = c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0, 0, 0),
                    viral_supp_t = c(1985, 2015, 2016),
                    viral_supp_y = matrix(0, nrow = 3, ncol = 9),
-                   viral_supp_y_1986_rest = 0.6,
-                   viral_supp_y_2015_ProFSW = 0.7,
-                   ART_eff = 0.98,
-                   ART_recruit_rate = 0.2,
-                   ART_reinit_rate = 0.1,
+                   # viral_supp_y_1986_rest = 0.6,
+                   # viral_supp_y_2015_ProFSW = 0.7,
+                   # ART_eff = 0.98,
+                   # ART_recruit_rate = 0.2,
+                   # ART_reinit_rate = 0.1,
 
                    tau_intervention_t = c(1986, 2015, 2016, 2017),
                    rho_intervention_t = c(1986, 2015, 2016, 2017),
@@ -1827,17 +1827,17 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    tau_intervention_y = matrix(c(rep(0, 9), 1.5, c(rep(0, 8)), 1.5, c(rep(0, 8)), rep(0, 9)), ncol = 9, nrow = 4, byrow = T),
                    rho_intervention_y = matrix(c(rep(0, 9), 6, c(rep(0, 8)), 6, c(rep(0, 8)), rep(0, 9)), ncol = 9, nrow = 4, byrow = T),
 
-                   intervention_testing_increase = 1.4,
-                   intervention_ART_increase = 6.5,
+                   # intervention_testing_increase = 1.4,
+                   # intervention_ART_increase = 6.5,
 
-                   prep_offering_rate = 1,
+                   # prep_offering_rate = 1,
 
                    FSW_ONLY = c(1, 1, rep(0, 7)),
 
 
-                   cost_ART_initiation_study_FSW = 1,
-                   cost_1_year_ART_study_FSW = 1,
-                   cost_1_year_ART_rest = 1,
+                   # cost_ART_initiation_study_FSW = 1,
+                   # cost_1_year_ART_study_FSW = 1,
+                   # cost_1_year_ART_rest = 1,
                    W0 = 1,
                    W1 = 1,
                    W2 = 1,
@@ -1862,15 +1862,15 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    cost_PREP_initiation_Patient_costs = 1,
                    cost_PREP_1_year_ART_Patient_costs = 1,
                    TasP_testing = 0,
-                   long_intervention = 0,
-                   FSW_eligible = 0,
-                   GP_eligible = 1,
+                   # long_intervention = 0,
+                   # FSW_eligible = 0,
+                   # GP_eligible = 1,
                    pfFSW_t = c(1985, 1993, 2015, 2060),
 
                    pfFSW_y = matrix(c(rep(0, 9), 0.55, c(rep(0, 8)), 0.2, c(rep(0, 8)), 0.2, c(rep(0, 8))), ncol = 9, nrow = 4, byrow = T),
 
-                   prev_non_ben_fsw_1993 = 0.55,
-                   prev_non_ben_fsw_2015 = 0.2,
+                   # prev_non_ben_fsw_1993 = 0.55,
+                   # prev_non_ben_fsw_2015 = 0.2,
 
 
                    infected_FSW_incoming = 1,
@@ -1878,34 +1878,34 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    prep_efficacious_y = c(0, 1, 1, 0, 0),
                    prep_efficacious_t = c(1985, 2015, 2017, 2017.01, 2060),
 
-                   PrEP_loss_to_follow_up = 0.1,
+                   # PrEP_loss_to_follow_up = 0.1,
 
-                   ART_recruit_rate_rest = 0.1,
-                   ART_reinit_rate_rest = 0.1,
+                   # ART_recruit_rate_rest = 0.1,
+                   # ART_reinit_rate_rest = 0.1,
 
-                   ART_init_ratio_MF = 2,
+                   # ART_init_ratio_MF = 2,
 
-                   RR_beta_HSV2_a_FSW = 1,
-                   RR_beta_HSV2_a_client = 1,
-                   RR_beta_HSV2_a_GPF = 1,
-                   RR_beta_HSV2_a_GPM = 1,
+                   # RR_beta_HSV2_a_FSW = 1,
+                   # RR_beta_HSV2_a_client = 1,
+                   # RR_beta_HSV2_a_GPF = 1,
+                   # RR_beta_HSV2_a_GPM = 1,
 
 
-                   testing_prob_men_2006 = 0.111,
-                   testing_prob_men_2008 = 0.112,
-                   testing_prob_men_2012 = 0.113,
+                   # testing_prob_men_2006 = 0.111,
+                   # testing_prob_men_2008 = 0.112,
+                   # testing_prob_men_2012 = 0.113,
+                   #
+                   # testing_prob_women_2006 = 0.114,
+                   # testing_prob_women_2008 = 0.115,
+                   # testing_prob_women_2012 = 0.116,
 
-                   testing_prob_women_2006 = 0.114,
-                   testing_prob_women_2008 = 0.115,
-                   testing_prob_women_2012 = 0.116,
-
-                   ART_recruit_rate_FSW = 1,
-                   ART_reinit_rate_FSW = 1,
+                   # ART_recruit_rate_FSW = 1,
+                   # ART_reinit_rate_FSW = 1,
 
                    PrEP_reinit_OnOff_t = c(1985, 2017, 2017.01, 2060),
                    PrEP_reinit_OnOff_y = c(0, 0, 0, 0),
 
-                   PrEP_reinits_on = 1,
+                   # PrEP_reinits_on = 1,
 
                    count_PrEP_1a = 1,
                    count_PrEP_1b = 1,
@@ -1940,5 +1940,17 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
     ret = modifyList(ret, lapply(ret[match(set_null, names(ret))], function(x) x*0))
   }
 
+
+  # browser()
+
+  ret <- ret[which(!names(ret) %in% c("N_init", "initial_Ntot", "frac_women_ProFSW", "frac_women_LowFSW", "frac_women_exFSW", "frac_men_client", "frac_women_virgin", "frac_men_virgin", "epsilon_1985", "epsilon_1992", "epsilon_2002", "epsilon_2013", "epsilon_2016", "dur_primary_phase", "dur_200_349", "gamma32", "gamma33", "gamma34", "ART_prob_t", "ART_prob_y", "RR_test_onPrEP", "RR_ART_CD4200", "tau01", "tau11", "tau2", "tau3", "tau4", "tau5", "zetaa_t", "zetaa_y", "zetab_t", "zetab_y", "zetac_t", "zetac_y", "c_comm_1985", "c_comm_1993", "c_comm_1995", "c_comm_1998", "c_comm_2002", "c_comm_2005", "c_comm_2008", "c_comm_2012", "c_comm_2015", "c_comm_2016", "c_noncomm_1985", "c_noncomm_1993", "c_noncomm_1995", "c_noncomm_1998", "c_noncomm_2002", "c_noncomm_2005", "c_noncomm_2008", "c_noncomm_2012", "c_noncomm_2015", "c_noncomm_2016", "fc_y_comm_1985", "fc_y_comm_1993", "fc_y_comm_1995", "fc_y_comm_1998", "fc_y_comm_2002", "fc_y_comm_2005", "fc_y_comm_2008", "fc_y_comm_2012", "fc_y_comm_2015", "fc_y_comm_2016", "fc_y_noncomm_1985", "fc_y_noncomm_1993", "fc_y_noncomm_1998", "fc_y_noncomm_2002", "fc_y_noncomm_2008", "fc_y_noncomm_20"))]
+
+  ret <- ret[which(!names(ret) %in% c("ART_eff", "ART_recruit_rate_FSW", "ART_recruit_rate_rest", "ART_reinit_rate_FSW", "ART_reinit_rate_rest", "ART_RR_prog", "betaMtoF_baseline", "c_comm_1993_ProFSW", "c_comm_1998_Client", "c_comm_2005_ProFSW", "c_comm_2012_Client", "c_comm_2015_Client", "c_non_comm_1985_Client", "c_non_comm_1985_LowFSW", "c_non_comm_1985_ProFSW", "c_noncomm_1998_GPF", "c_noncomm_1998_GPM", "c_noncomm_2008_GPF", "c_noncomm_2008_GPM", "dropout_rate_FSW", "dropout_rate_not_FSW", "dur_below_200", "eff_ART", "fc_y_comm_1985_ProFSW_Client", "fc_y_comm_1993_ProFSW_Client", "fc_y_comm_2002_ProFSW_Client", "fc_y_noncomm_1985_GPF_GPM", "fc_y_noncomm_1985_ProFSW_Client", "fc_y_noncomm_1998_GPF_GPM", "fc_y_noncomm_2002_ProFSW_Client", "fc_y_noncomm_2011_GPF_GPM", "fraction_F", "fraction_sexually_active_15_F", "fraction_sexually_active_15_M", "init_clientN_from_PCR", "muF", "muM", "n_y_comm_1985_Client_LowFSW", "n_y_comm_1985_Client_ProFSW", "n_y_comm_1985_LowFSW_Client", "n_y_comm_1985_ProFSW_Client", "n_y_noncomm_1985_GPF_GPM", "n_y_noncomm_1985_GPM_GPF"))]
+
+  ret <- ret[which(!names(ret) %in% c(unlist(strsplit("n_y_noncomm_2002_ProFSW_Client, n_y_noncomm_2015_ProFSW_Client, prev_HSV2_Client, prev_HSV2_FSW, prev_HSV2_GPF, prev_HSV2_GPM, prev_init_FSW, prev_init_rest, rate_enter_sexual_pop_F, rate_enter_sexual_pop_M, rate_leave_client, rate_leave_low_FSW, RR_beta_circum, RR_beta_FtM, RR_beta_HSV2_comm, RR_beta_HSV2_noncomm, SC_to_death, viral_supp_y_1986_rest, viral_supp_y_2015_ProFSW, movement, fc_y_noncomm_2011, fc_y_noncomm_2015, fc_y_noncomm_2016, n_y_comm_1985, n_y_comm_2002, n_y_comm_2015, n_y_comm_2016, n_y_noncomm_1985, n_y_noncomm_1998, n_y_noncomm_2011, n_y_noncomm_2002, n_y_noncomm_2015, n_y_noncomm_2016, betaMtoF_noncomm, betaFtoM_noncomm, betaMtoF_comm, betaFtoM_comm, RR_beta_HSV2_comm_t, RR_beta_HSV2_noncomm_t, RR_beta_HSV2_comm_a, RR_beta_HSV2_noncomm_a, beta_above_1, ignore_ranges_fc_c, delete, ART_recruit_rate, ART_reinit_rate, intervention_testing_increase, intervention_ART_increase, prep_offering_rate, prep_dropout", ", "))))]
+  ret <- ret[which(!names(ret) %in% c(unlist(strsplit("cost_ART_initiation_study_FSW, cost_1_year_ART_study_FSW, cost_1_year_ART_rest, long_intervention, FSW_eligible, GP_eligible, prev_non_ben_fsw_1993, prev_non_ben_fsw_2015, ART_init_ratio_MF, RR_beta_HSV2_a_FSW, RR_beta_HSV2_a_client, RR_beta_HSV2_a_GPF, RR_beta_HSV2_a_GPM, testing_prob_men_2006, testing_prob_men_2008, testing_prob_men_2012, testing_prob_women_2006, testing_prob_women_2008, testing_prob_women_2012, PrEP_reinits_on, infect_ART, alpha33, alpha34, alpha35, FSW_leave_Cotonou_fraction, time, PrEP_loss_to_follow_up, n_y_noncomm_2002_LowFSW_Client, n_y_noncomm_2015_LowFSW_Client, n_y_noncomm_1985_GPF_Client, fc_y_noncomm_1985_GPF_Client, fc_y_noncomm_1998_GPF_Client, fc_y_noncomm_2011_GPF_Client, betaMtoF_FSW, betaFtoM_client, betaMtoF_GPF, betaFtoM_GPM, ART_RR_mort, prop_client_GPM, prop_pro_FSW_GPF, prop_low_FSW_GPF", ", "))))]
+
+
   ret
+
 }
