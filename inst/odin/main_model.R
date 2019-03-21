@@ -1566,8 +1566,8 @@ dim(alpha35_without_supp) = user()
 dim(beta_comm) = Ncat
 dim(beta_noncomm) = Ncat
 
-dim(c_comm) = user()
-dim(c_noncomm) = user()
+dim(c_comm) = Ncat
+dim(c_noncomm) = Ncat
 dim(p_comm) = c(Ncat, Ncat)
 dim(p_noncomm) = c(Ncat, Ncat)
 
