@@ -1741,3 +1741,9 @@ dim(in_I45) <- c(Ncat, Ncat)
 dim(rate_move_in) <- c(Ncat, Ncat)
 dim(rate_move_out) <- Ncat
 dim(rate_move_out_PrEP) <- Ncat
+
+
+intervention_testing_increase = user()
+output(intervention_testing_increase) = intervention_testing_increase
+intervention_ART_increase = user()
+output(intervention_ART_increase) = intervention_ART_increase
