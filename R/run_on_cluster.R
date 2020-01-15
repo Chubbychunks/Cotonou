@@ -22,7 +22,7 @@ quantile_95 <- function(x) return(quantile(x, probs = c(0.025, 0.5, 0.975)))
 #' @export
 #' @useDynLib cotonou
 return_outputs <- function(p, gen, time, outputs, solving_method = "lsoda") {
-  mod <- gen(user = p)
+  mod <- gen(user = p, unused_user_action = "ignore")
   all_results <- mod$transform_variables(mod$run(time,  rtol = 10^-4,  atol = 10^-4, method = solving_method))
   # counter <<- counter + 1
   # if (counter %% 10 == 0)
@@ -35,7 +35,7 @@ return_outputs <- function(p, gen, time, outputs, solving_method = "lsoda") {
 #' @export
 #' @useDynLib cotonou
 return_all_outputs <- function(p, gen, time) {
-  mod <- gen(user = p)
+  mod <- gen(user = p, unused_user_action = "ignore")
   return(mod$transform_variables(mod$run(time)))
 }
 
