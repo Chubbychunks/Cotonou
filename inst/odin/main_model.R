@@ -641,6 +641,22 @@ output(iota[]) = iota
 iota[] = user()
 
 
+
+
+re_init_interruption_parm_y[,] = user()
+re_init_interruption_parm_t[] = user()
+
+output(re_init_interruption_parm_y[,]) = re_init_interruption_parm_y
+output(re_init_interruption_parm_t[]) = re_init_interruption_parm_t
+dim(re_init_interruption_parm_y) = user()
+dim(re_init_interruption_parm_t) = user()
+
+re_init_interruption_parm[] = interpolate(re_init_interruption_parm_t, re_init_interruption_parm_y, "constant")
+dim(re_init_interruption_parm) = Ncat
+output(re_init_interruption_parm[])= re_init_interruption_parm
+
+
+
 # rho[] = -log(1-ART_prob[i])
 
 rho[] = user()
