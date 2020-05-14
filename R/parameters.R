@@ -1912,7 +1912,11 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    count_PrEP_1c = 1,
 
                    re_init_interruption_parm_t = c(1985, 2017, 2017.01, 2060),
-                   re_init_interruption_parm_y = c(1, 1, 1, 1)
+                   re_init_interruption_parm_y = matrix(1, nrow = 4, ncol = 9),
+                   art_dropout_interruption_parm_t = c(1985, 2017, 2017.01, 2060),
+                   art_dropout_interruption_parm_y = matrix(1, nrow = 4, ncol = 9)
+
+
 
 
 

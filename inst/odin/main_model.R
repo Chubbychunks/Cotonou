@@ -120,18 +120,23 @@ deriv(I23[]) = gamma22[i] * I22[i] + (tau[i] + tau_intervention[i] * TasP_testin
 deriv(I24[]) = gamma23[i] * I23[i] + (tau[i] + tau_intervention[i] * TasP_testing) * I04[i] - I24[i] * (gamma24[i] + rho[i]*ART_eligible_CD4_200_349 + rho_intervention[i] + alpha24[i] + mu[i] + nu) + rate_move_out[i] * I24[i] + sum(in_I24[i, ])
 deriv(I25[]) = gamma24[i] * I24[i] + (RR_test_CD4200*tau[i] + tau_intervention[i] * TasP_testing) * I05[i] - I25[i] * (rho[i]*ART_eligible_CD4_below_200 + rho_intervention[i] + alpha25[i] + mu[i] + nu) + rate_move_out[i] * I25[i] + sum(in_I25[i, ])
 
-deriv(I32[]) = (rho[i]*ART_eligible_CD4_above_500*above_500_by_group[i] + rho_intervention[i]) * I22[i] + iota[i] * I42[i] - I32[i] * (gamma32[i] + phi2[i] + alpha32[i] + mu[i] + nu) + rate_move_out[i] * I32[i] + sum(in_I32[i, ])
-deriv(I33[]) = gamma32[i] * I32[i] + (rho[i]*ART_eligible_CD4_350_500 + rho_intervention[i]) * I23[i] + iota[i] * I43[i] - I33[i] * (gamma33[i] + phi3[i] + alpha33[i] + mu[i] + nu) + rate_move_out[i] * I33[i] + sum(in_I33[i, ])
-deriv(I34[]) = gamma33[i] * I33[i] + (rho[i]*ART_eligible_CD4_200_349 + rho_intervention[i]) * I24[i] + iota[i] * I44[i] - I34[i] * (gamma34[i] + phi4[i] + alpha34[i] + mu[i] + nu) + rate_move_out[i] * I34[i] + sum(in_I34[i, ])
-deriv(I35[]) = gamma34[i] * I34[i] + (rho[i]*ART_eligible_CD4_below_200 + rho_intervention[i]) * I25[i] + iota[i] * I45[i] - I35[i] * (phi5[i] + alpha35[i] + mu[i] + nu) + rate_move_out[i] * I35[i] + sum(in_I35[i, ])
+deriv(I32[]) = (rho[i]*ART_eligible_CD4_above_500*above_500_by_group[i] + rho_intervention[i]) * I22[i] + re_init_interruption_parm[i] * iota[i] * I42[i] - I32[i] * (gamma32[i] + art_dropout_interruption_parm[i] * phi2[i] + alpha32[i] + mu[i] + nu) + rate_move_out[i] * I32[i] + sum(in_I32[i, ])
+deriv(I33[]) = gamma32[i] * I32[i] + (rho[i]*ART_eligible_CD4_350_500 + rho_intervention[i]) * I23[i] + re_init_interruption_parm[i] * iota[i] * I43[i] - I33[i] * (gamma33[i] + art_dropout_interruption_parm[i] * phi3[i] + alpha33[i] + mu[i] + nu) + rate_move_out[i] * I33[i] + sum(in_I33[i, ])
+deriv(I34[]) = gamma33[i] * I33[i] + (rho[i]*ART_eligible_CD4_200_349 + rho_intervention[i]) * I24[i] + re_init_interruption_parm[i] * iota[i] * I44[i] - I34[i] * (gamma34[i] + art_dropout_interruption_parm[i] * phi4[i] + alpha34[i] + mu[i] + nu) + rate_move_out[i] * I34[i] + sum(in_I34[i, ])
+deriv(I35[]) = gamma34[i] * I34[i] + (rho[i]*ART_eligible_CD4_below_200 + rho_intervention[i]) * I25[i] + re_init_interruption_parm[i] * iota[i] * I45[i] - I35[i] * (art_dropout_interruption_parm[i] * phi5[i] + alpha35[i] + mu[i] + nu) + rate_move_out[i] * I35[i] + sum(in_I35[i, ])
 
-deriv(I42[]) = phi2[i] * I32[i] - I42[i] * (gamma42[i] + iota[i] + alpha42[i] + mu[i] + nu) + rate_move_out[i] * I42[i] + sum(in_I42[i, ])
-deriv(I43[]) = gamma42[i] * I42[i] + phi3[i] * I33[i] - I43[i] * (gamma43[i] + iota[i] + alpha43[i] + mu[i] + nu) + rate_move_out[i] * I43[i] + sum(in_I43[i, ])
-deriv(I44[]) = gamma43[i] * I43[i] + phi4[i] * I34[i] - I44[i] * (gamma44[i] + iota[i] + alpha44[i] + mu[i] + nu) + rate_move_out[i] * I44[i] + sum(in_I44[i, ])
-deriv(I45[]) = gamma44[i] * I44[i] + phi5[i] * I35[i] - I45[i] * (iota[i] + alpha45[i] + mu[i] + nu) + rate_move_out[i] * I45[i] + sum(in_I45[i, ])
+deriv(I42[]) = art_dropout_interruption_parm[i] * phi2[i] * I32[i] - I42[i] * (gamma42[i] + re_init_interruption_parm[i] * iota[i] + alpha42[i] + mu[i] + nu) + rate_move_out[i] * I42[i] + sum(in_I42[i, ])
+deriv(I43[]) = gamma42[i] * I42[i] + art_dropout_interruption_parm[i] * phi3[i] * I33[i] - I43[i] * (gamma43[i] + re_init_interruption_parm[i] * iota[i] + alpha43[i] + mu[i] + nu) + rate_move_out[i] * I43[i] + sum(in_I43[i, ])
+deriv(I44[]) = gamma43[i] * I43[i] + art_dropout_interruption_parm[i] * phi4[i] * I34[i] - I44[i] * (gamma44[i] + re_init_interruption_parm[i] * iota[i] + alpha44[i] + mu[i] + nu) + rate_move_out[i] * I44[i] + sum(in_I44[i, ])
+deriv(I45[]) = gamma44[i] * I44[i] + art_dropout_interruption_parm[i] * phi5[i] * I35[i] - I45[i] * (re_init_interruption_parm[i] * iota[i] + alpha45[i] + mu[i] + nu) + rate_move_out[i] * I45[i] + sum(in_I45[i, ])
 
 # output(ART_eligible_CD4_below_200) = ART_eligible_CD4_below_200
 
+# re_init_interruption_parm[i] * iota[i]
+# art_dropout_interruption_parm[i] * phi2[i]
+# art_dropout_interruption_parm[i] * phi3[i]
+# art_dropout_interruption_parm[i] * phi4[i]
+# art_dropout_interruption_parm[i] * phi5[i]
 
 
 gamma32_without_supp[] = user()
@@ -642,6 +647,19 @@ iota[] = user()
 
 
 
+art_dropout_interruption_parm_y[,] = user()
+art_dropout_interruption_parm_t[] = user()
+
+output(art_dropout_interruption_parm_y[,]) = art_dropout_interruption_parm_y
+output(art_dropout_interruption_parm_t[]) = art_dropout_interruption_parm_t
+dim(art_dropout_interruption_parm_y) = user()
+dim(art_dropout_interruption_parm_t) = user()
+
+art_dropout_interruption_parm[] = interpolate(art_dropout_interruption_parm_t, art_dropout_interruption_parm_y, "constant")
+dim(art_dropout_interruption_parm) = Ncat
+output(art_dropout_interruption_parm[])= art_dropout_interruption_parm
+
+
 
 re_init_interruption_parm_y[,] = user()
 re_init_interruption_parm_t[] = user()
@@ -694,6 +712,9 @@ HIV_positive[] = I01[i] + I11[i] + I02[i] + I03[i] + I04[i] + I05[i] +
 
 dim(HIV_positive) = Ncat
 output(HIV_positive[]) = HIV_positive
+
+
+
 
 Number_Susceptibles[] = S0[i] + S1a[i] + S1b[i] + S1c[i] + S1d[i]
 
@@ -863,13 +884,13 @@ deriv(TasPinitiations[]) = (rho_intervention[i]) * I22[i] + (rho_intervention[i]
 
 
 
-deriv(dropouts[]) = phi2[i] * I32[i] + phi3[i] * I33[i] + phi4[i] * I34[i] + phi5[i] * I35[i]
+deriv(dropouts[]) = art_dropout_interruption_parm[i] * phi2[i] * I32[i] + art_dropout_interruption_parm[i] * phi3[i] * I33[i] + art_dropout_interruption_parm[i] * phi4[i] * I34[i] + art_dropout_interruption_parm[i] * phi5[i] * I35[i]
 
 deriv(cumu_PrEP_dropouts[]) = kappaa[i] * count_PrEP_1a * S1a[i] + kappab[i] * count_PrEP_1b * S1b[i] + kappac[i] * S1c[i] * count_PrEP_1c
 dim(cumu_PrEP_dropouts) = Ncat
 initial(cumu_PrEP_dropouts[]) = 0
 
-deriv(cumuARTREinitiations[]) = iota[i] * I42[i] + iota[i] * I43[i] + iota[i] * I44[i] + iota[i] * I45[i]
+deriv(cumuARTREinitiations[]) = re_init_interruption_parm[i] * iota[i] * I42[i] + re_init_interruption_parm[i] * iota[i] * I43[i] + re_init_interruption_parm[i] * iota[i] * I44[i] + re_init_interruption_parm[i] * iota[i] * I45[i]
 
 # PrEP initiations + testing initiations + ART RE INITIATIONS
 deriv(cumuTested_approx[]) = (fPa * count_PrEP_1a + fPb * count_PrEP_1b + fPc * count_PrEP_1c) * zeta[i] * S0[i] + # PrEP
@@ -879,7 +900,7 @@ deriv(cumuTested_approx[]) = (fPa * count_PrEP_1a + fPb * count_PrEP_1b + fPc * 
   (tau[i] + tau_intervention[i] * TasP_testing) * I03[i] + # TESTING into I23
   (tau[i] + tau_intervention[i] * TasP_testing) * I04[i] +  # TESTING into I24
   (RR_test_CD4200*tau[i] + tau_intervention[i] * TasP_testing) * I05[i] + # TESTING into I25
-  iota[i] * I42[i] + iota[i] * I43[i] + iota[i] * I44[i] + iota[i] * I45[i] # re-initiations
+  re_init_interruption_parm[i] * iota[i] * I42[i] + re_init_interruption_parm[i] * iota[i] * I43[i] + re_init_interruption_parm[i] * iota[i] * I44[i] + re_init_interruption_parm[i] * iota[i] * I45[i] # re-initiations
 
 
 
