@@ -132,6 +132,8 @@ deriv(I45[]) = gamma44[i] * I44[i] + art_dropout_interruption_parm[i] * phi5[i] 
 
 # output(ART_eligible_CD4_below_200) = ART_eligible_CD4_below_200
 
+leaving_dropout_cats =
+
 # re_init_interruption_parm[i] * iota[i]
 # art_dropout_interruption_parm[i] * phi2[i]
 # art_dropout_interruption_parm[i] * phi3[i]
