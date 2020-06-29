@@ -163,6 +163,7 @@ alpha33[] = if(old_VS_assumption == 1) alpha33_without_supp[i] / viral_supp[i] e
 alpha34[] = if(old_VS_assumption == 1) alpha34_without_supp[i] / viral_supp[i] else alpha04[i] / ART_RR * viral_supp[i] + alpha04[i] * (1 - viral_supp[i])
 alpha35[] = if(old_VS_assumption == 1) alpha35_without_supp[i] / viral_supp[i] else alpha05[i] / ART_RR * viral_supp[i] + alpha05[i] * (1 - viral_supp[i])
 
+output(old_VS_assumption) = old_VS_assumption
 
 # gamma32[] = user()
 # gamma33[] = user()
