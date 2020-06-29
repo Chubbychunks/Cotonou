@@ -331,6 +331,9 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
 
   y$ART_RR_mort = y$ART_RR_prog
 
+
+  y$ART_RR = y$ART_RR_prog
+
   y$gamma01 = 1/y$dur_primary_phase
   y$gamma02 = 2/(y$SC_to_death - y$dur_primary_phase - y$dur_200_349 - y$dur_below_200)
   y$gamma03 = y$gamma02
@@ -356,7 +359,6 @@ fix_parameters <- function(y, Ncat, Nage, par_seq, condom_seq, groups_seq, years
   y$gamma32_without_supp <- (y$gamma02)/y$ART_RR_prog
   y$gamma33_without_supp <- (y$gamma03)/y$ART_RR_prog
   y$gamma34_without_supp <- (y$gamma04)/y$ART_RR_prog
-
 
   # mortality
   y$alpha03 <- rep_len(y$alpha03, Ncat)
@@ -1914,7 +1916,9 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    re_init_interruption_parm_t = c(1985, 2017, 2017.01, 2060),
                    re_init_interruption_parm_y = matrix(1, nrow = 4, ncol = 9),
                    art_dropout_interruption_parm_t = c(1985, 2017, 2017.01, 2060),
-                   art_dropout_interruption_parm_y = matrix(1, nrow = 4, ncol = 9)
+                   art_dropout_interruption_parm_y = matrix(1, nrow = 4, ncol = 9),
+
+                   old_VS_assumption = 1
 
 
 

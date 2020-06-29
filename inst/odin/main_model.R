@@ -132,7 +132,6 @@ deriv(I45[]) = gamma44[i] * I44[i] + art_dropout_interruption_parm[i] * phi5[i] 
 
 # output(ART_eligible_CD4_below_200) = ART_eligible_CD4_below_200
 
-leaving_dropout_cats =
 
 # re_init_interruption_parm[i] * iota[i]
 # art_dropout_interruption_parm[i] * phi2[i]
@@ -140,18 +139,29 @@ leaving_dropout_cats =
 # art_dropout_interruption_parm[i] * phi4[i]
 # art_dropout_interruption_parm[i] * phi5[i]
 
+old_VS_assumption = user()
+
+alpha03[] = user()
+alpha04[] = user()
+alpha05[] = user()
+gamma02[] = user()
+gamma03[] = user()
+gamma04[] = user()
+
+
+ART_RR = user()
 
 gamma32_without_supp[] = user()
 gamma33_without_supp[] = user()
 gamma34_without_supp[] = user()
 
-gamma32[] = gamma32_without_supp[i] / viral_supp[i]
-gamma33[] = gamma33_without_supp[i] / viral_supp[i]
-gamma34[] = gamma34_without_supp[i] / viral_supp[i]
+gamma32[] = if(old_VS_assumption == 1) gamma32_without_supp[i] / viral_supp[i] else gamma02[i] / ART_RR * viral_supp[i] + gamma02[i] * (1 - viral_supp[i])
+gamma33[] = if(old_VS_assumption == 1) gamma33_without_supp[i] / viral_supp[i] else gamma03[i] / ART_RR * viral_supp[i] + gamma03[i] * (1 - viral_supp[i])
+gamma34[] = if(old_VS_assumption == 1) gamma34_without_supp[i] / viral_supp[i] else gamma04[i] / ART_RR * viral_supp[i] + gamma04[i] * (1 - viral_supp[i])
 
-alpha33[] = alpha33_without_supp[i] / viral_supp[i]
-alpha34[] = alpha34_without_supp[i] / viral_supp[i]
-alpha35[] = alpha35_without_supp[i] / viral_supp[i]
+alpha33[] = if(old_VS_assumption == 1) alpha33_without_supp[i] / viral_supp[i] else alpha03[i] / ART_RR * viral_supp[i] + alpha03[i] * (1 - viral_supp[i])
+alpha34[] = if(old_VS_assumption == 1) alpha34_without_supp[i] / viral_supp[i] else alpha04[i] / ART_RR * viral_supp[i] + alpha04[i] * (1 - viral_supp[i])
+alpha35[] = if(old_VS_assumption == 1) alpha35_without_supp[i] / viral_supp[i] else alpha05[i] / ART_RR * viral_supp[i] + alpha05[i] * (1 - viral_supp[i])
 
 
 # gamma32[] = user()
@@ -1390,9 +1400,7 @@ nu = user()
 
 mu[] = user()
 gamma01[] = user()
-gamma02[] = user()
-gamma03[] = user()
-gamma04[] = user()
+
 
 gamma11[] = user()
 
@@ -1430,9 +1438,7 @@ kappac[] = user()
 # note alpha is ordered differently...
 alpha01[] = user()
 alpha02[] = user()
-alpha03[] = user()
-alpha04[] = user()
-alpha05[] = user()
+
 
 alpha11[] = user()
 
