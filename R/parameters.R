@@ -922,7 +922,9 @@ lhs_parameters <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., set_pars =
     PrEP_reinit_OnOff_t = c(1985, 2017, 2017.01, 2060),
     PrEP_reinit_OnOff_y = c(0, 0, 0, 0),
 
-    PrEP_reinits_on = 1
+    PrEP_reinits_on = 1,
+
+    old_VS_assumption = 1
 
 
   )
@@ -1299,7 +1301,9 @@ lhs_parameters_parallel <- function(n, sample = NULL, Ncat = 9, Nage = 1, ..., s
     PrEP_reinit_OnOff_t = c(1985, 2017, 2017.01, 2060),
     PrEP_reinit_OnOff_y = c(0, 0, 0, 0),
 
-    PrEP_reinits_on = 1
+    PrEP_reinits_on = 1,
+
+    old_VS_assumption = 1
 
 
 
