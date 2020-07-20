@@ -1922,6 +1922,11 @@ generate_parameters <- function(..., parameters = list(...), set_null = list(...
                    art_dropout_interruption_parm_t = c(1985, 2017, 2017.01, 2060),
                    art_dropout_interruption_parm_y = matrix(1, nrow = 4, ncol = 9),
 
+
+                   art_initiation_interruption_parm_t = c(1985, 2017, 2017.01, 2060),
+                   art_initiation_interruption_parm_y = matrix(1, nrow = 4, ncol = 9),
+
+
                    old_VS_assumption = 1
 
 
