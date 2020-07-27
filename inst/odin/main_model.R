@@ -899,12 +899,12 @@ deriv(cumuAllDeaths[]) = (alpha01[i] + mu[i]) * I01[i] + (alpha11[i] + mu[i]) * 
   (alpha42[i] + mu[i]) * I42[i] + (alpha43[i] + mu[i]) * I43[i] + (alpha44[i] + mu[i]) * I44[i] + (alpha45[i] + mu[i]) * I45[i] +
   mu[i] * (S0[i] + S1a[i] + S1b[i] + S1c[i] + S1d[i])
 
-deriv(cumuARTinitiations[]) = (rho_intervention[i] + rho[i]*ART_eligible_CD4_above_500*above_500_by_group[i]) * I22[i] + (rho[i]*ART_eligible_CD4_350_500 + rho_intervention[i]) * I23[i] +
-  (rho[i]*ART_eligible_CD4_200_349 + rho_intervention[i]) * I24[i] + (rho[i]*ART_eligible_CD4_below_200 + rho_intervention[i]) * I25[i]
+deriv(cumuARTinitiations[]) = (rho_intervention[i] + art_initiation_interruption_parm[i]*rho[i]*ART_eligible_CD4_above_500*above_500_by_group[i]) * I22[i] + (art_initiation_interruption_parm[i]*rho[i]*ART_eligible_CD4_350_500 + rho_intervention[i]) * I23[i] +
+  (art_initiation_interruption_parm[i]*rho[i]*ART_eligible_CD4_200_349 + rho_intervention[i]) * I24[i] + (art_initiation_interruption_parm[i]*rho[i]*ART_eligible_CD4_below_200 + rho_intervention[i]) * I25[i]
 
 
-deriv(cumuARTinitiations_not_TasP[]) = (rho[i]*ART_eligible_CD4_above_500*above_500_by_group[i]) * I22[i] + (rho[i]*ART_eligible_CD4_350_500) * I23[i] +
-  (rho[i]*ART_eligible_CD4_200_349) * I24[i] + (rho[i]*ART_eligible_CD4_below_200) * I25[i]
+deriv(cumuARTinitiations_not_TasP[]) = (art_initiation_interruption_parm[i]*rho[i]*ART_eligible_CD4_above_500*above_500_by_group[i]) * I22[i] + (art_initiation_interruption_parm[i]*rho[i]*ART_eligible_CD4_350_500) * I23[i] +
+  (art_initiation_interruption_parm[i]*rho[i]*ART_eligible_CD4_200_349) * I24[i] + (art_initiation_interruption_parm[i]*rho[i]*ART_eligible_CD4_below_200) * I25[i]
 
 initial(cumuARTinitiations_not_TasP[]) = 0
 dim(cumuARTinitiations_not_TasP) = Ncat

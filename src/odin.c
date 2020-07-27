@@ -6280,9 +6280,6 @@ void main_model_rhs(main_model_internal* internal, double t, double * state, dou
   for (int i = 1; i <= internal->dim_cumu_PrEP_dropouts; ++i) {
     dstatedt[internal->offset_variable_cumu_PrEP_dropouts + i - 1] = internal->kappaa[i - 1] * internal->count_PrEP_1a * S1a[i - 1] + internal->kappab[i - 1] * internal->count_PrEP_1b * S1b[i - 1] + internal->kappac[i - 1] * S1c[i - 1] * internal->count_PrEP_1c;
   }
-  for (int i = 1; i <= internal->dim_cumuARTinitiations_not_TasP; ++i) {
-    dstatedt[internal->dim_cumuDeaths_On_ART + i - 1] = (internal->rho[i - 1] * ART_eligible_CD4_above_500 * internal->above_500_by_group[i - 1]) * I22[i - 1] + (internal->rho[i - 1] * ART_eligible_CD4_350_500) * I23[i - 1] + (internal->rho[i - 1] * ART_eligible_CD4_200_349) * I24[i - 1] + (internal->rho[i - 1] * ART_eligible_CD4_below_200) * I25[i - 1];
-  }
   for (int i = 1; i <= internal->dim_eP1a_effective; ++i) {
     internal->eP1a_effective[i - 1] = internal->eP1a[i - 1] * prep_efficacious;
   }
@@ -6463,7 +6460,10 @@ void main_model_rhs(main_model_internal* internal, double t, double * state, dou
      internal->c_noncomm_balanced[i - 1] = (internal->Ncat == 9 ? internal->c_noncomm_balanced[2] : internal->c_noncomm_balanced[3]);
   }
   for (int i = 1; i <= internal->dim_cumuARTinitiations; ++i) {
-    dstatedt[internal->offset_variable_cumuARTinitiations + i - 1] = (internal->rho_intervention[i - 1] + internal->rho[i - 1] * ART_eligible_CD4_above_500 * internal->above_500_by_group[i - 1]) * I22[i - 1] + (internal->rho[i - 1] * ART_eligible_CD4_350_500 + internal->rho_intervention[i - 1]) * I23[i - 1] + (internal->rho[i - 1] * ART_eligible_CD4_200_349 + internal->rho_intervention[i - 1]) * I24[i - 1] + (internal->rho[i - 1] * ART_eligible_CD4_below_200 + internal->rho_intervention[i - 1]) * I25[i - 1];
+    dstatedt[internal->offset_variable_cumuARTinitiations + i - 1] = (internal->rho_intervention[i - 1] + internal->art_initiation_interruption_parm[i - 1] * internal->rho[i - 1] * ART_eligible_CD4_above_500 * internal->above_500_by_group[i - 1]) * I22[i - 1] + (internal->art_initiation_interruption_parm[i - 1] * internal->rho[i - 1] * ART_eligible_CD4_350_500 + internal->rho_intervention[i - 1]) * I23[i - 1] + (internal->art_initiation_interruption_parm[i - 1] * internal->rho[i - 1] * ART_eligible_CD4_200_349 + internal->rho_intervention[i - 1]) * I24[i - 1] + (internal->art_initiation_interruption_parm[i - 1] * internal->rho[i - 1] * ART_eligible_CD4_below_200 + internal->rho_intervention[i - 1]) * I25[i - 1];
+  }
+  for (int i = 1; i <= internal->dim_cumuARTinitiations_not_TasP; ++i) {
+    dstatedt[internal->dim_cumuDeaths_On_ART + i - 1] = (internal->art_initiation_interruption_parm[i - 1] * internal->rho[i - 1] * ART_eligible_CD4_above_500 * internal->above_500_by_group[i - 1]) * I22[i - 1] + (internal->art_initiation_interruption_parm[i - 1] * internal->rho[i - 1] * ART_eligible_CD4_350_500) * I23[i - 1] + (internal->art_initiation_interruption_parm[i - 1] * internal->rho[i - 1] * ART_eligible_CD4_200_349) * I24[i - 1] + (internal->art_initiation_interruption_parm[i - 1] * internal->rho[i - 1] * ART_eligible_CD4_below_200) * I25[i - 1];
   }
   for (int i = 1; i <= internal->dim_cumuARTREinitiations; ++i) {
     dstatedt[internal->offset_variable_cumuARTREinitiations + i - 1] = internal->re_init_interruption_parm[i - 1] * internal->iota[i - 1] * I42[i - 1] + internal->re_init_interruption_parm[i - 1] * internal->iota[i - 1] * I43[i - 1] + internal->re_init_interruption_parm[i - 1] * internal->iota[i - 1] * I44[i - 1] + internal->re_init_interruption_parm[i - 1] * internal->iota[i - 1] * I45[i - 1];
